@@ -1,0 +1,16 @@
+Understanding the Parts:
+
+[Map] = a Texture meant to be applied as a sculpt map.
+
+[Tex] = A texture meant to be applied as a normal texture.
+
+The script is simple enough,  it is in fact the same script I use for most all animated textures I make. The difference is in the last variable. The last number in the strand broken up by commas in the script should be made lower (down to 1) for smaller scaled fires {this will play the animation slower}. It should be made higher (up to 10) for larger scale fires {this will play the animation faster].
+
+There are 3 different sculpt maps for 3 different logs included. 1 has two nodes/stubs, 2 has one node/stub. and 3 has no nodes/stubs. Taken in consideration with scaling possibilities and color tint/shade, and levels of glow. your log arrangement can look many and varied in comparison to what someone else does with this same kit.
+
+In general:
+
+If you use just one of the sculpt maps, keep your number of logs under 3, use one glow setting, and have the animation as a single dropped in script on the linked together piece. You will lower it's lagability...you will also lower the realism and overall detail. something to keep in mind. 
+
+There is a balance. but it's up to you to find it and the point is that; How laggy it is vs. how amazing it looks is all about how you assemble the pieces provided (and what ever you also happen to add into the mix).
+
