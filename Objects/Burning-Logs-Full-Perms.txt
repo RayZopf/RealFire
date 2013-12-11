@@ -1,0 +1,5 @@
+x3 sculpt maps (of different logs: Firelog1, 2 & 3).
+x1 Animation Frame Texture (BurningLog).
+x1 Script for animating the texture on the logs (BurningAnimation).
+X1 ReadMe File/NC (for explinations of names and tips on use).
+x1 example piece of all components applied (examine for ideas on tex settings)

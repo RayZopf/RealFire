@@ -1,0 +1,15 @@
+About this Product:
+
+I have relegated this product to that of an unsupported freebie.
+
+You will receive as a direct delivery (found under recent items in older viewers and under the received items tab in newer viewers) both the completed build and it's components (all full perms).
+
+To get a close approximation preview of the objects animation in action click the 'watch in action' line under the product image.
+
+This should look about the same in all detail levels as shown in the picture. My pictures are taken in high level of detail. Some of the quality is lost in the mere exportation and re-importation of the picture. So you can consider the picture to be about what it looks like in medium level of detail.
+
+Tips:
+
+Play a lot with things like the color, glow, scale, bumpiness, light, and speed of playback.
+
+The script controls the speed of playback for the animation. For making it go slower (which you will want for smaller scale) change the last digit in the script to a lower number (as low as 1). to make it go faster (for larger scale) make that last number higher (as high as 10).
