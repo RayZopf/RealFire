@@ -164,8 +164,13 @@ updateSize(float size)
     if (size > 25.0) {
         start = startScale / 100.0 * size;     // start scale
         radius = burstRadius / 100.0 * size;   // burst radius
+        if (size >= 80) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
+            else if (size > 50) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
+                else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
     }
     else {
+        if (size >= 15) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
+            else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
         start = startScale / 4.0;              // start scale
         radius = burstRadius / 4.0;            // burst radius
         if (size < 5.0) {
@@ -508,6 +513,7 @@ stopSystem()
         llListenRemove(endColorHandle);
         menuOpen = FALSE;
     }
+    llSetLinkTextureAnim(LINK_SET, FALSE, ALL_SIDES,4,4,0,0,1);
 }
 
 updateParticles(vector start, vector end, float min, float max, float radius, vector push)
