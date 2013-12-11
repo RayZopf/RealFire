@@ -1,3 +1,4 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Smoke
 //
 // Author: Rene10957 Resident
@@ -11,28 +12,97 @@
 //
 // See fire.lsl for feature list
 
-string title = "RealSmoke";     // title
-string version = "2.1.1";       // version
-integer debug = FALSE;          // show/hide debug messages
 
-// Constants
+//modified by: Zopf Resident - Ray Zopf (Raz)
+//Additions: ---
+//11. Dec. 2013 v2.2-0.1
 
-integer smokeChannel = -10957;  // smoke channel
+//Files:
+//Fire.lsl
+//Smoke.lsl
+//config
+//User Manual
+//
+//
+//Prequisites: Smoke.lsl in another prim as Fire.lsl
+//Notecard format: see config NC
+//basic help: User Manual
 
+//Changelog
+//Formatting
+
+//bug: ---
+
+//todo: ---
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//===============================================
+//FIRESTORM SPECIFIC DEBUG STUFF
+//===============================================
+
+//#define FSDEBUG
+//#include "fs_debug.lsl"
+
+
+
+//===============================================
+//GLOBAL VARIABLES
+//===============================================
+
+//debug variables
+//-----------------------------------------------
+integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+
+
+//user changeable variables
+//-----------------------------------------------
 // Particle parameters
-
 float age = 10.0;               // life of each particle
 float rate = 0.5;               // how fast (rate) to emit particles
 integer count = 5;              // how many particles to emit per BURST
 float startAlpha = 0.1;         // start alpha (transparency) value
 
-// Functions
+
+//internal variables
+//-----------------------------------------------
+string title = "RealSmoke";     // title
+string version = "2.1.1";       // version
+integer debug = FALSE;          // show/hide debug messages
+
+// Constants
+integer smokeChannel = -10957;  // smoke channel
+
+
+
+//===============================================
+//PREDEFINED FUNCTIONS
+//===============================================
+
+//===============================================================================
+//= parameters   :    string    sMsg    message string received
+//=
+//= return        :    none
+//=
+//= description  :    output debug messages
+//=
+//===============================================================================
+
+Debug(string sMsg)
+{
+    if (!g_iDebugMode) return;
+    llOwnerSay("DEBUG: "+ llGetScriptName() + ": " + sMsg);
+}
+
 
 float percentage (float per, float num)
 {
     return num / 100.0 * per;
 }
 
+
+//most important function
+//-----------------------------------------------
 updateParticles(float alpha)
 {
     llParticleSystem([
@@ -58,6 +128,15 @@ updateParticles(float alpha)
         PSYS_PART_INTERP_SCALE_MASK ]);
 }
 
+
+
+//===============================================
+//===============================================
+//MAIN
+//===============================================
+//===============================================
+
+
 default
 {
     state_entry()
@@ -71,7 +150,9 @@ default
     {
         llResetScript();
     }
-
+	
+//listen for linked messages from Fire (main) script
+//-----------------------------------------------
     link_message(integer sender, integer number, string msg, key id)
     {
         if (debug) llOwnerSay("[Smoke] LINK_MESSAGE event: " + (string)number + "; " + msg + "; " + (string)id);
