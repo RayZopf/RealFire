@@ -1,5 +1,10 @@
 Sounds from http://freesound.org/
 
+License as found for all four samples:
+This work is licensed under the Attribution License.
+http://creativecommons.org/licenses/by/3.0/
+
+
 fire.crackling.mp3 by dobroide@freesound.org
 	http://freesound.org/people/dobroide/
 	http://freesound.org/people/dobroide/sounds/4211/
