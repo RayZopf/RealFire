@@ -1,0 +1,54 @@
+// Network receiver for RealFire
+//
+// Author: Rene10957 Resident
+// Date: 31-05-2013
+//
+// This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
+// To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
+//
+// Author and license headers must be left intact.
+// Content creator? Please read the license notecard!
+//
+// Drop this into the same prim where the FIRE SCRIPT is located
+// Note: only useful if you are also using the network control script
+
+string title = "Network Receiver";   // title
+string version = "1.0";              // version
+
+// Constants
+
+integer remoteChannel = -975101;     // remote channel
+integer msgNumber = 10957;           // number part of link message
+string separator = ";;";             // separator for region messages
+
+// Variables
+
+key owner;                           // object owner
+
+default
+{
+    state_entry()
+    {
+        owner = llGetOwner();
+        llListen(remoteChannel, "", "", "");
+        llWhisper(0, title + " " + version + " ready");
+    }
+
+    on_rez(integer start_param)
+    {
+        llResetScript();
+    }
+
+    listen(integer channel, string name, key id, string msg)
+    {
+        if (channel != remoteChannel) return;
+        if (llGetOwnerKey(id) != owner) return;
+
+        list msgList = llParseString2List(msg, [separator], []);
+        string command = llList2String(msgList, 0);
+        key user = (key)llList2String(msgList, 1);
+
+        if (command == "HELO") llRegionSayTo(id, channel, "DATA");
+        else llMessageLinked(LINK_THIS, msgNumber, command, user);
+    }
+}

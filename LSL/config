@@ -1,0 +1,38 @@
+# Configuration notecard for RealFire
+#
+# Date: 31-05-2013
+# Version: 2.2
+
+verbose = YES                   # show more/less info during startup
+switchAccess = 1                # access level for switch (1 = world, 2 = group, 4 = owner, 6 = group + owner)
+menuAccess = 1                  # access level for menu (1 = world, 2 = group, 4 = owner, 6 = group + owner)
+burnDown = NO                   # YES = burn down, NO = burn continuously
+loop = NO                       # YES = restart after burning down
+burnTime = 300                  # time to burn before starting to die, in seconds
+dieTime = 300                   # time it takes to die, in seconds
+changeLight = YES               # YES = change light with fire, NO = remain at current intensity/radius
+changeSmoke = YES               # YES = change smoke with fire, NO = remain at 100%
+changeVolume = YES              # YES = change volume with fire, NO = remain at current volume
+
+# Menu defaults
+
+size = 25                       # fire size percentage
+topColor = < 100, 0, 0 >        # top color percentage (red, green, blue)
+bottomColor = < 100, 100, 0 >   # bottom color percentage (red, green, blue)
+volume = 100                    # sound volume percentage
+smoke = YES                     # smoke or no smoke
+sound = YES                     # sound or no sound
+
+# Light properties
+
+intensity = 100                 # light intensity percentage
+radius = 50                     # light radius percentage
+falloff = 40                    # light falloff percentage
+
+# Link messages
+
+msgNumber = 10957               # number part of incoming link messages
+msgSwitch = switch              # string part of incoming link message: switch (on/off)
+msgOn = on                      # string part of incoming link message: switch on
+msgOff = off                    # string part of incoming link message: switch off
+msgMenu = menu                  # string part of incoming link message: show menu

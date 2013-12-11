@@ -1,0 +1,141 @@
+USER MANUAL FOR REALFIRE
+
+Date: 31-05-2013
+Version: 2.2
+
+QUICK START
+
+Rez the example object (small campfire). Touch to start or stop fire, touch and hold mouse button (> 1 sec.) to show menu.
+
+TWO SCRIPTS: FIRE AND SMOKE
+
+Every prim can only have one particle emitter, so the fire and smoke scripts cannot be in the same prim. You could, for example, put the fire script in the root prim and the smoke script in a child prim. It is assumed that you have some sort of object (linkset) with at least two prims.
+
+LINK CONTROL (SECONDARY SWITCH)
+
+For those awkward moments when you wished you could have an additional switch, but without the fire. Now you can. Drop in any prim within the same linkset. Touch for on/off, long touch for menu.
+
+REMOTE CONTROL (EXTERNAL SWITCH)
+
+Remote switch that works across an entire sim. Drop the remote control script in an external object and the remote receiver script into the prim where the fire is located. Touch for on/off, long touch for menu.
+
+Don't worry if you see multiple menus stacked on top of each other. You can bind a remote to one specific fire by entering the same text in the description of both prims.
+
+NETWORK CONTROL (CONTROL PANEL FOR MULTIPLE FIRES)
+
+Control panel for up to 9 fires. Drop the network control script in an external object and the network receiver script into the prim where the fire is located. You can turn them on or off all at the same time, or pull up the menu for individual fires. Touch for menu.
+
+Protected from public use (owner and group only).
+
+HOW TO ADD SOUND
+
+Drop an uploaded PCM WAV file (16-bit, 44.1 kHz, mono, <= 10 sec.) into the prim that contains the fire script. It can have any name and will be looped by the script.
+
+BURNING DOWN
+
+The fire burns continuously by default. You can make it burn down by setting the notecard option burnDown to YES. The burnTime and dieTime options control how long the fire will burn and how long it takes to die. Light, smoke and sound will start to diminish when the fire reaches 25% (or can remain unchanged, see notecard options). If you set loop to YES, the fire will restart and repeat the whole process.
+
+LINK MESSAGES FROM OTHER SCRIPTS
+
+Sometimes third-party scripts will allow you to create your own submenu, and will ask you to enter a number and a string in a notecard so the script will know what to send. The fire script also has a notecard, in which you can configure what to listen for. Another use for link messages is creating your own plugins. Two examples are included: nightfire and proximity.
+
+CONFIGURATION NOTECARD
+
+The fire script uses a notecard (default name "config"). Here you can configure verbosity, access control, if and how the fire burns down, menu defaults, light properties and communication with other scripts. The notecard is optional. If not present, default values will be used as indicated below.
+
+verbose = YES                   # show more/less info during startup
+switchAccess = 1                # access level for switch (1 = world, 2 = group, 4 = owner, 6 = group + owner)
+menuAccess = 1                  # access level for menu (1 = world, 2 = group, 4 = owner, 6 = group + owner)
+burnDown = NO                   # YES = burn down, NO = burn continuously
+loop = NO                       # YES = restart after burning down
+burnTime = 300                  # time to burn before starting to die, in seconds
+dieTime = 300                   # time it takes to die, in seconds
+changeLight = YES               # YES = change light with fire, NO = remain at current intensity/radius
+changeSmoke = YES               # YES = change smoke with fire, NO = remain at 100%
+changeVolume = YES              # YES = change volume with fire, NO = remain at current volume
+
+# Menu defaults
+
+size = 25                       # fire size percentage
+topColor = < 100, 0, 0 >        # top color percentage (red, green, blue)
+bottomColor = < 100, 100, 0 >   # bottom color percentage (red, green, blue)
+volume = 100                    # sound volume percentage
+smoke = YES                     # smoke or no smoke
+sound = YES                     # sound or no sound
+
+# Light properties
+
+intensity = 100                 # light intensity percentage
+radius = 50                     # light radius percentage
+falloff = 40                    # light falloff percentage
+
+# Link messages
+
+msgNumber = 10957               # number part of incoming link messages
+msgSwitch = switch              # string part of incoming link message: switch (on/off)
+msgOn = on                      # string part of incoming link message: switch on
+msgOff = off                    # string part of incoming link message: switch off
+msgMenu = menu                  # string part of incoming link message: show menu
+
+ACCESS CONTROL
+
+Both fire and menu have 3 access levels: owner, group and world. For example, you could have a public fire switch with limited access to the menu so no one can mess with your settings.
+
+Access levels:
+
+1 = world: anyone
+2 = group: avatars with same active group as object
+4 = owner: object owner
+6 = group + owner
+
+DEBUG MESSAGES
+
+Near the top of every script you will see the following line:
+
+integer debug = FALSE;   // show/hide debug messages
+
+If you modified the script and run into trouble, set debug to TRUE. It might give some insight while trying to locate the problem.
+
+CHANGE HISTORY
+
+1.0, 01-07-2011:
+
+- initial version
+
+1.1, 06-05-2012:
+
+- changed license from CC BY-SA to CC BY
+- added license notecard, configuraton notecard and example
+
+2.0, 16-06-2012:
+
+- menu: smoke on/off, sound on/off, change size, speed and color
+- access control: owner, group, world
+- simplified notecard settings
+- plugin support
+
+2.1, 30-04-2013
+
+- added additonal permissions to license
+- moved "verbose" setting to notecard
+- menu defaults
+- replaced "Speed" with "Volume" in menu
+- set default light properties (intensity, radius, falloff)
+- enable/disable burning down (disabled by default)
+- light/smoke/sound can either change with fire or remain constant
+- bugfix: sound not starting/stopping when added/removed
+
+2.1.1, 17-05-2013
+
+- removed author name from configuration notecard
+- larger fire (up to 4 meters high)
+- examples for nightfire and proximity (plugins)
+
+2.2, 31-05-2013
+
+- restart fire after burning down
+- link control (secondary switch)
+- remote control (external switch)
+- network control (control panel for multiple fires)
+- bugfix: sound status is ON even when sound is missing
+- bugfix: link messages from plugins could bypass access control
