@@ -53,7 +53,6 @@
 //#include "fs_debug.lsl"
 
 
-
 //===============================================
 //GLOBAL VARIABLES
 //===============================================
@@ -61,110 +60,107 @@
 //debug variables
 //-----------------------------------------------
 integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+integer debug = FALSE;          // show debug messages
 
 
 //user changeable variables
 //-----------------------------------------------
-
-string title = "RealFire";      // title
-string version = "2.2";         // version
-string notecard = "config";     // notecard name
-integer debug = FALSE;          // show debug messages
-
-// Constants
-
-integer _OWNER_ = 4;            // owner access bit
-integer _GROUP_ = 2;            // group access bit
-integer _WORLD_ = 1;            // world access bit
-integer smokeChannel = -10957;  // smoke channel
-float maxRed = 1.0;             // max. red
-float maxGreen = 1.0;           // max. green
-float maxBlue = 1.0;            // max. blue
-float maxIntensity = 1.0;       // max. light intensity
-float maxRadius = 20.0;         // max. light radius
-float maxFalloff = 2.0;         // max. light falloff
-float maxVolume = 1.0;          // max. volume for sound
-
-// Notecard variables
-
-integer verbose = TRUE;         // show more/less info during startup
-integer switchAccess;           // access level for switch
-integer menuAccess;             // access level for menu
-integer msgNumber;              // number part of incoming link messages
-string msgSwitch;               // string part of incoming link message: switch (on/off)
-string msgOn;                   // string part of incoming link message: switch on
-string msgOff;                  // string part of incoming link message: switch off
-string msgMenu;                 // string part of incoming link message: show menu
-integer burnDown = FALSE;       // burn down or burn continuously
-float burnTime;                 // time to burn in seconds before starting to die
-float dieTime;                  // time it takes to die in seconds
-integer loop = FALSE;           // restart after burning down
-integer changeLight = TRUE;     // change light with fire
-integer changeSmoke = TRUE;     // change smoke with fire
-integer changeVolume = TRUE;    // change volume with fire
-integer defSize;                // default fire size (percentage)
-vector defStartColor;           // default start (bottom) color (percentage R,G,B)
-vector defEndColor;             // default end (top) color (percentage R,G,B)
-integer defVolume;              // default volume for sound (percentage)
-integer defSmoke = TRUE;        // default smoke on/off
-integer defSound = TRUE;        // default sound on/off
-integer defIntensity;           // default light intensity (percentage)
-integer defRadius;              // default light radius (percentage)
-integer defFalloff;             // default light falloff (percentage)
+string NOTECARD = "config";     // notecard name
 
 // Particle parameters
+float g_fAge = 1.0;                // particle lifetime
+float g_fRate = 0.1;               // particle burst rate
+integer g_fCount = 10;             // particle count
+vector g_vStartScale = <0.4, 2, 0>;// particle start size (100%)
+vector g_vEndScale = <0.4, 2, 0>;  // particle end size (100%)
+float g_fMinSpeed = 0.0;           // particle min. burst speed (100%)
+float g_fMaxSpeed = 0.04;          // particle max. burst speed (100%)
+float g_fBurstRadius = 0.4;        // particle burst radius (100%)
+vector g_vPartAccel = <0, 0, 10>;  // particle accelleration (100%)
+vector g_vStartColor = <1, 1, 0>;  // particle start color
+vector g_vEndColor = <1, 0, 0>;    // particle end color
 
-float age = 1.0;                // particle lifetime
-float rate = 0.1;               // particle burst rate
-integer count = 10;             // particle count
-vector startScale = <0.4, 2, 0>;// particle start size (100%)
-vector endScale = <0.4, 2, 0>;  // particle end size (100%)
-float minSpeed = 0.0;           // particle min. burst speed (100%)
-float maxSpeed = 0.04;          // particle max. burst speed (100%)
-float burstRadius = 0.4;        // particle burst radius (100%)
-vector partAccel = <0, 0, 10>;  // particle accelleration (100%)
-vector startColor = <1, 1, 0>;  // particle start color
-vector endColor = <1, 0, 0>;    // particle end color
+
+//internal variables
+//-----------------------------------------------
+string g_sTitle = "RealFire";      // title
+string g_sVersion = "2.2";         // version
+
+// Constants
+integer ACCESS_OWNER = 4;            // owner access bit
+integer ACCESS_GROUP = 2;            // group access bit
+integer ACCESS_WORLD = 1;            // world access bit
+integer SMOKE_CHANNEL = -10957;  // smoke channel
+float MAX_COLOR = 1.0;             // max. red, green, blue
+float MAX_INTENSITY = 1.0;       // max. light intensity
+float MAX_RADIUS = 20.0;         // max. light radius
+float MAX_FALLOFF = 2.0;         // max. light falloff
+float MAX_VOLUME = 1.0;          // max. volume for sound
+
+// Notecard variables
+integer g_iVerbose = TRUE;         // show more/less info during startup
+integer g_iSwitchAccess;           // access level for switch
+integer g_iMenuAccess;             // access level for menu
+integer g_iMsgNumber;              // number part of incoming link messages
+string g_sMsgSwitch;               // string part of incoming link message: switch (on/off)
+string g_sMsgOn;                   // string part of incoming link message: switch on
+string g_sMsgOff;                  // string part of incoming link message: switch off
+string g_sMsgMenu;                 // string part of incoming link message: show menu
+integer g_iBurnDown = FALSE;       // burn down or burn continuously
+float g_fBurnTime;                 // time to burn in seconds before starting to die
+float g_fDieTime;                  // time it takes to die in seconds
+integer g_iLoop = FALSE;           // restart after burning down
+integer g_iChangeLight = TRUE;     // change light with fire
+integer g_iChangeSmoke = TRUE;     // change smoke with fire
+integer g_iChangeVolume = TRUE;    // change volume with fire
+integer g_iDefSize;                // default fire size (percentage)
+vector g_vDefStartColor;           // default start (bottom) color (percentage R,G,B)
+vector g_vDefEndColor;             // default end (top) color (percentage R,G,B)
+integer g_iDefVolume;              // default volume for sound (percentage)
+integer g_iDefSmoke = TRUE;        // default smoke on/off
+integer g_iDefSound = TRUE;        // default sound on/off
+integer g_iDefIntensity;           // default light intensity (percentage)
+integer g_iDefRadius;              // default light radius (percentage)
+integer g_iDefFalloff;             // default light falloff (percentage)
 
 // Variables
-
-key owner;                      // object owner
-key user;                       // key of last avatar to touch object
-integer line;                   // notecard line
+key g_kOwner;                      // object owner
+key g_kUser;                       // key of last avatar to touch object
+integer g_iLine;                   // notecard line
 integer menuChannel;            // main menu channel
-integer startColorChannel;      // start color menu channel
-integer endColorChannel;        // end color menu channel
-integer menuHandle;             // handle for main menu listener
-integer startColorHandle;       // handle for start color menu listener
-integer endColorHandle;         // handle for end color menu listener
-integer perRedStart;            // percent red for startColor
-integer perGreenStart;          // percent green for startColor
-integer perBlueStart;           // percent blue for startColor
-integer perRedEnd;              // percent red for endColor
-integer perGreenEnd;            // percent green for endColor
-integer perBlueEnd;             // percent blue for endColor
-integer perSize;                // percent particle size
-integer perVolume;              // percent volume
-integer on = FALSE;             // fire on/off
-integer burning = FALSE;        // burning constantly
-integer smokeOn = TRUE;         // smoke on/off
-integer soundOn = TRUE;         // sound on/off
-integer menuOpen = FALSE;       // a menu is open or canceled (ignore button)
-float time;                     // timer interval in seconds
-float percent;                  // percentage of particle size
-float percentSmoke;             // percentage of smoke
-float decPercent;               // how much to burn down (%) every timer interval
-vector lightColor;              // light color
-float lightIntensity;           // light intensity (changed by burning down)
-float lightRadius;              // light radius (changed by burning down)
-float lightFalloff;             // light falloff
-float soundVolume;              // sound volume (changed by burning down)
-string sound;                   // first sound in inventory
-float startIntensity;           // start value of lightIntensity (before burning down)
-float startRadius;              // start value of lightRadius (before burning down)
-float startVolume;              // start value of volume (before burning down)
+integer g_iStartColorChannel;      // start color menu channel
+integer g_iEndColorChannel;        // end color menu channel
+integer g_iMenuHandle;             // handle for main menu listener
+integer g_iStartColorHandle;       // handle for start color menu listener
+integer g_iEndColorHandle;         // handle for end color menu listener
+integer g_iPerRedStart;            // percent red for startColor
+integer g_iPerGreenStart;          // percent green for startColor
+integer g_iPerBlueStart;           // percent blue for startColor
+integer g_iPerRedEnd;              // percent red for endColor
+integer g_iPerGreenEnd;            // percent green for endColor
+integer g_iPerBlueEnd;             // percent blue for endColor
+integer g_iPerSize;                // percent particle size
+integer g_iPerVolume;              // percent volume
+integer g_iOn = FALSE;             // fire on/off
+integer g_iBurning = FALSE;        // burning constantly
+integer g_iSmokeOn = TRUE;         // smoke on/off
+integer g_iSoundOn = TRUE;         // sound on/off
+integer g_iMenuOpen = FALSE;       // a menu is open or canceled (ignore button)
+float g_fTime;                     // timer interval in seconds
+float g_fPercent;                  // percentage of particle size
+float g_fPercentSmoke;             // percentage of smoke
+float g_fDecPercent;               // how much to burn down (%) every timer interval
+vector g_vLightColor;              // light color
+float g_fLightIntensity;           // light intensity (changed by burning down)
+float g_fLightRadius;              // light radius (changed by burning down)
+float g_fLightFalloff;             // light falloff
+float g_fSoundVolume;              // sound volume (changed by burning down)
+string g_iSoundFile;                   // first sound in inventory
+float g_fStartIntensity;           // start value of lightIntensity (before burning down)
+float g_fStartRadius;              // start value of lightRadius (before burning down)
+float g_fStartVolume;              // start value of volume (before burning down)
 
-// Functions
+
 //===============================================
 //PREDEFINED FUNCTIONS
 //===============================================
@@ -187,30 +183,30 @@ Debug(string sMsg)
 
 toggleFire()
 {
-    if (on) stopSystem(); else startSystem();
+    if (g_iOn) stopSystem(); else startSystem();
 }
 
 toggleSmoke()
 {
-    if (smokeOn) {
+    if (g_iSmokeOn) {
         sendMessage(0);
-        smokeOn = FALSE;
+        g_iSmokeOn = FALSE;
     }
     else {
         sendMessage(100);
-        smokeOn = TRUE;
+        g_iSmokeOn = TRUE;
     }
 }
 
 toggleSound()
 {
-    if (soundOn) {
+    if (g_iSoundOn) {
         llStopSound();
-        soundOn = FALSE;
+        g_iSoundOn = FALSE;
     }
     else {
-        if (sound) llLoopSound(sound, soundVolume);
-        soundOn = TRUE;
+        if (g_iSoundFile) llLoopSound(g_iSoundFile, g_fSoundVolume);
+        g_iSoundOn = TRUE;
     }
 }
 
@@ -225,14 +221,14 @@ updateSize(float size)
     float radius;
     vector push;
 
-    end = endScale / 100.0 * size;             // end scale
-    min = minSpeed / 100.0 * size;             // min. burst speed
-    max = maxSpeed / 100.0 * size;             // max. burst speed
-    push = partAccel / 100.0 * size;           // accelleration
+    end = g_vEndScale / 100.0 * size;             // end scale
+    min = g_fMinSpeed / 100.0 * size;             // min. burst speed
+    max = g_fMaxSpeed / 100.0 * size;             // max. burst speed
+    push = g_vPartAccel / 100.0 * size;           // accelleration
 
     if (size > 25.0) {
-        start = startScale / 100.0 * size;     // start scale
-        radius = burstRadius / 100.0 * size;   // burst radius
+        start = g_vStartScale / 100.0 * size;     // start scale
+        radius = g_fBurstRadius / 100.0 * size;   // burst radius
         if (size >= 80) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
             else if (size > 50) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
                 else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
@@ -240,62 +236,62 @@ updateSize(float size)
     else {
         if (size >= 15) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
             else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
-        start = startScale / 4.0;              // start scale
-        radius = burstRadius / 4.0;            // burst radius
+        start = g_vStartScale / 4.0;              // start scale
+        radius = g_fBurstRadius / 4.0;            // burst radius
         if (size < 5.0) {
-            start.y = startScale.y / 100.0 * size * 5.0;
+            start.y = g_vStartScale.y / 100.0 * size * 5.0;
             if (start.y < 0.25) start.y = 0.25;
         }
-        if (changeLight) {
-            lightIntensity = percentage(size * 4.0, startIntensity);
-            lightRadius = percentage(size * 4.0, startRadius);
+        if (g_iChangeLight) {
+            g_fLightIntensity = percentage(size * 4.0, g_fStartIntensity);
+            g_fLightRadius = percentage(size * 4.0, g_fStartRadius);
         }
         else {
-            lightIntensity = startIntensity;
-            lightRadius = startRadius;
+            g_fLightIntensity = g_fStartIntensity;
+            g_fLightRadius = g_fStartRadius;
         }
-        if (changeSmoke) percentSmoke = size * 4.0;
-        else percentSmoke = 100.0;
-        if (changeVolume) soundVolume = percentage(size * 4.0, startVolume);
-        else soundVolume = startVolume;
+        if (g_iChangeSmoke) g_fPercentSmoke = size * 4.0;
+        else g_fPercentSmoke = 100.0;
+        if (g_iChangeVolume) g_fSoundVolume = percentage(size * 4.0, g_fStartVolume);
+        else g_fSoundVolume = g_fStartVolume;
     }
 
     updateColor();
     updateParticles(start, end, min, max, radius, push);
-    llSetPrimitiveParams([PRIM_POINT_LIGHT, TRUE, lightColor, lightIntensity, lightRadius, lightFalloff]);
-    if (smokeOn) sendMessage(llRound(percentSmoke));
-    if (sound) if (soundOn) llAdjustSoundVolume(soundVolume);
-    if (debug && burnDown) llOwnerSay((string)llRound(size) + "% " + (string)start + " " + (string)end);
+    llSetPrimitiveParams([PRIM_POINT_LIGHT, TRUE, g_vLightColor, g_fLightIntensity, g_fLightRadius, g_fLightFalloff]);
+    if (g_iSmokeOn) sendMessage(llRound(g_fPercentSmoke));
+    if (g_iSoundFile) if (g_iSoundOn) llAdjustSoundVolume(g_fSoundVolume);
+    if (debug && g_iBurnDown) llOwnerSay((string)llRound(size) + "% " + (string)start + " " + (string)end);
 }
 
 updateColor()
 {
-    startColor.x = percentage((float)perRedStart, maxRed);
-    startColor.y = percentage((float)perGreenStart, maxGreen);
-    startColor.z = percentage((float)perBlueStart, maxBlue);
+    g_vStartColor.x = percentage((float)g_iPerRedStart, MAX_COLOR);
+    g_vStartColor.y = percentage((float)g_iPerGreenStart, MAX_COLOR);
+    g_vStartColor.z = percentage((float)g_iPerBlueStart, MAX_COLOR);
 
-    endColor.x = percentage((float)perRedEnd, maxRed);
-    endColor.y = percentage((float)perGreenEnd, maxGreen);
-    endColor.z = percentage((float)perBlueEnd, maxBlue);
+    g_vEndColor.x = percentage((float)g_iPerRedEnd, MAX_COLOR);
+    g_vEndColor.y = percentage((float)g_iPerGreenEnd, MAX_COLOR);
+    g_vEndColor.z = percentage((float)g_iPerBlueEnd, MAX_COLOR);
 
-    lightColor = (startColor + endColor) / 2.0; // light color = average of start & end color
+    g_vLightColor = (g_vStartColor + g_vEndColor) / 2.0; // light color = average of start & end color
 }
 
-integer accessGranted(key user, integer access)
+integer accessGranted(key kUser, integer iAccess)
 {
-    integer bitmask = _WORLD_;
-    if (user == owner) bitmask += _OWNER_;
-    if (llSameGroup(user)) bitmask += _GROUP_;
-    return (bitmask & access);
+    integer iBitmask = ACCESS_WORLD;
+    if (kUser == g_kOwner) iBitmask += ACCESS_OWNER;
+    if (llSameGroup(kUser)) iBitmask += ACCESS_GROUP;
+    return (iBitmask & iAccess);
 }
 
 string showAccess(integer access)
 {
     string strAccess;
     if (access) {
-        if (access & _OWNER_) strAccess += " Owner";
-        if (access & _GROUP_) strAccess += " Group";
-        if (access & _WORLD_) strAccess += " World";
+        if (access & ACCESS_OWNER) strAccess += " Owner";
+        if (access & ACCESS_GROUP) strAccess += " Group";
+        if (access & ACCESS_WORLD) strAccess += " World";
     }
     else {
         strAccess = " None";
@@ -332,81 +328,81 @@ integer checkYesNo(string par, string val)
 
 loadNotecard()
 {
-    verbose = TRUE;
-    switchAccess = _WORLD_;
-    menuAccess = _WORLD_;
-    msgNumber = 10957;
-    msgSwitch = "switch";
-    msgOn = "on";
-    msgOff = "off";
-    msgMenu = "menu";
-    burnDown = FALSE;
-    burnTime = 300.0;
-    dieTime = 300.0;
-    loop = FALSE;
-    changeLight = TRUE;
-    changeSmoke = TRUE;
-    changeVolume = TRUE;
-    defSize = 25;
-    defStartColor = <100,100,0>;
-    defEndColor = <100,0,0>;
-    defVolume = 100;
-    defSmoke = TRUE;
-    defSound = TRUE;
-    defIntensity = 100;
-    defRadius = 50;
-    defFalloff = 40;
-    line = 0;
+    g_iVerbose = TRUE;
+    g_iSwitchAccess = ACCESS_WORLD;
+    g_iMenuAccess = ACCESS_WORLD;
+    g_iMsgNumber = 10957;
+    g_sMsgSwitch = "switch";
+    g_sMsgOn = "on";
+    g_sMsgOff = "off";
+    g_sMsgMenu = "menu";
+    g_iBurnDown = FALSE;
+    g_fBurnTime = 300.0;
+    g_fDieTime = 300.0;
+    g_iLoop = FALSE;
+    g_iChangeLight = TRUE;
+    g_iChangeSmoke = TRUE;
+    g_iChangeVolume = TRUE;
+    g_iDefSize = 25;
+    g_vDefStartColor = <100,100,0>;
+    g_vDefEndColor = <100,0,0>;
+    g_iDefVolume = 100;
+    g_iDefSmoke = TRUE;
+    g_iDefSound = TRUE;
+    g_iDefIntensity = 100;
+    g_iDefRadius = 50;
+    g_iDefFalloff = 40;
+    g_iLine = 0;
 
-    if (!burnDown) burnTime = 315360000;   // 10 years
-    time = dieTime / 100.0;                // try to get a one percent timer interval
-    if (time < 1.0) time = 1.0;            // but never smaller than one second
-    decPercent = 100.0 / (dieTime / time); // and burn down decPercent% every time
+    if (!g_iBurnDown) g_fBurnTime = 315360000;   // 10 years
+    g_fTime = g_fDieTime / 100.0;                // try to get a one percent timer interval
+    if (g_fTime < 1.0) g_fTime = 1.0;            // but never smaller than one second
+    g_fDecPercent = 100.0 / (g_fDieTime / g_fTime); // and burn down decPercent% every time
 
-    startIntensity = percentage(defIntensity, maxIntensity);
-    startRadius = percentage(defRadius, maxRadius);
-    lightFalloff = percentage(defFalloff, maxFalloff);
-    startVolume = percentage(defVolume, maxVolume);
+    g_fStartIntensity = percentage(g_iDefIntensity, MAX_INTENSITY);
+    g_fStartRadius = percentage(g_iDefRadius, MAX_RADIUS);
+    g_fLightFalloff = percentage(g_iDefFalloff, MAX_FALLOFF);
+    g_fStartVolume = percentage(g_iDefVolume, MAX_VOLUME);
 
-    if (llGetInventoryType(notecard) == INVENTORY_NOTECARD) {
-        llGetNotecardLine(notecard, line);
+    if (llGetInventoryType(NOTECARD) == INVENTORY_NOTECARD) {
+        llGetNotecardLine(NOTECARD, g_iLine);
     }
     else {
-        llWhisper(0, "Notecard \"" + notecard + "\" not found or empty, using defaults");
+        llWhisper(0, "Notecard \"" + NOTECARD + "\" not found or empty, using defaults");
         reset(); // initial values for menu
-        if (on) startSystem();
-        if (verbose) {
-            if (sound) llWhisper(0, "Sound in object inventory: Yes");
+        if (g_iOn) startSystem();
+        if (g_iVerbose) {
+            if (g_iSoundFile) llWhisper(0, "Sound in object inventory: Yes");
             else llWhisper(0, "Sound in object inventory: No");
         }
-        llWhisper(0, title + " " + version + " ready");
+        llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
         if (debug) {
-            llOwnerSay("verbose = " + (string)verbose);
-            llOwnerSay("switchAccess = " + (string)switchAccess);
-            llOwnerSay("menuAccess = " + (string)menuAccess);
-            llOwnerSay("msgNumber = " + (string)msgNumber);
-            llOwnerSay("msgSwitch = " + msgSwitch);
-            llOwnerSay("msgOn = " + msgOn);
-            llOwnerSay("msgOff = " + msgOff);
-            llOwnerSay("msgMenu = " + msgMenu);
-            llOwnerSay("burnDown = " + (string)burnDown);
-            llOwnerSay("burnTime = " + (string)burnTime);
-            llOwnerSay("dieTime = " + (string)dieTime);
-            llOwnerSay("loop = " + (string)loop);
-            llOwnerSay("changeLight = " + (string)changeLight);
-            llOwnerSay("changeSmoke = " + (string)changeSmoke);
-            llOwnerSay("changeVolume = " + (string)changeVolume);
-            llOwnerSay("defSize = " + (string)defSize);
-            llOwnerSay("defStartColor = " + (string)defStartColor);
-            llOwnerSay("defEndColor = " + (string)defEndColor);
-            llOwnerSay("defVolume = " + (string)defVolume);
-            llOwnerSay("defSmoke = " + (string)defSmoke);
-            llOwnerSay("defSound = " + (string)defSound);
-            llOwnerSay("defIntensity = " + (string)defIntensity);
-            llOwnerSay("defRadius = " + (string)defRadius);
-            llOwnerSay("defFalloff = " + (string)defFalloff);
-            llOwnerSay("time = " + (string)time);
-            llOwnerSay("decPercent = " + (string)decPercent);
+            llOwnerSay("verbose = " + (string)g_iVerbose);
+            llOwnerSay("switchAccess = " + (string)g_iSwitchAccess);
+            llOwnerSay("menuAccess = " + (string)g_iMenuAccess);
+            llOwnerSay("msgNumber = " + (string)g_iMsgNumber);
+            llOwnerSay("msgSwitch = " + g_sMsgSwitch);
+            llOwnerSay("msgOn = " + g_sMsgOn);
+            llOwnerSay("msgOff = " + g_sMsgOff);
+            llOwnerSay("msgMenu = " + g_sMsgMenu);
+            llOwnerSay("burnDown = " + (string)g_iBurnDown);
+            llOwnerSay("burnTime = " + (string)g_fBurnTime);
+            llOwnerSay("dieTime = " + (string)g_fDieTime);
+            llOwnerSay("loop = " + (string)g_iLoop);
+            llOwnerSay("changeLight = " + (string)g_iChangeLight);
+            llOwnerSay("changeSmoke = " + (string)g_iChangeSmoke);
+            llOwnerSay("changeVolume = " + (string)g_iChangeVolume);
+            llOwnerSay("defSize = " + (string)g_iDefSize);
+            llOwnerSay("defStartColor = " + (string)g_vDefStartColor);
+            llOwnerSay("defEndColor = " + (string)g_vDefEndColor);
+            llOwnerSay("defVolume = " + (string)g_iDefVolume);
+            llOwnerSay("defSmoke = " + (string)g_iDefSmoke);
+            llOwnerSay("defSound = " + (string)g_iDefSound);
+            llOwnerSay("defIntensity = " + (string)g_iDefIntensity);
+            llOwnerSay("defRadius = " + (string)g_iDefRadius);
+            llOwnerSay("defFalloff = " + (string)g_iDefFalloff);
+            llOwnerSay("time = " + (string)g_fTime);
+            llOwnerSay("decPercent = " + (string)g_fDecPercent);
         }
     }
 }
@@ -422,49 +418,49 @@ readNotecard (string ncLine)
         par = llStringTrim(par, STRING_TRIM);
         val = llStringTrim(val, STRING_TRIM);
         string lcpar = llToLower(par);
-        if (lcpar == "verbose") verbose = checkYesNo("verbose", val);
-        else if (lcpar == "switchaccess") switchAccess = checkInt("switchAccess", (integer)val, 0, 7);
-        else if (lcpar == "menuaccess") menuAccess = checkInt("menuAccess", (integer)val, 0, 7);
-        else if (lcpar == "msgnumber") msgNumber = (integer)val;
-        else if (lcpar == "msgswitch") msgSwitch = val;
-        else if (lcpar == "msgon") msgOn = val;
-        else if (lcpar == "msgoff") msgOff = val;
-        else if (lcpar == "msgmenu") msgMenu = val;
-        else if (lcpar == "burndown") burnDown = checkYesNo("burndown", val);
-        else if (lcpar == "burntime") burnTime = (float)checkInt("burnTime", (integer)val, 1, 315360000); // 10 years
-        else if (lcpar == "dietime") dieTime = (float)checkInt("dieTime", (integer)val, 1, 315360000); // 10 years
-        else if (lcpar == "loop") loop = checkYesNo("loop", val);
-        else if (lcpar == "changelight") changeLight = checkYesNo("changeLight", val);
-        else if (lcpar == "changesmoke") changeSmoke = checkYesNo("changeSmoke", val);
-        else if (lcpar == "changevolume") changeVolume = checkYesNo("changeVolume", val);
-        else if (lcpar == "size") defSize = checkInt("size", (integer)val, 0, 100);
-        else if (lcpar == "topcolor") defEndColor = checkVector("topColor", (vector)val);
-        else if (lcpar == "bottomcolor") defStartColor = checkVector("bottomColor", (vector)val);
-        else if (lcpar == "volume") defVolume = checkInt("volume", (integer)val, 0, 100);
-        else if (lcpar == "smoke") defSmoke = checkYesNo("smoke", val);
-        else if (lcpar == "sound") defSound = checkYesNo("sound", val);
-        else if (lcpar == "intensity") defIntensity = checkInt("intensity", (integer)val, 0, 100);
-        else if (lcpar == "radius") defRadius = checkInt("radius", (integer)val, 0, 100);
-        else if (lcpar == "falloff") defFalloff = checkInt("falloff", (integer)val, 0, 100);
-        else llWhisper(0, "Unknown parameter in notecard line " + (string)(line + 1) + ": " + par);
+        if (lcpar == "verbose") g_iVerbose = checkYesNo("verbose", val);
+        else if (lcpar == "switchaccess") g_iSwitchAccess = checkInt("switchAccess", (integer)val, 0, 7);
+        else if (lcpar == "menuaccess") g_iMenuAccess = checkInt("menuAccess", (integer)val, 0, 7);
+        else if (lcpar == "msgnumber") g_iMsgNumber = (integer)val;
+        else if (lcpar == "msgswitch") g_sMsgSwitch = val;
+        else if (lcpar == "msgon") g_sMsgOn = val;
+        else if (lcpar == "msgoff") g_sMsgOff = val;
+        else if (lcpar == "msgmenu") g_sMsgMenu = val;
+        else if (lcpar == "burndown") g_iBurnDown = checkYesNo("burndown", val);
+        else if (lcpar == "burntime") g_fBurnTime = (float)checkInt("burnTime", (integer)val, 1, 315360000); // 10 years
+        else if (lcpar == "dietime") g_fDieTime = (float)checkInt("dieTime", (integer)val, 1, 315360000); // 10 years
+        else if (lcpar == "loop") g_iLoop = checkYesNo("loop", val);
+        else if (lcpar == "changelight") g_iChangeLight = checkYesNo("changeLight", val);
+        else if (lcpar == "changesmoke") g_iChangeSmoke = checkYesNo("changeSmoke", val);
+        else if (lcpar == "changevolume") g_iChangeVolume = checkYesNo("changeVolume", val);
+        else if (lcpar == "size") g_iDefSize = checkInt("size", (integer)val, 0, 100);
+        else if (lcpar == "topcolor") g_vDefEndColor = checkVector("topColor", (vector)val);
+        else if (lcpar == "bottomcolor") g_vDefStartColor = checkVector("bottomColor", (vector)val);
+        else if (lcpar == "volume") g_iDefVolume = checkInt("volume", (integer)val, 0, 100);
+        else if (lcpar == "smoke") g_iDefSmoke = checkYesNo("smoke", val);
+        else if (lcpar == "sound") g_iDefSound = checkYesNo("sound", val);
+        else if (lcpar == "intensity") g_iDefIntensity = checkInt("intensity", (integer)val, 0, 100);
+        else if (lcpar == "radius") g_iDefRadius = checkInt("radius", (integer)val, 0, 100);
+        else if (lcpar == "falloff") g_iDefFalloff = checkInt("falloff", (integer)val, 0, 100);
+        else llWhisper(0, "Unknown parameter in notecard line " + (string)(g_iLine + 1) + ": " + par);
     }
 
-    line++;
-    llGetNotecardLine(notecard, line);
+    g_iLine++;
+    llGetNotecardLine(NOTECARD, g_iLine);
 }
 
 menuDialog (key id)
 {
-    menuOpen = TRUE;
-    string strSmoke = "OFF"; if (smokeOn) strSmoke = "ON";
-    string strSound = "NONE"; if (sound) if (soundOn) strSound = "ON"; else strSound = "OFF";
+    g_iMenuOpen = TRUE;
+    string strSmoke = "OFF"; if (g_iSmokeOn) strSmoke = "ON";
+    string strSound = "NONE"; if (g_iSoundFile) if (g_iSoundOn) strSound = "ON"; else strSound = "OFF";
     menuChannel = (integer)(llFrand(-1000000000.0) - 1000000000.0);
-    llListenRemove(menuHandle);
-    menuHandle = llListen(menuChannel, "", "", "");
+    llListenRemove(g_iMenuHandle);
+    g_iMenuHandle = llListen(menuChannel, "", "", "");
     llSetTimerEvent(0);
     llSetTimerEvent(120);
-    llDialog(id, title + " " + version +
-        "\n\nSize: " + (string)perSize + "%\t\tVolume: " + (string)perVolume + "%" +
+    llDialog(id, g_sTitle + " " + g_sVersion +
+        "\n\nSize: " + (string)g_iPerSize + "%\t\tVolume: " + (string)g_iPerVolume + "%" +
         "\nSmoke: " + strSmoke + "\t\tSound: " + strSound, [
         "Smoke", "Sound", "Close",
         "-Volume", "+Volume", "Reset",
@@ -475,40 +471,40 @@ menuDialog (key id)
 
 startColorDialog (key id)
 {
-    menuOpen = TRUE;
-    startColorChannel = (integer)(llFrand(-1000000000.0) - 1000000000.0);
-    llListenRemove(startColorHandle);
-    startColorHandle = llListen(startColorChannel, "", "", "");
+    g_iMenuOpen = TRUE;
+    g_iStartColorChannel = (integer)(llFrand(-1000000000.0) - 1000000000.0);
+    llListenRemove(g_iStartColorHandle);
+    g_iStartColorHandle = llListen(g_iStartColorChannel, "", "", "");
     llSetTimerEvent(0);
     llSetTimerEvent(120);
     llDialog(id, "Bottom color" +
-        "\n\nRed: " + (string)perRedStart + "%" +
-        "\nGreen: " + (string)perGreenStart + "%" +
-        "\nBlue: " + (string)perBlueStart + "%", [
+        "\n\nRed: " + (string)g_iPerRedStart + "%" +
+        "\nGreen: " + (string)g_iPerGreenStart + "%" +
+        "\nBlue: " + (string)g_iPerBlueStart + "%", [
         "Top color", "One color", "Main menu",
         "-Blue",  "+Blue",  "B min/max",
         "-Green", "+Green", "G min/max",
         "-Red",   "+Red",   "R min/max" ],
-        startColorChannel);
+        g_iStartColorChannel);
 }
 
 endColorDialog (key id)
 {
-    menuOpen = TRUE;
-    endColorChannel = (integer)(llFrand(-1000000000.0) - 1000000000.0);
-    llListenRemove(endColorHandle);
-    endColorHandle = llListen(endColorChannel, "", "", "");
+    g_iMenuOpen = TRUE;
+    g_iEndColorChannel = (integer)(llFrand(-1000000000.0) - 1000000000.0);
+    llListenRemove(g_iEndColorHandle);
+    g_iEndColorHandle = llListen(g_iEndColorChannel, "", "", "");
     llSetTimerEvent(0);
     llSetTimerEvent(120);
     llDialog(id, "Top color" +
-        "\n\nRed: " + (string)perRedEnd + "%" +
-        "\nGreen: " + (string)perGreenEnd + "%" +
-        "\nBlue: " + (string)perBlueEnd + "%", [
+        "\n\nRed: " + (string)g_iPerRedEnd + "%" +
+        "\nGreen: " + (string)g_iPerGreenEnd + "%" +
+        "\nBlue: " + (string)g_iPerBlueEnd + "%", [
         "Bottom color", "One color", "Main menu",
         "-Blue",  "+Blue",  "B min/max",
         "-Green", "+Green", "G min/max",
         "-Red",   "+Red",   "R min/max" ],
-        endColorChannel);
+        g_iEndColorChannel);
 }
 
 float percentage (float per, float num)
@@ -528,59 +524,59 @@ integer max (integer x, integer y)
 
 reset()
 {
-    smokeOn = defSmoke;
-    soundOn = defSound;
-    perSize = defSize;
-    perVolume = defVolume;
-    perRedStart = (integer)defStartColor.x;
-    perGreenStart = (integer)defStartColor.y;
-    perBlueStart = (integer)defStartColor.z;
-    perRedEnd = (integer)defEndColor.x;
-    perGreenEnd = (integer)defEndColor.y;
-    perBlueEnd = (integer)defEndColor.z;
+    g_iSmokeOn = g_iDefSmoke;
+    g_iSoundOn = g_iDefSound;
+    g_iPerSize = g_iDefSize;
+    g_iPerVolume = g_iDefVolume;
+    g_iPerRedStart = (integer)g_vDefStartColor.x;
+    g_iPerGreenStart = (integer)g_vDefStartColor.y;
+    g_iPerBlueStart = (integer)g_vDefStartColor.z;
+    g_iPerRedEnd = (integer)g_vDefEndColor.x;
+    g_iPerGreenEnd = (integer)g_vDefEndColor.y;
+    g_iPerBlueEnd = (integer)g_vDefEndColor.z;
 }
 
 startSystem()
 {
-    on = TRUE;
-    burning = TRUE;
-    percent = 100.0;
-    percentSmoke = 100.0;
-    smokeOn = !smokeOn;
+    g_iOn = TRUE;
+    g_iBurning = TRUE;
+    g_fPercent = 100.0;
+    g_fPercentSmoke = 100.0;
+    g_iSmokeOn = !g_iSmokeOn;
     toggleSmoke();
-    startVolume = percentage(perVolume, maxVolume);
-    lightIntensity = startIntensity;
-    lightRadius = startRadius;
-    soundVolume = startVolume;
-    updateSize((float)perSize);
+    g_fStartVolume = percentage(g_iPerVolume, MAX_VOLUME);
+    g_fLightIntensity = g_fStartIntensity;
+    g_fLightRadius = g_fStartRadius;
+    g_fSoundVolume = g_fStartVolume;
+    updateSize((float)g_iPerSize);
     llStopSound();
-    if (sound) if (soundOn) llLoopSound(sound, soundVolume);
+    if (g_iSoundFile) if (g_iSoundOn) llLoopSound(g_iSoundFile, g_fSoundVolume);
     llSetTimerEvent(0);
-    llSetTimerEvent(burnTime);
-    if (menuOpen) {
-        llListenRemove(menuHandle);
-        llListenRemove(startColorHandle);
-        llListenRemove(endColorHandle);
-        menuOpen = FALSE;
+    llSetTimerEvent(g_fBurnTime);
+    if (g_iMenuOpen) {
+        llListenRemove(g_iMenuHandle);
+        llListenRemove(g_iStartColorHandle);
+        llListenRemove(g_iEndColorHandle);
+        g_iMenuOpen = FALSE;
     }
 }
 
 stopSystem()
 {
-    on = FALSE;
-    burning = FALSE;
-    percent = 0.0;
-    percentSmoke = 0.0;
+    g_iOn = FALSE;
+    g_iBurning = FALSE;
+    g_fPercent = 0.0;
+    g_fPercentSmoke = 0.0;
     llSetTimerEvent(0);
     llParticleSystem([]);
     llSetPrimitiveParams([PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
     llStopSound();
     sendMessage(0);
-    if (menuOpen) {
-        llListenRemove(menuHandle);
-        llListenRemove(startColorHandle);
-        llListenRemove(endColorHandle);
-        menuOpen = FALSE;
+    if (g_iMenuOpen) {
+        llListenRemove(g_iMenuHandle);
+        llListenRemove(g_iStartColorHandle);
+        llListenRemove(g_iEndColorHandle);
+        g_iMenuOpen = FALSE;
     }
     llSetLinkTextureAnim(LINK_SET, FALSE, ALL_SIDES,4,4,0,0,1);
 }
@@ -589,15 +585,15 @@ updateParticles(vector start, vector end, float min, float max, float radius, ve
 {
     llParticleSystem ([
         PSYS_SRC_PATTERN, PSYS_SRC_PATTERN_EXPLODE,
-        PSYS_PART_START_COLOR, startColor,
-        PSYS_PART_END_COLOR, endColor,
+        PSYS_PART_START_COLOR, g_vStartColor,
+        PSYS_PART_END_COLOR, g_vEndColor,
         PSYS_PART_START_ALPHA, 1.0,
         PSYS_PART_END_ALPHA, 0.0,
         PSYS_PART_START_SCALE, start,
         PSYS_PART_END_SCALE, end,
-        PSYS_PART_MAX_AGE, age,
-        PSYS_SRC_BURST_RATE, rate,
-        PSYS_SRC_BURST_PART_COUNT, count,
+        PSYS_PART_MAX_AGE, g_fAge,
+        PSYS_SRC_BURST_RATE, g_fRate,
+        PSYS_SRC_BURST_PART_COUNT, g_fCount,
         PSYS_SRC_BURST_SPEED_MIN, min,
         PSYS_SRC_BURST_SPEED_MAX, max,
         PSYS_SRC_BURST_RADIUS, radius,
@@ -628,12 +624,12 @@ default
 {
     state_entry()
     {
-        owner = llGetOwner();
-        sound = llGetInventoryName(INVENTORY_SOUND, 0); // get first sound from inventory
-        if (sound) llPreloadSound(sound);
+        g_kOwner = llGetOwner();
+        g_iSoundFile = llGetInventoryName(INVENTORY_SOUND, 0); // get first sound from inventory
+        if (g_iSoundFile) llPreloadSound(g_iSoundFile);
         stopSystem();
         if (debug) {
-            llOwnerSay("Particle count: " + (string)llRound((float)count * age / rate));
+            llOwnerSay("Particle g_fCount: " + (string)llRound((float)count * g_fAge / g_fRate));
             llOwnerSay((string)llGetFreeMemory() + " bytes free");
         }
         llWhisper(0, "RealFire by Rene10957");
@@ -645,7 +641,17 @@ default
     {
         llResetScript();
     }
-
+	
+    changed(integer change)
+    {
+        if (change & CHANGED_INVENTORY) {
+            llWhisper(0, "Inventory changed, reloading notecard...");
+            g_iSoundFile = llGetInventoryName(INVENTORY_SOUND, 0); // get first sound from inventory
+            if (g_iSoundFile) llPreloadSound(g_iSoundFile);
+            loadNotecard();
+        }
+    }
+	
     touch_start(integer total_number)
     {
         llResetTime();
@@ -653,18 +659,18 @@ default
 
     touch_end(integer total_number)
     {
-        user = llDetectedKey(0);
+        g_kUser = llDetectedKey(0);
 
         if (llGetTime() > 1.0) {
-            if (accessGranted(user, menuAccess)) {
+            if (accessGranted(g_kUser, g_iMenuAccess)) {
                 startSystem();
-                menuDialog(user);
+                menuDialog(g_kUser);
             }
-            else llInstantMessage(user, "[Menu] Access denied");
+            else llInstantMessage(g_kUser, "[Menu] Access denied");
         }
         else {
-            if (accessGranted(user, switchAccess)) toggleFire();
-            else llInstantMessage(user, "[Switch] Access denied");
+            if (accessGranted(g_kUser, g_iSwitchAccess)) toggleFire();
+            else llInstantMessage(g_kUser, "[Switch] Access denied");
         }
     }
 
@@ -673,78 +679,78 @@ default
         if (debug) llOwnerSay("[Fire] LISTEN event: " + (string)channel + "; " + msg);
 
         if (channel == menuChannel) {
-            llListenRemove(menuHandle);
-            if (msg == "Small") perSize = 25;
-            else if (msg == "Medium") perSize = 50;
-            else if (msg == "Large") perSize = 75;
-            else if (msg == "-Fire") perSize = max(perSize - 5, 5);
-            else if (msg == "+Fire") perSize = min(perSize + 5, 100);
+            llListenRemove(g_iMenuHandle);
+            if (msg == "Small") g_iPerSize = 25;
+            else if (msg == "Medium") g_iPerSize = 50;
+            else if (msg == "Large") g_iPerSize = 75;
+            else if (msg == "-Fire") g_iPerSize = max(g_iPerSize - 5, 5);
+            else if (msg == "+Fire") g_iPerSize = min(g_iPerSize + 5, 100);
             else if (msg == "-Volume") {
-                perVolume = max(perVolume - 5, 5);
-                startVolume = percentage(perVolume, maxVolume);
+                g_iPerVolume = max(g_iPerVolume - 5, 5);
+                g_fStartVolume = percentage(g_iPerVolume, MAX_VOLUME);
             }
             else if (msg == "+Volume") {
-                perVolume = min(perVolume + 5, 100);
-                startVolume = percentage(perVolume, maxVolume);
+                g_iPerVolume = min(g_iPerVolume + 5, 100);
+                g_fStartVolume = percentage(g_iPerVolume, MAX_VOLUME);
             }
             else if (msg == "Smoke") toggleSmoke();
             else if (msg == "Sound") toggleSound();
-            else if (msg == "Color") endColorDialog(user);
+            else if (msg == "Color") endColorDialog(g_kUser);
             else if (msg == "Reset") { reset(); startSystem(); }
             else if (msg == "Close") {
                 llSetTimerEvent(0); // stop dialog timer
-                llSetTimerEvent(burnTime); // restart burn timer
-                menuOpen = FALSE;
+                llSetTimerEvent(g_fBurnTime); // restart burn timer
+                g_iMenuOpen = FALSE;
             }
             if (msg != "Color" && msg != "Close") {
-                if (msg != "Smoke" && msg != "Sound" && msg != "Reset") updateSize((float)perSize);
-                menuDialog(user);
+                if (msg != "Smoke" && msg != "Sound" && msg != "Reset") updateSize((float)g_iPerSize);
+                menuDialog(g_kUser);
             }
         }
-        else if (channel == startColorChannel) {
-            llListenRemove(startColorHandle);
-            if (msg == "-Red") perRedStart = max(perRedStart - 10, 0);
-            else if (msg == "-Green") perGreenStart = max(perGreenStart - 10, 0);
-            else if (msg == "-Blue") perBlueStart = max(perBlueStart - 10, 0);
-            else if (msg == "+Red") perRedStart = min(perRedStart + 10, 100);
-            else if (msg == "+Green") perGreenStart = min(perGreenStart + 10, 100);
-            else if (msg == "+Blue") perBlueStart = min(perBlueStart + 10, 100);
-            else if (msg == "R min/max") { if (perRedStart) perRedStart = 0; else perRedStart = 100; }
-            else if (msg == "G min/max") { if (perGreenStart) perGreenStart = 0; else perGreenStart = 100; }
-            else if (msg == "B min/max") { if (perBlueStart) perBlueStart = 0; else perBlueStart = 100; }
-            else if (msg == "Top color") endColorDialog(user);
-            else if (msg == "Main menu") menuDialog(user);
+        else if (channel == g_iStartColorChannel) {
+            llListenRemove(g_iStartColorHandle);
+            if (msg == "-Red") g_iPerRedStart = max(g_iPerRedStart - 10, 0);
+            else if (msg == "-Green") g_iPerGreenStart = max(g_iPerGreenStart - 10, 0);
+            else if (msg == "-Blue") g_iPerBlueStart = max(g_iPerBlueStart - 10, 0);
+            else if (msg == "+Red") g_iPerRedStart = min(g_iPerRedStart + 10, 100);
+            else if (msg == "+Green") g_iPerGreenStart = min(g_iPerGreenStart + 10, 100);
+            else if (msg == "+Blue") g_iPerBlueStart = min(g_iPerBlueStart + 10, 100);
+            else if (msg == "R min/max") { if (g_iPerRedStart) g_iPerRedStart = 0; else g_iPerRedStart = 100; }
+            else if (msg == "G min/max") { if (g_iPerGreenStart) g_iPerGreenStart = 0; else g_iPerGreenStart = 100; }
+            else if (msg == "B min/max") { if (g_iPerBlueStart) g_iPerBlueStart = 0; else g_iPerBlueStart = 100; }
+            else if (msg == "Top color") endColorDialog(g_kUser);
+            else if (msg == "Main menu") menuDialog(g_kUser);
             else if (msg == "One color") {
-                perRedEnd = perRedStart;
-                perGreenEnd = perGreenStart;
-                perBlueEnd = perBlueStart;
+                g_iPerRedEnd = g_iPerRedStart;
+                g_iPerGreenEnd = g_iPerGreenStart;
+                g_iPerBlueEnd = g_iPerBlueStart;
             }
             if (msg != "Top color" && msg != "Main menu") {
-                updateSize((float)perSize);
-                startColorDialog(user);
+                updateSize((float)g_iPerSize);
+                startColorDialog(g_kUser);
             }
         }
-        else if (channel == endColorChannel) {
-            llListenRemove(endColorHandle);
-            if (msg == "-Red") perRedEnd = max(perRedEnd - 10, 0);
-            else if (msg == "-Green") perGreenEnd = max(perGreenEnd - 10, 0);
-            else if (msg == "-Blue") perBlueEnd = max(perBlueEnd - 10, 0);
-            else if (msg == "+Red") perRedEnd = min(perRedEnd + 10, 100);
-            else if (msg == "+Green") perGreenEnd = min(perGreenEnd + 10, 100);
-            else if (msg == "+Blue") perBlueEnd = min(perBlueEnd + 10, 100);
-            else if (msg == "R min/max") { if (perRedEnd) perRedEnd = 0; else perRedEnd = 100; }
-            else if (msg == "G min/max") { if (perGreenEnd) perGreenEnd = 0; else perGreenEnd = 100; }
-            else if (msg == "B min/max") { if (perBlueEnd) perBlueEnd = 0; else perBlueEnd = 100; }
-            else if (msg == "Bottom color") startColorDialog(user);
-            else if (msg == "Main menu") menuDialog(user);
+        else if (channel == g_iEndColorChannel) {
+            llListenRemove(g_iEndColorHandle);
+            if (msg == "-Red") g_iPerRedEnd = max(g_iPerRedEnd - 10, 0);
+            else if (msg == "-Green") g_iPerGreenEnd = max(g_iPerGreenEnd - 10, 0);
+            else if (msg == "-Blue") g_iPerBlueEnd = max(g_iPerBlueEnd - 10, 0);
+            else if (msg == "+Red") g_iPerRedEnd = min(g_iPerRedEnd + 10, 100);
+            else if (msg == "+Green") g_iPerGreenEnd = min(g_iPerGreenEnd + 10, 100);
+            else if (msg == "+Blue") g_iPerBlueEnd = min(g_iPerBlueEnd + 10, 100);
+            else if (msg == "R min/max") { if (g_iPerRedEnd) g_iPerRedEnd = 0; else g_iPerRedEnd = 100; }
+            else if (msg == "G min/max") { if (g_iPerGreenEnd) g_iPerGreenEnd = 0; else g_iPerGreenEnd = 100; }
+            else if (msg == "B min/max") { if (g_iPerBlueEnd) g_iPerBlueEnd = 0; else g_iPerBlueEnd = 100; }
+            else if (msg == "Bottom color") startColorDialog(g_kUser);
+            else if (msg == "Main menu") menuDialog(g_kUser);
             else if (msg == "One color") {
-                perRedStart = perRedEnd;
-                perGreenStart = perGreenEnd;
-                perBlueStart = perBlueEnd;
+                g_iPerRedStart = g_iPerRedEnd;
+                g_iPerGreenStart = g_iPerGreenEnd;
+                g_iPerBlueStart = g_iPerBlueEnd;
             }
             if (msg != "Bottom color" && msg != "Main menu") {
-                updateSize((float)perSize);
-                endColorDialog(user);
+                updateSize((float)g_iPerSize);
+                endColorDialog(g_kUser);
             }
         }
     }
@@ -754,32 +760,32 @@ default
     link_message(integer sender_number, integer number, string msg, key id)
     {
         if (debug) llOwnerSay("[Fire] LINK_MESSAGE event: " + (string)number + "; " + msg + "; " + (string)id);
-        if (number != msgNumber) return;
+        if (number != g_iMsgNumber) return;
 
-        if (id) user = id;
+        if (id) g_kUser = id;
         else {
             llWhisper(0, "A valid avatar key must be provided in the link message.");
             return;
         }
 
-        if (msg == msgSwitch) {
-            if (accessGranted(user, switchAccess)) toggleFire();
-            else llInstantMessage(user, "[Switch] Access denied");
+        if (msg == g_sMsgSwitch) {
+            if (accessGranted(g_kUser, g_iSwitchAccess)) toggleFire();
+            else llInstantMessage(g_kUser, "[Switch] Access denied");
         }
-        else if (msg == msgOn) {
-            if (accessGranted(user, switchAccess)) startSystem();
-            else llInstantMessage(user, "[Switch] Access denied");
+        else if (msg == g_sMsgOn) {
+            if (accessGranted(g_kUser, g_iSwitchAccess)) startSystem();
+            else llInstantMessage(g_kUser, "[Switch] Access denied");
         }
-        else if (msg == msgOff) {
-            if (accessGranted(user, switchAccess)) stopSystem();
-            else llInstantMessage(user, "[Switch] Access denied");
+        else if (msg == g_sMsgOff) {
+            if (accessGranted(g_kUser, g_iSwitchAccess)) stopSystem();
+            else llInstantMessage(g_kUser, "[Switch] Access denied");
         }
-        else if (msg == msgMenu) {
-            if (accessGranted(user, menuAccess)) {
+        else if (msg == g_sMsgMenu) {
+            if (accessGranted(g_kUser, g_iMenuAccess)) {
                 startSystem();
-                menuDialog(user);
+                menuDialog(g_kUser);
             }
-            else llInstantMessage(user, "[Menu] Access denied");
+            else llInstantMessage(g_kUser, "[Menu] Access denied");
         }
     }
 	
@@ -788,64 +794,64 @@ default
     dataserver(key req, string data)
     {
         if (data == EOF) {
-            if (!burnDown) burnTime = 315360000;   // 10 years
-            time = dieTime / 100.0;                // try to get a one percent timer interval
-            if (time < 1.0) time = 1.0;            // but never smaller than one second
-            decPercent = 100.0 / (dieTime / time); // and burn down decPercent% every time
+            if (!g_iBurnDown) g_fBurnTime = 315360000;   // 10 years
+            g_fTime = g_fDieTime / 100.0;                // try to get a one percent timer interval
+            if (g_fTime < 1.0) g_fTime = 1.0;            // but never smaller than one second
+            g_fDecPercent = 100.0 / (g_fDieTime / g_fTime); // and burn down decPercent% every time
 
-            defStartColor.x = checkInt("ColorOn (RED)", (integer)defStartColor.x, 0, 100);
-            defStartColor.y = checkInt("ColorOn (GREEN)", (integer)defStartColor.y, 0, 100);
-            defStartColor.z = checkInt("ColorOn (BLUE)", (integer)defStartColor.z, 0, 100);
-            defEndColor.x = checkInt("ColorOff (RED)", (integer)defEndColor.x, 0, 100);
-            defEndColor.y = checkInt("ColorOff (GREEN)", (integer)defEndColor.y, 0, 100);
-            defEndColor.z = checkInt("ColorOff (BLUE)", (integer)defEndColor.z, 0, 100);
+            g_vDefStartColor.x = checkInt("ColorOn (RED)", (integer)g_vDefStartColor.x, 0, 100);
+            g_vDefStartColor.y = checkInt("ColorOn (GREEN)", (integer)g_vDefStartColor.y, 0, 100);
+            g_vDefStartColor.z = checkInt("ColorOn (BLUE)", (integer)g_vDefStartColor.z, 0, 100);
+            g_vDefEndColor.x = checkInt("ColorOff (RED)", (integer)g_vDefEndColor.x, 0, 100);
+            g_vDefEndColor.y = checkInt("ColorOff (GREEN)", (integer)g_vDefEndColor.y, 0, 100);
+            g_vDefEndColor.z = checkInt("ColorOff (BLUE)", (integer)g_vDefEndColor.z, 0, 100);
 
-            startIntensity = percentage(defIntensity, maxIntensity);
-            startRadius = percentage(defRadius, maxRadius);
-            lightFalloff = percentage(defFalloff, maxFalloff);
-            startVolume = percentage(defVolume, maxVolume);
+            g_fStartIntensity = percentage(g_iDefIntensity, MAX_INTENSITY);
+            g_fStartRadius = percentage(g_iDefRadius, MAX_RADIUS);
+            g_fLightFalloff = percentage(g_iDefFalloff, MAX_FALLOFF);
+            g_fStartVolume = percentage(g_iDefVolume, MAX_VOLUME);
 
             reset(); // initial values for menu
-            if (on) startSystem();
+            if (g_iOn) startSystem();
 
-            if (verbose) {
+            if (g_iVerbose) {
                 llWhisper(0, "Touch to start/stop fire");
                 llWhisper(0, "Long touch to show menu");
-                llWhisper(0, "Switch access:" + showAccess(switchAccess));
-                llWhisper(0, "Menu access:" + showAccess(menuAccess));
-                if (sound) llWhisper(0, "Sound in object inventory: Yes");
+                llWhisper(0, "Switch access:" + showAccess(g_iSwitchAccess));
+                llWhisper(0, "Menu access:" + showAccess(g_iMenuAccess));
+                if (g_iSoundFile) llWhisper(0, "Sound in object inventory: Yes");
                 else llWhisper(0, "Sound in object inventory: No");
             }
-            llWhisper(0, title + " " + version + " ready");
+            llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
 
             if (debug) {
-                llOwnerSay((string)line + " lines in notecard");
-                llOwnerSay("verbose = " + (string)verbose);
-                llOwnerSay("switchAccess = " + (string)switchAccess);
-                llOwnerSay("menuAccess = " + (string)menuAccess);
-                llOwnerSay("msgNumber = " + (string)msgNumber);
-                llOwnerSay("msgSwitch = " + msgSwitch);
-                llOwnerSay("msgOn = " + msgOn);
-                llOwnerSay("msgOff = " + msgOff);
-                llOwnerSay("msgMenu = " + msgMenu);
-                llOwnerSay("burnDown = " + (string)burnDown);
-                llOwnerSay("burnTime = " + (string)burnTime);
-                llOwnerSay("dieTime = " + (string)dieTime);
-                llOwnerSay("loop = " + (string)loop);
-                llOwnerSay("changeLight = " + (string)changeLight);
-                llOwnerSay("changeSmoke = " + (string)changeSmoke);
-                llOwnerSay("changeVolume = " + (string)changeVolume);
-                llOwnerSay("defSize = " + (string)defSize);
-                llOwnerSay("defStartColor = " + (string)defStartColor);
-                llOwnerSay("defEndColor = " + (string)defEndColor);
-                llOwnerSay("defVolume = " + (string)defVolume);
-                llOwnerSay("defSmoke = " + (string)defSmoke);
-                llOwnerSay("defSound = " + (string)defSound);
-                llOwnerSay("defIntensity = " + (string)defIntensity);
-                llOwnerSay("defRadius = " + (string)defRadius);
-                llOwnerSay("defFalloff = " + (string)defFalloff);
-                llOwnerSay("time = " + (string)time);
-                llOwnerSay("decPercent = " + (string)decPercent);
+                llOwnerSay((string)g_iLine + " lines in notecard");
+                llOwnerSay("verbose = " + (string)g_iVerbose);
+                llOwnerSay("switchAccess = " + (string)g_iSwitchAccess);
+                llOwnerSay("menuAccess = " + (string)g_iMenuAccess);
+                llOwnerSay("msgNumber = " + (string)g_iMsgNumber);
+                llOwnerSay("msgSwitch = " + g_sMsgSwitch);
+                llOwnerSay("msgOn = " + g_sMsgOn);
+                llOwnerSay("msgOff = " + g_sMsgOff);
+                llOwnerSay("msgMenu = " + g_sMsgMenu);
+                llOwnerSay("burnDown = " + (string)g_iBurnDown);
+                llOwnerSay("burnTime = " + (string)g_fBurnTime);
+                llOwnerSay("dieTime = " + (string)g_fDieTime);
+                llOwnerSay("loop = " + (string)g_iLoop);
+                llOwnerSay("changeLight = " + (string)g_iChangeLight);
+                llOwnerSay("changeSmoke = " + (string)g_iChangeSmoke);
+                llOwnerSay("changeVolume = " + (string)g_iChangeVolume);
+                llOwnerSay("defSize = " + (string)g_iDefSize);
+                llOwnerSay("defStartColor = " + (string)g_vDefStartColor);
+                llOwnerSay("defEndColor = " + (string)g_vDefEndColor);
+                llOwnerSay("defVolume = " + (string)g_iDefVolume);
+                llOwnerSay("defSmoke = " + (string)g_iDefSmoke);
+                llOwnerSay("defSound = " + (string)g_iDefSound);
+                llOwnerSay("defIntensity = " + (string)g_iDefIntensity);
+                llOwnerSay("defRadius = " + (string)g_iDefRadius);
+                llOwnerSay("defFalloff = " + (string)g_iDefFalloff);
+                llOwnerSay("time = " + (string)g_fTime);
+                llOwnerSay("decPercent = " + (string)g_fDecPercent);
             }
         }
         else {
@@ -853,41 +859,31 @@ default
         }
     }
 
-    changed(integer change)
-    {
-        if (change & CHANGED_INVENTORY) {
-            llWhisper(0, "Inventory changed, reloading notecard...");
-            sound = llGetInventoryName(INVENTORY_SOUND, 0); // get first sound from inventory
-            if (sound) llPreloadSound(sound);
-            loadNotecard();
-        }
-    }
-
     timer()
     {
-        if (menuOpen) {
+        if (g_iMenuOpen) {
             if (debug) llOwnerSay("MENU TIMEOUT");
-            llListenRemove(menuHandle);
-            llListenRemove(startColorHandle);
-            llListenRemove(endColorHandle);
+            llListenRemove(g_iMenuHandle);
+            llListenRemove(g_iStartColorHandle);
+            llListenRemove(g_iEndColorHandle);
             llSetTimerEvent(0); // stop dialog timer
-            llSetTimerEvent(burnTime); // restart burn timer
-            menuOpen = FALSE;
+            llSetTimerEvent(g_fBurnTime); // restart burn timer
+            g_iMenuOpen = FALSE;
             return;
         }
 
-        if (burning) {
+        if (g_iBurning) {
             llSetTimerEvent(0);
-            llSetTimerEvent(time);
-            burning = FALSE;
+            llSetTimerEvent(g_fTime);
+            g_iBurning = FALSE;
         }
 
-        if (percent >= decPercent) {
-            percent -= decPercent;
-            updateSize(percent / (100.0 / (float)perSize));
+        if (g_fPercent >= g_fDecPercent) {
+            g_fPercent -= g_fDecPercent;
+            updateSize(g_fPercent / (100.0 / (float)g_iPerSize));
         }
         else {
-            if (loop) startSystem();
+            if (g_iLoop) startSystem();
             else stopSystem();
         }
     }
