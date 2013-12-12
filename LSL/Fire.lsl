@@ -22,7 +22,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files
 //12. Dec. 2013
-//v2.2-0.2
+//v2.2-0.4
 
 //Files:
 //Fire.lsl
@@ -47,6 +47,7 @@
 
 //todo: make sound configurable via notecard
 //todo: better way to handle sound change / not changing on fire size change
+//todo: keep sound running for a short time after turning fire off
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -95,7 +96,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2-0.2";         // version
+string g_sVersion = "2.2-0.4";         // version
 
 // Constants
 integer ACCESS_OWNER = 4;            // owner access bit
@@ -446,7 +447,7 @@ loadNotecard()
 
 readNotecard (string ncLine)
 {
-	Debug("readNotecard, ncLine: "+ncLine);
+	//Debug("readNotecard, ncLine: "+ncLine);
     string ncData = llStringTrim(ncLine, STRING_TRIM);
 
     if (llStringLength(ncData) > 0 && llGetSubString(ncData, 0, 0) != "#") {
@@ -695,7 +696,7 @@ default
 		stopSystem();
         Debug("Particle count: " + (string)llRound((float)g_fCount * g_fAge / g_fRate));
         Debug((string)llGetFreeMemory() + " bytes free");
-		llWhisper(0, "RealFire by Rene10957");
+		llWhisper(0, "RealFire by Rene10957\n + Zopf");
 	    llWhisper(0, "Touch to start/stop fire\n *Long touch to show menu*");
 		CheckSoundFiles();
 		llWhisper(0, "Loading notecard...");
@@ -860,7 +861,7 @@ default
     {
 		if(kQuery_id != g_kQuery) return;
         if (data != EOF) {
-			Debug("Dataserver");
+			//Debug("Dataserver");
 			readNotecard(data);
 		} else {
 			Debug("Dataserver, last line done");
