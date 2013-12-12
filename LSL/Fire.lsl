@@ -20,9 +20,9 @@
 // - Long touch to show menu
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
-//Additions: ---
+//Additions: initial structure for multiple sound files
 //12. Dec. 2013
-//v2.2-0.1
+//v2.2-0.2
 
 //Files:
 //Fire.lsl
@@ -33,15 +33,19 @@
 //
 //
 //Prequisites: Smoke.lsl in another prim than Fire.lsl
+//Soundfiles need to be in same prim as Fire.lsl
+//
 //Notecard format: see config NC
 //basic help: User Manual
 
 //Changelog
 //Formatting
+//variable naming sheme
+//structure for multiple sound files
 
 //bug: ---
 
-//todo: ---
+//todo: make sound configurable via notecard
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -60,12 +64,16 @@
 //debug variables
 //-----------------------------------------------
 integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
-integer debug = FALSE;          // show debug messages
+integer debug = TRUE;          // show debug messages
 
 
 //user changeable variables
 //-----------------------------------------------
 string NOTECARD = "config";     // notecard name
+string g_sSoundFile = "4211_dobroide_fire-crackling";                   // standard sound, sound for big fire
+string g_sSoundFileSmall ="17742__krisboruff__fire-crackles-no-room_r8b";                   // sound for small fire
+string g_sSoundFileMedium1 = "104957__glaneur-de-sons__petit-feu-little-fire-1_r8b";                   // first sound for medium fire
+string g_sSoundFileMedium2 = "104958__glaneur-de-sons__petit-feu-little-fire-2_r8b";                   // second sound for medium fire
 
 // Particle parameters
 float g_fAge = 1.0;                // particle lifetime
@@ -84,7 +92,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2";         // version
+string g_sVersion = "2.2-0.2";         // version
 
 // Constants
 integer ACCESS_OWNER = 4;            // owner access bit
@@ -118,7 +126,7 @@ vector g_vDefStartColor;           // default start (bottom) color (percentage R
 vector g_vDefEndColor;             // default end (top) color (percentage R,G,B)
 integer g_iDefVolume;              // default volume for sound (percentage)
 integer g_iDefSmoke = TRUE;        // default smoke on/off
-integer g_iDefSound = TRUE;        // default sound on/off
+integer g_iDefSound = FALSE;        // default sound on/off
 integer g_iDefIntensity;           // default light intensity (percentage)
 integer g_iDefRadius;              // default light radius (percentage)
 integer g_iDefFalloff;             // default light falloff (percentage)
@@ -144,7 +152,8 @@ integer g_iPerVolume;              // percent volume
 integer g_iOn = FALSE;             // fire on/off
 integer g_iBurning = FALSE;        // burning constantly
 integer g_iSmokeOn = TRUE;         // smoke on/off
-integer g_iSoundOn = TRUE;         // sound on/off
+integer g_iSoundOn = FALSE;         // sound on/off
+integer g_iSoundAvail = FALSE;
 integer g_iMenuOpen = FALSE;       // a menu is open or canceled (ignore button)
 float g_fTime;                     // timer interval in seconds
 float g_fPercent;                  // percentage of particle size
@@ -155,7 +164,6 @@ float g_fLightIntensity;           // light intensity (changed by burning down)
 float g_fLightRadius;              // light radius (changed by burning down)
 float g_fLightFalloff;             // light falloff
 float g_fSoundVolume;              // sound volume (changed by burning down)
-string g_iSoundFile;                   // first sound in inventory
 float g_fStartIntensity;           // start value of lightIntensity (before burning down)
 float g_fStartRadius;              // start value of lightRadius (before burning down)
 float g_fStartVolume;              // start value of volume (before burning down)
@@ -189,11 +197,11 @@ toggleFire()
 toggleSmoke()
 {
     if (g_iSmokeOn) {
-        sendMessage(0);
+        llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, "0", "");
         g_iSmokeOn = FALSE;
     }
     else {
-        sendMessage(100);
+        llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, "100", "");
         g_iSmokeOn = TRUE;
     }
 }
@@ -203,9 +211,8 @@ toggleSound()
     if (g_iSoundOn) {
         llStopSound();
         g_iSoundOn = FALSE;
-    }
-    else {
-        if (g_iSoundFile) llLoopSound(g_iSoundFile, g_fSoundVolume);
+    } else {
+        if (g_iSoundAvail) llLoopSound(g_sSoundFile, g_fSoundVolume);
         g_iSoundOn = TRUE;
     }
 }
@@ -259,8 +266,8 @@ updateSize(float size)
     updateColor();
     updateParticles(start, end, min, max, radius, push);
     llSetPrimitiveParams([PRIM_POINT_LIGHT, TRUE, g_vLightColor, g_fLightIntensity, g_fLightRadius, g_fLightFalloff]);
-    if (g_iSmokeOn) sendMessage(llRound(g_fPercentSmoke));
-    if (g_iSoundFile) if (g_iSoundOn) llAdjustSoundVolume(g_fSoundVolume);
+    if (g_iSmokeOn) llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
+    if (g_iSoundAvail && g_iSoundOn) llAdjustSoundVolume(g_fSoundVolume);
     if (debug && g_iBurnDown) llOwnerSay((string)llRound(size) + "% " + (string)start + " " + (string)end);
 }
 
@@ -348,7 +355,7 @@ loadNotecard()
     g_vDefEndColor = <100,0,0>;
     g_iDefVolume = 100;
     g_iDefSmoke = TRUE;
-    g_iDefSound = TRUE;
+    g_iDefSound = FALSE;
     g_iDefIntensity = 100;
     g_iDefRadius = 50;
     g_iDefFalloff = 40;
@@ -366,16 +373,10 @@ loadNotecard()
 
     if (llGetInventoryType(NOTECARD) == INVENTORY_NOTECARD) {
         llGetNotecardLine(NOTECARD, g_iLine);
-    }
-    else {
+    } else {
         llWhisper(0, "Notecard \"" + NOTECARD + "\" not found or empty, using defaults");
         reset(); // initial values for menu
         if (g_iOn) startSystem();
-        if (g_iVerbose) {
-            if (g_iSoundFile) llWhisper(0, "Sound in object inventory: Yes");
-            else llWhisper(0, "Sound in object inventory: No");
-        }
-        llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
         if (debug) {
             llOwnerSay("verbose = " + (string)g_iVerbose);
             llOwnerSay("switchAccess = " + (string)g_iSwitchAccess);
@@ -404,6 +405,10 @@ loadNotecard()
             llOwnerSay("time = " + (string)g_fTime);
             llOwnerSay("decPercent = " + (string)g_fDecPercent);
         }
+    }
+	if (g_iVerbose) {
+        llWhisper(0, "Switch access:" + showAccess(g_iSwitchAccess));
+        llWhisper(0, "Menu access:" + showAccess(g_iMenuAccess));
     }
 }
 
@@ -452,8 +457,11 @@ readNotecard (string ncLine)
 menuDialog (key id)
 {
     g_iMenuOpen = TRUE;
-    string strSmoke = "OFF"; if (g_iSmokeOn) strSmoke = "ON";
-    string strSound = "NONE"; if (g_iSoundFile) if (g_iSoundOn) strSound = "ON"; else strSound = "OFF";
+    string strSmoke = "OFF";
+	if (g_iSmokeOn) strSmoke = "ON";
+    string strSound = "NONE";
+	if (g_iSoundAvail && g_iSoundOn) strSound = "ON"; 
+		else strSound = "OFF";
     menuChannel = (integer)(llFrand(-1000000000.0) - 1000000000.0);
     llListenRemove(g_iMenuHandle);
     g_iMenuHandle = llListen(menuChannel, "", "", "");
@@ -550,7 +558,7 @@ startSystem()
     g_fSoundVolume = g_fStartVolume;
     updateSize((float)g_iPerSize);
     llStopSound();
-    if (g_iSoundFile) if (g_iSoundOn) llLoopSound(g_iSoundFile, g_fSoundVolume);
+    if (g_iSoundAvail && g_iSoundOn) llLoopSound(g_sSoundFile, g_fSoundVolume);
     llSetTimerEvent(0);
     llSetTimerEvent(g_fBurnTime);
     if (g_iMenuOpen) {
@@ -571,7 +579,7 @@ stopSystem()
     llParticleSystem([]);
     llSetPrimitiveParams([PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
     llStopSound();
-    sendMessage(0);
+    llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, "0", "");
     if (g_iMenuOpen) {
         llListenRemove(g_iMenuHandle);
         llListenRemove(g_iStartColorHandle);
@@ -606,9 +614,22 @@ updateParticles(vector start, vector end, float min, float max, float radius, ve
         PSYS_PART_INTERP_SCALE_MASK ]);
 }
 
-sendMessage(integer number)
+CheckSoundFiles()
 {
-    llMessageLinked(LINK_ALL_OTHERS, smokeChannel, (string)number, "");
+	integer iSoundNumber = llGetInventoryNumber(INVENTORY_SOUND);
+	Debug("Sound number = " +(string)iSoundNumber);
+	if ( iSoundNumber > 0) {
+		integer i;
+		for (i = 0; i < iSoundNumber; ++i) {
+			string sSoundName = llGetInventoryName(INVENTORY_SOUND, i);
+			if (sSoundName == g_sSoundFile || sSoundName == g_sSoundFileMedium1 || sSoundName == g_sSoundFileMedium2 || sSoundName == g_sSoundFileSmall)
+			g_iSoundAvail = TRUE;
+		}
+	} else g_iSoundOn = g_iDefSound = g_iSoundAvail = FALSE;
+	if (g_iVerbose) {
+        if (g_iSoundAvail) llWhisper(0, "Sound object in inventory found: Yes");
+            else llWhisper(0, "All Sound objects in inventory: No");
+	}
 }
 
 
@@ -625,17 +646,16 @@ default
     state_entry()
     {
         g_kOwner = llGetOwner();
-        g_iSoundFile = llGetInventoryName(INVENTORY_SOUND, 0); // get first sound from inventory
-        if (g_iSoundFile) llPreloadSound(g_iSoundFile);
-        stopSystem();
-        if (debug) {
-            llOwnerSay("Particle g_fCount: " + (string)llRound((float)count * g_fAge / g_fRate));
-            llOwnerSay((string)llGetFreeMemory() + " bytes free");
-        }
-        llWhisper(0, "RealFire by Rene10957");
-        llWhisper(0, "Loading notecard...");
-        loadNotecard();
-    }
+		stopSystem();
+        Debug("Particle count: " + (string)llRound((float)g_fCount * g_fAge / g_fRate));
+        Debug((string)llGetFreeMemory() + " bytes free");
+		llWhisper(0, "RealFire by Rene10957");
+	    llWhisper(0, "Touch to start/stop fire\nLong touch to show menu");
+		llWhisper(0, "Loading notecard...");
+		loadNotecard();
+		CheckSoundFiles();
+		if (g_iSoundAvail) g_iSoundOn = TRUE;
+     }
 
     on_rez(integer start_param)
     {
@@ -644,17 +664,17 @@ default
 	
     changed(integer change)
     {
-        if (change & CHANGED_INVENTORY) {
-            llWhisper(0, "Inventory changed, reloading notecard...");
-            g_iSoundFile = llGetInventoryName(INVENTORY_SOUND, 0); // get first sound from inventory
-            if (g_iSoundFile) llPreloadSound(g_iSoundFile);
-            loadNotecard();
-        }
+		if (change & CHANGED_INVENTORY) {
+			llWhisper(0, "Inventory changed, reloading notecard...");
+			loadNotecard();
+			CheckSoundFiles();
+		}
     }
 	
     touch_start(integer total_number)
     {
         llResetTime();
+		if (g_iSoundAvail && g_iSoundOn) llPreloadSound(g_sSoundFile); //maybe change preloaded soundfile to medium fire sound
     }
 
     touch_end(integer total_number)
@@ -814,15 +834,7 @@ default
             reset(); // initial values for menu
             if (g_iOn) startSystem();
 
-            if (g_iVerbose) {
-                llWhisper(0, "Touch to start/stop fire");
-                llWhisper(0, "Long touch to show menu");
-                llWhisper(0, "Switch access:" + showAccess(g_iSwitchAccess));
-                llWhisper(0, "Menu access:" + showAccess(g_iMenuAccess));
-                if (g_iSoundFile) llWhisper(0, "Sound in object inventory: Yes");
-                else llWhisper(0, "Sound in object inventory: No");
-            }
-            llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
+            
 
             if (debug) {
                 llOwnerSay((string)g_iLine + " lines in notecard");
