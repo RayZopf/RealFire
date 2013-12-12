@@ -460,8 +460,10 @@ menuDialog (key id)
     string strSmoke = "OFF";
 	if (g_iSmokeOn) strSmoke = "ON";
     string strSound = "NONE";
-	if (g_iSoundAvail && g_iSoundOn) strSound = "ON"; 
-		else strSound = "OFF";
+	if (g_iSoundAvail) {
+		if (g_iSoundOn) strSound = "ON"; 
+			else strSound = "OFF";
+	}
     menuChannel = (integer)(llFrand(-1000000000.0) - 1000000000.0);
     llListenRemove(g_iMenuHandle);
     g_iMenuHandle = llListen(menuChannel, "", "", "");
