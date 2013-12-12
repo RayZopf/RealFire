@@ -15,7 +15,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: ---
-//11. Dec. 2013 v2.2-0.2
+//11. Dec. 2013
+//v2.2-0.3
 
 //Files:
 //Smoke.lsl
@@ -31,10 +32,11 @@
 
 //Changelog
 //Formatting
+//moved functions into main code
 
-//bug: ---
+//bug: if smoke is turned off via menu, llSleep still applies
 
-//todo: ---
+//todo: more natural smoke according to fire intensity - low fire with more fume, black smoke, smoke after fire is off, smoke fading instead of turning off
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -62,13 +64,13 @@ integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
 float g_fAge = 10.0;               // life of each particle
 float g_fRate = 0.5;               // how fast (rate) to emit particles
 integer g_iCount = 5;              // how many particles to emit per BURST
-float g_fStartAlpha = 0.1;         // start alpha (transparency) value
+float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 
 
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2-0.2";       // version
+string g_sVersion = "2.2-0.3";       // version
 
 // Constants
 integer SMOKE_CHANNEL = -10957;  // smoke channel
@@ -150,6 +152,8 @@ default
 				PSYS_PART_INTERP_COLOR_MASK |
 				PSYS_PART_INTERP_SCALE_MASK ]);
 			} else {
+				llWhisper(0, "Fumes are fading");
+				llSleep(9);
 				llParticleSystem([]);
 				Debug("smoke particles off");
 				}
