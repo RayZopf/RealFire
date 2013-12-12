@@ -46,6 +46,7 @@
 //bug: ---
 
 //todo: make sound configurable via notecard
+//todo: better way to handle sound change / not changing on fire size change
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -70,10 +71,12 @@ integer debug = TRUE;          // show debug messages
 //user changeable variables
 //-----------------------------------------------
 string NOTECARD = "config";     // notecard name
-string g_sSoundFile = "4211_dobroide_fire-crackling";                   // standard sound, sound for big fire
-string g_sSoundFileSmall ="17742__krisboruff__fire-crackles-no-room_r8b";                   // sound for small fire
-string g_sSoundFileMedium1 = "104957__glaneur-de-sons__petit-feu-little-fire-1_r8b";                   // first sound for medium fire
-string g_sSoundFileMedium2 = "104958__glaneur-de-sons__petit-feu-little-fire-2_r8b";                   // second sound for medium fire
+string g_sSoundFileSmall ="17742__krisboruff__fire-crackles-no-room";                   // sound for small fire
+string g_sSoundFileMedium1 = "104958__glaneur-de-sons__petit-feu-little-fire-2";                   // first sound for medium fire (yes, file fire-2); gets preloaded with every touch and played first on every ignition
+string g_sSoundFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1";                   // second sound for medium fire
+string g_sSoundFileFull = "4211__dobroide__fire-crackling";                   // standard sound, sound for big fire
+
+string g_sCurrentSoundFile = g_sSoundFileMedium2;
 
 // Particle parameters
 float g_fAge = 1.0;                // particle lifetime
@@ -213,7 +216,7 @@ toggleSound()
         llStopSound();
         g_iSoundOn = FALSE;
     } else {
-        if (g_iSoundAvail) llLoopSound(g_sSoundFile, g_fSoundVolume);
+        if (g_iSoundAvail) llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
         g_iSoundOn = TRUE;
     }
 }
@@ -237,11 +240,39 @@ updateSize(float size)
     if (size > 25.0) {
         start = g_vStartScale / 100.0 * size;     // start scale
         radius = g_fBurstRadius / 100.0 * size;   // burst radius
-        if (size >= 80) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
-            else if (size > 50) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
-                else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
+        if (size >= 80) {
+			llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
+			if (g_iSoundOn) { //needs to be improved
+				g_sCurrentSoundFile = g_sSoundFileFull;
+				llPreloadSound(g_sCurrentSoundFile);
+				llStopSound();
+				llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
+			}
+		} else if (size > 50) {
+					llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
+					if (g_iSoundOn) { //needs to be improved
+						g_sCurrentSoundFile = g_sSoundFileMedium2;
+						llPreloadSound(g_sCurrentSoundFile);
+						llStopSound();
+						llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
+					}
+				} else {
+						llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
+						if (g_iSoundOn) { //needs to be improved
+							g_sCurrentSoundFile = g_sSoundFileMedium1;
+							llPreloadSound(g_sCurrentSoundFile);
+							llStopSound();
+							llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
+						}
+					}
     }
     else {
+		if (g_iSoundOn) { //needs to be improved
+				g_sCurrentSoundFile = g_sSoundFileSmall;
+				llPreloadSound(g_sCurrentSoundFile);
+				llStopSound();
+				llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
+			}
         if (size >= 15) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
             else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
         start = g_vStartScale / 4.0;              // start scale
@@ -563,7 +594,11 @@ startSystem()
     g_fSoundVolume = g_fStartVolume;
     updateSize((float)g_iPerSize);
     llStopSound();
-    if (g_iSoundAvail && g_iSoundOn) llLoopSound(g_sSoundFile, g_fSoundVolume);
+    if (g_iSoundAvail && g_iSoundOn) {
+		llPlaySound(g_sSoundFileMedium1, g_fSoundVolume);
+		llPreloadSound(g_sCurrentSoundFile);
+		llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
+	}
     llSetTimerEvent(0);
     llSetTimerEvent(g_fBurnTime);
     if (g_iMenuOpen) {
@@ -627,7 +662,7 @@ CheckSoundFiles()
 		integer i;
 		for (i = 0; i < iSoundNumber; ++i) {
 			string sSoundName = llGetInventoryName(INVENTORY_SOUND, i);
-			if (sSoundName == g_sSoundFile || sSoundName == g_sSoundFileMedium1 || sSoundName == g_sSoundFileMedium2 || sSoundName == g_sSoundFileSmall)
+			if (sSoundName == g_sSoundFileFull || sSoundName == g_sSoundFileMedium1 || sSoundName == g_sSoundFileMedium2 || sSoundName == g_sSoundFileSmall)
 			g_iSoundAvail = TRUE;
 		}
 	} else g_iSoundAvail = FALSE;
@@ -684,14 +719,14 @@ default
     touch_start(integer total_number)
     {
         llResetTime();
-		if (g_iSoundAvail && g_iSoundOn) llPreloadSound(g_sSoundFile); //maybe change preloaded soundfile to medium fire sound
+		if (g_iSoundAvail && g_iSoundOn) llPreloadSound(g_sSoundFileMedium1); //maybe change preloaded soundfile to medium fire sound
     }
 
     touch_end(integer total_number)
     {
         g_kUser = llDetectedKey(0);
 
-        if (llGetTime() > 1.0) {
+        if (llGetTime() > 2.0) {
             if (accessGranted(g_kUser, g_iMenuAccess)) {
                 startSystem();
                 menuDialog(g_kUser);
