@@ -1,3 +1,4 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
 // Author: Rene10957 Resident
@@ -17,6 +18,53 @@
 // - Access control: owner, group, world
 // - Touch to start or stop fire
 // - Long touch to show menu
+
+//modified by: Zopf Resident - Ray Zopf (Raz)
+//Additions: ---
+//12. Dec. 2013
+//v2.2-0.1
+
+//Files:
+//Fire.lsl
+//
+//Smoke.lsl
+//config
+//User Manual
+//
+//
+//Prequisites: Smoke.lsl in another prim than Fire.lsl
+//Notecard format: see config NC
+//basic help: User Manual
+
+//Changelog
+//Formatting
+
+//bug: ---
+
+//todo: ---
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//===============================================
+//FIRESTORM SPECIFIC DEBUG STUFF
+//===============================================
+
+//#define FSDEBUG
+//#include "fs_debug.lsl"
+
+
+
+//===============================================
+//GLOBAL VARIABLES
+//===============================================
+
+//debug variables
+//-----------------------------------------------
+integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+
+
+//user changeable variables
+//-----------------------------------------------
 
 string title = "RealFire";      // title
 string version = "2.2";         // version
@@ -117,6 +165,25 @@ float startRadius;              // start value of lightRadius (before burning do
 float startVolume;              // start value of volume (before burning down)
 
 // Functions
+//===============================================
+//PREDEFINED FUNCTIONS
+//===============================================
+
+//===============================================================================
+//= parameters   :    string    sMsg    message string received
+//=
+//= return        :    none
+//=
+//= description  :    output debug messages
+//=
+//===============================================================================
+
+Debug(string sMsg)
+{
+    if (!g_iDebugMode) return;
+    llOwnerSay("DEBUG: "+ llGetScriptName() + ": " + sMsg);
+}
+
 
 toggleFire()
 {
@@ -147,6 +214,8 @@ toggleSound()
     }
 }
 
+//most important function
+//-----------------------------------------------
 updateSize(float size)
 {
     vector start;
@@ -546,6 +615,15 @@ sendMessage(integer number)
     llMessageLinked(LINK_ALL_OTHERS, smokeChannel, (string)number, "");
 }
 
+
+
+//===============================================
+//===============================================
+//MAIN
+//===============================================
+//===============================================
+
+
 default
 {
     state_entry()
@@ -670,7 +748,9 @@ default
             }
         }
     }
-
+	
+//listen for linked messages from OC scripts
+//-----------------------------------------------
     link_message(integer sender_number, integer number, string msg, key id)
     {
         if (debug) llOwnerSay("[Fire] LINK_MESSAGE event: " + (string)number + "; " + msg + "; " + (string)id);
@@ -702,7 +782,9 @@ default
             else llInstantMessage(user, "[Menu] Access denied");
         }
     }
-
+	
+//get presets from notecard
+//-----------------------------------------------
     dataserver(key req, string data)
     {
         if (data == EOF) {
