@@ -15,16 +15,17 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: ---
-//11. Dec. 2013 v2.2-0.1
+//11. Dec. 2013 v2.2-0.2
 
 //Files:
-//Fire.lsl
 //Smoke.lsl
+//
+//Fire.lsl
 //config
 //User Manual
 //
 //
-//Prequisites: Smoke.lsl in another prim as Fire.lsl
+//Prequisites: Smoke.lsl in another prim than Fire.lsl
 //Notecard format: see config NC
 //basic help: User Manual
 
@@ -58,20 +59,19 @@ integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
 //user changeable variables
 //-----------------------------------------------
 // Particle parameters
-float age = 10.0;               // life of each particle
-float rate = 0.5;               // how fast (rate) to emit particles
-integer count = 5;              // how many particles to emit per BURST
-float startAlpha = 0.1;         // start alpha (transparency) value
+float g_fAge = 10.0;               // life of each particle
+float g_fRate = 0.5;               // how fast (rate) to emit particles
+integer g_iCount = 5;              // how many particles to emit per BURST
+float g_fStartAlpha = 0.1;         // start alpha (transparency) value
 
 
 //internal variables
 //-----------------------------------------------
-string title = "RealSmoke";     // title
-string version = "2.1.1";       // version
-integer debug = FALSE;          // show/hide debug messages
+string g_sTitle = "RealSmoke";     // title
+string g_sVersion = "2.2-0.2";       // version
 
 // Constants
-integer smokeChannel = -10957;  // smoke channel
+integer SMOKE_CHANNEL = -10957;  // smoke channel
 
 
 
@@ -95,40 +95,6 @@ Debug(string sMsg)
 }
 
 
-float percentage (float per, float num)
-{
-    return num / 100.0 * per;
-}
-
-
-//most important function
-//-----------------------------------------------
-updateParticles(float alpha)
-{
-    llParticleSystem([
-        PSYS_SRC_PATTERN, PSYS_SRC_PATTERN_EXPLODE,
-        PSYS_PART_START_COLOR, <0.5, 0.5, 0.5>,
-        PSYS_PART_END_COLOR, <0.5, 0.5, 0.5>,
-        PSYS_PART_START_ALPHA, alpha,
-        PSYS_PART_END_ALPHA, 0.0,
-        PSYS_PART_START_SCALE, <0.1, 0.1, 0.0>,
-        PSYS_PART_END_SCALE, <3.0, 3.0, 0.0>,
-        PSYS_PART_MAX_AGE, age,
-        PSYS_SRC_BURST_RATE, rate,
-        PSYS_SRC_BURST_PART_COUNT, count,
-        PSYS_SRC_BURST_SPEED_MIN, 0.0,
-        PSYS_SRC_BURST_SPEED_MAX, 0.1,
-        PSYS_SRC_BURST_RADIUS, 0.1,
-        PSYS_SRC_ACCEL, <0.0, 0.0, 0.2>,
-        PSYS_PART_FLAGS,
-        0 |
-        PSYS_PART_EMISSIVE_MASK |
-        PSYS_PART_FOLLOW_VELOCITY_MASK |
-        PSYS_PART_INTERP_COLOR_MASK |
-        PSYS_PART_INTERP_SCALE_MASK ]);
-}
-
-
 
 //===============================================
 //===============================================
@@ -142,8 +108,9 @@ default
     state_entry()
     {
         llParticleSystem([]);
-        if (debug) llOwnerSay("Particle count: " + (string)llRound((float)count * age / rate));
-        llWhisper(0, title + " " + version + " ready");
+		//no llSleep because there is nothing to do
+        Debug("state_entry, Particle count = " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
+        llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
     }
 
     on_rez(integer start_param)
@@ -153,11 +120,38 @@ default
 	
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-    link_message(integer sender, integer number, string msg, key id)
+    link_message(integer iSender, integer iNumber, string sMsg, key kId)
     {
-        if (debug) llOwnerSay("[Smoke] LINK_MESSAGE event: " + (string)number + "; " + msg + "; " + (string)id);
-        if (number != smokeChannel) return;
-        if ((integer)msg) updateParticles(percentage((float)msg, startAlpha));
-        else llParticleSystem([]);
+		Debug("link_message = channel " + (string)iNumber + "; sMsg " + sMsg + "; kId " + (string)kId);
+        if (iNumber != SMOKE_CHANNEL) return;
+		
+        if ((integer)sMsg > 0 && (integer)sMsg <= 100) {
+			float fAlpha = g_fStartAlpha / 100.0 * (float)sMsg;
+			Debug("fAlpha " + (string)fAlpha);
+			llParticleSystem([
+				PSYS_SRC_PATTERN, PSYS_SRC_PATTERN_EXPLODE,
+				PSYS_PART_START_COLOR, <0.5, 0.5, 0.5>,
+				PSYS_PART_END_COLOR, <0.5, 0.5, 0.5>,
+				PSYS_PART_START_ALPHA, fAlpha,
+				PSYS_PART_END_ALPHA, 0.0,
+				PSYS_PART_START_SCALE, <0.1, 0.1, 0.0>,
+				PSYS_PART_END_SCALE, <3.0, 3.0, 0.0>,
+				PSYS_PART_MAX_AGE, g_fAge,
+				PSYS_SRC_BURST_RATE, g_fRate,
+				PSYS_SRC_BURST_PART_COUNT, g_iCount,
+				PSYS_SRC_BURST_SPEED_MIN, 0.0,
+				PSYS_SRC_BURST_SPEED_MAX, 0.1,
+				PSYS_SRC_BURST_RADIUS, 0.1,
+				PSYS_SRC_ACCEL, <0.0, 0.0, 0.2>,
+				PSYS_PART_FLAGS,
+				0 |
+				PSYS_PART_EMISSIVE_MASK |
+				PSYS_PART_FOLLOW_VELOCITY_MASK |
+				PSYS_PART_INTERP_COLOR_MASK |
+				PSYS_PART_INTERP_SCALE_MASK ]);
+			} else {
+				llParticleSystem([]);
+				Debug("smoke particles off");
+				}
     }
 }
