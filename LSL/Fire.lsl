@@ -126,7 +126,7 @@ vector g_vDefStartColor;           // default start (bottom) color (percentage R
 vector g_vDefEndColor;             // default end (top) color (percentage R,G,B)
 integer g_iDefVolume;              // default volume for sound (percentage)
 integer g_iDefSmoke = TRUE;        // default smoke on/off
-integer g_iDefSound = FALSE;        // default sound on/off
+integer g_iDefSound;        // default sound on/off
 integer g_iDefIntensity;           // default light intensity (percentage)
 integer g_iDefRadius;              // default light radius (percentage)
 integer g_iDefFalloff;             // default light falloff (percentage)
@@ -134,6 +134,7 @@ integer g_iDefFalloff;             // default light falloff (percentage)
 // Variables
 key g_kOwner;                      // object owner
 key g_kUser;                       // key of last avatar to touch object
+key	g_kQuery = NULL_KEY;
 integer g_iLine;                   // notecard line
 integer menuChannel;            // main menu channel
 integer g_iStartColorChannel;      // start color menu channel
@@ -335,48 +336,52 @@ integer checkYesNo(string par, string val)
 
 loadNotecard()
 {
-    g_iVerbose = TRUE;
-    g_iSwitchAccess = ACCESS_WORLD;
-    g_iMenuAccess = ACCESS_WORLD;
-    g_iMsgNumber = 10957;
-    g_sMsgSwitch = "switch";
-    g_sMsgOn = "on";
-    g_sMsgOff = "off";
-    g_sMsgMenu = "menu";
-    g_iBurnDown = FALSE;
-    g_fBurnTime = 300.0;
-    g_fDieTime = 300.0;
-    g_iLoop = FALSE;
-    g_iChangeLight = TRUE;
-    g_iChangeSmoke = TRUE;
-    g_iChangeVolume = TRUE;
-    g_iDefSize = 25;
-    g_vDefStartColor = <100,100,0>;
-    g_vDefEndColor = <100,0,0>;
-    g_iDefVolume = 100;
-    g_iDefSmoke = TRUE;
-    g_iDefSound = FALSE;
-    g_iDefIntensity = 100;
-    g_iDefRadius = 50;
-    g_iDefFalloff = 40;
-    g_iLine = 0;
-
-    if (!g_iBurnDown) g_fBurnTime = 315360000;   // 10 years
-    g_fTime = g_fDieTime / 100.0;                // try to get a one percent timer interval
-    if (g_fTime < 1.0) g_fTime = 1.0;            // but never smaller than one second
-    g_fDecPercent = 100.0 / (g_fDieTime / g_fTime); // and burn down decPercent% every time
-
-    g_fStartIntensity = percentage(g_iDefIntensity, MAX_INTENSITY);
-    g_fStartRadius = percentage(g_iDefRadius, MAX_RADIUS);
-    g_fLightFalloff = percentage(g_iDefFalloff, MAX_FALLOFF);
-    g_fStartVolume = percentage(g_iDefVolume, MAX_VOLUME);
-
-    if (llGetInventoryType(NOTECARD) == INVENTORY_NOTECARD) {
-        llGetNotecardLine(NOTECARD, g_iLine);
+	g_iLine = 0;
+	if (llGetInventoryType(NOTECARD) == INVENTORY_NOTECARD) {
+		Debug("loadNotecard, NC avail");
+        g_kQuery = llGetNotecardLine(NOTECARD, g_iLine);
     } else {
-        llWhisper(0, "Notecard \"" + NOTECARD + "\" not found or empty, using defaults");
-        reset(); // initial values for menu
+		llWhisper(0, "Notecard \"" + NOTECARD + "\" not found or empty, using defaults");
+
+		g_iVerbose = TRUE;
+		g_iSwitchAccess = ACCESS_WORLD;
+		g_iMenuAccess = ACCESS_WORLD;
+		g_iMsgNumber = 10957;
+		g_sMsgSwitch = "switch";
+		g_sMsgOn = "on";
+		g_sMsgOff = "off";
+		g_sMsgMenu = "menu";
+		g_iBurnDown = FALSE;
+		g_fBurnTime = 300.0;
+		g_fDieTime = 300.0;
+		g_iLoop = FALSE;
+		g_iChangeLight = TRUE;
+		g_iChangeSmoke = TRUE;
+		g_iChangeVolume = TRUE;
+		g_iDefSize = 25;
+		g_vDefStartColor = <100,100,0>;
+		g_vDefEndColor = <100,0,0>;
+		g_iDefVolume = 100;
+		g_iDefSmoke = TRUE;
+		g_iDefSound = TRUE;
+		g_iDefIntensity = 100;
+		g_iDefRadius = 50;
+		g_iDefFalloff = 40;
+
+		if (!g_iBurnDown) g_fBurnTime = 315360000;   // 10 years
+		g_fTime = g_fDieTime / 100.0;                // try to get a one percent timer interval
+		if (g_fTime < 1.0) g_fTime = 1.0;            // but never smaller than one second
+		g_fDecPercent = 100.0 / (g_fDieTime / g_fTime); // and burn down decPercent% every time
+
+		g_fStartIntensity = percentage(g_iDefIntensity, MAX_INTENSITY);
+		g_fStartRadius = percentage(g_iDefRadius, MAX_RADIUS);
+		g_fLightFalloff = percentage(g_iDefFalloff, MAX_FALLOFF);
+		g_fStartVolume = percentage(g_iDefVolume, MAX_VOLUME);
+		
+		reset(); // initial values for menu
         if (g_iOn) startSystem();
+		InfoLines();
+		
         if (debug) {
             llOwnerSay("verbose = " + (string)g_iVerbose);
             llOwnerSay("switchAccess = " + (string)g_iSwitchAccess);
@@ -406,14 +411,11 @@ loadNotecard()
             llOwnerSay("decPercent = " + (string)g_fDecPercent);
         }
     }
-	if (g_iVerbose) {
-        llWhisper(0, "Switch access:" + showAccess(g_iSwitchAccess));
-        llWhisper(0, "Menu access:" + showAccess(g_iMenuAccess));
-    }
 }
 
 readNotecard (string ncLine)
 {
+	Debug("readNotecard, ncLine: "+ncLine);
     string ncData = llStringTrim(ncLine, STRING_TRIM);
 
     if (llStringLength(ncData) > 0 && llGetSubString(ncData, 0, 0) != "#") {
@@ -451,7 +453,7 @@ readNotecard (string ncLine)
     }
 
     g_iLine++;
-    llGetNotecardLine(NOTECARD, g_iLine);
+    g_kQuery = llGetNotecardLine(NOTECARD, g_iLine);
 }
 
 menuDialog (key id)
@@ -534,8 +536,9 @@ integer max (integer x, integer y)
 
 reset()
 {
-    g_iSmokeOn = g_iDefSmoke;
-    g_iSoundOn = g_iDefSound;
+	if (!g_iSoundAvail) g_iDefSound = g_iSoundOn = FALSE;
+		else g_iSoundOn = g_iDefSound;
+	g_iSmokeOn = g_iDefSmoke;
     g_iPerSize = g_iDefSize;
     g_iPerVolume = g_iDefVolume;
     g_iPerRedStart = (integer)g_vDefStartColor.x;
@@ -627,11 +630,17 @@ CheckSoundFiles()
 			if (sSoundName == g_sSoundFile || sSoundName == g_sSoundFileMedium1 || sSoundName == g_sSoundFileMedium2 || sSoundName == g_sSoundFileSmall)
 			g_iSoundAvail = TRUE;
 		}
-	} else g_iSoundOn = g_iDefSound = g_iSoundAvail = FALSE;
+	} else g_iSoundAvail = FALSE;
+}
+
+InfoLines()
+{
 	if (g_iVerbose) {
-        if (g_iSoundAvail) llWhisper(0, "Sound object in inventory found: Yes");
-            else llWhisper(0, "All Sound objects in inventory: No");
-	}
+        llWhisper(0, "Switch access:" + showAccess(g_iSwitchAccess));
+        llWhisper(0, "Menu access:" + showAccess(g_iMenuAccess));
+		if (g_iSoundAvail) llWhisper(0, "Sound object in inventory found: Yes");
+            else llWhisper(0, "All Sound objects in inventory found: No");
+    }
 }
 
 
@@ -652,11 +661,10 @@ default
         Debug("Particle count: " + (string)llRound((float)g_fCount * g_fAge / g_fRate));
         Debug((string)llGetFreeMemory() + " bytes free");
 		llWhisper(0, "RealFire by Rene10957");
-	    llWhisper(0, "Touch to start/stop fire\nLong touch to show menu");
+	    llWhisper(0, "Touch to start/stop fire\n *Long touch to show menu*");
+		CheckSoundFiles();
 		llWhisper(0, "Loading notecard...");
 		loadNotecard();
-		CheckSoundFiles();
-		if (g_iSoundAvail) g_iSoundOn = TRUE;
      }
 
     on_rez(integer start_param)
@@ -667,9 +675,9 @@ default
     changed(integer change)
     {
 		if (change & CHANGED_INVENTORY) {
+			CheckSoundFiles();
 			llWhisper(0, "Inventory changed, reloading notecard...");
 			loadNotecard();
-			CheckSoundFiles();
 		}
     }
 	
@@ -813,9 +821,14 @@ default
 	
 //get presets from notecard
 //-----------------------------------------------
-    dataserver(key req, string data)
+    dataserver(key kQuery_id, string data)
     {
-        if (data == EOF) {
+		if(kQuery_id != g_kQuery) return;
+        if (data != EOF) {
+			Debug("Dataserver");
+			readNotecard(data);
+		} else {
+			Debug("Dataserver, last line done");
             if (!g_iBurnDown) g_fBurnTime = 315360000;   // 10 years
             g_fTime = g_fDieTime / 100.0;                // try to get a one percent timer interval
             if (g_fTime < 1.0) g_fTime = 1.0;            // but never smaller than one second
@@ -834,9 +847,9 @@ default
             g_fStartVolume = percentage(g_iDefVolume, MAX_VOLUME);
 
             reset(); // initial values for menu
+			
             if (g_iOn) startSystem();
-
-            
+			InfoLines();
 
             if (debug) {
                 llOwnerSay((string)g_iLine + " lines in notecard");
@@ -867,9 +880,6 @@ default
                 llOwnerSay("time = " + (string)g_fTime);
                 llOwnerSay("decPercent = " + (string)g_fDecPercent);
             }
-        }
-        else {
-            readNotecard(data);
         }
     }
 
