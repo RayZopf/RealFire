@@ -20,9 +20,9 @@
 // - Long touch to show menu
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
-//Additions: initial structure for multiple sound files, implent linked_message system
+//Additions: initial structure for multiple sound files, implement linked_message system
 //13. Dec. 2013
-//v2.2-0.51
+//v2.2-0.52
 
 //Files:
 //Fire.lsl
@@ -55,6 +55,8 @@
 //todo: make Sound own script, as Smoke
 //todo: remove any sound related functions after Sound.lsl is done
 //todo: wait for linked messages to let smoke and sound register themselfes
+//todo: better smoke (color, intensity, change when fire changes)
+//todo: add ping/pong with other scripts in case only fire.lsl gets resetted
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -73,7 +75,6 @@
 //debug variables
 //-----------------------------------------------
 integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
-integer debug = TRUE;          // show debug messages
 
 
 //user changeable variables
@@ -103,7 +104,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2-0.51";         // version
+string g_sVersion = "2.2-0.52";         // version
 
 // Constants
 integer ACCESS_OWNER = 4;            // owner access bit
@@ -216,10 +217,11 @@ Debug(string sMsg)
 //===============================================================================
 toggleFunktion(string sFunction)
 {
+	Debug("toggle function " + sFunction); 
 	if ("fire" == sFunction) {
 		if (g_iOn) stopSystem(); else startSystem();
 	} else if ("smoke" == sFunction) {
-	    if (g_iSmokeOn) {
+	    if (!g_iSmokeOn) {
 			sendMessage(SMOKE_CHANNEL, "0", "");
 			g_iSmokeOn = FALSE;
 		} else {
@@ -321,7 +323,7 @@ updateSize(float size)
     if (g_iSmokeAvail && g_iSmokeOn) sendMessage(SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
 	//sendMessage(integer iChan, string sType, string sCom, integer iNum)
 	if (g_iSoundAvail && g_iSoundOn) llAdjustSoundVolume(g_fSoundVolume);
-    if (debug && g_iBurnDown) llOwnerSay((string)llRound(size) + "% " + (string)start + " " + (string)end);
+    Debug((string)llRound(size) + "% " + (string)start + " " + (string)end);
 }
 
 updateColor()
@@ -434,7 +436,7 @@ loadNotecard()
         if (g_iOn) startSystem();
 		InfoLines();
 		
-        if (debug) {
+        if (g_iDebugMode) {
             llOwnerSay("verbose = " + (string)g_iVerbose);
             llOwnerSay("switchAccess = " + (string)g_iSwitchAccess);
             llOwnerSay("menuAccess = " + (string)g_iMenuAccess);
@@ -605,18 +607,20 @@ reset()
     g_iPerRedEnd = (integer)g_vDefEndColor.x;
     g_iPerGreenEnd = (integer)g_vDefEndColor.y;
     g_iPerBlueEnd = (integer)g_vDefEndColor.z;
+	
+	llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
+	//just send, don't check
+	sendMessage(SMOKE_CHANNEL, "0", "");
+	sendMessage(SOUND_CHANNEL, "0", "");
 }
 
 startSystem()
 {
+	Debug("startSystem");
     g_iOn = TRUE;
     g_iBurning = TRUE;
     g_fPercent = 100.0;
     g_fPercentSmoke = 100.0;
-	if (g_iSmokeAvail && g_iDefSmoke) {
-		g_iSmokeOn = TRUE;
-		toggleFunktion("smoke");
-	}
     g_fStartVolume = percentage(g_iPerVolume, MAX_VOLUME);
     g_fLightIntensity = g_fStartIntensity;
     g_fLightRadius = g_fStartRadius;
@@ -703,7 +707,7 @@ CheckSoundFiles()
 //===============================================================================
 //= parameters   :    integer	iChan		determines the script (function) to talk to
 //=					string	sVal			Value to set, also on/off (0 - 100)
-//=					string	sMsg			for sound: sound file name
+//=					string	sMsg			for sound: description of fire size
 //=
 //= return        :    none
 //=
@@ -715,12 +719,8 @@ sendMessage(integer iChan, string sVal, string sMsg )
 	if (iChan == SMOKE_CHANNEL) {
 		llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, sVal, ""); //to all other prims (because of only one emitter per prim)
 	} else if (iChan == SOUND_CHANNEL) {
-		if ("" == sMsg) {
-			llMessageLinked(LINK_SET, SOUND_CHANNEL, sVal, ""); //to all prims
-		} else {
 			string sSoundSet = sVal + "," + sMsg;
 			llMessageLinked(LINK_SET, SOUND_CHANNEL, sSoundSet, "");
-		}
 	}
 }
 
@@ -799,7 +799,7 @@ default
 
     listen(integer channel, string name, key id, string msg)
     {
-        if (debug) llOwnerSay("[Fire] LISTEN event: " + (string)channel + "; " + msg);
+        Debug("LISTEN event: " + (string)channel + "; " + msg);
 
         if (channel == menuChannel) {
             llListenRemove(g_iMenuHandle);
@@ -882,12 +882,12 @@ default
 //-----------------------------------------------
     link_message(integer iSender_number, integer iChan, string sMsg, key kId)
     {
-        Debug("link_message= channel" + (string)iChan + "; Messag " + sMsg + "; " + (string)kId);
+        Debug("link_message= channel" + (string)iChan + "; Message " + sMsg + "; " + (string)kId);
 		
 		if (iChan == SMOKE_CHANNEL) {
 			if ("1" == sMsg) {
 				g_iSmokeAvail = TRUE;
-				if (g_iDefSmoke && g_iOn) {
+				if (g_iDefSmoke && g_iOn) { //if only smoke scripts gets resetted
 					g_iSmokeOn = TRUE;
 					toggleFunktion("smoke");
 				}
@@ -956,7 +956,7 @@ default
             if (g_iOn) startSystem();
 			InfoLines();
 
-            if (debug) {
+            if (g_iDebugMode) {
                 llOwnerSay((string)g_iLine + " lines in notecard");
                 llOwnerSay("verbose = " + (string)g_iVerbose);
                 llOwnerSay("switchAccess = " + (string)g_iSwitchAccess);
@@ -991,7 +991,7 @@ default
     timer()
     {
         if (g_iMenuOpen) {
-            if (debug) llOwnerSay("MENU TIMEOUT");
+            if (g_iVerbose) llWhisper(0, "MENU TIMEOUT");
             llListenRemove(g_iMenuHandle);
             llListenRemove(g_iStartColorHandle);
             llListenRemove(g_iEndColorHandle);
