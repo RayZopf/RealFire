@@ -21,19 +21,20 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implent linked_message system
-//12. Dec. 2013
-//v2.2-0.5
+//13. Dec. 2013
+//v2.2-0.51
 
 //Files:
 //Fire.lsl
 //
 //Smoke.lsl
+//Sound.lsl
 //config
 //User Manual
 //
 //
 //Prequisites: Smoke.lsl in another prim than Fire.lsl
-//Soundfiles need to be in same prim as Fire.lsl
+//Soundfiles need to be in same prim as Fire.lsl (Sound.lsl after that is done)
 //
 //Notecard format: see config NC
 //basic help: User Manual
@@ -42,6 +43,7 @@
 //Formatting
 //variable naming sheme
 //structure for multiple sound files
+//structure for multiple scripts
 
 //bug: ---
 
@@ -51,6 +53,7 @@
 //todo: longer break between automatic fire off and going on again, also make fire slowly bigger... and let fire burn down slower (look into function)
 //todo: make 5% lowest setting (glowing)? and adjust fire (100%)  - is way too big for the fireplace
 //todo: make Sound own script, as Smoke
+//todo: remove any sound related functions after Sound.lsl is done
 //todo: wait for linked messages to let smoke and sound register themselfes
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -100,7 +103,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2-0.5";         // version
+string g_sVersion = "2.2-0.51";         // version
 
 // Constants
 integer ACCESS_OWNER = 4;            // owner access bit
@@ -197,35 +200,41 @@ float g_fStartVolume;              // start value of volume (before burning down
 //= description  :    output debug messages
 //=
 //===============================================================================
-
 Debug(string sMsg)
 {
     if (!g_iDebugMode) return;
     llOwnerSay("DEBUG: "+ llGetScriptName() + ": " + sMsg);
 }
 
+//===============================================================================
+//= parameters   :    string    sFunction    which function to toggle
+//=
+//= return        :    none
+//=
+//= description  :    handle different function toggles (on/off with intensity)
+//=
+//===============================================================================
 toggleFunktion(string sFunction)
 {
 	if ("fire" == sFunction) {
 		if (g_iOn) stopSystem(); else startSystem();
 	} else if ("smoke" == sFunction) {
 	    if (g_iSmokeOn) {
-			//sendMessage(integer iChan, string sType, string sCom, integer iNum)
-			llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, "0", "");
+			sendMessage(SMOKE_CHANNEL, "0", "");
 			g_iSmokeOn = FALSE;
 		} else {
-			//sendMessage(integer iChan, string sType, string sCom, integer iNum)
-			llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, "100", "");
+			sendMessage(SMOKE_CHANNEL, "100", "");
 			g_iSmokeOn = TRUE;
 		}
 	} else if ("sound" == sFunction) {
 		if (g_iSoundOn) {
-			//sendMessage(integer iChan, string sType, string sCom, integer iNum)
-			llStopSound();
+			sendMessage(SOUND_CHANNEL, "0", "");
+			llStopSound(); //remove after Sound.lsl is done!!
 			g_iSoundOn = FALSE;
 		} else {
 			//sendMessage(integer iChan, string sType, string sCom, integer iNum)
-			if (g_iSoundAvail) llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
+			sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSoundFile);
+			if (g_iSoundAvail) llLoopSound(g_sCurrentSoundFile, g_fSoundVolume); //remove after Sound.lsl is done!!
 			g_iSoundOn = TRUE;
 		}
 	}
@@ -309,7 +318,7 @@ updateSize(float size)
     updateColor();
     updateParticles(start, end, min, max, radius, push);
     llSetPrimitiveParams([PRIM_POINT_LIGHT, TRUE, g_vLightColor, g_fLightIntensity, g_fLightRadius, g_fLightFalloff]);
-    if (g_iSmokeOn && g_iSmokeAvail) llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
+    if (g_iSmokeAvail && g_iSmokeOn) sendMessage(SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
 	//sendMessage(integer iChan, string sType, string sCom, integer iNum)
 	if (g_iSoundAvail && g_iSoundOn) llAdjustSoundVolume(g_fSoundVolume);
     if (debug && g_iBurnDown) llOwnerSay((string)llRound(size) + "% " + (string)start + " " + (string)end);
@@ -613,8 +622,10 @@ startSystem()
     g_fLightRadius = g_fStartRadius;
     g_fSoundVolume = g_fStartVolume;
     updateSize((float)g_iPerSize);
-    llStopSound();
-    if (g_iSoundAvail && g_iSoundOn) {
+    llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
+    if (g_iSoundAvail && g_iSoundOn) { //needs some more rework
+		//g_iSoundOn = TRUE;
+		//toggleFunktion("sound");
 		llPlaySound(g_sSoundFileMedium1, g_fSoundVolume);
 		llPreloadSound(g_sCurrentSoundFile);
 		llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
@@ -638,9 +649,9 @@ stopSystem()
     llSetTimerEvent(0);
     llParticleSystem([]);
     llSetPrimitiveParams([PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
-    llStopSound();
-	//sendMessage(integer iChan, string sType, string sCom, integer iNum)
-    if (g_iSmokeAvail) llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, "0", "");
+    llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
+	if (g_iSoundAvail) sendMessage(SOUND_CHANNEL, "0", "");
+    if (g_iSmokeAvail) sendMessage(SMOKE_CHANNEL, "0", "");
     if (g_iMenuOpen) {
         llListenRemove(g_iMenuHandle);
         llListenRemove(g_iStartColorHandle);
@@ -689,13 +700,29 @@ CheckSoundFiles()
 	} else g_iSoundAvail = FALSE;
 }
 
-//sendMessage(integer iChan, string sType, string sCom, integer iNum)
-//{
-//	if (smoke == sType) {
-//	} else if (sound == sType) {
-//		}
-//    llMessageLinked(LINK_ALL_OTHERS, iChan, (string)number, ""); //to all prims, root too (sound)!
-//}
+//===============================================================================
+//= parameters   :    integer	iChan		determines the script (function) to talk to
+//=					string	sVal			Value to set, also on/off (0 - 100)
+//=					string	sMsg			for sound: sound file name
+//=
+//= return        :    none
+//=
+//= description  :    forwards settings to functions/other scripts
+//=
+//===============================================================================
+sendMessage(integer iChan, string sVal, string sMsg )
+{
+	if (iChan == SMOKE_CHANNEL) {
+		llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, sVal, ""); //to all other prims (because of only one emitter per prim)
+	} else if (iChan == SOUND_CHANNEL) {
+		if ("" == sMsg) {
+			llMessageLinked(LINK_SET, SOUND_CHANNEL, sVal, ""); //to all prims
+		} else {
+			string sSoundSet = sVal + "," + sMsg;
+			llMessageLinked(LINK_SET, SOUND_CHANNEL, sSoundSet, "");
+		}
+	}
+}
 
 InfoLines()
 {
