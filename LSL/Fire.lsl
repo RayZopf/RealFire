@@ -45,14 +45,13 @@
 
 //bug: ---
 
-//todo: make sound configurable via notecard
+//todo: make sound configurable via notecard - maybe own config file?
 //todo: better way to handle sound change / not changing on fire size change
 //todo: keep sound running for a short time after turning fire off
 //todo: longer break between automatic fire off and going on again, also make fire slowly bigger... and let fire burn down slower (look into function)
-//todo: make 5% lowest setting (glowing) and adjust fire (100%) is way too big for the fireplace
+//todo: make 5% lowest setting (glowing)? and adjust fire (100%)  - is way too big for the fireplace
 //todo: make Sound own script, as Smoke
 //todo: wait for linked messages to let smoke and sound register themselfes
-//todo: check if smoke on startup has only level 0 or 100 or if it is according to fire
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -205,39 +204,33 @@ Debug(string sMsg)
     llOwnerSay("DEBUG: "+ llGetScriptName() + ": " + sMsg);
 }
 
-//toggleFunktion(string sFunction)
-
-toggleFire()
+toggleFunktion(string sFunction)
 {
-    if (g_iOn) stopSystem(); else startSystem();
+	if ("fire" == sFunction) {
+		if (g_iOn) stopSystem(); else startSystem();
+	} else if ("smoke" == sFunction) {
+	    if (g_iSmokeOn) {
+			//sendMessage(integer iChan, string sType, string sCom, integer iNum)
+			llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, "0", "");
+			g_iSmokeOn = FALSE;
+		} else {
+			//sendMessage(integer iChan, string sType, string sCom, integer iNum)
+			llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, "100", "");
+			g_iSmokeOn = TRUE;
+		}
+	} else if ("sound" == sFunction) {
+		if (g_iSoundOn) {
+			//sendMessage(integer iChan, string sType, string sCom, integer iNum)
+			llStopSound();
+			g_iSoundOn = FALSE;
+		} else {
+			//sendMessage(integer iChan, string sType, string sCom, integer iNum)
+			if (g_iSoundAvail) llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
+			g_iSoundOn = TRUE;
+		}
+	}
 }
 
-toggleSmoke()
-{
-    if (g_iSmokeOn) {
-		//sendMessage(integer iChan, string sType, string sCom, integer iNum)
-        llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, "0", "");
-        g_iSmokeOn = FALSE;
-    }
-    else {
-		//sendMessage(integer iChan, string sType, string sCom, integer iNum)
-        llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, "100", "");
-        g_iSmokeOn = TRUE;
-    }
-}
-
-toggleSound()
-{
-    if (g_iSoundOn) {
-		//sendMessage(integer iChan, string sType, string sCom, integer iNum)
-        llStopSound();
-        g_iSoundOn = FALSE;
-    } else {
-		//sendMessage(integer iChan, string sType, string sCom, integer iNum)
-        if (g_iSoundAvail) llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
-        g_iSoundOn = TRUE;
-    }
-}
 
 //most important function
 //-----------------------------------------------
@@ -613,7 +606,7 @@ startSystem()
     g_fPercentSmoke = 100.0;
 	if (g_iSmokeAvail && g_iDefSmoke) {
 		g_iSmokeOn = TRUE;
-		toggleSmoke();
+		toggleFunktion("smoke");
 	}
     g_fStartVolume = percentage(g_iPerVolume, MAX_VOLUME);
     g_fLightIntensity = g_fStartIntensity;
@@ -772,7 +765,7 @@ default
             else llInstantMessage(g_kUser, "[Menu] Access denied");
         }
         else {
-            if (accessGranted(g_kUser, g_iSwitchAccess)) toggleFire();
+            if (accessGranted(g_kUser, g_iSwitchAccess)) toggleFunktion("fire");
             else llInstantMessage(g_kUser, "[Switch] Access denied");
         }
     }
@@ -796,8 +789,8 @@ default
                 g_iPerVolume = min(g_iPerVolume + 5, 100);
                 g_fStartVolume = percentage(g_iPerVolume, MAX_VOLUME);
             }
-            else if (msg == "Smoke" && g_iSmokeAvail) toggleSmoke();
-            else if (msg == "Sound" && g_iSoundAvail) toggleSound();
+            else if (msg == "Smoke" && g_iSmokeAvail) toggleFunktion("smoke");
+            else if (msg == "Sound" && g_iSoundAvail) toggleFunktion("sound");
             else if (msg == "Color") endColorDialog(g_kUser);
             else if (msg == "Reset") { reset(); startSystem(); }
             else if (msg == "Close") {
@@ -869,7 +862,7 @@ default
 				g_iSmokeAvail = TRUE;
 				if (g_iDefSmoke && g_iOn) {
 					g_iSmokeOn = TRUE;
-					toggleSmoke();
+					toggleFunktion("smoke");
 				}
 			}
 		} else if (iChan == SOUND_CHANNEL) {
@@ -883,7 +876,7 @@ default
 					}
 
 				if (sMsg == g_sMsgSwitch) {
-					if (accessGranted(g_kUser, g_iSwitchAccess)) toggleFire();
+					if (accessGranted(g_kUser, g_iSwitchAccess)) toggleFunktion("fire");
 					else llInstantMessage(g_kUser, "[Switch] Access denied");
 				}
 				else if (sMsg == g_sMsgOn) {
