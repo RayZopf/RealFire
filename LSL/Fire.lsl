@@ -20,9 +20,9 @@
 // - Long touch to show menu
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
-//Additions: initial structure for multiple sound files
+//Additions: initial structure for multiple sound files, implent linked_message system
 //12. Dec. 2013
-//v2.2-0.4
+//v2.2-0.5
 
 //Files:
 //Fire.lsl
@@ -48,6 +48,11 @@
 //todo: make sound configurable via notecard
 //todo: better way to handle sound change / not changing on fire size change
 //todo: keep sound running for a short time after turning fire off
+//todo: longer break between automatic fire off and going on again, also make fire slowly bigger... and let fire burn down slower (look into function)
+//todo: make 5% lowest setting (glowing) and adjust fire (100%) is way too big for the fireplace
+//todo: make Sound own script, as Smoke
+//todo: wait for linked messages to let smoke and sound register themselfes
+//todo: check if smoke on startup has only level 0 or 100 or if it is according to fire
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -96,18 +101,22 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2-0.4";         // version
+string g_sVersion = "2.2-0.5";         // version
 
 // Constants
 integer ACCESS_OWNER = 4;            // owner access bit
 integer ACCESS_GROUP = 2;            // group access bit
 integer ACCESS_WORLD = 1;            // world access bit
-integer SMOKE_CHANNEL = -10957;  // smoke channel
 float MAX_COLOR = 1.0;             // max. red, green, blue
 float MAX_INTENSITY = 1.0;       // max. light intensity
 float MAX_RADIUS = 20.0;         // max. light radius
 float MAX_FALLOFF = 2.0;         // max. light falloff
 float MAX_VOLUME = 1.0;          // max. volume for sound
+
+//RealFire MESSAGE MAP
+integer SMOKE_CHANNEL = -10957;  // smoke channel
+integer SOUND_CHANNEL = -10956;  // smoke channel
+
 
 // Notecard variables
 integer g_iVerbose = TRUE;         // show more/less info during startup
@@ -130,7 +139,7 @@ vector g_vDefStartColor;           // default start (bottom) color (percentage R
 vector g_vDefEndColor;             // default end (top) color (percentage R,G,B)
 integer g_iDefVolume;              // default volume for sound (percentage)
 integer g_iDefSmoke = TRUE;        // default smoke on/off
-integer g_iDefSound;        // default sound on/off
+integer g_iDefSound = FALSE;  		// default sound on/off; keep off if SoundAvail
 integer g_iDefIntensity;           // default light intensity (percentage)
 integer g_iDefRadius;              // default light radius (percentage)
 integer g_iDefFalloff;             // default light falloff (percentage)
@@ -139,6 +148,10 @@ integer g_iDefFalloff;             // default light falloff (percentage)
 key g_kOwner;                      // object owner
 key g_kUser;                       // key of last avatar to touch object
 key	g_kQuery = NULL_KEY;
+
+integer g_iSmokeAvail = FALSE;		// true after script sucessfully registered for the task
+integer g_iSoundAvail = FALSE;		// true after script sucessfully registered for the task
+
 integer g_iLine;                   // notecard line
 integer menuChannel;            // main menu channel
 integer g_iStartColorChannel;      // start color menu channel
@@ -156,9 +169,8 @@ integer g_iPerSize;                // percent particle size
 integer g_iPerVolume;              // percent volume
 integer g_iOn = FALSE;             // fire on/off
 integer g_iBurning = FALSE;        // burning constantly
-integer g_iSmokeOn = TRUE;         // smoke on/off
+integer g_iSmokeOn = FALSE;         // smoke on/off
 integer g_iSoundOn = FALSE;         // sound on/off
-integer g_iSoundAvail = FALSE;
 integer g_iMenuOpen = FALSE;       // a menu is open or canceled (ignore button)
 float g_fTime;                     // timer interval in seconds
 float g_fPercent;                  // percentage of particle size
@@ -193,6 +205,7 @@ Debug(string sMsg)
     llOwnerSay("DEBUG: "+ llGetScriptName() + ": " + sMsg);
 }
 
+//toggleFunktion(string sFunction)
 
 toggleFire()
 {
@@ -202,10 +215,12 @@ toggleFire()
 toggleSmoke()
 {
     if (g_iSmokeOn) {
+		//sendMessage(integer iChan, string sType, string sCom, integer iNum)
         llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, "0", "");
         g_iSmokeOn = FALSE;
     }
     else {
+		//sendMessage(integer iChan, string sType, string sCom, integer iNum)
         llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, "100", "");
         g_iSmokeOn = TRUE;
     }
@@ -214,9 +229,11 @@ toggleSmoke()
 toggleSound()
 {
     if (g_iSoundOn) {
+		//sendMessage(integer iChan, string sType, string sCom, integer iNum)
         llStopSound();
         g_iSoundOn = FALSE;
     } else {
+		//sendMessage(integer iChan, string sType, string sCom, integer iNum)
         if (g_iSoundAvail) llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
         g_iSoundOn = TRUE;
     }
@@ -299,8 +316,9 @@ updateSize(float size)
     updateColor();
     updateParticles(start, end, min, max, radius, push);
     llSetPrimitiveParams([PRIM_POINT_LIGHT, TRUE, g_vLightColor, g_fLightIntensity, g_fLightRadius, g_fLightFalloff]);
-    if (g_iSmokeOn) llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
-    if (g_iSoundAvail && g_iSoundOn) llAdjustSoundVolume(g_fSoundVolume);
+    if (g_iSmokeOn && g_iSmokeAvail) llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
+	//sendMessage(integer iChan, string sType, string sCom, integer iNum)
+	if (g_iSoundAvail && g_iSoundOn) llAdjustSoundVolume(g_fSoundVolume);
     if (debug && g_iBurnDown) llOwnerSay((string)llRound(size) + "% " + (string)start + " " + (string)end);
 }
 
@@ -395,7 +413,7 @@ loadNotecard()
 		g_vDefEndColor = <100,0,0>;
 		g_iDefVolume = 100;
 		g_iDefSmoke = TRUE;
-		g_iDefSound = TRUE;
+		g_iDefSound = FALSE;
 		g_iDefIntensity = 100;
 		g_iDefRadius = 50;
 		g_iDefFalloff = 40;
@@ -491,13 +509,18 @@ readNotecard (string ncLine)
 menuDialog (key id)
 {
     g_iMenuOpen = TRUE;
-    string strSmoke = "OFF";
-	if (g_iSmokeOn) strSmoke = "ON";
-    string strSound = "NONE";
+	
+    string strSmoke = "N/A";
+	if (g_iSmokeAvail) {
+		if (g_iSmokeOn) strSmoke = "ON";
+			else strSmoke = "OFF";
+	}
+    string strSound = "N/A";
 	if (g_iSoundAvail) {
 		if (g_iSoundOn) strSound = "ON"; 
 			else strSound = "OFF";
 	}
+	
     menuChannel = (integer)(llFrand(-1000000000.0) - 1000000000.0);
     llListenRemove(g_iMenuHandle);
     g_iMenuHandle = llListen(menuChannel, "", "", "");
@@ -568,9 +591,10 @@ integer max (integer x, integer y)
 
 reset()
 {
+	if (!g_iSmokeAvail) g_iDefSmoke = g_iSmokeOn = FALSE;
+		else g_iSmokeOn = g_iDefSmoke;
 	if (!g_iSoundAvail) g_iDefSound = g_iSoundOn = FALSE;
 		else g_iSoundOn = g_iDefSound;
-	g_iSmokeOn = g_iDefSmoke;
     g_iPerSize = g_iDefSize;
     g_iPerVolume = g_iDefVolume;
     g_iPerRedStart = (integer)g_vDefStartColor.x;
@@ -587,8 +611,10 @@ startSystem()
     g_iBurning = TRUE;
     g_fPercent = 100.0;
     g_fPercentSmoke = 100.0;
-    g_iSmokeOn = !g_iSmokeOn;
-    toggleSmoke();
+	if (g_iSmokeAvail && g_iDefSmoke) {
+		g_iSmokeOn = TRUE;
+		toggleSmoke();
+	}
     g_fStartVolume = percentage(g_iPerVolume, MAX_VOLUME);
     g_fLightIntensity = g_fStartIntensity;
     g_fLightRadius = g_fStartRadius;
@@ -620,7 +646,8 @@ stopSystem()
     llParticleSystem([]);
     llSetPrimitiveParams([PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
     llStopSound();
-    llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, "0", "");
+	//sendMessage(integer iChan, string sType, string sCom, integer iNum)
+    if (g_iSmokeAvail) llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, "0", "");
     if (g_iMenuOpen) {
         llListenRemove(g_iMenuHandle);
         llListenRemove(g_iStartColorHandle);
@@ -669,6 +696,14 @@ CheckSoundFiles()
 	} else g_iSoundAvail = FALSE;
 }
 
+//sendMessage(integer iChan, string sType, string sCom, integer iNum)
+//{
+//	if (smoke == sType) {
+//	} else if (sound == sType) {
+//		}
+//    llMessageLinked(LINK_ALL_OTHERS, iChan, (string)number, ""); //to all prims, root too (sound)!
+//}
+
 InfoLines()
 {
 	if (g_iVerbose) {
@@ -711,6 +746,8 @@ default
     changed(integer change)
     {
 		if (change & CHANGED_INVENTORY) {
+			g_iSmokeAvail = g_iSmokeOn = FALSE;
+			g_iSoundAvail = g_iDefSound = g_iSoundOn = FALSE;
 			CheckSoundFiles();
 			llWhisper(0, "Inventory changed, reloading notecard...");
 			loadNotecard();
@@ -759,8 +796,8 @@ default
                 g_iPerVolume = min(g_iPerVolume + 5, 100);
                 g_fStartVolume = percentage(g_iPerVolume, MAX_VOLUME);
             }
-            else if (msg == "Smoke") toggleSmoke();
-            else if (msg == "Sound") toggleSound();
+            else if (msg == "Smoke" && g_iSmokeAvail) toggleSmoke();
+            else if (msg == "Sound" && g_iSoundAvail) toggleSound();
             else if (msg == "Color") endColorDialog(g_kUser);
             else if (msg == "Reset") { reset(); startSystem(); }
             else if (msg == "Close") {
@@ -821,38 +858,50 @@ default
         }
     }
 	
-//listen for linked messages from OC scripts
+//listen for linked messages from other RealFire scripts and devices
 //-----------------------------------------------
-    link_message(integer sender_number, integer number, string msg, key id)
+    link_message(integer iSender_number, integer iChan, string sMsg, key kId)
     {
-        if (debug) llOwnerSay("[Fire] LINK_MESSAGE event: " + (string)number + "; " + msg + "; " + (string)id);
-        if (number != g_iMsgNumber) return;
+        Debug("link_message= channel" + (string)iChan + "; Messag " + sMsg + "; " + (string)kId);
+		
+		if (iChan == SMOKE_CHANNEL) {
+			if (integer(sMsg)) {
+				g_iSmokeAvail = TRUE;
+				if (g_iDefSmoke && g_iOn) {
+					g_iSmokeOn = TRUE;
+					toggleSmoke();
+				}
+			}
+		} else if (iChan == SOUND_CHANNEL) {
+				if (integer(sMsg)) g_iSoundAvail == TRUE;
+				
+			} else if (iChan == g_iMsgNumber) {
+				if (kId != "") g_kUser = kId;
+					else {
+						llWhisper(0, "A valid avatar key must be provided in the link message.");
+						return;
+					}
 
-        if (id) g_kUser = id;
-        else {
-            llWhisper(0, "A valid avatar key must be provided in the link message.");
-            return;
-        }
-
-        if (msg == g_sMsgSwitch) {
-            if (accessGranted(g_kUser, g_iSwitchAccess)) toggleFire();
-            else llInstantMessage(g_kUser, "[Switch] Access denied");
-        }
-        else if (msg == g_sMsgOn) {
-            if (accessGranted(g_kUser, g_iSwitchAccess)) startSystem();
-            else llInstantMessage(g_kUser, "[Switch] Access denied");
-        }
-        else if (msg == g_sMsgOff) {
-            if (accessGranted(g_kUser, g_iSwitchAccess)) stopSystem();
-            else llInstantMessage(g_kUser, "[Switch] Access denied");
-        }
-        else if (msg == g_sMsgMenu) {
-            if (accessGranted(g_kUser, g_iMenuAccess)) {
-                startSystem();
-                menuDialog(g_kUser);
-            }
-            else llInstantMessage(g_kUser, "[Menu] Access denied");
-        }
+				if (sMsg == g_sMsgSwitch) {
+					if (accessGranted(g_kUser, g_iSwitchAccess)) toggleFire();
+					else llInstantMessage(g_kUser, "[Switch] Access denied");
+				}
+				else if (sMsg == g_sMsgOn) {
+					if (accessGranted(g_kUser, g_iSwitchAccess)) startSystem();
+					else llInstantMessage(g_kUser, "[Switch] Access denied");
+				}
+				else if (sMsg == g_sMsgOff) {
+					if (accessGranted(g_kUser, g_iSwitchAccess)) stopSystem();
+					else llInstantMessage(g_kUser, "[Switch] Access denied");
+				}
+				else if (sMsg == g_sMsgMenu) {
+					if (accessGranted(g_kUser, g_iMenuAccess)) {
+						startSystem();
+						menuDialog(g_kUser);
+					}
+					else llInstantMessage(g_kUser, "[Menu] Access denied");
+				}
+			}
     }
 	
 //get presets from notecard

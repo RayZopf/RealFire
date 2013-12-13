@@ -14,9 +14,9 @@
 
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
-//Additions: ---
+//Additions: register with Fire.lsl
 //11. Dec. 2013
-//v2.2-0.3
+//v2.2-0.4
 
 //Files:
 //Smoke.lsl
@@ -37,6 +37,7 @@
 //bug: if smoke is turned off via menu, llSleep still applies
 
 //todo: more natural smoke according to fire intensity - low fire with more fume, black smoke, smoke after fire is off, smoke fading instead of turning off
+//todo: registering with Fire.lsl
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -60,6 +61,8 @@ integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
 
 //user changeable variables
 //-----------------------------------------------
+integer g_iSmoke = TRUE;			// Smoke on/off in this prim
+
 // Particle parameters
 float g_fAge = 10.0;               // life of each particle
 float g_fRate = 0.5;               // how fast (rate) to emit particles
@@ -70,7 +73,7 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2-0.3";       // version
+string g_sVersion = "2.2-0.4";       // version
 
 // Constants
 integer SMOKE_CHANNEL = -10957;  // smoke channel
@@ -110,7 +113,9 @@ default
     state_entry()
     {
         llParticleSystem([]);
-		//no llSleep because there is nothing to do
+		llSleep(1);
+		//do some linked message to register with Fire.lsl
+		llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)g_iSmoke, "");
         Debug("state_entry, Particle count = " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
         llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
     }
@@ -118,6 +123,14 @@ default
     on_rez(integer start_param)
     {
         llResetScript();
+    }
+	
+	changed(integer change)
+    {
+		if (change & CHANGED_INVENTORY) {
+			llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)g_iSmoke, "");
+			llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
+		}
     }
 	
 //listen for linked messages from Fire (main) script
