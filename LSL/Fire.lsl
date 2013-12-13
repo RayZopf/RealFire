@@ -54,9 +54,9 @@
 //todo: make 5% lowest setting (glowing)? and adjust fire (100%)  - is way too big for the fireplace
 //todo: make Sound own script, as Smoke
 //todo: remove any sound related functions after Sound.lsl is done
-//todo: wait for linked messages to let smoke and sound register themselfes
-//todo: better smoke (color, intensity, change when fire changes)
+//todo: better smoke (color, intensity, change when fire changes) - rework smoke in updateSize (currently only changed when size<=25)
 //todo: add ping/pong with other scripts in case only fire.lsl gets resetted
+//todo: when +/- Volume Smoke.lsl gets informed?!
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -105,6 +105,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
 string g_sVersion = "2.2-0.52";         // version
+string g_sScriptName;
 
 // Constants
 integer ACCESS_OWNER = 4;            // owner access bit
@@ -143,6 +144,7 @@ vector g_vDefEndColor;             // default end (top) color (percentage R,G,B)
 integer g_iDefVolume;              // default volume for sound (percentage)
 integer g_iDefSmoke = TRUE;        // default smoke on/off
 integer g_iDefSound = FALSE;  		// default sound on/off; keep off if SoundAvail
+string g_sCurrentSound;
 integer g_iDefIntensity;           // default light intensity (percentage)
 integer g_iDefRadius;              // default light radius (percentage)
 integer g_iDefFalloff;             // default light falloff (percentage)
@@ -204,7 +206,7 @@ float g_fStartVolume;              // start value of volume (before burning down
 Debug(string sMsg)
 {
     if (!g_iDebugMode) return;
-    llOwnerSay("DEBUG: "+ llGetScriptName() + ": " + sMsg);
+    llOwnerSay("DEBUG: "+ g_sScriptName + ": " + sMsg);
 }
 
 //===============================================================================
@@ -218,7 +220,7 @@ Debug(string sMsg)
 toggleFunktion(string sFunction)
 {
 	Debug("toggle function " + sFunction); 
-	if ("fire" == sFunction) {
+	if ("fire" == sFunction) { 				//g_iOn works different than g_iSmokeOn!
 		if (g_iOn) stopSystem(); else startSystem();
 	} else if ("smoke" == sFunction) {
 	    if (!g_iSmokeOn) {
@@ -264,7 +266,9 @@ updateSize(float size)
         radius = g_fBurstRadius / 100.0 * size;   // burst radius
         if (size >= 80) {
 			llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
+			g_sCurrentSound = "full";
 			if (g_iSoundOn) { //needs to be improved
+				sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound)
 				g_sCurrentSoundFile = g_sSoundFileFull;
 				llPreloadSound(g_sCurrentSoundFile);
 				llStopSound();
@@ -272,6 +276,7 @@ updateSize(float size)
 			}
 		} else if (size > 50) {
 					llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
+					g_sCurrentSound = "medium2";
 					if (g_iSoundOn) { //needs to be improved
 						g_sCurrentSoundFile = g_sSoundFileMedium2;
 						llPreloadSound(g_sCurrentSoundFile);
@@ -280,6 +285,7 @@ updateSize(float size)
 					}
 				} else {
 						llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
+						g_sCurrentSound = "medium1";
 						if (g_iSoundOn) { //needs to be improved
 							g_sCurrentSoundFile = g_sSoundFileMedium1;
 							llPreloadSound(g_sCurrentSoundFile);
@@ -289,6 +295,7 @@ updateSize(float size)
 					}
     }
     else {
+		g_sCurrentSound = "small";
 		if (g_iSoundOn) { //needs to be improved
 				g_sCurrentSoundFile = g_sSoundFileSmall;
 				llPreloadSound(g_sCurrentSoundFile);
@@ -313,6 +320,7 @@ updateSize(float size)
         }
         if (g_iChangeSmoke) g_fPercentSmoke = size * 4.0;
         else g_fPercentSmoke = 100.0;
+		Debug("Smoke size: change= "+(string)g_iChangeSmoke+", size= "+(string)size +", percentage= "+(string)g_fPercentSmoke);
         if (g_iChangeVolume) g_fSoundVolume = percentage(size * 4.0, g_fStartVolume);
         else g_fSoundVolume = g_fStartVolume;
     }
@@ -630,6 +638,7 @@ startSystem()
     if (g_iSoundAvail && g_iSoundOn) { //needs some more rework
 		//g_iSoundOn = TRUE;
 		//toggleFunktion("sound");
+		//start
 		llPlaySound(g_sSoundFileMedium1, g_fSoundVolume);
 		llPreloadSound(g_sCurrentSoundFile);
 		llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
@@ -717,10 +726,10 @@ CheckSoundFiles()
 sendMessage(integer iChan, string sVal, string sMsg )
 {
 	if (iChan == SMOKE_CHANNEL) {
-		llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, sVal, ""); //to all other prims (because of only one emitter per prim)
+		llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, sVal, (key)g_sScriptName); //to all other prims (because of only one emitter per prim)
 	} else if (iChan == SOUND_CHANNEL) {
 			string sSoundSet = sVal + "," + sMsg;
-			llMessageLinked(LINK_SET, SOUND_CHANNEL, sSoundSet, "");
+			llMessageLinked(LINK_SET, SOUND_CHANNEL, sSoundSet, (key)g_sScriptName);
 	}
 }
 
@@ -748,6 +757,8 @@ default
     state_entry()
     {
         g_kOwner = llGetOwner();
+		g_sScriptName = llGetScriptName();
+		
 		stopSystem();
         Debug("Particle count: " + (string)llRound((float)g_fCount * g_fAge / g_fRate));
         Debug((string)llGetFreeMemory() + " bytes free");
@@ -892,8 +903,9 @@ default
 					toggleFunktion("smoke");
 				}
 			}
-		} else if (iChan == SOUND_CHANNEL) {
+		} else if (iChan == SOUND_CHANNEL && (string)kId != g_sScriptName) {
 			if ("1" == sMsg) g_iSoundAvail = TRUE;
+				else llWhisper(0, "Unable to provide sound effects");
 				
 		} else if (iChan == g_iMsgNumber) {
 			if (kId != "") g_kUser = kId;
