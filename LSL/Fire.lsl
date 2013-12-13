@@ -885,7 +885,7 @@ default
         Debug("link_message= channel" + (string)iChan + "; Messag " + sMsg + "; " + (string)kId);
 		
 		if (iChan == SMOKE_CHANNEL) {
-			if (integer(sMsg)) {
+			if ("1" == sMsg) {
 				g_iSmokeAvail = TRUE;
 				if (g_iDefSmoke && g_iOn) {
 					g_iSmokeOn = TRUE;
@@ -893,19 +893,19 @@ default
 				}
 			}
 		} else if (iChan == SOUND_CHANNEL) {
-				if (integer(sMsg)) g_iSoundAvail == TRUE;
+			if ("1" == sMsg) g_iSoundAvail = TRUE;
 				
-			} else if (iChan == g_iMsgNumber) {
-				if (kId != "") g_kUser = kId;
-					else {
-						llWhisper(0, "A valid avatar key must be provided in the link message.");
-						return;
-					}
-
-				if (sMsg == g_sMsgSwitch) {
-					if (accessGranted(g_kUser, g_iSwitchAccess)) toggleFunktion("fire");
-					else llInstantMessage(g_kUser, "[Switch] Access denied");
+		} else if (iChan == g_iMsgNumber) {
+			if (kId != "") g_kUser = kId;
+				else {
+					llWhisper(0, "A valid avatar key must be provided in the link message.");
+					return;
 				}
+
+			if (sMsg == g_sMsgSwitch) {
+				if (accessGranted(g_kUser, g_iSwitchAccess)) toggleFunktion("fire");
+					else llInstantMessage(g_kUser, "[Switch] Access denied");
+			}
 				else if (sMsg == g_sMsgOn) {
 					if (accessGranted(g_kUser, g_iSwitchAccess)) startSystem();
 					else llInstantMessage(g_kUser, "[Switch] Access denied");
@@ -921,7 +921,7 @@ default
 					}
 					else llInstantMessage(g_kUser, "[Menu] Access denied");
 				}
-			}
+		}
     }
 	
 //get presets from notecard
