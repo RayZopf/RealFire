@@ -138,7 +138,7 @@ default
     link_message(integer iSender, integer iNumber, string sMsg, key kId)
     {
 		Debug("link_message = channel " + (string)iNumber + "; sMsg " + sMsg + "; kId " + (string)kId);
-        if (iNumber != SMOKE_CHANNEL) return;
+        if (iNumber != SMOKE_CHANNEL || !g_iSmoke) return;
 		
         if ((integer)sMsg > 0 && (integer)sMsg <= 100) {
 			float fAlpha = g_fStartAlpha / 100.0 * (float)sMsg;

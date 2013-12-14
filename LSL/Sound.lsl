@@ -129,9 +129,9 @@ default
 {
     state_entry()
     {
+		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
         llStopSound();
-		g_sScriptName = llGetScriptName();
 		CheckSoundFiles();
 		llSleep(1);
 		if (g_iSound) llMessageLinked(LINK_SET, SOUND_CHANNEL, (string)g_iSoundAvail, (key)g_sScriptName);
@@ -167,12 +167,13 @@ default
     {
 		Debug("link_message = channel " + (string)iChan + "; sMsg " + sSoundSet + "; kId " + (string)kId);
 		
-        if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail) return;
+        if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail || (string)kId = g_sScriptName) return;
+		Debug("work on link_message");
 		list lParams = llParseString2List(sSoundSet, [","], []);
         string sVal = llList2String(lParams, 0);
         string sMsg = llList2String(lParams, 1);
 		
-        if ((integer)sVal > 0 && (integer)sVal <= 100) {
+        if ((integer)sVal > 0 && (integer)sVal <= 1) {
 			g_fSoundVolume = (float)sVal;
 			if (sMsg = "") {
 				llAdjustSoundVolume(g_fSoundVolume);
@@ -194,7 +195,7 @@ default
 			llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
 		} else {
 				llStopSound();
-				g_fSoundVolume = 100;
+				g_fSoundVolume = 1;
 			}
     }
 }

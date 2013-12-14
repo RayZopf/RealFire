@@ -45,7 +45,7 @@
 //structure for multiple sound files
 //structure for multiple scripts
 
-//bug: ---
+//bug: volume does not work
 
 //todo: make sound configurable via notecard - maybe own config file?
 //todo: better way to handle sound change / not changing on fire size change
@@ -264,7 +264,7 @@ updateSize(float size)
     if (size > 25.0) {
         start = g_vStartScale / 100.0 * size;     // start scale
         radius = g_fBurstRadius / 100.0 * size;   // burst radius
-        if (size >= 80) {
+        if (size >= 80.0) {
 			llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
 			if (g_iSoundOn && g_iSoundAvail) { //needs to be improved
 				g_sCurrentSound = "full";
@@ -275,7 +275,7 @@ updateSize(float size)
 				llStopSound();
 				llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
 			}
-		} else if (size > 50) {
+		} else if (size > 50.0) {
 					llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
 					if (g_iSoundOn && g_iSoundAvail) { //needs to be improved
 						g_sCurrentSound = "medium2";
@@ -309,7 +309,7 @@ updateSize(float size)
 				llStopSound();
 				llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
 			}
-        if (size >= 15) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
+        if (size >= 15.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
             else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
         start = g_vStartScale / 4.0;              // start scale
         radius = g_fBurstRadius / 4.0;            // burst radius
@@ -446,7 +446,7 @@ loadNotecard()
 		g_fStartIntensity = percentage(g_iDefIntensity, MAX_INTENSITY);
 		g_fStartRadius = percentage(g_iDefRadius, MAX_RADIUS);
 		g_fLightFalloff = percentage(g_iDefFalloff, MAX_FALLOFF);
-		g_fStartVolume = percentage(g_iDefVolume, MAX_VOLUME);
+		g_fStartVolume = percentage(g_iDefVolume, MAX_VOLUME); //not needed? 
 		
 		reset(); // initial values for menu
         if (g_iOn) startSystem();
@@ -637,12 +637,12 @@ startSystem()
     g_iBurning = TRUE;
     g_fPercent = 100.0;
     g_fPercentSmoke = 100.0;
-    g_fStartVolume = percentage(g_iPerVolume, MAX_VOLUME);
+    g_fStartVolume = percentage((float)g_iPerVolume, MAX_VOLUME);
     g_fLightIntensity = g_fStartIntensity;
     g_fLightRadius = g_fStartRadius;
     g_fSoundVolume = g_fStartVolume;
 	llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
-    if (g_iSoundAvail && g_iSoundOn) { //needs some more rework
+    if (g_iSoundAvail && g_iSoundOn) { //needs some more rework, move all calculation inside
 		//g_iSoundOn = TRUE;
 		//toggleFunktion("sound");
 		//start
@@ -828,10 +828,12 @@ default
             else if (msg == "-Volume") {
                 g_iPerVolume = max(g_iPerVolume - 5, 5);
                 g_fStartVolume = percentage(g_iPerVolume, MAX_VOLUME);
+				g_fSoundVolume = g_fStartVolume;
             }
             else if (msg == "+Volume") {
                 g_iPerVolume = min(g_iPerVolume + 5, 100);
                 g_fStartVolume = percentage(g_iPerVolume, MAX_VOLUME);
+				g_fSoundVolume = g_fStartVolume;
             }
             else if (msg == "Smoke" && g_iSmokeAvail) toggleFunktion("smoke");
             else if (msg == "Sound" && g_iSoundAvail) toggleFunktion("sound");
@@ -967,7 +969,7 @@ default
             g_fStartIntensity = percentage(g_iDefIntensity, MAX_INTENSITY);
             g_fStartRadius = percentage(g_iDefRadius, MAX_RADIUS);
             g_fLightFalloff = percentage(g_iDefFalloff, MAX_FALLOFF);
-            g_fStartVolume = percentage(g_iDefVolume, MAX_VOLUME);
+            g_fStartVolume = percentage((float)g_iDefVolume, MAX_VOLUME);
 
             reset(); // initial values for menu
 			
