@@ -16,7 +16,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl
 //11. Dec. 2013
-//v2.2-0.4
+//v2.2-0.41
 
 //Files:
 //Smoke.lsl
@@ -37,7 +37,6 @@
 //bug: if smoke is turned off via menu, llSleep still applies
 
 //todo: more natural smoke according to fire intensity - low fire with more fume, black smoke, smoke after fire is off, smoke fading instead of turning off
-//todo: registering with Fire.lsl
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -73,7 +72,9 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2-0.4";       // version
+string g_sVersion = "2.2-0.41";       // version
+
+string g_sSize;
 
 // Constants
 integer SMOKE_CHANNEL = -10957;  // smoke channel
@@ -117,7 +118,8 @@ default
 		//do some linked message to register with Fire.lsl
 		llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)g_iSmoke, "");
         Debug("state_entry, Particle count = " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
-        llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
+        if (g_iSmoke) llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
+			else llWhisper(0, g_sTitle + " " + g_sVersion + " disabled");
     }
 
     on_rez(integer start_param)
@@ -129,7 +131,8 @@ default
     {
 		if (change & CHANGED_INVENTORY) {
 			llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)g_iSmoke, "");
-			llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
+			if (g_iSmoke) llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
+				else llWhisper(0, g_sTitle + " " + g_sVersion + " disabled");
 		}
     }
 	
@@ -137,10 +140,10 @@ default
 //-----------------------------------------------
     link_message(integer iSender, integer iNumber, string sMsg, key kId)
     {
-		Debug("link_message = channel " + (string)iNumber + "; sMsg " + sMsg + "; kId " + (string)kId);
-        if (iNumber != SMOKE_CHANNEL || !g_iSmoke) return;
-		
-        if ((integer)sMsg > 0 && (integer)sMsg <= 100) {
+		Debug("link_message = channel " + (string)iNumber + "; sMsg " + sMsg + "; kId " + (string)kId+" ...g_sSize "+g_sSize);
+        if (iNumber != SMOKE_CHANNEL || !g_iSmoke || sMsg == g_sSize) return;
+
+        if ((float)sMsg > 0 && (float)sMsg <= 100) {
 			float fAlpha = g_fStartAlpha / 100.0 * (float)sMsg;
 			Debug("fAlpha " + (string)fAlpha);
 			llParticleSystem([
@@ -164,11 +167,12 @@ default
 				PSYS_PART_FOLLOW_VELOCITY_MASK |
 				PSYS_PART_INTERP_COLOR_MASK |
 				PSYS_PART_INTERP_SCALE_MASK ]);
-			} else {
-				llWhisper(0, "Fumes are fading");
-				llSleep(9);
-				llParticleSystem([]);
-				Debug("smoke particles off");
-				}
+		} else {
+			llWhisper(0, "Fumes are fading");
+			llSleep(9);
+			llParticleSystem([]);
+			Debug("smoke particles off");
+		}
+		g_sSize = sMsg;
     }
 }

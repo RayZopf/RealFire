@@ -24,9 +24,9 @@
 //Changelog
 //
 
-//bug: ---
+//bug: soundpreload on touch is useless in child prim
 
-//todo: ---
+//todo: decide if touch event should really block touch on child prim and how to preload sound
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -68,7 +68,9 @@ string g_sVersion = "0.31";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
-float g_fSoundVolume = 100;
+float g_fSoundVolumeCur = 0.0;
+float g_fSoundVolumeNew;
+string g_sSize;
 
 // Constants
 integer SOUND_CHANNEL = -10956;  // smoke channel
@@ -105,6 +107,26 @@ CheckSoundFiles()
 			g_iSoundAvail = TRUE;
 		}
 	} else g_iSoundAvail = FALSE;
+}
+
+
+SelectSound(string sMsg)
+{
+	if ("small" == sMsg) {
+			g_sCurrentSoundFile = g_sSoundFileSmall;
+	} else if ("medium1" == sMsg) {
+		g_sCurrentSoundFile = g_sSoundFileMedium1;
+	} else if ("medium2" == sMsg) {
+			g_sCurrentSoundFile = g_sSoundFileMedium2;
+	} else if ("full" == sMsg) {
+			g_sCurrentSoundFile = g_sSoundFileFull;
+	} else {
+		Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-");
+		if (g_fSoundVolumeNew > 0) llPlaySound(g_sSoundFileMedium1, g_fSoundVolumeNew); //preloaded on touch
+		g_sSize = "start";
+		return;
+	}
+	g_sSize = sMsg;
 }
 
 InfoLines()
@@ -147,6 +169,7 @@ default
 	touch(integer total_number)
     {
 		if (g_iSoundAvail && g_iSound) llPreloadSound(g_sSoundFileMedium1); //maybe change preloaded soundfile to medium fire sound
+		//this also blocks touch events on this child to be passed to root prim!
     }
 	
 	changed(integer change)
@@ -173,36 +196,39 @@ default
 		list lParams = llParseString2List(sSoundSet, [","], []);
         string sVal = llList2String(lParams, 0);
         string sMsg = llList2String(lParams, 1);
-		Debug("work on link_message: "+sVal+" -"+sMsg+"-" );
 		
-        if ((float)sVal > 0 && (float)sVal <= 1) {
-			g_fSoundVolume = (float)sVal;
-			if ("" == sMsg) {
+		Debug("no changes? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
+		if ((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) return;
+		Debug("work on link_message");
+		
+		g_fSoundVolumeNew = (float)sVal;
+		//change sound while sound is off
+		if (0 == g_fSoundVolumeNew && sMsg != g_sSize && "" != sMsg) {
+			SelectSound(sMsg);
+			Debug("change while off");
+			return;
+		}
+		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1) {
+			if ("" == sMsg || sMsg == g_sSize) {
 				Debug("Vol-adjust");
-				llAdjustSoundVolume(g_fSoundVolume);
+				if (g_fSoundVolumeCur > 0) llAdjustSoundVolume(g_fSoundVolumeNew);
+					else llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
+				g_fSoundVolumeCur = g_fSoundVolumeNew;
 				return;
 			}
-			
-			if ("small" == sMsg) {
-				g_sCurrentSoundFile = g_sSoundFileSmall;
-			} else if ("medium1" == sMsg) {
-				g_sCurrentSoundFile = g_sSoundFileMedium1;
-			} else if ("medium2" == sMsg) {
-				g_sCurrentSoundFile = g_sSoundFileMedium2;
-			} else if ("full" == sMsg) {
-				g_sCurrentSoundFile = g_sSoundFileFull;
-			} else {
-				llPlaySound(g_sSoundFileMedium1, g_fSoundVolume); //preloaded on touch
-				return;
-			}
-			Debug("play sound: "+g_sCurrentSoundFile");
+
+			SelectSound(sMsg);
+			if ("start" == g_sSize) return;
+			Debug("play sound: "+g_sCurrentSoundFile);
 			
 			llPreloadSound(g_sCurrentSoundFile);
+			g_fSoundVolumeCur = g_fSoundVolumeNew;
 			llStopSound();
-			llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
+			llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
 		} else {
+				Debug("stop");
 				llStopSound();
-				g_fSoundVolume = 1;
+				g_fSoundVolumeNew =g_fSoundVolumeCur = 0.0;
 			}
     }
 }
