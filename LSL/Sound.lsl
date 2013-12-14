@@ -174,8 +174,10 @@ default
 		
         if ((integer)sVal > 0 && (integer)sVal <= 100) {
 			g_fSoundVolume = (float)sVal;
-			llAdjustSoundVolume(g_fSoundVolume);
-			if (sMsg = "") return;
+			if (sMsg = "") {
+				llAdjustSoundVolume(g_fSoundVolume);
+				return;
+			}
 			
 			if ("small" == sMsg) {
 				g_sCurrentSoundFile = g_sSoundFileSmall;

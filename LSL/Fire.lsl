@@ -144,7 +144,7 @@ vector g_vDefEndColor;             // default end (top) color (percentage R,G,B)
 integer g_iDefVolume;              // default volume for sound (percentage)
 integer g_iDefSmoke = TRUE;        // default smoke on/off
 integer g_iDefSound = FALSE;  		// default sound on/off; keep off if SoundAvail
-string g_sCurrentSound;
+string g_sCurrentSound = "medium2";
 integer g_iDefIntensity;           // default light intensity (percentage)
 integer g_iDefRadius;              // default light radius (percentage)
 integer g_iDefFalloff;             // default light falloff (percentage)
@@ -231,13 +231,13 @@ toggleFunktion(string sFunction)
 			g_iSmokeOn = TRUE;
 		}
 	} else if ("sound" == sFunction) {
-		if (g_iSoundOn) {
+		if (!g_iSoundOn) {
 			sendMessage(SOUND_CHANNEL, "0", "");
-			llStopSound(); //remove after Sound.lsl is done!!
+			//llStopSound(); //remove after Sound.lsl is done!!
 			g_iSoundOn = FALSE;
 		} else {
 			//sendMessage(integer iChan, string sType, string sCom, integer iNum)
-			sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSoundFile);
+			if (g_iSoundAvail) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSoundFile);
 			if (g_iSoundAvail) llLoopSound(g_sCurrentSoundFile, g_fSoundVolume); //remove after Sound.lsl is done!!
 			g_iSoundOn = TRUE;
 		}
@@ -266,9 +266,10 @@ updateSize(float size)
         radius = g_fBurstRadius / 100.0 * size;   // burst radius
         if (size >= 80) {
 			llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
-			g_sCurrentSound = "full";
-			if (g_iSoundOn) { //needs to be improved
-				sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound)
+			if (g_iSoundOn && g_iSoundAvail) { //needs to be improved
+				g_sCurrentSound = "full";
+				sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound);
+				
 				g_sCurrentSoundFile = g_sSoundFileFull;
 				llPreloadSound(g_sCurrentSoundFile);
 				llStopSound();
@@ -276,8 +277,10 @@ updateSize(float size)
 			}
 		} else if (size > 50) {
 					llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
-					g_sCurrentSound = "medium2";
-					if (g_iSoundOn) { //needs to be improved
+					if (g_iSoundOn && g_iSoundAvail) { //needs to be improved
+						g_sCurrentSound = "medium2";
+						sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound);
+						
 						g_sCurrentSoundFile = g_sSoundFileMedium2;
 						llPreloadSound(g_sCurrentSoundFile);
 						llStopSound();
@@ -285,8 +288,10 @@ updateSize(float size)
 					}
 				} else {
 						llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
-						g_sCurrentSound = "medium1";
-						if (g_iSoundOn) { //needs to be improved
+						if (g_iSoundOn && g_iSoundAvail) { //needs to be improved
+							g_sCurrentSound = "medium1";
+							sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound);
+							
 							g_sCurrentSoundFile = g_sSoundFileMedium1;
 							llPreloadSound(g_sCurrentSoundFile);
 							llStopSound();
@@ -295,8 +300,10 @@ updateSize(float size)
 					}
     }
     else {
-		g_sCurrentSound = "small";
-		if (g_iSoundOn) { //needs to be improved
+		if (g_iSoundOn && g_iSoundAvail) { //needs to be improved
+				g_sCurrentSound = "small";
+				sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound);
+				
 				g_sCurrentSoundFile = g_sSoundFileSmall;
 				llPreloadSound(g_sCurrentSoundFile);
 				llStopSound();
@@ -318,7 +325,7 @@ updateSize(float size)
             g_fLightIntensity = g_fStartIntensity;
             g_fLightRadius = g_fStartRadius;
         }
-        if (g_iChangeSmoke) g_fPercentSmoke = size * 4.0;
+        if (g_iChangeSmoke) g_fPercentSmoke = size * 4.0; //works only here within range 0-100!!!
         else g_fPercentSmoke = 100.0;
 		Debug("Smoke size: change= "+(string)g_iChangeSmoke+", size= "+(string)size +", percentage= "+(string)g_fPercentSmoke);
         if (g_iChangeVolume) g_fSoundVolume = percentage(size * 4.0, g_fStartVolume);
@@ -330,6 +337,7 @@ updateSize(float size)
     llSetPrimitiveParams([PRIM_POINT_LIGHT, TRUE, g_vLightColor, g_fLightIntensity, g_fLightRadius, g_fLightFalloff]);
     if (g_iSmokeAvail && g_iSmokeOn) sendMessage(SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
 	//sendMessage(integer iChan, string sType, string sCom, integer iNum)
+	if (g_iSoundAvail && g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, "");
 	if (g_iSoundAvail && g_iSoundOn) llAdjustSoundVolume(g_fSoundVolume);
     Debug((string)llRound(size) + "% " + (string)start + " " + (string)end);
 }
@@ -633,16 +641,14 @@ startSystem()
     g_fLightIntensity = g_fStartIntensity;
     g_fLightRadius = g_fStartRadius;
     g_fSoundVolume = g_fStartVolume;
-    updateSize((float)g_iPerSize);
-    llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
+	llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
     if (g_iSoundAvail && g_iSoundOn) { //needs some more rework
 		//g_iSoundOn = TRUE;
 		//toggleFunktion("sound");
 		//start
-		llPlaySound(g_sSoundFileMedium1, g_fSoundVolume);
-		llPreloadSound(g_sCurrentSoundFile);
-		llLoopSound(g_sCurrentSoundFile, g_fSoundVolume);
+		sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, "start");
 	}
+    updateSize((float)g_iPerSize);
     llSetTimerEvent(0);
     llSetTimerEvent(g_fBurnTime);
     if (g_iMenuOpen) {
@@ -902,7 +908,7 @@ default
 					g_iSmokeOn = TRUE;
 					toggleFunktion("smoke");
 				}
-			}
+			} else if ("0" == sMsg) llWhisper(0, "Smoke script is disabled");
 		} else if (iChan == SOUND_CHANNEL && (string)kId != g_sScriptName) {
 			if ("1" == sMsg) g_iSoundAvail = TRUE;
 				else llWhisper(0, "Unable to provide sound effects");
