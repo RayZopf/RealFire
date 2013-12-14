@@ -2,7 +2,7 @@
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
 //14. Dec. 2013
-//v0.2
+//v0.31
 //
 //
 // (Realfire by Rene)
@@ -64,7 +64,7 @@ string g_sCurrentSoundFile = g_sSoundFileMedium2;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";     // title
-string g_sVersion = "0.2";       // version
+string g_sVersion = "0.31";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
@@ -134,7 +134,8 @@ default
         llStopSound();
 		CheckSoundFiles();
 		llSleep(1);
-		if (g_iSound) llMessageLinked(LINK_SET, SOUND_CHANNEL, (string)g_iSoundAvail, (key)g_sScriptName);
+		if (g_iSound && g_iSoundAvail) llMessageLinked(LINK_SET, SOUND_CHANNEL, "1", (key)g_sScriptName);
+			else llMessageLinked(LINK_SET, SOUND_CHANNEL, "0", (key)g_sScriptName);
 		InfoLines();
     }
 
@@ -155,7 +156,8 @@ default
 			llStopSound();
 			CheckSoundFiles();
 			llSleep(1);
-			if (g_iSound) llMessageLinked(LINK_SET, SOUND_CHANNEL, (string)g_iSoundAvail, (key)g_sScriptName);
+			if (g_iSound && g_iSoundAvail) llMessageLinked(LINK_SET, SOUND_CHANNEL, "1", (key)g_sScriptName);
+				else llMessageLinked(LINK_SET, SOUND_CHANNEL, "0", (key)g_sScriptName);
 			InfoLines();
 		}
     }
@@ -165,17 +167,18 @@ default
 //-----------------------------------------------
     link_message(integer iSender, integer iChan, string sSoundSet, key kId)
     {
-		Debug("link_message = channel " + (string)iChan + "; sMsg " + sSoundSet + "; kId " + (string)kId);
+		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);
 		
-        if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail || (string)kId = g_sScriptName) return;
-		Debug("work on link_message");
+        if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail || (string)kId == g_sScriptName) return;
 		list lParams = llParseString2List(sSoundSet, [","], []);
         string sVal = llList2String(lParams, 0);
         string sMsg = llList2String(lParams, 1);
+		Debug("work on link_message: "+sVal+" -"+sMsg+"-" );
 		
-        if ((integer)sVal > 0 && (integer)sVal <= 1) {
+        if ((float)sVal > 0 && (float)sVal <= 1) {
 			g_fSoundVolume = (float)sVal;
-			if (sMsg = "") {
+			if ("" == sMsg) {
+				Debug("Vol-adjust");
 				llAdjustSoundVolume(g_fSoundVolume);
 				return;
 			}
@@ -188,7 +191,11 @@ default
 				g_sCurrentSoundFile = g_sSoundFileMedium2;
 			} else if ("full" == sMsg) {
 				g_sCurrentSoundFile = g_sSoundFileFull;
-			} else llPlaySound(g_sSoundFileMedium1, g_fSoundVolume); //preloaded on touch
+			} else {
+				llPlaySound(g_sSoundFileMedium1, g_fSoundVolume); //preloaded on touch
+				return;
+			}
+			Debug("play sound: "+g_sCurrentSoundFile");
 			
 			llPreloadSound(g_sCurrentSoundFile);
 			llStopSound();
