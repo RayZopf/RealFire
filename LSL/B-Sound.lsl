@@ -57,7 +57,7 @@ integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
 integer g_iSound = TRUE;			// Sound on/off in this prim
 integer g_iVerbose = TRUE;
 
-string g_sBackrSoundFile ="17742__krisboruff__fire-crackles-no-room";                   // backroundsound for small fire
+string g_sBackSoundFile ="17742__krisboruff__fire-crackles-no-room";                   // backroundsound for small fire
 
 
 //internal variables
@@ -103,7 +103,7 @@ CheckSoundFiles()
 		integer i;
 		for (i = 0; i < iSoundNumber; ++i) {
 			string sSoundName = llGetInventoryName(INVENTORY_SOUND, i);
-			if (sSoundName == g_sBackrSoundFile) g_iSoundAvail = TRUE;
+			if (sSoundName == g_sBackSoundFile) g_iSoundAvail = TRUE;
 		}
 	} else g_iSoundAvail = FALSE;
 }
@@ -149,7 +149,7 @@ default
 	
 	touch_start(integer total_number)
     {
-		if (g_iSoundAvail && g_iSound) llPreloadSound(g_sBackrSoundFile); //maybe change preloaded soundfile to medium fire sound
+		if (g_iSoundAvail && g_iSound) llPreloadSound(g_sBackSoundFile); //maybe change preloaded soundfile to medium fire sound
 		//this also blocks touch events on this child to be passed to root prim!
     }
 	
@@ -183,11 +183,11 @@ default
 		Debug("work on link_message");
 		
 		g_fSoundVolumeNew = (float)sVal;
-		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1 && ) { //background sound on/volume adjust
+		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1) { //background sound on/volume adjust
 			g_fFactor = 3/4;  //simple adjustment to different fire sizes (full, at start, when special B_Sound message with sMsg = -1)
 			if ("-1" == sMsg) g_fFactor = 1.0;
 				else if ("" != sMsg && (float)sMsg < 0.55 ) g_fFactor = 3/5;
-					else if (float)g_sSize < 0.55) g_fFactor = 3/5;
+					else if ((float)g_sSize < 0.55) g_fFactor = 3/5;
 			if (g_fSoundVolumeCur > 0) { //sound should already run
 				Debug("Vol-adjust");
 				llAdjustSoundVolume(g_fSoundVolumeNew*g_fFactor);
@@ -196,7 +196,7 @@ default
 			
 				//llSleep(2); //better not wait to make sound different in timing, find another way
 				llStopSound(); // just in case ...
-				llLoopSound(g_sBackrSoundFile, g_fSoundVolumeNew*g_fFactor);
+				llLoopSound(g_sBackSoundFile, g_fSoundVolumeNew*g_fFactor);
 			}
 			if ("" != sMsg) g_sSize = sMsg;
 			g_fSoundVolumeCur = g_fSoundVolumeNew;

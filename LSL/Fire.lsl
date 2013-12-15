@@ -20,9 +20,9 @@
 // - Long touch to show menu
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
-//Additions: initial structure for multiple sound files, implement linked_message system
-//14. Dec. 2013
-//v2.2-0.64
+//Additions: initial structure for multiple sound files, implement linked_message system, background sound
+//15. Dec. 2013
+//v2.2-0.7
 
 //Files:
 //Fire.lsl
@@ -44,6 +44,7 @@
 //	variable naming sheme
 //	structure for multiple sound files
 //	structure for multiple scripts
+//	B-Sound
 
 //bug: on notcard change, connection to smoke and sound gets lost
 
@@ -60,7 +61,7 @@
 //todo: create a backround-sound.lsl
 //todo: change sound settings from full, medium, small to number/percentage - as this will be more versatile, esp. in Sound.lsl
 //todo: integrate B-Sound  - use key in lllinkedmessage/link_message to differentiate; add backround sound off
-//todo: scale for effect 0<=x<=100, -1 backround -- con't confuse with volume
+//todo: scale for effect 0<=x<=100, -1 backround, 110 Sound start -- don't confuse with volume
 //todo: let sound script do calculation of sound percentage, as smoke does it
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -85,6 +86,8 @@ integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
 //user changeable variables
 //-----------------------------------------------
 string NOTECARD = "config";     // notecard name
+string SOUNDSCRIPT = "Sound.lsl";
+string BACKSOUNDSCRIPT = "B-Sound.lsl";
 
 // Particle parameters
 float g_fAge = 1.0;                // particle lifetime
@@ -103,7 +106,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2-0.64";         // version
+string g_sVersion = "2.2-0.7";         // version
 string g_sScriptName;
 
 // Constants
@@ -143,7 +146,7 @@ vector g_vDefEndColor;             // default end (top) color (percentage R,G,B)
 integer g_iDefVolume;              // default volume for sound (percentage)
 integer g_iDefSmoke = TRUE;        // default smoke on/off
 integer g_iDefSound = FALSE;  		// default sound on/off; keep off if SoundAvail
-string g_sCurrentSound = "medium2";
+string g_sCurrentSound = "55";
 integer g_iDefIntensity;           // default light intensity (percentage)
 integer g_iDefRadius;              // default light radius (percentage)
 integer g_iDefFalloff;             // default light falloff (percentage)
@@ -155,6 +158,7 @@ key	g_kQuery = NULL_KEY;
 
 integer g_iSmokeAvail = FALSE;		// true after script sucessfully registered for the task
 integer g_iSoundAvail = FALSE;		// true after script sucessfully registered for the task
+integer g_iBackSoundAvail = FALSE;
 
 integer g_iLine;                   // notecard line
 integer menuChannel;            // main menu channel
@@ -238,7 +242,7 @@ toggleFunktion(string sFunction)
 			g_iSoundOn = FALSE;
 		} else {
 			if (g_fSoundVolumeTmp > 0 && g_fSoundVolumeTmp <= 1) g_fSoundVolume = g_fSoundVolumeTmp;
-			if (g_iSoundAvail) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound);
+			if (g_iSoundAvail || g_iBackSoundAvail) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound);
 			g_iSoundOn = TRUE;
 		}
 	}
@@ -260,35 +264,20 @@ updateSize(float size)
     min = g_fMinSpeed / 100.0 * size;             // min. burst speed
     max = g_fMaxSpeed / 100.0 * size;             // max. burst speed
     push = g_vPartAccel / 100.0 * size;           // accelleration
-
+	
+	if (g_iSoundAvail || g_iBackSoundAvail) { //needs to be improved
+		if (0 <= size && 100 >= size) g_sCurrentSound = (string)size;
+		sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound);
+	}
+	
     if (size > 25.0) {
         start = g_vStartScale / 100.0 * size;     // start scale
         radius = g_fBurstRadius / 100.0 * size;   // burst radius
-        if (size >= 80.0) {
-			llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
-			if (g_iSoundAvail) { //needs to be improved
-				g_sCurrentSound = "full";
-				sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound);
-			}
-		} else if (size > 50.0) {
-					llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
-					if (g_iSoundAvail) { //needs to be improved
-						g_sCurrentSound = "medium2";
-						sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound);
-					}
-				} else {
-						llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
-						if (g_iSoundAvail) { //needs to be improved
-							g_sCurrentSound = "medium1";
-							sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound);
-						}
-					}
+        if (size >= 80.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
+			else if (size > 50.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
+				else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
     }
     else {
-		if (g_iSoundAvail) { //needs to be improved
-				g_sCurrentSound = "small";
-				sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound);
-			}
         if (size >= 15.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
             else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
         start = g_vStartScale / 4.0;              // start scale
@@ -308,7 +297,7 @@ updateSize(float size)
         if (g_iChangeSmoke && g_iSmokeAvail) g_fPercentSmoke = size * 4.0; //works only here within range 0-100!!!
 			else g_fPercentSmoke = 100.0;
 		Debug("Smoke size: change= "+(string)g_iChangeSmoke+", size= "+(string)size +", percentage= "+(string)g_fPercentSmoke);
-		if (g_iSoundAvail) {
+		if (g_iSoundAvail || g_iBackSoundAvail) {
 			if (g_iChangeVolume) {
 				if (g_iSoundOn) g_fSoundVolume = percentage(size * 4.0, g_fStartVolume);
 					else g_fSoundVolumeTmp = percentage(size * 4.0, g_fStartVolume);
@@ -322,7 +311,7 @@ updateSize(float size)
     updateParticles(start, end, min, max, radius, push);
     llSetPrimitiveParams([PRIM_POINT_LIGHT, TRUE, g_vLightColor, g_fLightIntensity, g_fLightRadius, g_fLightFalloff]);
     if (g_iSmokeAvail && g_iSmokeOn) sendMessage(SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
-	if (g_iSoundAvail && g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, ""); //adjust Volume - currently only useful when volume-change on automatic fire change
+	if ((g_iSoundAvail || g_iBackSoundAvail) && g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, ""); //adjust Volume - currently only useful when volume-change on automatic fire change
     Debug((string)llRound(size) + "% " + (string)start + " " + (string)end);
 }
 
@@ -520,7 +509,7 @@ menuDialog (key id)
 			else strSmoke = "OFF";
 	}
     string strSound = "N/A";
-	if (g_iSoundAvail) {
+	if (g_iSoundAvail || g_iBackSoundAvail) {
 		if (g_iSoundOn) strSound = "ON"; 
 			else strSound = "OFF";
 	}
@@ -597,7 +586,7 @@ reset()
 {
 	if (!g_iSmokeAvail) g_iSmokeOn = FALSE;
 		else g_iSmokeOn = g_iDefSmoke;
-	if (!g_iSoundAvail) g_iSoundOn = FALSE;
+	if (!g_iSoundAvail && !g_iBackSoundAvail) g_iSoundOn = FALSE;
 		else g_iSoundOn = g_iDefSound;
     g_iPerSize = g_iDefSize;
     g_iPerVolume = g_iDefVolume;
@@ -627,7 +616,7 @@ startSystem()
     g_fLightIntensity = g_fStartIntensity;
     g_fLightRadius = g_fStartRadius;
 	llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
-    if (g_iSoundAvail) { //needs some more rework, move all calculation inside
+    if (g_iSoundAvail || g_iBackSoundAvail) { //needs some more rework, move all calculation inside
 		g_fStartVolume = percentage((float)g_iPerVolume, MAX_VOLUME);
 		g_fSoundVolume = g_fStartVolume;
 		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, "-1"); //background noise
@@ -653,7 +642,7 @@ stopSystem()
     llParticleSystem([]);
     llSetPrimitiveParams([PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
     llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
-	if (g_iSoundAvail) sendMessage(SOUND_CHANNEL, "0", "");
+	if (g_iSoundAvail || g_iBackSoundAvail) sendMessage(SOUND_CHANNEL, "0", "");
     if (g_iSmokeAvail) sendMessage(SMOKE_CHANNEL, "0", "");
     if (g_iMenuOpen) {
         llListenRemove(g_iMenuHandle);
@@ -752,7 +741,7 @@ default
     {
 		if (change & CHANGED_INVENTORY) {
 			g_iSmokeAvail = g_iSmokeOn = FALSE;
-			g_iSoundAvail = g_iDefSound = g_iSoundOn = FALSE;
+			g_iSoundAvail = g_iBackSoundAvail = g_iDefSound = g_iSoundOn = FALSE;
 			llWhisper(0, "Inventory changed, reloading notecard...");
 			loadNotecard();
 		}
@@ -806,7 +795,7 @@ default
 					else g_fSoundVolumeTmp = g_fStartVolume;
             }
             else if (msg == "Smoke" && g_iSmokeAvail) toggleFunktion("smoke");
-            else if (msg == "Sound" && g_iSoundAvail) toggleFunktion("sound");
+            else if (msg == "Sound" && (g_iSoundAvail || g_iBackSoundAvail)) toggleFunktion("sound");
             else if (msg == "Color") endColorDialog(g_kUser);
             else if (msg == "Reset") { reset(); startSystem(); }
             else if (msg == "Close") {
@@ -886,9 +875,12 @@ default
 				if ("0" == sMsg) llWhisper(0, "Unable to provide smoke effects");
 			}
 		} else if (iChan == SOUND_CHANNEL && (string)kId != g_sScriptName) {
-			if ("1" == sMsg) g_iSoundAvail = TRUE;
-				else {
+			if ("1" == sMsg) {
+					if ((string)kId == SOUNDSCRIPT) g_iSoundAvail = TRUE;
+					if ((string)kId == BACKSOUNDSCRIPT) g_iBackSoundAvail = TRUE;
+				} else {
 					g_iSoundAvail = FALSE;
+					g_iBackSoundAvail = FALSE;
 					llWhisper(0, "Unable to provide sound effects");
 				}	
 		} else if (iChan == g_iMsgNumber) {

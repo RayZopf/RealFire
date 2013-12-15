@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//14. Dec. 2013
-//v0.31
+//15. Dec. 2013
+//v0.4
 //
 //
 // (Realfire by Rene)
@@ -64,7 +64,7 @@ string g_sCurrentSoundFile = g_sSoundFileMedium2;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";     // title
-string g_sVersion = "0.31";       // version
+string g_sVersion = "0.4";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
@@ -110,23 +110,23 @@ CheckSoundFiles()
 }
 
 
-SelectSound(string sMsg)
+SelectSound(float fMsg)
 {
-	if ("small" == sMsg) {
+	if (fMsg <= 25) {
 			g_sCurrentSoundFile = g_sSoundFileSmall;
-	} else if ("medium1" == sMsg) {
+	} else if (fMsg > 25 && fMsg <= 50) {
 		g_sCurrentSoundFile = g_sSoundFileMedium1;
-	} else if ("medium2" == sMsg) {
+	} else if (fMsg > 50 && fMsg < 80) {
 			g_sCurrentSoundFile = g_sSoundFileMedium2;
-	} else if ("full" == sMsg) {
+	} else if (fMsg >= 80) {
 			g_sCurrentSoundFile = g_sSoundFileFull;
 	} else {
 		Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-");
 		if (g_fSoundVolumeNew > 0) llPlaySound(g_sSoundFileMedium1, g_fSoundVolumeNew); //preloaded on touch
-		g_sSize = "start";
+		g_sSize = "110";
 		return;
 	}
-	g_sSize = sMsg;
+	g_sSize = (string)fMsg;
 }
 
 InfoLines()
@@ -204,7 +204,7 @@ default
 		g_fSoundVolumeNew = (float)sVal;
 		//change sound while sound is off
 		if (0 == g_fSoundVolumeNew && sMsg != g_sSize && "" != sMsg) {
-			SelectSound(sMsg);
+			SelectSound((float)sMsg);
 			Debug("change while off");
 			return;
 		}
@@ -217,7 +217,7 @@ default
 				return;
 			}
 
-			SelectSound(sMsg);
+			SelectSound((float)sMsg);
 			if ("start" == g_sSize) return;
 			Debug("play sound: "+g_sCurrentSoundFile);
 			
