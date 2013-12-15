@@ -2,7 +2,7 @@
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
 //15. Dec. 2013
-//v0.2
+//v0.22
 //
 //
 // (Realfire by Rene)
@@ -63,11 +63,12 @@ string g_sBackSoundFile ="17742__krisboruff__fire-crackles-no-room";            
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";     // title
-string g_sVersion = "0.2";       // version
+string g_sVersion = "0.22";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
 float g_fSoundVolumeCur = 0.0;
+float g_fSoundVolumeCurF = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize;
 float g_fFactor;
@@ -116,7 +117,7 @@ InfoLines()
 	if (g_iVerbose) {
 		if (g_iSoundAvail) llWhisper(0, "Sound object in inventory found: Yes");
             else llWhisper(0, "All Sound objects in inventory found: No");
-		if (!g_iSound) llWhisper(0, g_sTitle+"Sound script disabled");
+		if (!g_iSound) llWhisper(0, g_sTitle+" script disabled");
     }
 }
 
@@ -133,6 +134,7 @@ default
     {
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
+		g_fFactor = 5.0 / 6.0;
 		llPassTouches(TRUE);
         llStopSound();
 		CheckSoundFiles();
@@ -147,7 +149,7 @@ default
         llResetScript();
     }
 	
-	touch_start(integer total_number)
+	touch(integer total_number)
     {
 		if (g_iSoundAvail && g_iSound) llPreloadSound(g_sBackSoundFile); //maybe change preloaded soundfile to medium fire sound
 		//this also blocks touch events on this child to be passed to root prim!
@@ -184,28 +186,37 @@ default
 		
 		g_fSoundVolumeNew = (float)sVal;
 		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1) { //background sound on/volume adjust
-			g_fFactor = 3/4;  //simple adjustment to different fire sizes (full, at start, when special B_Sound message with sMsg = -1)
+			Debug("Factor start "+(string)g_fFactor);
+			//simple adjustment to different fire sizes (full, at start, when special B_Sound message with sMsg = -1)
 			if ("-1" == sMsg) g_fFactor = 1.0;
-				else if ("" != sMsg && (float)sMsg < 0.55 ) g_fFactor = 3/5;
-					else if ((float)g_sSize < 0.55) g_fFactor = 3/5;
-			if (g_fSoundVolumeCur > 0) { //sound should already run
-				Debug("Vol-adjust");
-				llAdjustSoundVolume(g_fSoundVolumeNew*g_fFactor);
-			} else {
-				Debug("play sound");
+				else if ( 0 < (integer)sMsg && 100 >= (integer)sMsg) {
+						if ((integer)sMsg < 55 ) g_fFactor = 4.0 / 5.0;
+							else g_fFactor = 5.0 / 6.0;
+					} else if ("" != sMsg && (integer)g_sSize < 55 ) g_fFactor = 4.0 / 5.0; //fallback - is this still needed?
+						else if ("" != sMsg && (integer)g_sSize >= 55 && 100 <= (integer)g_sSize) g_fFactor = 5.0 / 6.0;
+			Debug("Factor calculated "+(string)g_fFactor);
+			float fSoundVolumeF = g_fSoundVolumeNew*g_fFactor;
 			
+			if (g_fSoundVolumeCur > 0 && g_fSoundVolumeCurF > 0) { //sound should already run
+				Debug("Vol-adjust: "+(string)fSoundVolumeF);
+				llAdjustSoundVolume(fSoundVolumeF);
+			} else {
+				Debug("play sound: "+(string)fSoundVolumeF);
 				//llSleep(2); //better not wait to make sound different in timing, find another way
-				llStopSound(); // just in case ...
-				llLoopSound(g_sBackSoundFile, g_fSoundVolumeNew*g_fFactor);
+				llStopSound(); // just in case...
+				llSleep(2); //make sounds synchronus
+				llLoopSound(g_sBackSoundFile, fSoundVolumeF);
 			}
 			if ("" != sMsg) g_sSize = sMsg;
 			g_fSoundVolumeCur = g_fSoundVolumeNew;
+			g_fSoundVolumeCurF = fSoundVolumeF;
 		} else {
 			Debug("stop");
-			llSleep(4); // wait ... better would be to fade out
+			if (g_iVerbose) llWhisper(0, "Backround noise fading out...");
+			llSleep(7); // wait ... better would be to fade out
 			llStopSound();
 			llWhisper(0, "Backround noise off");
-			g_fSoundVolumeNew =g_fSoundVolumeCur = 0.0;
+			g_fSoundVolumeNew = g_fSoundVolumeCur = g_fSoundVolumeCurF = 0.0;
 		}
     }
 }

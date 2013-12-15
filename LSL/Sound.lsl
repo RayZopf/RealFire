@@ -136,7 +136,7 @@ InfoLines()
 	if (g_iVerbose) {
 		if (g_iSoundAvail) llWhisper(0, "Sound object in inventory found: Yes");
             else llWhisper(0, "All Sound objects in inventory found: No");
-		if (!g_iSound) llWhisper(0, g_sTitle+"Sound script disabled");
+		if (!g_iSound) llWhisper(0, g_sTitle+" script disabled");
     }
 }
 

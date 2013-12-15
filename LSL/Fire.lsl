@@ -22,7 +22,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound
 //15. Dec. 2013
-//v2.2-0.7
+//v2.2-0.71
 
 //Files:
 //Fire.lsl
@@ -106,7 +106,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2-0.7";         // version
+string g_sVersion = "2.2-0.71";         // version
 string g_sScriptName;
 
 // Constants
@@ -597,10 +597,10 @@ reset()
     g_iPerGreenEnd = (integer)g_vDefEndColor.y;
     g_iPerBlueEnd = (integer)g_vDefEndColor.z;
 	
-	llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
 	//just send, don't check
 	sendMessage(SMOKE_CHANNEL, "0", "");
 	sendMessage(SOUND_CHANNEL, "0", "");
+	llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
 }
 
 startSystem()
@@ -615,11 +615,10 @@ startSystem()
 	}
     g_fLightIntensity = g_fStartIntensity;
     g_fLightRadius = g_fStartRadius;
-	llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
     if (g_iSoundAvail || g_iBackSoundAvail) { //needs some more rework, move all calculation inside
 		g_fStartVolume = percentage((float)g_iPerVolume, MAX_VOLUME);
 		g_fSoundVolume = g_fStartVolume;
-		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, "-1"); //background noise
+		//if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, "-1"); //background noise - do better not use, gets called to often
 	}
     updateSize((float)g_iPerSize);
     llSetTimerEvent(0);
@@ -641,8 +640,8 @@ stopSystem()
     llSetTimerEvent(0);
     llParticleSystem([]);
     llSetPrimitiveParams([PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
-    llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
 	if (g_iSoundAvail || g_iBackSoundAvail) sendMessage(SOUND_CHANNEL, "0", "");
+    //llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
     if (g_iSmokeAvail) sendMessage(SMOKE_CHANNEL, "0", "");
     if (g_iMenuOpen) {
         llListenRemove(g_iMenuHandle);
@@ -875,14 +874,15 @@ default
 				if ("0" == sMsg) llWhisper(0, "Unable to provide smoke effects");
 			}
 		} else if (iChan == SOUND_CHANNEL && (string)kId != g_sScriptName) {
-			if ("1" == sMsg) {
-					if ((string)kId == SOUNDSCRIPT) g_iSoundAvail = TRUE;
-					if ((string)kId == BACKSOUNDSCRIPT) g_iBackSoundAvail = TRUE;
-				} else {
-					g_iSoundAvail = FALSE;
-					g_iBackSoundAvail = FALSE;
-					llWhisper(0, "Unable to provide sound effects");
-				}	
+			if ((string)kId == SOUNDSCRIPT) {
+				if ("1" == sMsg) g_iSoundAvail = TRUE;
+					else g_iSoundAvail = FALSE;
+			}
+			if ((string)kId == BACKSOUNDSCRIPT) {
+				if ("1" == sMsg) g_iBackSoundAvail = TRUE;
+					else g_iBackSoundAvail = FALSE;
+			}
+			if ("1" != sMsg ) llWhisper(0, "Unable to provide sound effects ("+(string)kId+")");	
 		} else if (iChan == g_iMsgNumber) {
 			if (kId != "") g_kUser = kId;
 				else {
