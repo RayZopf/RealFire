@@ -266,6 +266,7 @@ updateSize(float size)
     push = g_vPartAccel / 100.0 * size;           // accelleration
 	
 	if (g_iSoundAvail || g_iBackSoundAvail) { //needs to be improved
+		g_fSoundVolume = g_fStartVolume; //to start again with default (e.g. menu setting)
 		if (0 <= size && 100 >= size) g_sCurrentSound = (string)size;
 		sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound);
 	}
@@ -617,7 +618,7 @@ startSystem()
     g_fLightRadius = g_fStartRadius;
     if (g_iSoundAvail || g_iBackSoundAvail) { //needs some more rework, move all calculation inside
 		g_fStartVolume = percentage((float)g_iPerVolume, MAX_VOLUME);
-		g_fSoundVolume = g_fStartVolume;
+		//g_fSoundVolume = g_fStartVolume;
 		//if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, "-1"); //background noise - do better not use, gets called to often
 	}
     updateSize((float)g_iPerSize);
@@ -803,8 +804,7 @@ default
                 g_iMenuOpen = FALSE;
             }
             if (msg != "Color" && msg != "Close") {
-				if ("+Volume" == msg || "-Volume" == msg) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, "");
-					else if (msg != "Smoke" && msg != "Sound" && msg != "Reset") updateSize((float)g_iPerSize);
+					if (msg != "Smoke" && msg != "Sound" && msg != "Reset") updateSize((float)g_iPerSize);
 				menuDialog(g_kUser);
             }
         }

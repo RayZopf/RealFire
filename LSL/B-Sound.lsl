@@ -190,10 +190,10 @@ default
 			//simple adjustment to different fire sizes (full, at start, when special B_Sound message with sMsg = -1)
 			if ("-1" == sMsg) g_fFactor = 1.0;
 				else if ( 0 < (integer)sMsg && 100 >= (integer)sMsg) {
-						if ((integer)sMsg < 55 ) g_fFactor = 4.0 / 5.0;
+						if ((integer)sMsg <= 15 ) g_fFactor = 4.0 / 5.0;
 							else g_fFactor = 5.0 / 6.0;
-					} else if ("" != sMsg && (integer)g_sSize < 55 ) g_fFactor = 4.0 / 5.0; //fallback - is this still needed?
-						else if ("" != sMsg && (integer)g_sSize >= 55 && 100 <= (integer)g_sSize) g_fFactor = 5.0 / 6.0;
+					} else if ("" != sMsg && (integer)g_sSize <= 15 ) g_fFactor = 4.0 / 5.0; //fallback - is this still needed?
+						else if ("" != sMsg && (integer)g_sSize > 15 && 100 <= (integer)g_sSize) g_fFactor = 5.0 / 6.0;
 			Debug("Factor calculated "+(string)g_fFactor);
 			float fSoundVolumeF = g_fSoundVolumeNew*g_fFactor;
 			
