@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//14. Dec. 2013
-//v0.31
+//15. Dec. 2013
+//v0.2
 //
 //
 // (Realfire by Rene)
@@ -10,14 +10,15 @@
 // (v2.2)
 
 //Files:
-//Sound.lsl
+//B-Sound.lsl
 //
 //Fire.lsl
 //config
 //User Manual
 //
 //
-//Prequisites: Soundfiles need to be in same prim as Sound.lsl
+//Prequisites: Soundfile need to be in same prim as B-Sound.lsl;
+//	for fastest start, keep in prim that get's touched at start
 //Notecard format: see config NC
 //basic help: User Manual
 
@@ -27,6 +28,9 @@
 //bug: soundpreload on touch is useless in child prim
 
 //todo: decide if touch event should really block touch on child prim and how to preload sound
+//todo: simplify to use only one sound file as backround noise (at half the normal volume)
+//todo: sMsg has to be changed in Fire.lsl
+//todo: make sounds from different prims asynchronus
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -53,24 +57,20 @@ integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
 integer g_iSound = TRUE;			// Sound on/off in this prim
 integer g_iVerbose = TRUE;
 
-string g_sSoundFileSmall ="17742__krisboruff__fire-crackles-no-room";                   // sound for small fire
-string g_sSoundFileMedium1 = "104958__glaneur-de-sons__petit-feu-little-fire-2";                   // first sound for medium fire (yes, file fire-2); gets preloaded with every touch and played first on every ignition
-string g_sSoundFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1";                   // second sound for medium fire
-string g_sSoundFileFull = "4211__dobroide__fire-crackling";                   // standard sound, sound for big fire
-
-string g_sCurrentSoundFile = g_sSoundFileMedium2;
+string g_sBackrSoundFile ="17742__krisboruff__fire-crackles-no-room";                   // backroundsound for small fire
 
 
 //internal variables
 //-----------------------------------------------
-string g_sTitle = "RealSound";     // title
-string g_sVersion = "0.31";       // version
+string g_sTitle = "RealB-Sound";     // title
+string g_sVersion = "0.2";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
 float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize;
+float g_fFactor;
 
 // Constants
 integer SOUND_CHANNEL = -10956;  // smoke channel
@@ -103,31 +103,11 @@ CheckSoundFiles()
 		integer i;
 		for (i = 0; i < iSoundNumber; ++i) {
 			string sSoundName = llGetInventoryName(INVENTORY_SOUND, i);
-			if (sSoundName == g_sSoundFileFull || sSoundName == g_sSoundFileMedium1 || sSoundName == g_sSoundFileMedium2 || sSoundName == g_sSoundFileSmall)
-			g_iSoundAvail = TRUE;
+			if (sSoundName == g_sBackrSoundFile) g_iSoundAvail = TRUE;
 		}
 	} else g_iSoundAvail = FALSE;
 }
 
-
-SelectSound(string sMsg)
-{
-	if ("small" == sMsg) {
-			g_sCurrentSoundFile = g_sSoundFileSmall;
-	} else if ("medium1" == sMsg) {
-		g_sCurrentSoundFile = g_sSoundFileMedium1;
-	} else if ("medium2" == sMsg) {
-			g_sCurrentSoundFile = g_sSoundFileMedium2;
-	} else if ("full" == sMsg) {
-			g_sCurrentSoundFile = g_sSoundFileFull;
-	} else {
-		Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-");
-		if (g_fSoundVolumeNew > 0) llPlaySound(g_sSoundFileMedium1, g_fSoundVolumeNew); //preloaded on touch
-		g_sSize = "start";
-		return;
-	}
-	g_sSize = sMsg;
-}
 
 InfoLines()
 {
@@ -153,6 +133,7 @@ default
     {
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
+		llPassTouches(TRUE);
         llStopSound();
 		CheckSoundFiles();
 		llSleep(1);
@@ -166,10 +147,10 @@ default
         llResetScript();
     }
 	
-	touch(integer total_number)
+	touch_start(integer total_number)
     {
-		//if (g_iSoundAvail && g_iSound) llPreloadSound(g_sSoundFileMedium1); //maybe change preloaded soundfile to medium fire sound
-		//this also blocks touch events on this child to be passed to root prim! only works if child prim is touched
+		if (g_iSoundAvail && g_iSound) llPreloadSound(g_sBackrSoundFile); //maybe change preloaded soundfile to medium fire sound
+		//this also blocks touch events on this child to be passed to root prim!
     }
 	
 	changed(integer change)
@@ -192,43 +173,39 @@ default
     {
 		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);
 		
-        if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail || llSubStringIndex(llToLower((string)kId), "sound")  >= 0) return; //sound scripts need to have sound in their name, so that we can discard those messages!
+        if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail || llSubStringIndex(llToLower((string)kId), "sound") >= 0) return; //sound scripts need to have sound in their name, so that we can discard those messages!
 		list lParams = llParseString2List(sSoundSet, [","], []);
         string sVal = llList2String(lParams, 0);
-        string sMsg = llList2String(lParams, 1);
+		string sMsg = llList2String(lParams, 1);
 		
-		Debug("no changes? backround? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
-		if (((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) || "-1" == sMsg) return; //-1 for backround sound script
+		Debug("no changes? backround on/off? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
+		if ((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) return; //no "backround sound off" currently
 		Debug("work on link_message");
 		
 		g_fSoundVolumeNew = (float)sVal;
-		//change sound while sound is off
-		if (0 == g_fSoundVolumeNew && sMsg != g_sSize && "" != sMsg) {
-			SelectSound(sMsg);
-			Debug("change while off");
-			return;
-		}
-		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1) {
-			if ("" == sMsg || sMsg == g_sSize) {
+		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1 && ) { //background sound on/volume adjust
+			g_fFactor = 3/4;  //simple adjustment to different fire sizes (full, at start, when special B_Sound message with sMsg = -1)
+			if ("-1" == sMsg) g_fFactor = 1.0;
+				else if ("" != sMsg && (float)sMsg < 0.55 ) g_fFactor = 3/5;
+					else if (float)g_sSize < 0.55) g_fFactor = 3/5;
+			if (g_fSoundVolumeCur > 0) { //sound should already run
 				Debug("Vol-adjust");
-				if (g_fSoundVolumeCur > 0) llAdjustSoundVolume(g_fSoundVolumeNew);
-					else llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
-				g_fSoundVolumeCur = g_fSoundVolumeNew;
-				return;
-			}
-
-			SelectSound(sMsg);
-			if ("start" == g_sSize) return;
-			Debug("play sound: "+g_sCurrentSoundFile);
+				llAdjustSoundVolume(g_fSoundVolumeNew*g_fFactor);
+			} else {
+				Debug("play sound");
 			
-			llPreloadSound(g_sCurrentSoundFile);
-			g_fSoundVolumeCur = g_fSoundVolumeNew;
-			llStopSound();
-			llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
-		} else {
-				Debug("stop");
-				llStopSound();
-				g_fSoundVolumeNew =g_fSoundVolumeCur = 0.0;
+				//llSleep(2); //better not wait to make sound different in timing, find another way
+				llStopSound(); // just in case ...
+				llLoopSound(g_sBackrSoundFile, g_fSoundVolumeNew*g_fFactor);
 			}
+			if ("" != sMsg) g_sSize = sMsg;
+			g_fSoundVolumeCur = g_fSoundVolumeNew;
+		} else {
+			Debug("stop");
+			llSleep(4); // wait ... better would be to fade out
+			llStopSound();
+			llWhisper(0, "Backround noise off");
+			g_fSoundVolumeNew =g_fSoundVolumeCur = 0.0;
+		}
     }
 }

@@ -57,6 +57,11 @@
 //todo: if script in another prim is removed, Fire.lsl cannot handle the situation
 //todo: check change smoke while smoke is off
 //todo: sound preload on touch
+//todo: create a backround-sound.lsl
+//todo: change sound settings from full, medium, small to number/percentage - as this will be more versatile, esp. in Sound.lsl
+//todo: integrate B-Sound  - use key in lllinkedmessage/link_message to differentiate; add backround sound off
+//todo: scale for effect 0<=x<=100, -1 backround -- con't confuse with volume
+//todo: let sound script do calculation of sound percentage, as smoke does it
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -625,7 +630,7 @@ startSystem()
     if (g_iSoundAvail) { //needs some more rework, move all calculation inside
 		g_fStartVolume = percentage((float)g_iPerVolume, MAX_VOLUME);
 		g_fSoundVolume = g_fStartVolume;
-		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, "start");
+		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, "-1"); //background noise
 	}
     updateSize((float)g_iPerSize);
     llSetTimerEvent(0);
