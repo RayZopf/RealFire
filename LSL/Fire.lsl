@@ -22,7 +22,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound
 //15. Dec. 2013
-//v2.2-0.71
+//v2.2-0.72
 
 //Files:
 //Fire.lsl
@@ -51,18 +51,18 @@
 //todo: make sound configurable via notecard - maybe own config file?
 //todo: better way to handle sound change / not changing on fire size change
 //todo: keep sound running for a short time after turning fire off
+//todo: sound preload on touch
+//todo: integrate B-Sound  - use key in lllinkedmessage/link_message to differentiate; add backround sound off
+//todo: scale for effect 0<=x<=100, -1 backround, 110 Sound start -- don't confuse with volume
+//todo: prim fire
+//todo: sparkles via temp prims
 //todo: longer break between automatic fire off and going on again, also make fire slowly bigger... and let fire burn down slower (look into function)
 //todo: make 5% lowest setting (glowing)? and adjust fire (100%)  - is way too big for the fireplace
 //todo: better smoke (color, intensity, change when fire changes) - rework smoke in updateSize (currently only changed when size<=25)
+//todo: check change smoke while smoke is off
+//todo: let sound script do calculation of sound percentage, as smoke does it
 //todo: add ping/pong with other scripts in case only fire.lsl gets resetted
 //todo: if script in another prim is removed, Fire.lsl cannot handle the situation
-//todo: check change smoke while smoke is off
-//todo: sound preload on touch
-//todo: create a backround-sound.lsl
-//todo: change sound settings from full, medium, small to number/percentage - as this will be more versatile, esp. in Sound.lsl
-//todo: integrate B-Sound  - use key in lllinkedmessage/link_message to differentiate; add backround sound off
-//todo: scale for effect 0<=x<=100, -1 backround, 110 Sound start -- don't confuse with volume
-//todo: let sound script do calculation of sound percentage, as smoke does it
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -80,7 +80,7 @@
 
 //debug variables
 //-----------------------------------------------
-integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 
 
 //user changeable variables
@@ -88,6 +88,8 @@ integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
 string NOTECARD = "config";     // notecard name
 string SOUNDSCRIPT = "Sound.lsl";
 string BACKSOUNDSCRIPT = "B-Sound.lsl";
+string SMOKESCRIPT = "Smoke.lsl";
+string SPARKSSCRIPT = "Sparks.lsl";
 
 // Particle parameters
 float g_fAge = 1.0;                // particle lifetime
@@ -106,7 +108,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2-0.71";         // version
+string g_sVersion = "2.2-0.72";         // version
 string g_sScriptName;
 
 // Constants
@@ -210,7 +212,7 @@ float g_fStartVolume;              // start value of volume (before burning down
 Debug(string sMsg)
 {
     if (!g_iDebugMode) return;
-    llOwnerSay("DEBUG: "+ g_sScriptName + ": " + sMsg);
+    llOwnerSay("DEBUG: "+ g_sScriptName + "; " + sMsg);
 }
 
 //===============================================================================
@@ -873,7 +875,7 @@ default
 				g_iSmokeAvail = FALSE;
 				if ("0" == sMsg) llWhisper(0, "Unable to provide smoke effects");
 			}
-		} else if (iChan == SOUND_CHANNEL && (string)kId != g_sScriptName) {
+		} else if (iChan == SOUND_CHANNEL && llToLower((string)kId) != llToLower(g_sScriptName)) {
 			if ((string)kId == SOUNDSCRIPT) {
 				if ("1" == sMsg) g_iSoundAvail = TRUE;
 					else g_iSoundAvail = FALSE;

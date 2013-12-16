@@ -2,7 +2,7 @@
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
 //15. Dec. 2013
-//v0.22
+//v0.23
 //
 //
 // (Realfire by Rene)
@@ -49,7 +49,7 @@
 
 //debug variables
 //-----------------------------------------------
-integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 
 
 //user changeable variables
@@ -57,13 +57,13 @@ integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
 integer g_iSound = TRUE;			// Sound on/off in this prim
 integer g_iVerbose = TRUE;
 
-string g_sBackSoundFile ="17742__krisboruff__fire-crackles-no-room";                   // backroundsound for small fire
+string BACKSOUNDFILE ="17742__krisboruff__fire-crackles-no-room";                   // backroundsound for small fire
 
 
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";     // title
-string g_sVersion = "0.22";       // version
+string g_sVersion = "0.23";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
@@ -93,7 +93,7 @@ integer SOUND_CHANNEL = -10956;  // smoke channel
 Debug(string sMsg)
 {
     if (!g_iDebugMode) return;
-    llOwnerSay("DEBUG: "+ g_sScriptName + ": " + sMsg);
+    llOwnerSay("DEBUG: "+ g_sScriptName + "; " + sMsg);
 }
 
 CheckSoundFiles()
@@ -104,7 +104,7 @@ CheckSoundFiles()
 		integer i;
 		for (i = 0; i < iSoundNumber; ++i) {
 			string sSoundName = llGetInventoryName(INVENTORY_SOUND, i);
-			if (sSoundName == g_sBackSoundFile) g_iSoundAvail = TRUE;
+			if (sSoundName == BACKSOUNDFILE) g_iSoundAvail = TRUE;
 		}
 	} else g_iSoundAvail = FALSE;
 }
@@ -151,7 +151,7 @@ default
 	
 	touch(integer total_number)
     {
-		if (g_iSoundAvail && g_iSound) llPreloadSound(g_sBackSoundFile); //maybe change preloaded soundfile to medium fire sound
+		if (g_iSoundAvail && g_iSound) llPreloadSound(BACKSOUNDFILE); //maybe change preloaded soundfile to medium fire sound
 		//this also blocks touch events on this child to be passed to root prim!
     }
 	
@@ -205,7 +205,7 @@ default
 				//llSleep(2); //better not wait to make sound different in timing, find another way
 				llStopSound(); // just in case...
 				llSleep(2); //make sounds synchronus
-				llLoopSound(g_sBackSoundFile, fSoundVolumeF);
+				llLoopSound(BACKSOUNDFILE, fSoundVolumeF);
 			}
 			if ("" != sMsg) g_sSize = sMsg;
 			g_fSoundVolumeCur = g_fSoundVolumeNew;

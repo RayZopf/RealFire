@@ -16,7 +16,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl
 //11. Dec. 2013
-//v2.2-0.41
+//v2.2-0.42
 
 //Files:
 //Smoke.lsl
@@ -55,7 +55,7 @@
 
 //debug variables
 //-----------------------------------------------
-integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 
 
 //user changeable variables
@@ -72,7 +72,8 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2-0.41";       // version
+string g_sVersion = "2.2-0.42";       // version
+string g_sScriptName;
 
 string g_sSize;
 
@@ -97,7 +98,7 @@ integer SMOKE_CHANNEL = -10957;  // smoke channel
 Debug(string sMsg)
 {
     if (!g_iDebugMode) return;
-    llOwnerSay("DEBUG: "+ llGetScriptName() + ": " + sMsg);
+    llOwnerSay("DEBUG: "+ g_sScriptName + "; " + sMsg);
 }
 
 
@@ -113,11 +114,12 @@ default
 {
     state_entry()
     {
+		g_sScriptName = llGetScriptName();
+        Debug("state_entry, Particle count = " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
         llParticleSystem([]);
 		llSleep(1);
 		//do some linked message to register with Fire.lsl
-		llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)g_iSmoke, "");
-        Debug("state_entry, Particle count = " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
+		llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)g_iSmoke, (key)g_sScriptName);
         if (g_iSmoke) llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
 			else llWhisper(0, g_sTitle + " " + g_sVersion + " disabled");
     }
@@ -130,7 +132,7 @@ default
 	changed(integer change)
     {
 		if (change & CHANGED_INVENTORY) {
-			llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)g_iSmoke, "");
+			llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)g_iSmoke, (key)g_sScriptName);
 			if (g_iSmoke) llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
 				else llWhisper(0, g_sTitle + " " + g_sVersion + " disabled");
 		}

@@ -2,7 +2,7 @@
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
 //15. Dec. 2013
-//v0.4
+//v0.41
 //
 //
 // (Realfire by Rene)
@@ -45,7 +45,7 @@
 
 //debug variables
 //-----------------------------------------------
-integer g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 
 
 //user changeable variables
@@ -64,7 +64,7 @@ string g_sCurrentSoundFile = g_sSoundFileMedium2;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";     // title
-string g_sVersion = "0.4";       // version
+string g_sVersion = "0.41";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
@@ -92,7 +92,7 @@ integer SOUND_CHANNEL = -10956;  // smoke channel
 Debug(string sMsg)
 {
     if (!g_iDebugMode) return;
-    llOwnerSay("DEBUG: "+ g_sScriptName + ": " + sMsg);
+    llOwnerSay("DEBUG: "+ g_sScriptName + "; " + sMsg);
 }
 
 CheckSoundFiles()
