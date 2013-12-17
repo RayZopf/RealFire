@@ -21,8 +21,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound
-//15. Dec. 2013
-//v2.2-0.72
+//17. Dec. 2013
+//v2.2-0.74
 
 //Files:
 //Fire.lsl
@@ -54,7 +54,7 @@
 //todo: sound preload on touch
 //todo: integrate B-Sound  - use key in lllinkedmessage/link_message to differentiate; add backround sound off
 //todo: scale for effect 0<=x<=100, -1 backround, 110 Sound start -- don't confuse with volume
-//todo: prim fire
+//todo: prim fire / temp rezzer / flexi prim
 //todo: sparkles via temp prims
 //todo: longer break between automatic fire off and going on again, also make fire slowly bigger... and let fire burn down slower (look into function)
 //todo: make 5% lowest setting (glowing)? and adjust fire (100%)  - is way too big for the fireplace
@@ -63,6 +63,9 @@
 //todo: let sound script do calculation of sound percentage, as smoke does it
 //todo: add ping/pong with other scripts in case only fire.lsl gets resetted
 //todo: if script in another prim is removed, Fire.lsl cannot handle the situation
+//todo: move object animation to own script too?
+//todo: ability to change burndown/restart
+//todo: fire size = 0 - but sound on + volume --> at least background sound (glowing embers)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -90,6 +93,7 @@ string SOUNDSCRIPT = "Sound.lsl";
 string BACKSOUNDSCRIPT = "B-Sound.lsl";
 string SMOKESCRIPT = "Smoke.lsl";
 string SPARKSSCRIPT = "Sparks.lsl";
+string AANIMATIONSCRIPT = "Animation.lsl";
 
 // Particle parameters
 float g_fAge = 1.0;                // particle lifetime
@@ -108,7 +112,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2-0.72";         // version
+string g_sVersion = "2.2-0.74";         // version
 string g_sScriptName;
 
 // Constants
@@ -190,7 +194,7 @@ vector g_vLightColor;              // light color
 float g_fLightIntensity;           // light intensity (changed by burning down)
 float g_fLightRadius;              // light radius (changed by burning down)
 float g_fLightFalloff;             // light falloff
-float g_fSoundVolume;              // sound volume (changed by burning down)
+float g_fSoundVolume = 0.0;              // sound volume (changed by burning down)
 float g_fSoundVolumeTmp;
 float g_fStartIntensity;           // start value of lightIntensity (before burning down)
 float g_fStartRadius;              // start value of lightRadius (before burning down)
@@ -426,7 +430,7 @@ loadNotecard()
 		
 		reset(); // initial values for menu
         if (g_iOn) startSystem();
-		InfoLines();
+		if (g_iVerbose) InfoLines();
 		
         if (g_iDebugMode) {
             llOwnerSay("verbose = " + (string)g_iVerbose);
@@ -604,13 +608,12 @@ reset()
 	sendMessage(SMOKE_CHANNEL, "0", "");
 	sendMessage(SOUND_CHANNEL, "0", "");
 	llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
+	if (g_iVerbose) llWhisper(0, "The fire is taken care off");
 }
 
 startSystem()
 {
 	Debug("startSystem");
-    g_iOn = TRUE;
-    g_iBurning = TRUE;
     g_fPercent = 100.0;
 	g_fPercentSmoke = 100.0;
 	if (g_iSmokeAvail && g_iSmokeOn) {
@@ -622,7 +625,9 @@ startSystem()
 		g_fStartVolume = percentage((float)g_iPerVolume, MAX_VOLUME);
 		//g_fSoundVolume = g_fStartVolume;
 		//if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, "-1"); //background noise - do better not use, gets called to often
+		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fStartVolume, "110");
 	}
+	if (g_iVerbose && !g_iOn) llWhisper(0, "The fire gets lit");
     updateSize((float)g_iPerSize);
     llSetTimerEvent(0);
     llSetTimerEvent(g_fBurnTime);
@@ -632,10 +637,13 @@ startSystem()
         llListenRemove(g_iEndColorHandle);
         g_iMenuOpen = FALSE;
     }
+    g_iOn = TRUE;
+    g_iBurning = TRUE;
 }
 
 stopSystem()
 {
+	if (g_iVerbose && g_iOn) llWhisper(0, "The fire is dying down");
     g_iOn = FALSE;
     g_iBurning = FALSE;
     g_fPercent = 0.0;
@@ -643,7 +651,7 @@ stopSystem()
     llSetTimerEvent(0);
     llParticleSystem([]);
     llSetPrimitiveParams([PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
-	if (g_iSoundAvail || g_iBackSoundAvail) sendMessage(SOUND_CHANNEL, "0", "");
+	if (g_iSoundAvail || g_iBackSoundAvail) sendMessage(SOUND_CHANNEL, "0", "0"); //volume off and size off
     //llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
     if (g_iSmokeAvail) sendMessage(SMOKE_CHANNEL, "0", "");
     if (g_iMenuOpen) {
@@ -652,6 +660,7 @@ stopSystem()
         llListenRemove(g_iEndColorHandle);
         g_iMenuOpen = FALSE;
     }
+	llSleep(3);
     llSetLinkTextureAnim(LINK_SET, FALSE, ALL_SIDES,4,4,0,0,1);
 }
 
@@ -703,10 +712,8 @@ sendMessage(integer iChan, string sVal, string sMsg )
 
 InfoLines()
 {
-	if (g_iVerbose) {
         llWhisper(0, "Switch access:" + showAccess(g_iSwitchAccess));
         llWhisper(0, "Menu access:" + showAccess(g_iMenuAccess));
-    }
 }
 
 
@@ -728,9 +735,9 @@ default
 		stopSystem();
         Debug("Particle count: " + (string)llRound((float)g_fCount * g_fAge / g_fRate));
         Debug((string)llGetFreeMemory() + " bytes free");
-		llWhisper(0, "RealFire by Rene10957\n + Zopf");
+		llWhisper(0, "RealFire by Rene10957\n + Enhancements by Zopf");
 	    llWhisper(0, "Touch to start/stop fire\n *Long touch to show menu*");
-		llWhisper(0, "Loading notecard...");
+		if (g_iVerbose) llWhisper(0, "Loading notecard...");
 		loadNotecard();
      }
 
@@ -760,8 +767,7 @@ default
 
         if (llGetTime() > 2.0) {
             if (accessGranted(g_kUser, g_iMenuAccess)) {
-				g_iOn = FALSE;
-				toggleFunktion("fire");
+				if (!g_iOn) toggleFunktion("fire"); //do not use if fire is already burning
                 //startSystem();
                 menuDialog(g_kUser);
             }
@@ -944,7 +950,7 @@ default
             reset(); // initial values for menu
 			
             if (g_iOn) startSystem();
-			InfoLines();
+			if (g_iVerbose) InfoLines();
 
             if (g_iDebugMode) {
                 llOwnerSay((string)g_iLine + " lines in notecard");

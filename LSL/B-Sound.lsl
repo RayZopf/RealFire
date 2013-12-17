@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//15. Dec. 2013
-//v0.23
+//17. Dec. 2013
+//v0.24
 //
 //
 // (Realfire by Rene)
@@ -63,14 +63,14 @@ string BACKSOUNDFILE ="17742__krisboruff__fire-crackles-no-room";               
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";     // title
-string g_sVersion = "0.23";       // version
+string g_sVersion = "0.24";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
 float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeCurF = 0.0;
 float g_fSoundVolumeNew;
-string g_sSize;
+string g_sSize = "0";
 float g_fFactor;
 
 // Constants
@@ -115,9 +115,9 @@ InfoLines()
 	if (g_iSound && g_iSoundAvail) llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
 			else llWhisper(0, g_sTitle + " " + g_sVersion + " not ready");
 	if (g_iVerbose) {
-		if (g_iSoundAvail) llWhisper(0, "Sound object in inventory found: Yes");
-            else llWhisper(0, "All Sound objects in inventory found: No");
-		if (!g_iSound) llWhisper(0, g_sTitle+" script disabled");
+		if (g_iSoundAvail) llWhisper(0, g_sTitle+" - Sound object in inventory found: Yes");
+            else llWhisper(0, g_sTitle+" / "+ g_sScriptName +" - All Sound objects in inventory found: No");
+		if (!g_iSound) llWhisper(0, g_sTitle+" / "+ g_sScriptName +" script disabled");
     }
 }
 
@@ -134,7 +134,7 @@ default
     {
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
-		g_fFactor = 5.0 / 6.0;
+		g_fFactor = 7.0 / 8.0;
 		llPassTouches(TRUE);
         llStopSound();
 		CheckSoundFiles();
@@ -181,7 +181,7 @@ default
 		string sMsg = llList2String(lParams, 1);
 		
 		Debug("no changes? backround on/off? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
-		if ((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) return; //no "backround sound off" currently
+		if (((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) || "110" ==sMsg) return; //no "backround sound off" currently, 110 = Sound.lsl
 		Debug("work on link_message");
 		
 		g_fSoundVolumeNew = (float)sVal;
@@ -190,9 +190,9 @@ default
 			//simple adjustment to different fire sizes (full, at start, when special B_Sound message with sMsg = -1)
 			if ("-1" == sMsg) g_fFactor = 1.0;
 				else if ( 0 < (integer)sMsg && 100 >= (integer)sMsg) {
-						if ((integer)sMsg <= 15 ) g_fFactor = 4.0 / 5.0;
-							else g_fFactor = 5.0 / 6.0;
-					} else if ("" != sMsg && (integer)g_sSize <= 15 ) g_fFactor = 4.0 / 5.0; //fallback - is this still needed?
+						if ((integer)sMsg <= 15 ) g_fFactor = 5.0 / 6.0;
+							else g_fFactor = 7.0 / 8.0;
+					} else if ("" != sMsg && (integer)g_sSize <= 15 ) g_fFactor = 5.0 / 6.0; //fallback - is this still needed?
 						else if ("" != sMsg && (integer)g_sSize > 15 && 100 <= (integer)g_sSize) g_fFactor = 5.0 / 6.0;
 			Debug("Factor calculated "+(string)g_fFactor);
 			float fSoundVolumeF = g_fSoundVolumeNew*g_fFactor;
@@ -206,17 +206,18 @@ default
 				llStopSound(); // just in case...
 				llSleep(2); //make sounds synchronus
 				llLoopSound(BACKSOUNDFILE, fSoundVolumeF);
+				if (g_iVerbose) llWhisper(0, "Fire emits a crackling background sound");
 			}
-			if ("" != sMsg) g_sSize = sMsg;
 			g_fSoundVolumeCur = g_fSoundVolumeNew;
 			g_fSoundVolumeCurF = fSoundVolumeF;
+			if ("" != sMsg) g_sSize = sMsg;
 		} else {
-			Debug("stop");
-			if (g_iVerbose) llWhisper(0, "Backround noise fading out...");
-			llSleep(7); // wait ... better would be to fade out
+			llWhisper(0, "Background fire noises getting quieter and quieter...");
+			llSleep(11); // wait ... better would be to fade out
 			llStopSound();
-			llWhisper(0, "Backround noise off");
+			if (g_iVerbose) llWhisper(0, "Background noise off");
 			g_fSoundVolumeNew = g_fSoundVolumeCur = g_fSoundVolumeCurF = 0.0;
+			g_sSize = "0";
 		}
     }
 }

@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//15. Dec. 2013
-//v0.41
+//17. Dec. 2013
+//v0.44
 //
 //
 // (Realfire by Rene)
@@ -27,6 +27,7 @@
 //bug: soundpreload on touch is useless in child prim
 
 //todo: decide if touch event should really block touch on child prim and how to preload sound
+//todo: think about fire size = 0 what happens to normal sound (B-sound would just go working on)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -64,13 +65,13 @@ string g_sCurrentSoundFile = g_sSoundFileMedium2;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";     // title
-string g_sVersion = "0.41";       // version
+string g_sVersion = "0.44";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
 float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
-string g_sSize;
+string g_sSize = "0";
 
 // Constants
 integer SOUND_CHANNEL = -10956;  // smoke channel
@@ -112,18 +113,19 @@ CheckSoundFiles()
 
 SelectSound(float fMsg)
 {
+	Debug("SelectSound: "+(string)fMsg);
 	if (fMsg <= 25) {
 			g_sCurrentSoundFile = g_sSoundFileSmall;
 	} else if (fMsg > 25 && fMsg <= 50) {
 		g_sCurrentSoundFile = g_sSoundFileMedium1;
 	} else if (fMsg > 50 && fMsg < 80) {
 			g_sCurrentSoundFile = g_sSoundFileMedium2;
-	} else if (fMsg >= 80) {
+	} else if (fMsg >= 80 && fMsg <= 100) {
 			g_sCurrentSoundFile = g_sSoundFileFull;
 	} else {
 		Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-");
 		if (g_fSoundVolumeNew > 0) llPlaySound(g_sSoundFileMedium1, g_fSoundVolumeNew); //preloaded on touch
-		g_sSize = "110";
+		g_sSize = "0";
 		return;
 	}
 	g_sSize = (string)fMsg;
@@ -134,9 +136,9 @@ InfoLines()
 	if (g_iSound && g_iSoundAvail) llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
 			else llWhisper(0, g_sTitle + " " + g_sVersion + " not ready");
 	if (g_iVerbose) {
-		if (g_iSoundAvail) llWhisper(0, "Sound object in inventory found: Yes");
-            else llWhisper(0, "All Sound objects in inventory found: No");
-		if (!g_iSound) llWhisper(0, g_sTitle+" script disabled");
+		if (g_iSoundAvail) llWhisper(0, g_sTitle+" - Sound object in inventory found: Yes");
+            else llWhisper(0, g_sTitle+" / "+ g_sScriptName +" - All Sound objects in inventory found: No");
+		if (!g_iSound) llWhisper(0, g_sTitle+" / "+ g_sScriptName +" script disabled");
     }
 }
 
@@ -203,22 +205,28 @@ default
 		
 		g_fSoundVolumeNew = (float)sVal;
 		//change sound while sound is off
-		if (0 == g_fSoundVolumeNew && sMsg != g_sSize && "" != sMsg) {
+		if (0 == g_fSoundVolumeNew && sMsg != g_sSize && "" != sMsg && "0" != sMsg) {
 			SelectSound((float)sMsg);
 			Debug("change while off");
 			return;
 		}
 		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1) {
 			if ("" == sMsg || sMsg == g_sSize) {
-				Debug("Vol-adjust");
-				if (g_fSoundVolumeCur > 0) llAdjustSoundVolume(g_fSoundVolumeNew);
-					else llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
+				if (g_fSoundVolumeCur > 0) {
+					llAdjustSoundVolume(g_fSoundVolumeNew);
+					if (g_iVerbose) llWhisper(0, "Fire changes it's volume level");
+				} else {
+					llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
+					if (g_iVerbose) llWhisper(0, "The fire starts to make some noise");
+				}
 				g_fSoundVolumeCur = g_fSoundVolumeNew;
 				return;
 			}
 
+			string sCurrentSoundFileTemp = g_sCurrentSoundFile;
 			SelectSound((float)sMsg);
-			if ("start" == g_sSize) return;
+			if ("110" == sMsg || g_sCurrentSoundFile == sCurrentSoundFileTemp) return;
+			if (g_iVerbose && "0" != g_sSize) llWhisper(0, "The fire changes it's sound");
 			Debug("play sound: "+g_sCurrentSoundFile);
 			
 			llPreloadSound(g_sCurrentSoundFile);
@@ -226,9 +234,11 @@ default
 			llStopSound();
 			llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
 		} else {
-				Debug("stop");
+				llSleep(1);
 				llStopSound();
+				if (g_iVerbose) llWhisper(0, "Noise from fire ended");
 				g_fSoundVolumeNew =g_fSoundVolumeCur = 0.0;
+				g_sSize = "0";
 			}
     }
 }

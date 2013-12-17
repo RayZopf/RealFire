@@ -15,8 +15,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl
-//11. Dec. 2013
-//v2.2-0.42
+//16. Dec. 2013
+//v2.2-0.43
 
 //Files:
 //Smoke.lsl
@@ -61,6 +61,7 @@ integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 //user changeable variables
 //-----------------------------------------------
 integer g_iSmoke = TRUE;			// Smoke on/off in this prim
+integer g_iVerbose = TRUE;
 
 // Particle parameters
 float g_fAge = 10.0;               // life of each particle
@@ -72,10 +73,10 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2-0.42";       // version
+string g_sVersion = "2.2-0.43";       // version
 string g_sScriptName;
 
-string g_sSize;
+string g_sSize = "0";
 
 // Constants
 integer SMOKE_CHANNEL = -10957;  // smoke channel
@@ -121,7 +122,7 @@ default
 		//do some linked message to register with Fire.lsl
 		llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)g_iSmoke, (key)g_sScriptName);
         if (g_iSmoke) llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
-			else llWhisper(0, g_sTitle + " " + g_sVersion + " disabled");
+			else if (g_iVerbose) llWhisper(0, g_sTitle + " " + g_sVersion + " (" + g_sScriptName + ") disabled");
     }
 
     on_rez(integer start_param)
@@ -134,7 +135,7 @@ default
 		if (change & CHANGED_INVENTORY) {
 			llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)g_iSmoke, (key)g_sScriptName);
 			if (g_iSmoke) llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
-				else llWhisper(0, g_sTitle + " " + g_sVersion + " disabled");
+				else if (g_iVerbose) llWhisper(0, g_sTitle + " " + g_sVersion + " (" + g_sScriptName + ") disabled");
 		}
     }
 	
@@ -169,10 +170,12 @@ default
 				PSYS_PART_FOLLOW_VELOCITY_MASK |
 				PSYS_PART_INTERP_COLOR_MASK |
 				PSYS_PART_INTERP_SCALE_MASK ]);
+				if (g_iVerbose && "0"!= g_sSize) llWhisper(0, "Smoke changes it's appearance");
 		} else {
 			llWhisper(0, "Fumes are fading");
-			llSleep(9);
+			llSleep(15);
 			llParticleSystem([]);
+			if (g_iVerbose) llWhisper(0, "Smoke vanished");
 			Debug("smoke particles off");
 		}
 		g_sSize = sMsg;
