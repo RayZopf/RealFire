@@ -21,8 +21,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound
-//17. Dec. 2013
-//v2.2-0.74
+//18. Dec. 2013
+//v2.2-0.75
 
 //Files:
 //Fire.lsl
@@ -55,7 +55,10 @@
 //todo: integrate B-Sound  - use key in lllinkedmessage/link_message to differentiate; add backround sound off
 //todo: scale for effect 0<=x<=100, -1 backround, 110 Sound start -- don't confuse with volume
 //todo: prim fire / temp rezzer / flexi prim
-//todo: sparkles via temp prims
+//todo: sparkles
+//todo: fire via particles, using textures?!
+//todo: check //PSYS_PART_RIBBON_MASK effect
+//todo: maybe en-/disable //PSYS_PART_WIND_MASK, if fire is out-/inside (test effect!)
 //todo: longer break between automatic fire off and going on again, also make fire slowly bigger... and let fire burn down slower (look into function)
 //todo: make 5% lowest setting (glowing)? and adjust fire (100%)  - is way too big for the fireplace
 //todo: better smoke (color, intensity, change when fire changes) - rework smoke in updateSize (currently only changed when size<=25)
@@ -89,16 +92,17 @@ integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 //user changeable variables
 //-----------------------------------------------
 string NOTECARD = "config";     // notecard name
-string SOUNDSCRIPT = "Sound.lsl";
-string BACKSOUNDSCRIPT = "B-Sound.lsl";
-string SMOKESCRIPT = "Smoke.lsl";
-string SPARKSSCRIPT = "Sparks.lsl";
-string AANIMATIONSCRIPT = "Animation.lsl";
+string SOUNDSCRIPT = "Sound.lsl"; //normal sounds
+string BACKSOUNDSCRIPT = "B-Sound.lsl"; //only one (backround, quieter) sound
+string SMOKESCRIPT = "Smoke.lsl";	//script for smoke particles from a second prim
+string SPARKSSCRIPT = "Sparks.lsl"; //script for particles from a third prim
+string TEXTANIMSCRIPT = "Animation.lsl"; //script that handles texture animations (for each single prim)
+string PRIMFIREANIMSCRIPT = "P-Anim.lsl"; //script to create temporary flexi prim (Fire)
 
 // Particle parameters
 float g_fAge = 1.0;                // particle lifetime
 float g_fRate = 0.1;               // particle burst rate
-integer g_fCount = 10;             // particle count
+integer g_iCount = 10;             // particle count
 vector g_vStartScale = <0.4, 2, 0>;// particle start size (100%)
 vector g_vEndScale = <0.4, 2, 0>;  // particle end size (100%)
 float g_fMinSpeed = 0.0;           // particle min. burst speed (100%)
@@ -112,7 +116,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2-0.74";         // version
+string g_sVersion = "2.2-0.75";         // version
 string g_sScriptName;
 
 // Constants
@@ -608,7 +612,7 @@ reset()
 	sendMessage(SMOKE_CHANNEL, "0", "");
 	sendMessage(SOUND_CHANNEL, "0", "");
 	llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
-	if (g_iVerbose) llWhisper(0, "The fire is taken care off");
+	if (g_iVerbose) llWhisper(0, "The fire get's taken care off");
 }
 
 startSystem()
@@ -667,26 +671,51 @@ stopSystem()
 updateParticles(vector start, vector end, float min, float max, float radius, vector push)
 {
     llParticleSystem ([
-        PSYS_SRC_PATTERN, PSYS_SRC_PATTERN_EXPLODE,
+	//System Behavior
+        PSYS_PART_FLAGS,
+          0 |
+			//PSYS_PART_BOUNCE_MASK |
+          PSYS_PART_EMISSIVE_MASK |
+			//PSYS_PART_FOLLOW_SRC_MASK |
+			//PSYS_PART_FOLLOW_VELOCITY_MASK |
+          PSYS_PART_INTERP_COLOR_MASK |
+          PSYS_PART_INTERP_SCALE_MASK, // |
+			//PSYS_PART_RIBBON_MASK |
+		  	//PSYS_PART_TARGET_LINEAR_MASK |
+			//PSYS_PART_TARGET_POS_MASK |
+			////PSYS_PART_WIND_MASK,
+	//System Presentation
+        PSYS_SRC_PATTERN, 
+		  PSYS_SRC_PATTERN_EXPLODE, //|
+			//PSYS_SRC_PATTERN_ANGLE_CONE |
+			//PSYS_SRC_PATTERN_ANGLE |
+			////PSYS_SRC_PATTERN_DROP,
+        PSYS_SRC_BURST_RADIUS, radius,
+			//PSYS_SRC_ANGLE_BEGIN, float,
+			//PSYS_SRC_ANGLE_END, float,
+			//PSYS_SRC_TARGET_KEY, key,
+	//Particle Appearance
         PSYS_PART_START_COLOR, g_vStartColor,
         PSYS_PART_END_COLOR, g_vEndColor,
         PSYS_PART_START_ALPHA, 1.0,
         PSYS_PART_END_ALPHA, 0.0,
         PSYS_PART_START_SCALE, start,
         PSYS_PART_END_SCALE, end,
+			//PSYS_SRC_TEXTURE, string,
+			//PSYS_PART_START_GLOW, float,
+			//PSYS_PART_END_GLOW, float,
+	//Particle Blending
+	//Particle Flow
+			//PSYS_SRC_MAX_AGE, float,
         PSYS_PART_MAX_AGE, g_fAge,
         PSYS_SRC_BURST_RATE, g_fRate,
-        PSYS_SRC_BURST_PART_COUNT, g_fCount,
-        PSYS_SRC_BURST_SPEED_MIN, min,
-        PSYS_SRC_BURST_SPEED_MAX, max,
-        PSYS_SRC_BURST_RADIUS, radius,
+        PSYS_SRC_BURST_PART_COUNT, g_iCount,
+	//Particle Motion
         PSYS_SRC_ACCEL, push,
-        PSYS_PART_FLAGS,
-        0 |
-        PSYS_PART_EMISSIVE_MASK |
-        PSYS_PART_FOLLOW_VELOCITY_MASK |
-        PSYS_PART_INTERP_COLOR_MASK |
-        PSYS_PART_INTERP_SCALE_MASK ]);
+			//PSYS_SRC_OMEGA, vector,
+        PSYS_SRC_BURST_SPEED_MIN, min,
+        PSYS_SRC_BURST_SPEED_MAX, max
+	]);
 }
 
 
@@ -733,7 +762,7 @@ default
 		g_sScriptName = llGetScriptName();
 		
 		stopSystem();
-        Debug("Particle count: " + (string)llRound((float)g_fCount * g_fAge / g_fRate));
+        Debug("Particle count: " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
         Debug((string)llGetFreeMemory() + " bytes free");
 		llWhisper(0, "RealFire by Rene10957\n + Enhancements by Zopf");
 	    llWhisper(0, "Touch to start/stop fire\n *Long touch to show menu*");

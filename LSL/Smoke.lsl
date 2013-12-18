@@ -15,8 +15,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl
-//16. Dec. 2013
-//v2.2-0.43
+//18. Dec. 2013
+//v2.2-0.44
 
 //Files:
 //Smoke.lsl
@@ -37,6 +37,7 @@
 //bug: if smoke is turned off via menu, llSleep still applies
 
 //todo: more natural smoke according to fire intensity - low fire with more fume, black smoke, smoke after fire is off, smoke fading instead of turning off
+//todo: en-/disable //PSYS_PART_WIND_MASK, if fire is out-/inside
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -73,7 +74,7 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2-0.43";       // version
+string g_sVersion = "2.2-0.44";       // version
 string g_sScriptName;
 
 string g_sSize = "0";
@@ -149,27 +150,52 @@ default
         if ((float)sMsg > 0 && (float)sMsg <= 100) {
 			float fAlpha = g_fStartAlpha / 100.0 * (float)sMsg;
 			Debug("fAlpha " + (string)fAlpha);
-			llParticleSystem([
-				PSYS_SRC_PATTERN, PSYS_SRC_PATTERN_EXPLODE,
+		    llParticleSystem ([
+			//System Behavior
+				PSYS_PART_FLAGS,
+	  			  0 |
+					//PSYS_PART_BOUNCE_MASK |
+					//PSYS_PART_EMISSIVE_MASK |
+					//PSYS_PART_FOLLOW_SRC_MASK |
+					//PSYS_PART_FOLLOW_VELOCITY_MASK |
+				  PSYS_PART_INTERP_COLOR_MASK |
+				  PSYS_PART_INTERP_SCALE_MASK, // |
+					//PSYS_PART_RIBBON_MASK |
+					//PSYS_PART_TARGET_LINEAR_MASK |
+					//PSYS_PART_TARGET_POS_MASK |
+					////PSYS_PART_WIND_MASK,
+			//System Presentation
+				PSYS_SRC_PATTERN, 
+				  PSYS_SRC_PATTERN_EXPLODE, //|
+					//PSYS_SRC_PATTERN_ANGLE_CONE |
+					//PSYS_SRC_PATTERN_ANGLE |
+					////PSYS_SRC_PATTERN_DROP,
+				  PSYS_SRC_BURST_RADIUS, 0.1,
+					//PSYS_SRC_ANGLE_BEGIN, float,
+					//PSYS_SRC_ANGLE_END, float,
+					//PSYS_SRC_TARGET_KEY, key,
+			//Particle Appearance
 				PSYS_PART_START_COLOR, <0.5, 0.5, 0.5>,
 				PSYS_PART_END_COLOR, <0.5, 0.5, 0.5>,
 				PSYS_PART_START_ALPHA, fAlpha,
 				PSYS_PART_END_ALPHA, 0.0,
 				PSYS_PART_START_SCALE, <0.1, 0.1, 0.0>,
 				PSYS_PART_END_SCALE, <3.0, 3.0, 0.0>,
+					//PSYS_SRC_TEXTURE, string,
+					//PSYS_PART_START_GLOW, float,
+					//PSYS_PART_END_GLOW, float,
+			//Particle Blending
+			//Particle Flow
+					//PSYS_SRC_MAX_AGE, float,
 				PSYS_PART_MAX_AGE, g_fAge,
 				PSYS_SRC_BURST_RATE, g_fRate,
 				PSYS_SRC_BURST_PART_COUNT, g_iCount,
-				PSYS_SRC_BURST_SPEED_MIN, 0.0,
-				PSYS_SRC_BURST_SPEED_MAX, 0.1,
-				PSYS_SRC_BURST_RADIUS, 0.1,
+			//Particle Motion
 				PSYS_SRC_ACCEL, <0.0, 0.0, 0.2>,
-				PSYS_PART_FLAGS,
-				0 |
-				PSYS_PART_EMISSIVE_MASK |
-				PSYS_PART_FOLLOW_VELOCITY_MASK |
-				PSYS_PART_INTERP_COLOR_MASK |
-				PSYS_PART_INTERP_SCALE_MASK ]);
+					//PSYS_SRC_OMEGA, vector,
+				PSYS_SRC_BURST_SPEED_MIN, 0.0,
+				PSYS_SRC_BURST_SPEED_MAX, 0.1
+			]);
 				if (g_iVerbose && "0"!= g_sSize) llWhisper(0, "Smoke changes it's appearance");
 		} else {
 			llWhisper(0, "Fumes are fading");
