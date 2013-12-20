@@ -38,6 +38,8 @@
 
 //todo: more natural smoke according to fire intensity - low fire with more fume, black smoke, smoke after fire is off, smoke fading instead of turning off
 //todo: en-/disable //PSYS_PART_WIND_MASK, if fire is out-/inside
+//todo: better use cone instead of explode (radius) + cone (placement)
+//todo: smoke reflecting fire light
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 

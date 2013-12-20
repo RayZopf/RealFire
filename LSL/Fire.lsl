@@ -49,19 +49,20 @@
 //bug: on notcard change, connection to smoke and sound gets lost
 
 //todo: make sound configurable via notecard - maybe own config file?
-//todo: better way to handle sound change / not changing on fire size change
 //todo: keep sound running for a short time after turning fire off
 //todo: sound preload on touch
 //todo: integrate B-Sound  - use key in lllinkedmessage/link_message to differentiate; add backround sound off
 //todo: scale for effect 0<=x<=100, -1 backround, 110 Sound start -- don't confuse with volume
-//todo: prim fire / temp rezzer / flexi prim
+//todo: prim fire / flexi prim (need to move/rotate it) / sculpted prims ----- temp rezzer 
 //todo: sparkles
 //todo: fire via particles, using textures?!
 //todo: check //PSYS_PART_RIBBON_MASK effect
 //todo: maybe en-/disable //PSYS_PART_WIND_MASK, if fire is out-/inside (test effect!)
+//todo: test cone instead of explode (radius) + angle (placement)
 //todo: longer break between automatic fire off and going on again, also make fire slowly bigger... and let fire burn down slower (look into function)
 //todo: make 5% lowest setting (glowing)? and adjust fire (100%)  - is way too big for the fireplace
 //todo: better smoke (color, intensity, change when fire changes) - rework smoke in updateSize (currently only changed when size<=25)
+//todo: smoke with textures
 //todo: check change smoke while smoke is off
 //todo: let sound script do calculation of sound percentage, as smoke does it
 //todo: add ping/pong with other scripts in case only fire.lsl gets resetted
@@ -69,6 +70,9 @@
 //todo: move object animation to own script too?
 //todo: ability to change burndown/restart
 //todo: fire size = 0 - but sound on + volume --> at least background sound (glowing embers)
+//todo: HUD?
+//todo: play with llListen()
+//todo: always check for llGetFreeMemory()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
