@@ -1,0 +1,15 @@
+Received: (qmail 6113 invoked by alias); 31 Dec 2013 16:54:59 -0000
+Received: (qmail 6110 invoked by uid 453); 31 Dec 2013 16:54:59 -0000
+Received: from sim10269.agni.lindenlab.com (HELO sim10269.agni.lindenlab.com) (216.82.49.191)
+    by local (qpsmtpd/0.84) with (AES256-SHA encrypted) ESMTPS; Tue, 31 Dec 2013 17:54:54 +0100
+Received: from lindenlab.com (localhost [127.0.0.1])
+	by sim10269.agni.lindenlab.com (Postfix) with SMTP id A541D4EC78
+	for <zopf@xxx.xx; Tue, 31 Dec 2013 16:54:42 +0000 (UTC)
+From: "Xemem Kultus" <jshghptcfs6a5sti767zy4c6be24p5hgc6jfk6ogr4fvlqmazmhoqoivrcd3xv6v@im.agni.lindenlab.com>
+To: "Zopf" <zopf@xxx.xx>
+Subject: Message From Second Life
+Content-Type: text/plain; charset=utf-8
+MIME-Version: 1.0
+Date: Tue, 31 Dec 2013 16:54:42 +0000 (UTC)
+
+[16:53] Xemem Kultus: ...officially, so that no one gets a bug up their ass, treat it as any full perm object (as it says full perm in the listing). Basically meaning as long as you don't simply repackage it 'as is'. you should be fine.
