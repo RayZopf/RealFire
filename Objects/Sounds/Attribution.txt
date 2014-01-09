@@ -1,9 +1,11 @@
 Sounds from http://freesound.org/
 
-License as found for all four samples:
+License as found for all five samples:
 This work is licensed under the Attribution License.
 http://creativecommons.org/licenses/by/3.0/
 
+75145__willc2-45220__struck-match-8b-22k-1-65s.aif by willc2_45220
+	http://freesound.org/people/willc2_45220/sounds/75145/
 
 fire.crackling.mp3 by dobroide@freesound.org
 	http://freesound.org/people/dobroide/

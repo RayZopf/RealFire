@@ -13,6 +13,8 @@ Sounds: http://freesound.org/
 	fire.crackling.mp3 by dobroide@freesound.org
 	
 	more:
+	http://freesound.org/people/willc2_45220/sounds/75145/
+	75145__willc2-45220__struck-match-8b-22k-1-65s.aif by willc2_45220
 	http://freesound.org/people/Krisboruff/sounds/17742/
 	Fire_Crackles(No Room).wav by Krisboruff
 	http://freesound.org/people/Glaneur%20de%20sons/sounds/104957/
