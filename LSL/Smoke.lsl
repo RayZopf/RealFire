@@ -15,8 +15,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl
-//18. Dec. 2013
-//v2.2-0.44
+//09. Jan. 2014
+//v2.2-0.45
 
 //Files:
 //Smoke.lsl
@@ -40,6 +40,7 @@
 //todo: en-/disable //PSYS_PART_WIND_MASK, if fire is out-/inside
 //todo: better use cone instead of explode (radius) + cone (placement)
 //todo: smoke reflecting fire light
+//todo: check if other sound scripts are in same prim
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -76,12 +77,13 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2-0.44";       // version
+string g_sVersion = "2.2-0.45";       // version
 string g_sScriptName;
 
 string g_sSize = "0";
 
-// Constants
+//RealFire MESSAGE MAP
+integer COMMAND_CHANNEL = -10950;
 integer SMOKE_CHANNEL = -10957;  // smoke channel
 
 
@@ -105,7 +107,16 @@ Debug(string sMsg)
     llOwnerSay("DEBUG: "+ g_sScriptName + "; " + sMsg);
 }
 
+RegisterExtension()
+{
+	llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)g_iSmoke, (key)g_sScriptName);
+}
 
+InfoLines()
+{
+    if (g_iSmoke) llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
+		else if (g_iVerbose) llWhisper(0, g_sTitle + " " + g_sVersion + " (" + g_sScriptName + ") disabled");
+}
 
 //===============================================
 //===============================================
@@ -123,9 +134,8 @@ default
         llParticleSystem([]);
 		llSleep(1);
 		//do some linked message to register with Fire.lsl
-		llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)g_iSmoke, (key)g_sScriptName);
-        if (g_iSmoke) llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
-			else if (g_iVerbose) llWhisper(0, g_sTitle + " " + g_sVersion + " (" + g_sScriptName + ") disabled");
+		RegisterExtension();
+		InfoLines();
     }
 
     on_rez(integer start_param)
@@ -136,9 +146,8 @@ default
 	changed(integer change)
     {
 		if (change & CHANGED_INVENTORY) {
-			llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)g_iSmoke, (key)g_sScriptName);
-			if (g_iSmoke) llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
-				else if (g_iVerbose) llWhisper(0, g_sTitle + " " + g_sVersion + " (" + g_sScriptName + ") disabled");
+			RegisterExtension();
+			InfoLines();
 		}
     }
 	
@@ -147,6 +156,8 @@ default
     link_message(integer iSender, integer iNumber, string sMsg, key kId)
     {
 		Debug("link_message = channel " + (string)iNumber + "; sMsg " + sMsg + "; kId " + (string)kId+" ...g_sSize "+g_sSize);
+		if (iChan == COMMAND_CHANNEL) RegisterExtension();
+		
         if (iNumber != SMOKE_CHANNEL || !g_iSmoke || sMsg == g_sSize) return;
 
         if ((float)sMsg > 0 && (float)sMsg <= 100) {

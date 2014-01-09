@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//17. Dec. 2013
-//v0.24
+//09. Jan. 2014
+//v0.3
 //
 //
 // (Realfire by Rene)
@@ -28,9 +28,10 @@
 //bug: soundpreload on touch is useless in child prim
 
 //todo: decide if touch event should really block touch on child prim and how to preload sound
-//todo: simplify to use only one sound file as backround noise (at half the normal volume)
+//todo: simplify to use only one sound file as background noise (at half? the normal volume - volume == volume falloff!!!)
 //todo: sMsg has to be changed in Fire.lsl
 //todo: make sounds from different prims asynchronus
+//todo: check if other sound scripts are in same prim
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -63,7 +64,7 @@ string BACKSOUNDFILE ="17742__krisboruff__fire-crackles-no-room";               
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";     // title
-string g_sVersion = "0.24";       // version
+string g_sVersion = "0.3";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
@@ -73,7 +74,8 @@ float g_fSoundVolumeNew;
 string g_sSize = "0";
 float g_fFactor;
 
-// Constants
+//RealFire MESSAGE MAP
+integer COMMAND_CHANNEL = -10950;
 integer SOUND_CHANNEL = -10956;  // smoke channel
 
 
@@ -109,15 +111,20 @@ CheckSoundFiles()
 	} else g_iSoundAvail = FALSE;
 }
 
+RegisterExtension()
+{
+	if (g_iSound && g_iSoundAvail) llMessageLinked(LINK_SET, SOUND_CHANNEL, "1", (key)g_sScriptName);
+		else llMessageLinked(LINK_SET, SOUND_CHANNEL, "0", (key)g_sScriptName);
+}
 
 InfoLines()
 {
-	if (g_iSound && g_iSoundAvail) llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
-			else llWhisper(0, g_sTitle + " " + g_sVersion + " not ready");
 	if (g_iVerbose) {
 		if (g_iSoundAvail) llWhisper(0, g_sTitle+" - Sound object in inventory found: Yes");
             else llWhisper(0, g_sTitle+" / "+ g_sScriptName +" - All Sound objects in inventory found: No");
 		if (!g_iSound) llWhisper(0, g_sTitle+" / "+ g_sScriptName +" script disabled");
+	if (g_iSound && g_iSoundAvail) llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
+			else llWhisper(0, g_sTitle + " " + g_sVersion + " not ready");
     }
 }
 
@@ -139,8 +146,7 @@ default
         llStopSound();
 		CheckSoundFiles();
 		llSleep(1);
-		if (g_iSound && g_iSoundAvail) llMessageLinked(LINK_SET, SOUND_CHANNEL, "1", (key)g_sScriptName);
-			else llMessageLinked(LINK_SET, SOUND_CHANNEL, "0", (key)g_sScriptName);
+		RegisterExtension();
 		InfoLines();
     }
 
@@ -162,8 +168,7 @@ default
 			llStopSound();
 			CheckSoundFiles();
 			llSleep(1);
-			if (g_iSound && g_iSoundAvail) llMessageLinked(LINK_SET, SOUND_CHANNEL, "1", (key)g_sScriptName);
-				else llMessageLinked(LINK_SET, SOUND_CHANNEL, "0", (key)g_sScriptName);
+			RegisterExtension();
 			InfoLines();
 		}
     }
@@ -174,6 +179,7 @@ default
     link_message(integer iSender, integer iChan, string sSoundSet, key kId)
     {
 		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);
+		if (iChan == COMMAND_CHANNEL) RegisterExtension();	
 		
         if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail || llSubStringIndex(llToLower((string)kId), "sound") >= 0) return; //sound scripts need to have sound in their name, so that we can discard those messages!
 		list lParams = llParseString2List(sSoundSet, [","], []);

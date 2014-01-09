@@ -21,8 +21,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound
-//18. Dec. 2013
-//v2.2-0.75
+//09. Jan. 2014
+//v2.2-0.77
 
 //Files:
 //Fire.lsl
@@ -51,6 +51,7 @@
 //todo: make sound configurable via notecard - maybe own config file?
 //todo: keep sound running for a short time after turning fire off
 //todo: sound preload on touch
+//todo: sound seems to get called twice
 //todo: integrate B-Sound  - use key in lllinkedmessage/link_message to differentiate; add backround sound off
 //todo: scale for effect 0<=x<=100, -1 backround, 110 Sound start -- don't confuse with volume
 //todo: prim fire / flexi prim (need to move/rotate it) / sculpted prims ----- temp rezzer 
@@ -73,6 +74,7 @@
 //todo: HUD?
 //todo: play with llListen()
 //todo: always check for llGetFreeMemory()
+//todo: check if other particle scripts are in same prim
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -120,8 +122,10 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2-0.75";         // version
+string g_sVersion = "2.2-0.77";         // version
 string g_sScriptName;
+string g_sAuthors = "Rene10957, Zopf";
+
 
 // Constants
 integer ACCESS_OWNER = 4;            // owner access bit
@@ -134,8 +138,9 @@ float MAX_FALLOFF = 2.0;         // max. light falloff
 float MAX_VOLUME = 1.0;          // max. volume for sound
 
 //RealFire MESSAGE MAP
+integer COMMAND_CHANNEL = -10950;
 integer SMOKE_CHANNEL = -10957;  // smoke channel
-integer SOUND_CHANNEL = -10956;  // smoke channel
+integer SOUND_CHANNEL = -10956;  // sound channel
 
 
 // Notecard variables
@@ -768,8 +773,9 @@ default
 		stopSystem();
         Debug("Particle count: " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
         Debug((string)llGetFreeMemory() + " bytes free");
-		llWhisper(0, "RealFire by Rene10957\n + Enhancements by Zopf");
+		llWhisper(0, "RealFire by "+g_sAuthors);
 	    llWhisper(0, "Touch to start/stop fire\n *Long touch to show menu*");
+		llMessageLinked(LINK_SET, COMMAND_CHANNEL, "register", (key)g_sScriptName);
 		if (g_iVerbose) llWhisper(0, "Loading notecard...");
 		loadNotecard();
      }
@@ -903,6 +909,7 @@ default
     {
         Debug("link_message= channel" + (string)iChan + "; Message " + sMsg + "; " + (string)kId);
 		
+		if (iChan == COMMAND_CHANNEL) return;
 		if (iChan == SMOKE_CHANNEL) {
 			if ("1" == sMsg) {
 				g_iSmokeAvail = TRUE;
