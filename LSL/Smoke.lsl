@@ -153,12 +153,12 @@ default
 	
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-    link_message(integer iSender, integer iNumber, string sMsg, key kId)
+    link_message(integer iSender, integer iChan, string sMsg, key kId)
     {
-		Debug("link_message = channel " + (string)iNumber + "; sMsg " + sMsg + "; kId " + (string)kId+" ...g_sSize "+g_sSize);
+		Debug("link_message = channel " + (string)iChan + "; sMsg " + sMsg + "; kId " + (string)kId+" ...g_sSize "+g_sSize);
 		if (iChan == COMMAND_CHANNEL) RegisterExtension();
 		
-        if (iNumber != SMOKE_CHANNEL || !g_iSmoke || sMsg == g_sSize) return;
+        if (iChan != SMOKE_CHANNEL || !g_iSmoke || sMsg == g_sSize) return;
 
         if ((float)sMsg > 0 && (float)sMsg <= 100) {
 			float fAlpha = g_fStartAlpha / 100.0 * (float)sMsg;
