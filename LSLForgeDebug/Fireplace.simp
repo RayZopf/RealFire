@@ -1,0 +1,322 @@
+<worldNode>
+  <nodeName>Home</nodeName>
+  <value class="string"></value>
+  <childrenArray>
+    <anyNaturalNode>
+      <displayName>max_time</displayName>
+      <nodeName>max_time</nodeName>
+      <value class="int">10000000</value>
+      <childrenArray/>
+    </anyNaturalNode>
+    <eventHandlerNode>
+      <nodeName>event-handler</nodeName>
+      <childrenArray/>
+    </eventHandlerNode>
+    <defaultAvatarNode>
+      <nodeName>Default Avatar</nodeName>
+      <childrenArray>
+        <avatarPropertiesNode>
+          <nodeName>avatar-properties</nodeName>
+          <childrenArray>
+            <gridPositionNode>
+              <nodeName>pos</nodeName>
+              <childrenArray>
+                <gridCoordinateNode>
+                  <nodeName>x</nodeName>
+                  <value class="float">128.0</value>
+                  <childrenArray/>
+                </gridCoordinateNode>
+                <gridCoordinateNode>
+                  <nodeName>y</nodeName>
+                  <value class="float">128.0</value>
+                  <childrenArray/>
+                </gridCoordinateNode>
+                <gridCoordinateNode>
+                  <nodeName>z</nodeName>
+                  <value class="float">0.0</value>
+                  <childrenArray/>
+                </gridCoordinateNode>
+              </childrenArray>
+            </gridPositionNode>
+          </childrenArray>
+        </avatarPropertiesNode>
+        <eventHandlerNode>
+          <nodeName>event-handler</nodeName>
+          <childrenArray/>
+        </eventHandlerNode>
+      </childrenArray>
+    </defaultAvatarNode>
+    <avatarNode>
+      <nodeName>Joe Avatar</nodeName>
+      <childrenArray>
+        <avatarPropertiesNode>
+          <nodeName>avatar-properties</nodeName>
+          <childrenArray>
+            <gridPositionNode>
+              <nodeName>pos</nodeName>
+              <childrenArray>
+                <gridCoordinateNode>
+                  <nodeName>x</nodeName>
+                  <value class="float">128.0</value>
+                  <childrenArray/>
+                </gridCoordinateNode>
+                <gridCoordinateNode>
+                  <nodeName>y</nodeName>
+                  <value class="float">128.0</value>
+                  <childrenArray/>
+                </gridCoordinateNode>
+                <gridCoordinateNode>
+                  <nodeName>z</nodeName>
+                  <value class="float">0.0</value>
+                  <childrenArray/>
+                </gridCoordinateNode>
+              </childrenArray>
+            </gridPositionNode>
+          </childrenArray>
+        </avatarPropertiesNode>
+        <eventHandlerNode>
+          <nodeName>event-handler</nodeName>
+          <childrenArray/>
+        </eventHandlerNode>
+      </childrenArray>
+    </avatarNode>
+    <objectNode>
+      <nodeName>Firelog</nodeName>
+      <childrenArray>
+        <objectPropertiesNode>
+          <nodeName>object-properties</nodeName>
+          <childrenArray>
+            <gridPositionNode>
+              <nodeName>pos</nodeName>
+              <childrenArray>
+                <gridCoordinateNode>
+                  <nodeName>x</nodeName>
+                  <value class="float">128.0</value>
+                  <childrenArray/>
+                </gridCoordinateNode>
+                <gridCoordinateNode>
+                  <nodeName>y</nodeName>
+                  <value class="float">128.0</value>
+                  <childrenArray/>
+                </gridCoordinateNode>
+                <gridCoordinateNode>
+                  <nodeName>z</nodeName>
+                  <value class="float">0.0</value>
+                  <childrenArray/>
+                </gridCoordinateNode>
+              </childrenArray>
+            </gridPositionNode>
+          </childrenArray>
+        </objectPropertiesNode>
+        <primNode>
+          <nodeName>Firelog</nodeName>
+          <childrenArray>
+            <primPropertiesNode>
+              <nodeName>prim-properties</nodeName>
+              <childrenArray>
+                <gridPositionNode>
+                  <nodeName>pos</nodeName>
+                  <childrenArray>
+                    <gridCoordinateNode>
+                      <nodeName>x</nodeName>
+                      <value class="float">0.0</value>
+                      <childrenArray/>
+                    </gridCoordinateNode>
+                    <gridCoordinateNode>
+                      <nodeName>y</nodeName>
+                      <value class="float">0.0</value>
+                      <childrenArray/>
+                    </gridCoordinateNode>
+                    <gridCoordinateNode>
+                      <nodeName>z</nodeName>
+                      <value class="float">0.0</value>
+                      <childrenArray/>
+                    </gridCoordinateNode>
+                  </childrenArray>
+                </gridPositionNode>
+                <avatarReferenceNode>
+                  <nodeName>owner</nodeName>
+                  <value class="string">Default Avatar</value>
+                  <childrenArray/>
+                </avatarReferenceNode>
+                <stringNode>
+                  <nodeName>description</nodeName>
+                  <value class="string"></value>
+                  <childrenArray/>
+                </stringNode>
+              </childrenArray>
+            </primPropertiesNode>
+            <scriptNode>
+              <nodeName>Fire</nodeName>
+              <value class="string">RealFire-Rene10957.LSL.Fire.lslp</value>
+              <childrenArray/>
+            </scriptNode>
+            <notecardNode>
+              <nodeName>config</nodeName>
+              <childrenArray>
+                <inventoryPropertiesNode>
+                  <nodeName>properties</nodeName>
+                  <childrenArray>
+                    <avatarReferenceNode>
+                      <nodeName>creator</nodeName>
+                      <value class="string">Default Avatar</value>
+                      <childrenArray/>
+                    </avatarReferenceNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Base Permissions</displayName>
+                      <nodeName>basep</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Owner Permissions</displayName>
+                      <nodeName>ownerp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Group Permissions</displayName>
+                      <nodeName>groupp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Everybody Permissions</displayName>
+                      <nodeName>everybodyp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Next Owner Permissions</displayName>
+                      <nodeName>nextp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                  </childrenArray>
+                </inventoryPropertiesNode>
+                <notecardLineNode>
+                  <nodeName>line</nodeName>
+                  <value class="string">verbose = YES</value>
+                  <childrenArray/>
+                </notecardLineNode>
+                <notecardLineNode>
+                  <nodeName>line</nodeName>
+                  <value class="string">menuAccess = 1</value>
+                  <childrenArray/>
+                </notecardLineNode>
+              </childrenArray>
+            </notecardNode>
+            <scriptNode>
+              <nodeName>B-Sound</nodeName>
+              <value class="string">RealFire-Rene10957.LSL.B-Sound.lslp</value>
+              <childrenArray/>
+            </scriptNode>
+            <soundNode>
+              <nodeName>17742__krisboruff__fire-crackles-no-room</nodeName>
+              <childrenArray>
+                <inventoryPropertiesNode>
+                  <nodeName>properties</nodeName>
+                  <childrenArray>
+                    <avatarReferenceNode>
+                      <nodeName>creator</nodeName>
+                      <value class="string">Default Avatar</value>
+                      <childrenArray/>
+                    </avatarReferenceNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Base Permissions</displayName>
+                      <nodeName>basep</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Owner Permissions</displayName>
+                      <nodeName>ownerp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Group Permissions</displayName>
+                      <nodeName>groupp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Everybody Permissions</displayName>
+                      <nodeName>everybodyp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Next Owner Permissions</displayName>
+                      <nodeName>nextp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-ConstrainedFloatNode>
+                      <min>0.0</min>
+                      <max>10.0</max>
+                      <displayName>Duration</displayName>
+                      <nodeName>duration</nodeName>
+                      <value class="float">9.0</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-ConstrainedFloatNode>
+                  </childrenArray>
+                </inventoryPropertiesNode>
+              </childrenArray>
+            </soundNode>
+          </childrenArray>
+        </primNode>
+        <primNode>
+          <nodeName>Smoke</nodeName>
+          <childrenArray>
+            <primPropertiesNode>
+              <nodeName>prim-properties</nodeName>
+              <childrenArray>
+                <gridPositionNode>
+                  <nodeName>pos</nodeName>
+                  <childrenArray>
+                    <gridCoordinateNode>
+                      <nodeName>x</nodeName>
+                      <value class="float">0.0</value>
+                      <childrenArray/>
+                    </gridCoordinateNode>
+                    <gridCoordinateNode>
+                      <nodeName>y</nodeName>
+                      <value class="float">0.0</value>
+                      <childrenArray/>
+                    </gridCoordinateNode>
+                    <gridCoordinateNode>
+                      <nodeName>z</nodeName>
+                      <value class="float">0.0</value>
+                      <childrenArray/>
+                    </gridCoordinateNode>
+                  </childrenArray>
+                </gridPositionNode>
+                <avatarReferenceNode>
+                  <nodeName>owner</nodeName>
+                  <value class="string">Default Avatar</value>
+                  <childrenArray/>
+                </avatarReferenceNode>
+                <stringNode>
+                  <nodeName>description</nodeName>
+                  <value class="string"></value>
+                  <childrenArray/>
+                </stringNode>
+              </childrenArray>
+            </primPropertiesNode>
+            <scriptNode>
+              <nodeName>Smoke</nodeName>
+              <value class="string">RealFire-Rene10957.LSL.Smoke.lslp</value>
+              <childrenArray/>
+            </scriptNode>
+            <scriptNode>
+              <nodeName>Sound</nodeName>
+              <value class="string">RealFire-Rene10957.LSL.Sound.lslp</value>
+              <childrenArray/>
+            </scriptNode>
+          </childrenArray>
+        </primNode>
+      </childrenArray>
+    </objectNode>
+  </childrenArray>
+</worldNode>

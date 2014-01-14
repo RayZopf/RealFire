@@ -1,0 +1,52 @@
+<tests>
+  <lsl-test>
+    <name>no soundfile-verbose</name>
+    <entryPoint>
+      <fileName>RealFire-Rene10957.LSL.B-Sound.lslp</fileName>
+      <path>default.state_entry</path>
+    </entryPoint>
+    <arguments/>
+    <expectedReturn/>
+    <expectations>
+      <mode>nice</mode>
+      <calls/>
+    </expectations>
+    <initialBindings>
+      <globalBinding>
+        <name>g_iVerbose</name>
+        <value class="lsl-integer">1</value>
+      </globalBinding>
+    </initialBindings>
+    <finalBindings>
+      <globalBinding>
+        <name>g_iSoundAvail</name>
+        <value class="lsl-integer">0</value>
+      </globalBinding>
+    </finalBindings>
+  </lsl-test>
+  <lsl-test>
+    <name>no soundfile-n_verbose</name>
+    <entryPoint>
+      <fileName>RealFire-Rene10957.LSL.B-Sound.lslp</fileName>
+      <path>default.state_entry</path>
+    </entryPoint>
+    <arguments/>
+    <expectedReturn/>
+    <expectations>
+      <mode>nice</mode>
+      <calls/>
+    </expectations>
+    <initialBindings>
+      <globalBinding>
+        <name>g_iVerbose</name>
+        <value class="lsl-integer">0</value>
+      </globalBinding>
+    </initialBindings>
+    <finalBindings>
+      <globalBinding>
+        <name>g_iSoundAvail</name>
+        <value class="lsl-integer">0</value>
+      </globalBinding>
+    </finalBindings>
+  </lsl-test>
+</tests>
