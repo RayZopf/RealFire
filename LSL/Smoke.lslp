@@ -16,7 +16,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
 //14. Jan. 2014
-//v2.2-0.5
+//v2.2-0.51
 
 //Files:
 //Smoke.lsl
@@ -69,7 +69,7 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2-0.5";       // version
+string g_sVersion = "2.2-0.51";       // version
 string g_sScriptName;
 
 string g_sSize = "0";
@@ -83,6 +83,7 @@ integer SMOKE_CHANNEL = -10957;  // smoke channel
 //LSLForge MODULES
 //===============================================
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
+$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSmoke, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSmoke, m_sVersion=g_sVersion);
 $import RegisterExtension.lslm(m_iOn=g_iSmoke, m_iComplete=g_iSmoke, channel=SMOKE_CHANNEL, m_sScriptName=g_sScriptName);
 
 
@@ -90,11 +91,7 @@ $import RegisterExtension.lslm(m_iOn=g_iSmoke, m_iComplete=g_iSmoke, channel=SMO
 //PREDEFINED FUNCTIONS
 //===============================================
 
-InfoLines()
-{
-    if (g_iSmoke) llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
-		else if (g_iVerbose) llWhisper(0, g_sTitle + " " + g_sVersion + " (" + g_sScriptName + ") disabled");
-}
+
 
 //===============================================
 //===============================================

@@ -75,6 +75,7 @@
 //todo: play with llListen()
 //todo: always check for llGetFreeMemory()
 //todo: check if other particle scripts are in same prim
+//todo: rethink system of verbose messages
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -897,6 +898,7 @@ default
 		if (iChan == SMOKE_CHANNEL) {
 			if ("1" == sMsg) {
 				g_iSmokeAvail = TRUE;
+				llWhisper(0, "Smoke effects available");
 				if (g_iDefSmoke && g_iOn) { //if only smoke scripts gets resetted
 					g_iSmokeOn = FALSE; //important to get it toggled
 					toggleFunktion("smoke");
@@ -907,12 +909,16 @@ default
 			}
 		} else if (iChan == SOUND_CHANNEL && llToLower((string)kId) != llToLower(g_sScriptName)) {
 			if ((string)kId == SOUNDSCRIPT) {
-				if ("1" == sMsg) g_iSoundAvail = TRUE;
-					else g_iSoundAvail = FALSE;
+				if ("1" == sMsg) {
+						g_iSoundAvail = TRUE;
+						llWhisper(0, "Sound effects available");
+				} else g_iSoundAvail = FALSE;
 			}
 			if ((string)kId == BACKSOUNDSCRIPT) {
-				if ("1" == sMsg) g_iBackSoundAvail = TRUE;
-					else g_iBackSoundAvail = FALSE;
+				if ("1" == sMsg){
+						g_iBackSoundAvail = TRUE;
+						llWhisper(0, "Ambience sound available");
+				} else g_iBackSoundAvail = FALSE;
 			}
 			if ("1" != sMsg ) llWhisper(0, "Unable to provide sound effects ("+(string)kId+")");	
 		} else if (iChan == g_iMsgNumber) {

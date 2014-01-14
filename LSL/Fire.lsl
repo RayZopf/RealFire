@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Jan 14 03:02:54 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Jan 14 04:50:19 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -76,6 +76,7 @@
 //todo: play with llListen()
 //todo: always check for llGetFreeMemory()
 //todo: check if other particle scripts are in same prim
+//todo: rethink system of verbose messages
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -820,6 +821,7 @@ default {
         if ((iChan == SMOKE_CHANNEL)) {
             if (("1" == sMsg)) {
                 (g_iSmokeAvail = TRUE);
+                llWhisper(0,"Smoke effects available");
                 if ((g_iDefSmoke && g_iOn)) {
                     (g_iSmokeOn = FALSE);
                     toggleFunktion("smoke");
@@ -832,11 +834,17 @@ default {
         }
         else  if (((iChan == SOUND_CHANNEL) && (llToLower(((string)kId)) != llToLower(g_sScriptName)))) {
             if ((((string)kId) == SOUNDSCRIPT)) {
-                if (("1" == sMsg)) (g_iSoundAvail = TRUE);
+                if (("1" == sMsg)) {
+                    (g_iSoundAvail = TRUE);
+                    llWhisper(0,"Sound effects available");
+                }
                 else  (g_iSoundAvail = FALSE);
             }
             if ((((string)kId) == BACKSOUNDSCRIPT)) {
-                if (("1" == sMsg)) (g_iBackSoundAvail = TRUE);
+                if (("1" == sMsg)) {
+                    (g_iBackSoundAvail = TRUE);
+                    llWhisper(0,"Ambience sound available");
+                }
                 else  (g_iBackSoundAvail = FALSE);
             }
             if (("1" != sMsg)) llWhisper(0,(("Unable to provide sound effects (" + ((string)kId)) + ")"));

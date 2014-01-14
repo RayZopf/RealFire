@@ -33,6 +33,7 @@
 //todo: sMsg has to be changed in Fire.lsl
 //todo: make sounds from different prims asynchronus
 //todo: check if other sound scripts are in same prim
+//todo: touch passtrouch/touch event - check if that is handled correctly
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -76,7 +77,7 @@ integer SOUND_CHANNEL = -10956;  // smoke channel
 //LSLForge MODULES
 //===============================================
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
-$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iSoundAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iSound=g_iSound, m_sVersion=g_sVersion);
+$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSound, m_sVersion=g_sVersion);
 $import RegisterExtension.lslm(m_iOn=g_iSound, m_iComplete=g_iSoundAvail, channel=SOUND_CHANNEL, m_sScriptName=g_sScriptName);
 
 
@@ -113,8 +114,8 @@ default
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
 		g_fFactor = 7.0 / 8.0;
-		llPassTouches(TRUE);
-        llStopSound();
+		llPassTouches(TRUE); //this need review!
+        if (g_iSound) llStopSound();
 		CheckSoundFiles();
 		llSleep(1);
 		RegisterExtension(LINK_SET);
@@ -136,7 +137,7 @@ default
     {
 		if (change & CHANGED_INVENTORY) {
 			llWhisper(0, "Inventory changed, checking sound samples...");
-			llStopSound();
+			if (g_iSound) llStopSound();
 			CheckSoundFiles();
 			llSleep(1);
 			RegisterExtension(LINK_SET);
@@ -197,4 +198,8 @@ default
 			g_sSize = "0";
 		}
     }
+    
+//-----------------------------------------------
+//END STATE: default
+//-----------------------------------------------
 }

@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Jan 14 03:02:54 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Jan 14 04:50:19 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -34,6 +34,7 @@
 //todo: sMsg has to be changed in Fire.lsl
 //todo: make sounds from different prims asynchronus
 //todo: check if other sound scripts are in same prim
+//todo: touch passtrouch/touch event - check if that is handled correctly
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -93,13 +94,13 @@ Debug(string sMsg){
 
 //###
 //PrintStatusInfo.lslm
-//0.1 - 14Jan2014
+//0.11 - 14Jan2014
 //###
 
 InfoLines(){
     if (g_iVerbose) {
-        if (g_iSoundAvail) llWhisper(0,(g_sTitle + " - Sound file(s) found in inventory: Yes"));
-        else  llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " - Needed sound files(s) found in inventory: NO"));
+        if (g_iSoundAvail) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
+        else  llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
         if ((!g_iSound)) llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " script disabled"));
         if ((g_iSound && g_iSoundAvail)) llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " ready"));
         else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
@@ -150,7 +151,7 @@ default {
         Debug("state_entry");
         (g_fFactor = (7.0 / 8.0));
         llPassTouches(TRUE);
-        llStopSound();
+        if (g_iSound) llStopSound();
         CheckSoundFiles();
         llSleep(1);
         RegisterExtension(LINK_SET);
@@ -171,7 +172,7 @@ default {
 	changed(integer change) {
         if ((change & CHANGED_INVENTORY)) {
             llWhisper(0,"Inventory changed, checking sound samples...");
-            llStopSound();
+            if (g_iSound) llStopSound();
             CheckSoundFiles();
             llSleep(1);
             RegisterExtension(LINK_SET);

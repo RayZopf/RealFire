@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Jan 14 03:02:54 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Jan 14 04:53:23 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Smoke
 //
@@ -17,7 +17,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
 //14. Jan. 2014
-//v2.2-0.5
+//v2.2-0.51
 
 //Files:
 //Smoke.lsl
@@ -70,7 +70,7 @@ float g_fStartAlpha = 0.4;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";
-string g_sVersion = "2.2-0.5";
+string g_sVersion = "2.2-0.51";
 string g_sScriptName;
 
 string g_sSize = "0";
@@ -99,6 +99,21 @@ Debug(string sMsg){
 }
 
 //###
+//PrintStatusInfo.lslm
+//0.11 - 14Jan2014
+//###
+
+InfoLines(){
+    if (g_iVerbose) {
+        if (g_iSmoke) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
+        else  llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        if ((!g_iSmoke)) llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " script disabled"));
+        if ((g_iSmoke && g_iSmoke)) llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " ready"));
+        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+    }
+}
+
+//###
 //RegisterExtension.lslm
 //0.1 - 14Jan2014
 //###
@@ -113,10 +128,7 @@ RegisterExtension(integer link){
 //PREDEFINED FUNCTIONS
 //===============================================
 
-InfoLines(){
-    if (g_iSmoke) llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " ready"));
-    else  if (g_iVerbose) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " (") + g_sScriptName) + ") disabled"));
-}
+
 
 //===============================================
 //===============================================

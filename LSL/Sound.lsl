@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Tue Jan 14 03:02:54 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Tue Jan 14 04:50:19 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -35,14 +35,6 @@
 //todo: use more sounds and change them randomly http://wiki.secondlife.com/wiki/Script:Random_Sounds
 //todo: check if other sound scripts are in same prim
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-//===============================================
-//FIRESTORM SPECIFIC DEBUG STUFF
-//===============================================
-
-//#define FSDEBUG
-//#include "fs_debug.lsl"
 
 
 
@@ -110,13 +102,13 @@ Debug(string sMsg){
 
 //###
 //PrintStatusInfo.lslm
-//0.1 - 14Jan2014
+//0.11 - 14Jan2014
 //###
 
 InfoLines(){
     if (g_iVerbose) {
-        if (g_iSoundAvail) llWhisper(0,(g_sTitle + " - Sound file(s) found in inventory: Yes"));
-        else  llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " - Needed sound files(s) found in inventory: NO"));
+        if (g_iSoundAvail) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
+        else  llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
         if ((!g_iSound)) llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " script disabled"));
         if ((g_iSound && g_iSoundAvail)) llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " ready"));
         else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
