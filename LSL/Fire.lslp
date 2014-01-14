@@ -20,9 +20,9 @@
 // - Long touch to show menu
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
-//Additions: initial structure for multiple sound files, implement linked_message system, background sound
-//09. Jan. 2014
-//v2.2-0.77
+//Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
+//14. Jan. 2014
+//v2.2-0.8
 
 //Files:
 //Fire.lsl
@@ -79,14 +79,6 @@
 
 
 //===============================================
-//FIRESTORM SPECIFIC DEBUG STUFF
-//===============================================
-
-//#define FSDEBUG
-//#include "fs_debug.lsl"
-
-
-//===============================================
 //GLOBAL VARIABLES
 //===============================================
 
@@ -122,7 +114,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2-0.77";         // version
+string g_sVersion = "2.2-0.8";         // version
 string g_sScriptName;
 string g_sAuthors = "Rene10957, Zopf";
 
@@ -215,22 +207,14 @@ float g_fStartVolume;              // start value of volume (before burning down
 
 
 //===============================================
+//LSLForge MODULES
+//===============================================
+$import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
+
+
+//===============================================
 //PREDEFINED FUNCTIONS
 //===============================================
-
-//===============================================================================
-//= parameters   :    string    sMsg    message string received
-//=
-//= return        :    none
-//=
-//= description  :    output debug messages
-//=
-//===============================================================================
-Debug(string sMsg)
-{
-    if (!g_iDebugMode) return;
-    llOwnerSay("DEBUG: "+ g_sScriptName + "; " + sMsg);
-}
 
 //===============================================================================
 //= parameters   :    string    sFunction    which function to toggle
@@ -1052,4 +1036,8 @@ default
             else stopSystem();
         }
     }
+
+//-----------------------------------------------
+//END STATE: default
+//-----------------------------------------------
 }

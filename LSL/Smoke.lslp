@@ -14,9 +14,9 @@
 
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
-//Additions: register with Fire.lsl
-//09. Jan. 2014
-//v2.2-0.45
+//Additions: register with Fire.lsl, LSLForge Modules
+//14. Jan. 2014
+//v2.2-0.5
 
 //Files:
 //Smoke.lsl
@@ -44,14 +44,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//===============================================
-//FIRESTORM SPECIFIC DEBUG STUFF
-//===============================================
-
-//#define FSDEBUG
-//#include "fs_debug.lsl"
-
-
 
 //===============================================
 //GLOBAL VARIABLES
@@ -77,7 +69,7 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2-0.45";       // version
+string g_sVersion = "2.2-0.5";       // version
 string g_sScriptName;
 
 string g_sSize = "0";
@@ -87,30 +79,16 @@ integer COMMAND_CHANNEL = -10950;
 integer SMOKE_CHANNEL = -10957;  // smoke channel
 
 
+//===============================================
+//LSLForge MODULES
+//===============================================
+$import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
+$import RegisterExtension.lslm(m_iOn=g_iSmoke, m_iComplete=g_iSmoke, channel=SMOKE_CHANNEL, m_sScriptName=g_sScriptName);
+
 
 //===============================================
 //PREDEFINED FUNCTIONS
 //===============================================
-
-//===============================================================================
-//= parameters   :    string    sMsg    message string received
-//=
-//= return        :    none
-//=
-//= description  :    output debug messages
-//=
-//===============================================================================
-
-Debug(string sMsg)
-{
-    if (!g_iDebugMode) return;
-    llOwnerSay("DEBUG: "+ g_sScriptName + "; " + sMsg);
-}
-
-RegisterExtension()
-{
-	llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, (string)g_iSmoke, (key)g_sScriptName);
-}
 
 InfoLines()
 {
@@ -131,10 +109,10 @@ default
     {
 		g_sScriptName = llGetScriptName();
         Debug("state_entry, Particle count = " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
-        llParticleSystem([]);
+        if (g_iSmoke) llParticleSystem([]);
 		llSleep(1);
 		//do some linked message to register with Fire.lsl
-		RegisterExtension();
+		RegisterExtension(LINK_ALL_OTHERS);
 		InfoLines();
     }
 
@@ -146,7 +124,7 @@ default
 	changed(integer change)
     {
 		if (change & CHANGED_INVENTORY) {
-			RegisterExtension();
+			RegisterExtension(LINK_ALL_OTHERS);
 			InfoLines();
 		}
     }
@@ -156,7 +134,7 @@ default
     link_message(integer iSender, integer iChan, string sMsg, key kId)
     {
 		Debug("link_message = channel " + (string)iChan + "; sMsg " + sMsg + "; kId " + (string)kId+" ...g_sSize "+g_sSize);
-		if (iChan == COMMAND_CHANNEL) RegisterExtension();
+		if (iChan == COMMAND_CHANNEL) RegisterExtension(LINK_ALL_OTHERS);
 		
         if (iChan != SMOKE_CHANNEL || !g_iSmoke || sMsg == g_sSize) return;
 
@@ -219,4 +197,8 @@ default
 		}
 		g_sSize = sMsg;
     }
+    
+//-----------------------------------------------
+//END STATE: default
+//-----------------------------------------------
 }

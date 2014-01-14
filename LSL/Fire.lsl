@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Jan 14 01:28:20 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Jan 14 03:02:54 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -21,9 +21,9 @@
 // - Long touch to show menu
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
-//Additions: initial structure for multiple sound files, implement linked_message system, background sound
-//09. Jan. 2014
-//v2.2-0.77
+//Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
+//14. Jan. 2014
+//v2.2-0.8
 
 //Files:
 //Fire.lsl
@@ -80,14 +80,6 @@
 
 
 //===============================================
-//FIRESTORM SPECIFIC DEBUG STUFF
-//===============================================
-
-//#define FSDEBUG
-//#include "fs_debug.lsl"
-
-
-//===============================================
 //GLOBAL VARIABLES
 //===============================================
 
@@ -119,7 +111,7 @@ vector g_vEndColor = <1,0,0>;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";
-string g_sVersion = "2.2-0.77";
+string g_sVersion = "2.2-0.8";
 string g_sScriptName;
 string g_sAuthors = "Rene10957, Zopf";
 
@@ -210,10 +202,11 @@ float g_fStartIntensity;
 float g_fStartRadius;
 float g_fStartVolume;
 
+//###
+//Debug.lslm
+//0.1 - 14Jan2014
+//###
 
-//===============================================
-//PREDEFINED FUNCTIONS
-//===============================================
 
 //===============================================================================
 //= parameters   :    string    sMsg    message string received
@@ -227,6 +220,11 @@ Debug(string sMsg){
     if ((!g_iDebugMode)) return;
     llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
 }
+
+
+//===============================================
+//PREDEFINED FUNCTIONS
+//===============================================
 
 //===============================================================================
 //= parameters   :    string    sFunction    which function to toggle

@@ -1,0 +1,41 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//Module Print Status Info
+//
+//by: Zopf Resident - Ray Zopf (Raz)
+//14. Jan 2014
+//v0.1
+
+//Files:
+//PrintStatusInfo.lslm
+//
+//
+//Prequisites: RealFire Sound scripts
+//
+
+//Changelog
+// 
+
+//bug:
+
+//todo:
+// 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+$module (integer m_iVerbose, integer m_iSoundAvail, string m_sTitle, string m_sScriptName, integer m_iSound, string m_sVersion)
+
+//###
+//PrintStatusInfo.lslm
+//0.1 - 14Jan2014
+//###
+
+InfoLines()
+{
+	if (m_iVerbose) {
+		if (m_iSoundAvail) llWhisper(0, m_sTitle+" - Sound file(s) found in inventory: Yes");
+            else llWhisper(0, m_sTitle+" / "+ m_sScriptName +" - Needed sound files(s) found in inventory: NO");
+		if (!m_iSound) llWhisper(0, m_sTitle+" / "+ m_sScriptName +" script disabled");
+	if (m_iSound && m_iSoundAvail) llWhisper(0, m_sTitle + " " + m_sVersion + " ready");
+			else llWhisper(0, m_sTitle + " " + m_sVersion + " not ready");
+    }
+}

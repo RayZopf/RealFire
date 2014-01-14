@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//09. Jan. 2014
-//v0.6
+//14. Jan. 2014
+//v0.7
 //
 //
 // (Realfire by Rene)
@@ -22,6 +22,7 @@
 //basic help: User Manual
 
 //Changelog
+// LSLForge Modules
 //
 
 //bug: ---
@@ -73,7 +74,7 @@ string g_sCurrentSoundFile = g_sSoundFileMedium2;							// standard sound - must
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";     // title
-string g_sVersion = "0.6";       // version
+string g_sVersion = "0.7";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
@@ -89,23 +90,16 @@ integer SOUND_CHANNEL = -10956;  // smoke channel
 
 
 //===============================================
+//LSLForge MODULES
+//===============================================
+$import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
+$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iSoundAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iSound=g_iSound, m_sVersion=g_sVersion);
+$import RegisterExtension.lslm(m_iOn=g_iSound, m_iComplete=g_iSoundAvail, channel=SOUND_CHANNEL, m_sScriptName=g_sScriptName);
+
+
+//===============================================
 //PREDEFINED FUNCTIONS
 //===============================================
-
-//===============================================================================
-//= parameters   :    string    sMsg    message string received
-//=
-//= return        :    none
-//=
-//= description  :    output debug messages
-//=
-//===============================================================================
-
-Debug(string sMsg)
-{
-    if (!g_iDebugMode) return;
-    llOwnerSay("DEBUG: "+ g_sScriptName + "; " + sMsg);
-}
 
 CheckSoundFiles()
 {
@@ -168,23 +162,7 @@ SelectSound(float fMsg)
 	g_sSize = (string)fMsg;
 }
 
-RegisterExtension()
-{
-	if (g_iSound && g_iSoundAvail) llMessageLinked(LINK_SET, SOUND_CHANNEL, "1", (key)g_sScriptName);
-		else llMessageLinked(LINK_SET, SOUND_CHANNEL, "0", (key)g_sScriptName);
-}
 
-
-InfoLines()
-{
-	if (g_iVerbose) {
-		if (g_iSoundAvail) llWhisper(0, g_sTitle+" - Sound file(s) found in inventory: Yes");
-            else llWhisper(0, g_sTitle+" / "+ g_sScriptName +" - Needed sound files(s) found in inventory: NO");
-		if (!g_iSound) llWhisper(0, g_sTitle+" / "+ g_sScriptName +" script disabled");
-	if (g_iSound && g_iSoundAvail) llWhisper(0, g_sTitle + " " + g_sVersion + " ready");
-			else llWhisper(0, g_sTitle + " " + g_sVersion + " not ready");
-    }
-}
 
 //===============================================
 //===============================================
@@ -222,7 +200,7 @@ default
 			llStopSound();
 			CheckSoundFiles();
 			llSleep(1);
-			RegisterExtension();
+			RegisterExtension(LINK_SET);
 			InfoLines();
 		}
     }
@@ -233,7 +211,7 @@ default
     link_message(integer iSender, integer iChan, string sSoundSet, key kId)
     {
 		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);		
-		if (iChan == COMMAND_CHANNEL) RegisterExtension();
+		if (iChan == COMMAND_CHANNEL) RegisterExtension(LINK_SET);
 		
         if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail || llSubStringIndex(llToLower((string)kId), "sound")  >= 0) return; //sound scripts need to have sound in their name, so that we can discard those messages!
 		list lParams = llParseString2List(sSoundSet, [","], []);
@@ -282,4 +260,8 @@ default
 				g_sSize = "0";
 			}
     }
+    
+//-----------------------------------------------
+//END STATE: default
+//-----------------------------------------------
 }

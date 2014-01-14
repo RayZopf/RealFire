@@ -1,9 +1,9 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Jan 14 01:28:11 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Jan 14 03:02:54 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//09. Jan. 2014
-//v0.3
+//14. Jan. 2014
+//v0.4
 //
 //
 // (Realfire by Rene)
@@ -24,6 +24,7 @@
 //basic help: User Manual
 
 //Changelog
+// LSLForge Modules
 //
 
 //bug: soundpreload on touch is useless in child prim
@@ -34,14 +35,6 @@
 //todo: make sounds from different prims asynchronus
 //todo: check if other sound scripts are in same prim
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-//===============================================
-//FIRESTORM SPECIFIC DEBUG STUFF
-//===============================================
-
-//#define FSDEBUG
-//#include "fs_debug.lsl"
 
 
 
@@ -65,7 +58,7 @@ string BACKSOUNDFILE = "17742__krisboruff__fire-crackles-no-room";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";
-string g_sVersion = "0.3";
+string g_sVersion = "0.4";
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
@@ -79,10 +72,11 @@ float g_fFactor;
 integer COMMAND_CHANNEL = -10950;
 integer SOUND_CHANNEL = -10956;
 
+//###
+//Debug.lslm
+//0.1 - 14Jan2014
+//###
 
-//===============================================
-//PREDEFINED FUNCTIONS
-//===============================================
 
 //===============================================================================
 //= parameters   :    string    sMsg    message string received
@@ -92,11 +86,40 @@ integer SOUND_CHANNEL = -10956;
 //= description  :    output debug messages
 //=
 //===============================================================================
-
 Debug(string sMsg){
     if ((!g_iDebugMode)) return;
     llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
 }
+
+//###
+//PrintStatusInfo.lslm
+//0.1 - 14Jan2014
+//###
+
+InfoLines(){
+    if (g_iVerbose) {
+        if (g_iSoundAvail) llWhisper(0,(g_sTitle + " - Sound file(s) found in inventory: Yes"));
+        else  llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " - Needed sound files(s) found in inventory: NO"));
+        if ((!g_iSound)) llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " script disabled"));
+        if ((g_iSound && g_iSoundAvail)) llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " ready"));
+        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+    }
+}
+
+//###
+//RegisterExtension.lslm
+//0.1 - 14Jan2014
+//###
+
+RegisterExtension(integer link){
+    if ((g_iSound && g_iSoundAvail)) llMessageLinked(link,SOUND_CHANNEL,"1",((key)g_sScriptName));
+    else  llMessageLinked(link,SOUND_CHANNEL,"0",((key)g_sScriptName));
+}
+
+
+//===============================================
+//PREDEFINED FUNCTIONS
+//===============================================
 
 CheckSoundFiles(){
     integer iSoundNumber = llGetInventoryNumber(INVENTORY_SOUND);
@@ -111,20 +134,7 @@ CheckSoundFiles(){
     else  (g_iSoundAvail = FALSE);
 }
 
-RegisterExtension(){
-    if ((g_iSound && g_iSoundAvail)) llMessageLinked(LINK_SET,SOUND_CHANNEL,"1",((key)g_sScriptName));
-    else  llMessageLinked(LINK_SET,SOUND_CHANNEL,"0",((key)g_sScriptName));
-}
 
-InfoLines(){
-    if (g_iVerbose) {
-        if (g_iSoundAvail) llWhisper(0,(g_sTitle + " - Sound object in inventory found: Yes"));
-        else  llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " - All Sound objects in inventory found: No"));
-        if ((!g_iSound)) llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " script disabled"));
-        if ((g_iSound && g_iSoundAvail)) llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " ready"));
-        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
-    }
-}
 
 //===============================================
 //===============================================
@@ -143,7 +153,7 @@ default {
         llStopSound();
         CheckSoundFiles();
         llSleep(1);
-        RegisterExtension();
+        RegisterExtension(LINK_SET);
         InfoLines();
     }
 
@@ -164,7 +174,7 @@ default {
             llStopSound();
             CheckSoundFiles();
             llSleep(1);
-            RegisterExtension();
+            RegisterExtension(LINK_SET);
             InfoLines();
         }
     }
@@ -175,7 +185,7 @@ default {
 //-----------------------------------------------
     link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
         Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSoundSet) + "; kId ") + ((string)kId)));
-        if ((iChan == COMMAND_CHANNEL)) RegisterExtension();
+        if ((iChan == COMMAND_CHANNEL)) RegisterExtension(LINK_SET);
         if (((((iChan != SOUND_CHANNEL) || (!g_iSound)) || (!g_iSoundAvail)) || (llSubStringIndex(llToLower(((string)kId)),"sound") >= 0))) return;
         list lParams = llParseString2List(sSoundSet,[","],[]);
         string sVal = llList2String(lParams,0);

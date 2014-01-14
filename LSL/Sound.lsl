@@ -1,9 +1,9 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Tue Jan 14 01:28:36 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Tue Jan 14 03:02:54 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//09. Jan. 2014
-//v0.6
+//14. Jan. 2014
+//v0.7
 //
 //
 // (Realfire by Rene)
@@ -23,6 +23,7 @@
 //basic help: User Manual
 
 //Changelog
+// LSLForge Modules
 //
 
 //bug: ---
@@ -74,7 +75,7 @@ string g_sCurrentSoundFile = g_sSoundFileMedium2;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";
-string g_sVersion = "0.6";
+string g_sVersion = "0.7";
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
@@ -88,10 +89,11 @@ string g_sSize = "0";
 integer COMMAND_CHANNEL = -10950;
 integer SOUND_CHANNEL = -10956;
 
+//###
+//Debug.lslm
+//0.1 - 14Jan2014
+//###
 
-//===============================================
-//PREDEFINED FUNCTIONS
-//===============================================
 
 //===============================================================================
 //= parameters   :    string    sMsg    message string received
@@ -101,11 +103,40 @@ integer SOUND_CHANNEL = -10956;
 //= description  :    output debug messages
 //=
 //===============================================================================
-
 Debug(string sMsg){
     if ((!g_iDebugMode)) return;
     llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
 }
+
+//###
+//PrintStatusInfo.lslm
+//0.1 - 14Jan2014
+//###
+
+InfoLines(){
+    if (g_iVerbose) {
+        if (g_iSoundAvail) llWhisper(0,(g_sTitle + " - Sound file(s) found in inventory: Yes"));
+        else  llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " - Needed sound files(s) found in inventory: NO"));
+        if ((!g_iSound)) llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " script disabled"));
+        if ((g_iSound && g_iSoundAvail)) llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " ready"));
+        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+    }
+}
+
+//###
+//RegisterExtension.lslm
+//0.1 - 14Jan2014
+//###
+
+RegisterExtension(integer link){
+    if ((g_iSound && g_iSoundAvail)) llMessageLinked(link,SOUND_CHANNEL,"1",((key)g_sScriptName));
+    else  llMessageLinked(link,SOUND_CHANNEL,"0",((key)g_sScriptName));
+}
+
+
+//===============================================
+//PREDEFINED FUNCTIONS
+//===============================================
 
 CheckSoundFiles(){
     integer iSoundNumber = llGetInventoryNumber(INVENTORY_SOUND);
@@ -171,21 +202,7 @@ SelectSound(float fMsg){
     (g_sSize = ((string)fMsg));
 }
 
-RegisterExtension(){
-    if ((g_iSound && g_iSoundAvail)) llMessageLinked(LINK_SET,SOUND_CHANNEL,"1",((key)g_sScriptName));
-    else  llMessageLinked(LINK_SET,SOUND_CHANNEL,"0",((key)g_sScriptName));
-}
 
-
-InfoLines(){
-    if (g_iVerbose) {
-        if (g_iSoundAvail) llWhisper(0,(g_sTitle + " - Sound file(s) found in inventory: Yes"));
-        else  llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " - Needed sound files(s) found in inventory: NO"));
-        if ((!g_iSound)) llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " script disabled"));
-        if ((g_iSound && g_iSoundAvail)) llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " ready"));
-        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
-    }
-}
 
 //===============================================
 //===============================================
@@ -220,7 +237,7 @@ default {
             llStopSound();
             CheckSoundFiles();
             llSleep(1);
-            RegisterExtension();
+            RegisterExtension(LINK_SET);
             InfoLines();
         }
     }
@@ -231,7 +248,7 @@ default {
 //-----------------------------------------------
     link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
         Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSoundSet) + "; kId ") + ((string)kId)));
-        if ((iChan == COMMAND_CHANNEL)) RegisterExtension();
+        if ((iChan == COMMAND_CHANNEL)) RegisterExtension(LINK_SET);
         if (((((iChan != SOUND_CHANNEL) || (!g_iSound)) || (!g_iSoundAvail)) || (llSubStringIndex(llToLower(((string)kId)),"sound") >= 0))) return;
         list lParams = llParseString2List(sSoundSet,[","],[]);
         string sVal = llList2String(lParams,0);

@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Jan 14 01:28:30 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Jan 14 03:02:54 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Smoke
 //
@@ -15,9 +15,9 @@
 
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
-//Additions: register with Fire.lsl
-//09. Jan. 2014
-//v2.2-0.45
+//Additions: register with Fire.lsl, LSLForge Modules
+//14. Jan. 2014
+//v2.2-0.5
 
 //Files:
 //Smoke.lsl
@@ -45,14 +45,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//===============================================
-//FIRESTORM SPECIFIC DEBUG STUFF
-//===============================================
-
-//#define FSDEBUG
-//#include "fs_debug.lsl"
-
-
 
 //===============================================
 //GLOBAL VARIABLES
@@ -78,7 +70,7 @@ float g_fStartAlpha = 0.4;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";
-string g_sVersion = "2.2-0.45";
+string g_sVersion = "2.2-0.5";
 string g_sScriptName;
 
 string g_sSize = "0";
@@ -87,11 +79,11 @@ string g_sSize = "0";
 integer COMMAND_CHANNEL = -10950;
 integer SMOKE_CHANNEL = -10957;
 
+//###
+//Debug.lslm
+//0.1 - 14Jan2014
+//###
 
-
-//===============================================
-//PREDEFINED FUNCTIONS
-//===============================================
 
 //===============================================================================
 //= parameters   :    string    sMsg    message string received
@@ -101,15 +93,25 @@ integer SMOKE_CHANNEL = -10957;
 //= description  :    output debug messages
 //=
 //===============================================================================
-
 Debug(string sMsg){
     if ((!g_iDebugMode)) return;
     llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
 }
 
-RegisterExtension(){
-    llMessageLinked(LINK_ALL_OTHERS,SMOKE_CHANNEL,((string)g_iSmoke),((key)g_sScriptName));
+//###
+//RegisterExtension.lslm
+//0.1 - 14Jan2014
+//###
+
+RegisterExtension(integer link){
+    if ((g_iSmoke && g_iSmoke)) llMessageLinked(link,SMOKE_CHANNEL,"1",((key)g_sScriptName));
+    else  llMessageLinked(link,SMOKE_CHANNEL,"0",((key)g_sScriptName));
 }
+
+
+//===============================================
+//PREDEFINED FUNCTIONS
+//===============================================
 
 InfoLines(){
     if (g_iSmoke) llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " ready"));
@@ -128,9 +130,9 @@ default {
     state_entry() {
         (g_sScriptName = llGetScriptName());
         Debug(("state_entry, Particle count = " + ((string)llRound(((((float)g_iCount) * g_fAge) / g_fRate)))));
-        llParticleSystem([]);
+        if (g_iSmoke) llParticleSystem([]);
         llSleep(1);
-        RegisterExtension();
+        RegisterExtension(LINK_ALL_OTHERS);
         InfoLines();
     }
 
@@ -142,7 +144,7 @@ default {
 	
 	changed(integer change) {
         if ((change & CHANGED_INVENTORY)) {
-            RegisterExtension();
+            RegisterExtension(LINK_ALL_OTHERS);
             InfoLines();
         }
     }
@@ -152,7 +154,7 @@ default {
 //-----------------------------------------------
     link_message(integer iSender,integer iChan,string sMsg,key kId) {
         Debug(((((((("link_message = channel " + ((string)iChan)) + "; sMsg ") + sMsg) + "; kId ") + ((string)kId)) + " ...g_sSize ") + g_sSize));
-        if ((iChan == COMMAND_CHANNEL)) RegisterExtension();
+        if ((iChan == COMMAND_CHANNEL)) RegisterExtension(LINK_ALL_OTHERS);
         if ((((iChan != SMOKE_CHANNEL) || (!g_iSmoke)) || (sMsg == g_sSize))) return;
         if (((((float)sMsg) > 0) && (((float)sMsg) <= 100))) {
             float fAlpha = ((g_fStartAlpha / 100.0) * ((float)sMsg));
