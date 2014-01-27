@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Jan 21 03:25:14 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Mon Jan 27 06:05:39 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -22,8 +22,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//14. Jan. 2014
-//v2.2-0.8
+//27. Jan. 2014
+//v2.2-0.81
 
 //Files:
 //Fire.lsl
@@ -76,7 +76,7 @@
 //todo: play with llListen()
 //todo: always check for llGetFreeMemory()
 //todo: check if other particle scripts are in same prim
-//todo: rethink system of verbose messages
+//todo: rethink system of verbose messages - use settings notecard!
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -112,7 +112,7 @@ vector g_vEndColor = <1,0,0>;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";
-string g_sVersion = "2.2-0.8";
+string g_sVersion = "2.2-0.81";
 string g_sScriptName;
 string g_sAuthors = "Rene10957, Zopf";
 
@@ -664,7 +664,7 @@ default {
         stopSystem();
         Debug(("Particle count: " + ((string)llRound(((((float)g_iCount) * g_fAge) / g_fRate)))));
         Debug((((string)llGetFreeMemory()) + " bytes free"));
-        llWhisper(0,("RealFire by " + g_sAuthors));
+        llWhisper(0,((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors));
         llWhisper(0,"Touch to start/stop fire\n *Long touch to show menu*");
         llMessageLinked(LINK_SET,COMMAND_CHANNEL,"register",((key)g_sScriptName));
         if (g_iVerbose) llWhisper(0,"Loading notecard...");

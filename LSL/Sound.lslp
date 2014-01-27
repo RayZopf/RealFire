@@ -171,6 +171,8 @@ default
 		Debug("state_entry");
         llStopSound();
 		CheckSoundFiles();
+		llSleep(1);
+		RegisterExtension(LINK_SET);
 		InfoLines();
     }
 
