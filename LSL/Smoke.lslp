@@ -15,8 +15,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//14. Jan. 2014
-//v2.2-0.51
+//27. Jan. 2014
+//v2.2-0.52
 
 //Files:
 //Smoke.lsl
@@ -69,7 +69,7 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2-0.51";       // version
+string g_sVersion = "2.2-0.52";       // version
 string g_sScriptName;
 
 string g_sSize = "0";
@@ -121,6 +121,7 @@ default
 	changed(integer change)
     {
 		if (change & CHANGED_INVENTORY) {
+			llSleep(1);
 			RegisterExtension(LINK_ALL_OTHERS);
 			InfoLines();
 		}
@@ -135,7 +136,8 @@ default
 		
         if (iChan != SMOKE_CHANNEL || !g_iSmoke || sMsg == g_sSize) return;
 
-        if ((float)sMsg > 0 && (float)sMsg <= 100) {
+        if ((integer)sMsg > 0 && (integer)sMsg <= 100) {
+			llSetTimerEvent(0.0);
 			float fAlpha = g_fStartAlpha / 100.0 * (float)sMsg;
 			Debug("fAlpha " + (string)fAlpha);
 		    llParticleSystem ([
@@ -184,17 +186,23 @@ default
 				PSYS_SRC_BURST_SPEED_MIN, 0.0,
 				PSYS_SRC_BURST_SPEED_MAX, 0.1
 			]);
-				if (g_iVerbose && "0"!= g_sSize) llWhisper(0, "Smoke changes it's appearance");
+			if (g_iVerbose && "0"!= g_sSize) llWhisper(0, "Smoke changes it's appearance");
 		} else {
 			llWhisper(0, "Fumes are fading");
-			llSleep(15);
-			llParticleSystem([]);
-			if (g_iVerbose) llWhisper(0, "Smoke vanished");
-			Debug("smoke particles off");
+			llSetTimerEvent(15.0);
 		}
 		g_sSize = sMsg;
-    }
-    
+	}
+
+
+	timer()
+	{
+		llParticleSystem([]);
+		if (g_iVerbose) llWhisper(0, "Smoke vanished");
+		Debug("smoke particles off");
+		llSetTimerEvent(0.0);
+	}
+	
 //-----------------------------------------------
 //END STATE: default
 //-----------------------------------------------

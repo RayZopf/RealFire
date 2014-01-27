@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Jan 21 03:25:14 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Mon Jan 27 06:03:58 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Smoke
 //
@@ -16,8 +16,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//14. Jan. 2014
-//v2.2-0.51
+//27. Jan. 2014
+//v2.2-0.52
 
 //Files:
 //Smoke.lsl
@@ -70,7 +70,7 @@ float g_fStartAlpha = 0.4;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";
-string g_sVersion = "2.2-0.51";
+string g_sVersion = "2.2-0.52";
 string g_sScriptName;
 
 string g_sSize = "0";
@@ -156,6 +156,7 @@ default {
 	
 	changed(integer change) {
         if ((change & CHANGED_INVENTORY)) {
+            llSleep(1);
             RegisterExtension(LINK_ALL_OTHERS);
             InfoLines();
         }
@@ -168,7 +169,8 @@ default {
         Debug(((((((("link_message = channel " + ((string)iChan)) + "; sMsg ") + sMsg) + "; kId ") + ((string)kId)) + " ...g_sSize ") + g_sSize));
         if ((iChan == COMMAND_CHANNEL)) RegisterExtension(LINK_ALL_OTHERS);
         if ((((iChan != SMOKE_CHANNEL) || (!g_iSmoke)) || (sMsg == g_sSize))) return;
-        if (((((float)sMsg) > 0) && (((float)sMsg) <= 100))) {
+        if (((((integer)sMsg) > 0) && (((integer)sMsg) <= 100))) {
+            llSetTimerEvent(0.0);
             float fAlpha = ((g_fStartAlpha / 100.0) * ((float)sMsg));
             Debug(("fAlpha " + ((string)fAlpha)));
             llParticleSystem([PSYS_PART_FLAGS,((0 | PSYS_PART_INTERP_COLOR_MASK) | PSYS_PART_INTERP_SCALE_MASK),PSYS_SRC_PATTERN,PSYS_SRC_PATTERN_EXPLODE,PSYS_SRC_BURST_RADIUS,0.1,PSYS_PART_START_COLOR,<0.5,0.5,0.5>,PSYS_PART_END_COLOR,<0.5,0.5,0.5>,PSYS_PART_START_ALPHA,fAlpha,PSYS_PART_END_ALPHA,0.0,PSYS_PART_START_SCALE,<0.1,0.1,0.0>,PSYS_PART_END_SCALE,<3.0,3.0,0.0>,PSYS_PART_MAX_AGE,g_fAge,PSYS_SRC_BURST_RATE,g_fRate,PSYS_SRC_BURST_PART_COUNT,g_iCount,PSYS_SRC_ACCEL,<0.0,0.0,0.2>,PSYS_SRC_BURST_SPEED_MIN,0.0,PSYS_SRC_BURST_SPEED_MAX,0.1]);
@@ -176,11 +178,17 @@ default {
         }
         else  {
             llWhisper(0,"Fumes are fading");
-            llSleep(15);
-            llParticleSystem([]);
-            if (g_iVerbose) llWhisper(0,"Smoke vanished");
-            Debug("smoke particles off");
+            llSetTimerEvent(15.0);
         }
         (g_sSize = sMsg);
+    }
+
+
+
+	timer() {
+        llParticleSystem([]);
+        if (g_iVerbose) llWhisper(0,"Smoke vanished");
+        Debug("smoke particles off");
+        llSetTimerEvent(0.0);
     }
 }

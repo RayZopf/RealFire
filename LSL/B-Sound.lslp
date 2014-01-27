@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//14. Jan. 2014
-//v0.4
+//27. Jan. 2014
+//v0.41
 //
 //
 // (Realfire by Rene)
@@ -58,7 +58,7 @@ string BACKSOUNDFILE ="17742__krisboruff__fire-crackles-no-room";               
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";     // title
-string g_sVersion = "0.4";       // version
+string g_sVersion = "0.41";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
@@ -145,7 +145,7 @@ default
 		}
     }
 
-	
+
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
     link_message(integer iSender, integer iChan, string sSoundSet, key kId)
@@ -165,6 +165,7 @@ default
 		g_fSoundVolumeNew = (float)sVal;
 		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1) { //background sound on/volume adjust
 			Debug("Factor start "+(string)g_fFactor);
+			llSetTimerEvent(0.0);
 			//simple adjustment to different fire sizes (full, at start, when special B_Sound message with sMsg = -1)
 			if ("-1" == sMsg) g_fFactor = 1.0;
 				else if ( 0 < (integer)sMsg && 100 >= (integer)sMsg) {
@@ -182,7 +183,7 @@ default
 				Debug("play sound: "+(string)fSoundVolumeF);
 				//llSleep(2); //better not wait to make sound different in timing, find another way
 				llStopSound(); // just in case...
-				llSleep(2); //make sounds synchronus
+				llSleep(2); //make sounds asynchronus
 				llLoopSound(BACKSOUNDFILE, fSoundVolumeF);
 				if (g_iVerbose) llWhisper(0, "Fire emits a crackling background sound");
 			}
@@ -191,14 +192,20 @@ default
 			if ("" != sMsg) g_sSize = sMsg;
 		} else {
 			llWhisper(0, "Background fire noises getting quieter and quieter...");
-			llSleep(11); // wait ... better would be to fade out
-			llStopSound();
-			if (g_iVerbose) llWhisper(0, "Background noise off");
-			g_fSoundVolumeNew = g_fSoundVolumeCur = g_fSoundVolumeCurF = 0.0;
-			g_sSize = "0";
+			llSetTimerEvent(11.0); // wait ... better would be to fade out
 		}
-    }
-    
+	}
+
+
+	timer()
+	{
+		llStopSound();
+		if (g_iVerbose) llWhisper(0, "Background noise off");
+		g_fSoundVolumeNew = g_fSoundVolumeCur = g_fSoundVolumeCurF = 0.0;
+		g_sSize = "0";
+		llSetTimerEvent(0.0);
+	}
+
 //-----------------------------------------------
 //END STATE: default
 //-----------------------------------------------
