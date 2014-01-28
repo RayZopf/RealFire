@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Jan 28 22:03:48 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Jan 28 22:07:55 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -229,11 +229,9 @@ Debug(string sMsg){
     llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
 }
 
-
-//===============================================
-//PREDEFINED FUNCTIONS
-//===============================================
-
+//###
+//getGroup.lslm
+//0.1 - 28Jan2014
 
 string getGroup(){
     string str = llStringTrim(llGetObjectDesc(),STRING_TRIM);
@@ -241,6 +239,10 @@ string getGroup(){
     return str;
 }
 
+
+//===============================================
+//PREDEFINED FUNCTIONS
+//===============================================
 
 //===============================================================================
 //= parameters   :    string    sFunction    which function to toggle

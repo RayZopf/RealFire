@@ -218,20 +218,12 @@ float g_fStartVolume;              // start value of volume (before burning down
 //LSLForge MODULES
 //===============================================
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
+$import getGroup.lslm();
 
 
 //===============================================
 //PREDEFINED FUNCTIONS
 //===============================================
-
-
-string getGroup()
-{
-    string str = llStringTrim(llGetObjectDesc(), STRING_TRIM);
-    if (llToLower(str) == "(no description)" || str == "") str = "Default";
-    return str;
-}
-
 
 //===============================================================================
 //= parameters   :    string    sFunction    which function to toggle

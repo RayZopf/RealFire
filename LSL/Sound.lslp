@@ -86,6 +86,7 @@ integer SOUND_CHANNEL = -15789;  // smoke channel
 //===============================================
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSound, m_sVersion=g_sVersion);
+$import getGroup.lslm();
 $import RegisterExtension.lslm(m_iOn=g_iSound, m_iComplete=g_iSoundAvail, channel=SOUND_CHANNEL, m_sScriptName=g_sScriptName);
 
 
@@ -154,13 +155,6 @@ SelectSound(float fMsg)
 	g_sSize = (string)fMsg;
 }
 
-
-string getGroup()
-{
-    string str = llStringTrim(llGetObjectDesc(), STRING_TRIM);
-    if (llToLower(str) == "(no description)" || str == "") str = "Default";
-    return str;
-}
 
 
 //===============================================
