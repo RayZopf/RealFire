@@ -1,7 +1,7 @@
 // Remote receiver for RealFire
 //
 // Author: Rene10957 Resident
-// Date: 31-05-2013
+// Date: 12-01-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -13,7 +13,7 @@
 // Note: only useful if you are also using the remote control script
 
 string title = "Remote Receiver";   // title
-string version = "1.0";             // version
+string version = "1.1";             // version
 
 // Constants
 
@@ -52,6 +52,8 @@ default
         string command = llList2String(msgList, 1);
         key user = (key)llList2String(msgList, 2);
 
-        if (group == getGroup()) llMessageLinked(LINK_THIS, msgNumber, command, user);
+        if (group == getGroup() || group == "Default" || getGroup() == "Default") {
+            llMessageLinked(LINK_THIS, msgNumber, command, user);
+        }
     }
 }

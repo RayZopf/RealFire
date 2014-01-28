@@ -1,7 +1,7 @@
 // Realfire by Rene - Smoke
 //
 // Author: Rene10957 Resident
-// Date: 17-05-2013
+// Date: 12-01-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -12,12 +12,12 @@
 // See fire.lsl for feature list
 
 string title = "RealSmoke";     // title
-string version = "2.1.1";       // version
+string version = "2.1.2";       // version
 integer debug = FALSE;          // show/hide debug messages
 
 // Constants
 
-integer smokeChannel = -10957;  // smoke channel
+integer smokeChannel = -15790;  // smoke channel
 
 // Particle parameters
 
@@ -27,6 +27,13 @@ integer count = 5;              // how many particles to emit per BURST
 float startAlpha = 0.1;         // start alpha (transparency) value
 
 // Functions
+
+string getGroup()
+{
+    string str = llStringTrim(llGetObjectDesc(), STRING_TRIM);
+    if (llToLower(str) == "(no description)" || str == "") str = "Default";
+    return str;
+}
 
 float percentage (float per, float num)
 {
@@ -76,7 +83,13 @@ default
     {
         if (debug) llOwnerSay("[Smoke] LINK_MESSAGE event: " + (string)number + "; " + msg + "; " + (string)id);
         if (number != smokeChannel) return;
-        if ((integer)msg) updateParticles(percentage((float)msg, startAlpha));
-        else llParticleSystem([]);
+
+        integer alpha = (integer)msg;
+        string group = (string)id;
+
+        if (group == getGroup() || group == "Default" || getGroup() == "Default") {
+            if (alpha) updateParticles(percentage((float)alpha, startAlpha));
+            else llParticleSystem([]);
+        }
     }
 }

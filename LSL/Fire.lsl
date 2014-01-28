@@ -1,7 +1,7 @@
 // Realfire by Rene - Fire
 //
 // Author: Rene10957 Resident
-// Date: 31-05-2013
+// Date: 12-01-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -19,7 +19,7 @@
 // - Long touch to show menu
 
 string title = "RealFire";      // title
-string version = "2.2";         // version
+string version = "2.2.1";       // version
 string notecard = "config";     // notecard name
 integer debug = FALSE;          // show debug messages
 
@@ -28,7 +28,7 @@ integer debug = FALSE;          // show debug messages
 integer _OWNER_ = 4;            // owner access bit
 integer _GROUP_ = 2;            // group access bit
 integer _WORLD_ = 1;            // world access bit
-integer smokeChannel = -10957;  // smoke channel
+integer smokeChannel = -15790;  // smoke channel
 float maxRed = 1.0;             // max. red
 float maxGreen = 1.0;           // max. green
 float maxBlue = 1.0;            // max. blue
@@ -117,6 +117,13 @@ float startRadius;              // start value of lightRadius (before burning do
 float startVolume;              // start value of volume (before burning down)
 
 // Functions
+
+string getGroup()
+{
+    string str = llStringTrim(llGetObjectDesc(), STRING_TRIM);
+    if (llToLower(str) == "(no description)" || str == "") str = "Default";
+    return str;
+}
 
 toggleFire()
 {
@@ -535,9 +542,9 @@ updateParticles(vector start, vector end, float min, float max, float radius, ve
         PSYS_PART_INTERP_SCALE_MASK ]);
 }
 
-sendMessage(integer number)
+sendMessage(integer alpha)
 {
-    llMessageLinked(LINK_ALL_OTHERS, smokeChannel, (string)number, "");
+    llMessageLinked(LINK_ALL_OTHERS, smokeChannel, (string)alpha, getGroup());
 }
 
 default

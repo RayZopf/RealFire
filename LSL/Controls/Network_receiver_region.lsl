@@ -14,7 +14,7 @@
 
 string title = "Network Receiver";   // title
 string version = "2.0";              // version
-integer linkSet = TRUE;              // LINKSET mode
+integer linkSet = FALSE;             // REGION mode
 integer debug = FALSE;               // show/hide debug messages
 
 // Constants

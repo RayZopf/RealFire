@@ -1,7 +1,7 @@
 USER MANUAL FOR REALFIRE
 
-Date: 31-05-2013
-Version: 2.2
+Date: 12-01-2014
+Version: 2.2.1
 
 QUICK START
 
@@ -11,25 +11,35 @@ TWO SCRIPTS: FIRE AND SMOKE
 
 Every prim can only have one particle emitter, so the fire and smoke scripts cannot be in the same prim. You could, for example, put the fire script in the root prim and the smoke script in a child prim. It is assumed that you have some sort of object (linkset) with at least two prims.
 
+SMOKE CONTROL (SMOKE WITHOUT FIRE)
+
+The smoke-only feature was dropped in 2.0 and reintroduced in 2.2.1 by popular demand. Drop "smoke" and "smoke_control" in the same prim and touch for on/off. No other scripts are needed.
+
 LINK CONTROL (SECONDARY SWITCH)
 
 For those awkward moments when you wished you could have an additional switch, but without the fire. Now you can. Drop in any prim within the same linkset. Touch for on/off, long touch for menu.
+
+There can be more than one secondary switch.
 
 REMOTE CONTROL (EXTERNAL SWITCH)
 
 Remote switch that works across an entire sim. Drop the remote control script in an external object and the remote receiver script into the prim where the fire is located. Touch for on/off, long touch for menu.
 
-Don't worry if you see multiple menus stacked on top of each other. You can bind a remote to one specific fire by entering the same text in the description of both prims.
+If you have more than one fire, you may see multiple menus stacked on top of each other. To bind a remote to one specific fire, enter the same text in the description of both prims.
+
+There can be more than one external switch, but be aware that every receiver has an open listener.
 
 NETWORK CONTROL (CONTROL PANEL FOR MULTIPLE FIRES)
 
-Control panel for up to 9 fires. Drop the network control script in an external object and the network receiver script into the prim where the fire is located. You can turn them on or off all at the same time, or pull up the menu for individual fires. Touch for menu.
+Drop the network control script in an empty prim and the network receiver script in every prim that contains a fire script. It can control up to 9 fires, turn them on or off all at the same time, or pull up the menu for individual fires. Touch for menu.
 
-Protected from public use (owner and group only).
+There are two versions: linkset and region. When using the region version, every receiver has an open listener.
+
+Known issue in linkset version: turning on one fire will trigger every smoke prim in the linkset. However, you can bind a smoke prim to one specific fire by entering the same text in the description of both prims.
 
 HOW TO ADD SOUND
 
-Drop an uploaded PCM WAV file (16-bit, 44.1 kHz, mono, <= 10 sec.) into the prim that contains the fire script. It can have any name and will be looped by the script.
+If you don't want to use the provided fire sound, you can drop an uploaded PCM WAV file (16-bit, 44.1 kHz, mono, <= 10 sec.) into the prim that contains the fire script. It can have any name and will be looped by the script.
 
 BURNING DOWN
 
@@ -139,3 +149,17 @@ CHANGE HISTORY
 - network control (control panel for multiple fires)
 - bugfix: sound status is ON even when sound is missing
 - bugfix: link messages from plugins could bypass access control
+
+2.2.1, 12-01-2014
+
+Bugfixes in network control:
+
+- added linkset version: region version is inconvenient for rentals
+- removed access limitation (owner/group): inconvenient for rentals
+- fixed node discovery: sometimes incomplete, depending on rez order
+- fixed sorting of menu buttons
+
+Other:
+
+- bugfix: potential channel conflict with Lighting System
+- reintroduced smoke-only feature (dropped in 2.0)
