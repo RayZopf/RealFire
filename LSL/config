@@ -1,7 +1,7 @@
 # Configuration notecard for RealFire
 #
-# Date: 31-05-2013
-# Version: 2.2
+# Date: 31-05-2013 - 28.Jan.2014
+# Version: 2.2-0.1
 
 verbose = YES                   # show more/less info during startup
 switchAccess = 1                # access level for switch (1 = world, 2 = group, 4 = owner, 6 = group + owner)
@@ -20,6 +20,9 @@ size = 25                       # fire size percentage
 topColor = < 100, 0, 0 >        # top color percentage (red, green, blue)
 bottomColor = < 100, 100, 0 >   # bottom color percentage (red, green, blue)
 volume = 100                    # sound volume percentage
+ParticleFire = 1				# (additionally) use particles for fire effect (induces viwer side lag)
+lowprim = 1						# rez PrimFire as temp-prim only (not set to set via Menu!)
+PrimFire = 1					# (additionally) use prims for fire effect (may induce higher primcount)
 smoke = YES                     # smoke or no smoke
 sound = YES                     # sound or no sound
 

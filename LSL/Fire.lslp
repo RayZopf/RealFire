@@ -22,7 +22,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
 //28. Jan. 2014
-//v2.2-0.81
+//v2.2-0.9
 
 //Files:
 //Fire.lsl
@@ -95,7 +95,7 @@ string SOUNDSCRIPT = "Sound.lsl"; //normal sounds
 string BACKSOUNDSCRIPT = "B-Sound.lsl"; //only one (backround, quieter) sound
 string SMOKESCRIPT = "Smoke.lsl";	//script for smoke particles from a second prim
 string SPARKSSCRIPT = "Sparks.lsl"; //script for particles from a third prim
-string TEXTANIMSCRIPT = "Animation.lsl"; //script that handles texture animations (for each single prim)
+string TEXTUREANIMSCRIPT = "Animation.lsl"; //script that handles texture animations (for each single prim)
 string PRIMFIREANIMSCRIPT = "P-Anim.lsl"; //script to create temporary flexi prim (Fire)
 
 // Particle parameters
@@ -115,7 +115,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2-0.81";         // version
+string g_sVersion = "2.2-0.9";         // version
 string g_sScriptName;
 string g_sAuthors = "Rene10957, Zopf";
 
@@ -134,6 +134,7 @@ float MAX_VOLUME = 1.0;          // max. volume for sound
 integer COMMAND_CHANNEL = -10950;
 integer SMOKE_CHANNEL = -10957;  // smoke channel
 integer SOUND_CHANNEL = -10956;  // sound channel
+integer ANIM_CHANNEL = -10955;  // primfire/textureanim channel
 
 
 // Notecard variables
@@ -145,6 +146,7 @@ string g_sMsgSwitch;               // string part of incoming link message: swit
 string g_sMsgOn;                   // string part of incoming link message: switch on
 string g_sMsgOff;                  // string part of incoming link message: switch off
 string g_sMsgMenu;                 // string part of incoming link message: show menu
+integer g_iLowprim = FALSE;			// only use temp prim for PrimFire if set to TRUE
 integer g_iBurnDown = FALSE;       // burn down or burn continuously
 float g_fBurnTime;                 // time to burn in seconds before starting to die
 float g_fDieTime;                  // time it takes to die in seconds
@@ -158,6 +160,8 @@ vector g_vDefEndColor;             // default end (top) color (percentage R,G,B)
 integer g_iDefVolume;              // default volume for sound (percentage)
 integer g_iDefSmoke = TRUE;        // default smoke on/off
 integer g_iDefSound = FALSE;  		// default sound on/off; keep off if SoundAvail
+integer g_iDefParticleFire = TRUE; 	// default fire particle effects on
+integer g_iDefPrimFire = FALSE;		// default rezzing fire prims off
 string g_sCurrentSound = "55";
 integer g_iDefIntensity;           // default light intensity (percentage)
 integer g_iDefRadius;              // default light radius (percentage)
@@ -171,6 +175,7 @@ key	g_kQuery = NULL_KEY;
 integer g_iSmokeAvail = FALSE;		// true after script sucessfully registered for the task
 integer g_iSoundAvail = FALSE;		// true after script sucessfully registered for the task
 integer g_iBackSoundAvail = FALSE;
+integer g_iPrimFireAvail = FALSE;	// not needed for ParticleFire - as that is the standard, included in main script
 
 integer g_iLine;                   // notecard line
 integer menuChannel;            // main menu channel
@@ -191,6 +196,8 @@ integer g_iOn = FALSE;             // fire on/off
 integer g_iBurning = FALSE;        // burning constantly
 integer g_iSmokeOn = FALSE;         // smoke on/off
 integer g_iSoundOn = FALSE;         // sound on/off
+integer g_iParticleFireOn = TRUE;
+integer g_iPrimFireOn = FALSE;
 integer g_iMenuOpen = FALSE;       // a menu is open or canceled (ignore button)
 float g_fTime;                     // timer interval in seconds
 float g_fPercent;                  // percentage of particle size
@@ -230,6 +237,20 @@ toggleFunktion(string sFunction)
 	Debug("toggle function " + sFunction); 
 	if ("fire" == sFunction) {
 		if (g_iOn) stopSystem(); else startSystem();
+	} else if ("particlefire" == sFunction) {
+		if (g_iParticleFireOn) {
+			g_iParticleFireOn = FALSE;
+		} else {
+			g_iParticleFireOn = TRUE;
+		}
+	} else if ("primfire" == sFunction) {
+		if (g_iPrimFireOn) {
+			sendMessage(ANIM_CHANNEL, "0", (string)g_iLowprim);
+			g_iPrimFireOn = FALSE;
+		} else {
+			if (g_iPrimFireAvail) sendMessage(ANIM_CHANNEL, (string)llRound(g_iPerSize), (string)g_iLowprim);
+			g_iPrimFireOn = TRUE;
+		}
 	} else if ("smoke" == sFunction) {
 	    if (g_iSmokeOn) {
 			sendMessage(SMOKE_CHANNEL, "0", "");
@@ -257,17 +278,17 @@ toggleFunktion(string sFunction)
 //-----------------------------------------------
 updateSize(float size)
 {
-    vector start;
-    vector end;
-    float min;
-    float max;
-    float radius;
-    vector push;
+    vector vStart;
+    vector vEnd;
+    float fMin;
+    float fMax;
+    float fRadius;	// also used to indicate PrimFire size
+    vector vPush;
 
-    end = g_vEndScale / 100.0 * size;             // end scale
-    min = g_fMinSpeed / 100.0 * size;             // min. burst speed
-    max = g_fMaxSpeed / 100.0 * size;             // max. burst speed
-    push = g_vPartAccel / 100.0 * size;           // accelleration
+    vEnd = g_vEndScale / 100.0 * size;             // end scale
+    fMin = g_fMinSpeed / 100.0 * size;             // min. burst speed
+    fMax = g_fMaxSpeed / 100.0 * size;             // max. burst speed
+    vPush = g_vPartAccel / 100.0 * size;           // accelleration
 	
 	if (g_iSoundAvail || g_iBackSoundAvail) { //needs to be improved
 		g_fSoundVolume = g_fStartVolume; //to start again with default (e.g. menu setting)
@@ -276,8 +297,8 @@ updateSize(float size)
 	}
 	
     if (size > 25.0) {
-        start = g_vStartScale / 100.0 * size;     // start scale
-        radius = g_fBurstRadius / 100.0 * size;   // burst radius
+        vStart = g_vStartScale / 100.0 * size;     // start scale
+        fRadius = g_fBurstRadius / 100.0 * size;   // burst radius
         if (size >= 80.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
 			else if (size > 50.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
 				else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
@@ -285,11 +306,11 @@ updateSize(float size)
     else {
         if (size >= 15.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
             else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
-        start = g_vStartScale / 4.0;              // start scale
-        radius = g_fBurstRadius / 4.0;            // burst radius
+        vStart = g_vStartScale / 4.0;              // start scale
+        fRadius = g_fBurstRadius / 4.0;            // burst radius
         if (size < 5.0) {
-            start.y = g_vStartScale.y / 100.0 * size * 5.0;
-            if (start.y < 0.25) start.y = 0.25;
+            vStart.y = g_vStartScale.y / 100.0 * size * 5.0;
+            if (vStart.y < 0.25) vStart.y = 0.25;
         }
         if (g_iChangeLight) {
             g_fLightIntensity = percentage(size * 4.0, g_fStartIntensity);
@@ -312,12 +333,14 @@ updateSize(float size)
 		}
     }
 
-    updateColor();
-    updateParticles(start, end, min, max, radius, push);
+	updateColor();
+    if (g_iParticleFireOn) updateParticles(vStart, vEnd, fMin, fMax, fRadius, vPush);
+    	else llParticleSystem([]);
+    if (g_iPrimFireAvail && g_iPrimFireOn) sendMessage(ANIM_CHANNEL, (string)fRadius, (string)g_iLowprim);
     llSetPrimitiveParams([PRIM_POINT_LIGHT, TRUE, g_vLightColor, g_fLightIntensity, g_fLightRadius, g_fLightFalloff]);
     if (g_iSmokeAvail && g_iSmokeOn) sendMessage(SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
 	if ((g_iSoundAvail || g_iBackSoundAvail) && g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, ""); //adjust Volume - currently only useful when volume-change on automatic fire change
-    Debug((string)llRound(size) + "% " + (string)start + " " + (string)end);
+    Debug((string)llRound(size) + "% " + (string)vStart + " " + (string)vEnd);
 }
 
 updateColor()
@@ -399,6 +422,7 @@ loadNotecard()
 		g_sMsgOn = "on";
 		g_sMsgOff = "off";
 		g_sMsgMenu = "menu";
+		g_iLowprim = FALSE;
 		g_iBurnDown = FALSE;
 		g_fBurnTime = 300.0;
 		g_fDieTime = 300.0;
@@ -412,6 +436,8 @@ loadNotecard()
 		g_iDefVolume = 100;
 		g_iDefSmoke = TRUE;
 		g_iDefSound = FALSE;
+		g_iDefParticleFire = TRUE;
+		g_iDefPrimFire = FALSE;
 		g_iDefIntensity = 100;
 		g_iDefRadius = 50;
 		g_iDefFalloff = 40;
@@ -492,6 +518,9 @@ readNotecard (string ncLine)
         else if (lcpar == "topcolor") g_vDefEndColor = checkVector("topColor", (vector)val);
         else if (lcpar == "bottomcolor") g_vDefStartColor = checkVector("bottomColor", (vector)val);
         else if (lcpar == "volume") g_iDefVolume = checkInt("volume", (integer)val, 0, 100);
+        else if ("particlefire" == lcpar)g_iDefParticleFire = checkYesNo("particlefire", val);
+        else if ("lowprim" == lcpar) g_iLowprim = checkYesNo("lowprim", val);
+        else if ("primfire" == lcpar) g_iDefPrimFire = checkYesNo("primfire", val);
         else if (lcpar == "smoke") g_iDefSmoke = checkYesNo("smoke", val);
         else if (lcpar == "sound") g_iDefSound = checkYesNo("sound", val);
         else if (lcpar == "intensity") g_iDefIntensity = checkInt("intensity", (integer)val, 0, 100);
@@ -508,6 +537,13 @@ menuDialog (key id)
 {
     g_iMenuOpen = TRUE;
 	
+	string sParticleFire = "ON";
+	if (!g_iParticleFireOn) sParticleFire = "OFF";
+	string sPrimFire = "N/A";
+	if (g_iPrimFireAvail) {
+		if (g_iPrimFireOn) sPrimFire = "ON";
+			else sPrimFire = "OFF";
+	}
     string strSmoke = "N/A";
 	if (g_iSmokeAvail) {
 		if (g_iSmokeOn) strSmoke = "ON";
@@ -518,7 +554,6 @@ menuDialog (key id)
 		if (g_iSoundOn) strSound = "ON"; 
 			else strSound = "OFF";
 	}
-	
     menuChannel = (integer)(llFrand(-1000000000.0) - 1000000000.0);
     llListenRemove(g_iMenuHandle);
     g_iMenuHandle = llListen(menuChannel, "", "", "");
@@ -526,11 +561,12 @@ menuDialog (key id)
     llSetTimerEvent(120);
     llDialog(id, g_sTitle + " " + g_sVersion +
         "\n\nSize: " + (string)g_iPerSize + "%\t\tVolume: " + (string)g_iPerVolume + "%" +
-        "\nSmoke: " + strSmoke + "\t\tSound: " + strSound, [
-        "Smoke", "Sound", "Close",
+        "\nParticleFire: " + sParticleFire + "\tPrimFire: " + sPrimFire + "\tSmoke: " + strSmoke + "\tSound: " + strSound, [
+        "PrimFire", "ParticleFire", "Smoke", "Sound",
         "-Volume", "+Volume", "Reset",
         "-Fire", "+Fire", "Color",
-        "Small", "Medium", "Large" ],
+        "Small", "Medium", "Large",
+        "Close" ],
         menuChannel);
 }
 
@@ -589,6 +625,9 @@ integer max (integer x, integer y)
 
 reset()
 {
+	g_iParticleFireOn = g_iDefParticleFire;
+	if (!g_iPrimFireAvail) g_iPrimFireOn = FALSE;
+		else g_iPrimFireOn = g_iDefPrimFire; 
 	if (!g_iSmokeAvail) g_iSmokeOn = FALSE;
 		else g_iSmokeOn = g_iDefSmoke;
 	if (!g_iSoundAvail && !g_iBackSoundAvail) g_iSoundOn = FALSE;
@@ -605,6 +644,7 @@ reset()
 	//just send, don't check
 	sendMessage(SMOKE_CHANNEL, "0", "");
 	sendMessage(SOUND_CHANNEL, "0", "");
+	sendMessage(ANIM_CHANNEL, "0", "");
 	llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
 	if (g_iVerbose) llWhisper(0, "The fire get's taken care off");
 }
@@ -649,6 +689,7 @@ stopSystem()
     llSetTimerEvent(0);
     llParticleSystem([]);
     llSetPrimitiveParams([PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
+    if (g_iPrimFireAvail) sendMessage(ANIM_CHANNEL, "0", "");
 	if (g_iSoundAvail || g_iBackSoundAvail) sendMessage(SOUND_CHANNEL, "0", "0"); //volume off and size off
     //llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
     if (g_iSmokeAvail) sendMessage(SMOKE_CHANNEL, "0", "");
@@ -662,7 +703,7 @@ stopSystem()
     llSetLinkTextureAnim(LINK_SET, FALSE, ALL_SIDES,4,4,0,0,1);
 }
 
-updateParticles(vector start, vector end, float min, float max, float radius, vector push)
+updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadius, vector vPush)
 {
     llParticleSystem ([
 	//System Behavior
@@ -684,7 +725,7 @@ updateParticles(vector start, vector end, float min, float max, float radius, ve
 			//PSYS_SRC_PATTERN_ANGLE_CONE |
 			//PSYS_SRC_PATTERN_ANGLE |
 			////PSYS_SRC_PATTERN_DROP,
-        PSYS_SRC_BURST_RADIUS, radius,
+        PSYS_SRC_BURST_RADIUS, fRadius,
 			//PSYS_SRC_ANGLE_BEGIN, float,
 			//PSYS_SRC_ANGLE_END, float,
 			//PSYS_SRC_TARGET_KEY, key,
@@ -693,8 +734,8 @@ updateParticles(vector start, vector end, float min, float max, float radius, ve
         PSYS_PART_END_COLOR, g_vEndColor,
         PSYS_PART_START_ALPHA, 1.0,
         PSYS_PART_END_ALPHA, 0.0,
-        PSYS_PART_START_SCALE, start,
-        PSYS_PART_END_SCALE, end,
+        PSYS_PART_START_SCALE, vStart,
+        PSYS_PART_END_SCALE, vEnd,
 			//PSYS_SRC_TEXTURE, string,
 			//PSYS_PART_START_GLOW, float,
 			//PSYS_PART_END_GLOW, float,
@@ -705,10 +746,10 @@ updateParticles(vector start, vector end, float min, float max, float radius, ve
         PSYS_SRC_BURST_RATE, g_fRate,
         PSYS_SRC_BURST_PART_COUNT, g_iCount,
 	//Particle Motion
-        PSYS_SRC_ACCEL, push,
+        PSYS_SRC_ACCEL, vPush,
 			//PSYS_SRC_OMEGA, vector,
-        PSYS_SRC_BURST_SPEED_MIN, min,
-        PSYS_SRC_BURST_SPEED_MAX, max
+        PSYS_SRC_BURST_SPEED_MIN, fMin,
+        PSYS_SRC_BURST_SPEED_MAX, fMax
 	]);
 }
 
@@ -716,7 +757,7 @@ updateParticles(vector start, vector end, float min, float max, float radius, ve
 //===============================================================================
 //= parameters   :    integer	iChan		determines the script (function) to talk to
 //=					string	sVal			Value to set, also on/off (0 - 100)
-//=					string	sMsg			for sound: description of fire size
+//=					string	sMsg			for sound: description of fire size, values > 100 (110) when lightning fire
 //=
 //= return        :    none
 //=
@@ -725,11 +766,11 @@ updateParticles(vector start, vector end, float min, float max, float radius, ve
 //===============================================================================
 sendMessage(integer iChan, string sVal, string sMsg )
 {
-	if (iChan == SMOKE_CHANNEL) {
+	if (iChan == ANIM_CHANNEL|| SOUND_CHANNEL) {
+		string sSet = sVal + "," + sMsg;
+		llMessageLinked(LINK_SET, iChan, sSet, (key)g_sScriptName);
+	} else if (iChan == SMOKE_CHANNEL) {
 		llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, sVal, (key)g_sScriptName); //to all other prims (because of only one emitter per prim)
-	} else if (iChan == SOUND_CHANNEL) {
-			string sSoundSet = sVal + "," + sMsg;
-			llMessageLinked(LINK_SET, SOUND_CHANNEL, sSoundSet, (key)g_sScriptName);
 	}
 }
 
@@ -773,6 +814,7 @@ default
     changed(integer change)
     {
 		if (change & CHANGED_INVENTORY) {
+			g_iPrimFireAvail = g_iPrimFireOn = FALSE;
 			g_iSmokeAvail = g_iSmokeOn = FALSE;
 			g_iSoundAvail = g_iBackSoundAvail = g_iDefSound = g_iSoundOn = FALSE;
 			llWhisper(0, "Inventory changed, reloading notecard...");
@@ -826,6 +868,8 @@ default
 				if (g_iSoundOn) g_fSoundVolume = g_fStartVolume;
 					else g_fSoundVolumeTmp = g_fStartVolume;
             }
+            else if ("ParticleFire" == msg) toggleFunktion("particlefire");
+            else if ("PrimFire" == msg && g_iPrimFireAvail) toggleFunktion("primfire"); 
             else if (msg == "Smoke" && g_iSmokeAvail) toggleFunktion("smoke");
             else if (msg == "Sound" && (g_iSoundAvail || g_iBackSoundAvail)) toggleFunktion("sound");
             else if (msg == "Color") endColorDialog(g_kUser);
@@ -836,7 +880,7 @@ default
                 g_iMenuOpen = FALSE;
             }
             if (msg != "Color" && msg != "Close") {
-					if (msg != "Smoke" && msg != "Sound" && msg != "Reset") updateSize((float)g_iPerSize);
+					if (msg != "Smoke" && msg != "Sound" && "PrimFire" != msg && msg != "Reset") updateSize((float)g_iPerSize);
 				menuDialog(g_kUser);
             }
         }
@@ -895,7 +939,21 @@ default
         Debug("link_message= channel" + (string)iChan + "; Message " + sMsg + "; " + (string)kId);
 		
 		if (iChan == COMMAND_CHANNEL) return;
-		if (iChan == SMOKE_CHANNEL) {
+		if (iChan == ANIM_CHANNEL && llToLower((string)kId) != llToLower(g_sScriptName)) {
+			if ((string)kId == PRIMFIREANIMSCRIPT) {
+				if ("1" == sMsg) {
+						g_iPrimFireAvail = TRUE;
+						llWhisper(0, "PrimFire available");
+				} else g_iPrimFireAvail = FALSE;
+			}
+			if ((string)kId == TEXTUREANIMSCRIPT) {
+				if ("1" == sMsg){
+						//g_iBackSoundAvail = TRUE;
+						llWhisper(0, "Texture animations available");
+				} else ;//g_iBackSoundAvail = FALSE;
+			}
+			if ("1" != sMsg ) llWhisper(0, "Unable to provide animations ("+(string)kId+")");
+		} else if (iChan == SMOKE_CHANNEL) {
 			if ("1" == sMsg) {
 				g_iSmokeAvail = TRUE;
 				llWhisper(0, "Smoke available");
@@ -920,7 +978,7 @@ default
 						llWhisper(0, "Ambience sound available");
 				} else g_iBackSoundAvail = FALSE;
 			}
-			if ("1" != sMsg ) llWhisper(0, "Unable to provide sound effects ("+(string)kId+")");	
+			if ("1" != sMsg ) llWhisper(0, "Unable to provide sound effects ("+(string)kId+")");
 		} else if (iChan == g_iMsgNumber) {
 			if (kId != "") g_kUser = kId;
 				else {
