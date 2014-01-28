@@ -42,6 +42,7 @@
         </avatarPropertiesNode>
         <eventHandlerNode>
           <nodeName>event-handler</nodeName>
+          <value class="string">Owner-touch.lslm</value>
           <childrenArray/>
         </eventHandlerNode>
       </childrenArray>
@@ -264,6 +265,176 @@
                 </inventoryPropertiesNode>
               </childrenArray>
             </soundNode>
+            <lslforge.sim.SimProjectNodes_-InventoryObjectNode>
+              <nodeName>Fire-small</nodeName>
+              <childrenArray>
+                <inventoryPropertiesNode>
+                  <nodeName>properties</nodeName>
+                  <childrenArray>
+                    <avatarReferenceNode>
+                      <nodeName>creator</nodeName>
+                      <value class="string">Default Avatar</value>
+                      <childrenArray/>
+                    </avatarReferenceNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Base Permissions</displayName>
+                      <nodeName>basep</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Owner Permissions</displayName>
+                      <nodeName>ownerp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Group Permissions</displayName>
+                      <nodeName>groupp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Everybody Permissions</displayName>
+                      <nodeName>everybodyp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Next Owner Permissions</displayName>
+                      <nodeName>nextp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                  </childrenArray>
+                </inventoryPropertiesNode>
+                <primNode>
+                  <nodeName>Flexiprim-small</nodeName>
+                  <childrenArray>
+                    <primPropertiesNode>
+                      <nodeName>prim-properties</nodeName>
+                      <childrenArray>
+                        <gridPositionNode>
+                          <nodeName>pos</nodeName>
+                          <childrenArray>
+                            <gridCoordinateNode>
+                              <nodeName>x</nodeName>
+                              <value class="float">0.0</value>
+                              <childrenArray/>
+                            </gridCoordinateNode>
+                            <gridCoordinateNode>
+                              <nodeName>y</nodeName>
+                              <value class="float">0.0</value>
+                              <childrenArray/>
+                            </gridCoordinateNode>
+                            <gridCoordinateNode>
+                              <nodeName>z</nodeName>
+                              <value class="float">0.0</value>
+                              <childrenArray/>
+                            </gridCoordinateNode>
+                          </childrenArray>
+                        </gridPositionNode>
+                        <avatarReferenceNode>
+                          <nodeName>owner</nodeName>
+                          <value class="string">Default Avatar</value>
+                          <childrenArray/>
+                        </avatarReferenceNode>
+                        <stringNode>
+                          <nodeName>description</nodeName>
+                          <value class="string"></value>
+                          <childrenArray/>
+                        </stringNode>
+                      </childrenArray>
+                    </primPropertiesNode>
+                  </childrenArray>
+                </primNode>
+              </childrenArray>
+            </lslforge.sim.SimProjectNodes_-InventoryObjectNode>
+            <lslforge.sim.SimProjectNodes_-InventoryObjectNode>
+              <nodeName>Fire-medium</nodeName>
+              <childrenArray>
+                <inventoryPropertiesNode>
+                  <nodeName>properties</nodeName>
+                  <childrenArray>
+                    <avatarReferenceNode>
+                      <nodeName>creator</nodeName>
+                      <value class="string">Default Avatar</value>
+                      <childrenArray/>
+                    </avatarReferenceNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Base Permissions</displayName>
+                      <nodeName>basep</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Owner Permissions</displayName>
+                      <nodeName>ownerp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Group Permissions</displayName>
+                      <nodeName>groupp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Everybody Permissions</displayName>
+                      <nodeName>everybodyp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                    <lslforge.sim.SimProject_-HexIntNode>
+                      <displayName>Next Owner Permissions</displayName>
+                      <nodeName>nextp</nodeName>
+                      <value class="int">2147483647</value>
+                      <childrenArray/>
+                    </lslforge.sim.SimProject_-HexIntNode>
+                  </childrenArray>
+                </inventoryPropertiesNode>
+                <primNode>
+                  <nodeName>Flexiprim-medium</nodeName>
+                  <childrenArray>
+                    <primPropertiesNode>
+                      <nodeName>prim-properties</nodeName>
+                      <childrenArray>
+                        <gridPositionNode>
+                          <nodeName>pos</nodeName>
+                          <childrenArray>
+                            <gridCoordinateNode>
+                              <nodeName>x</nodeName>
+                              <value class="float">0.0</value>
+                              <childrenArray/>
+                            </gridCoordinateNode>
+                            <gridCoordinateNode>
+                              <nodeName>y</nodeName>
+                              <value class="float">0.0</value>
+                              <childrenArray/>
+                            </gridCoordinateNode>
+                            <gridCoordinateNode>
+                              <nodeName>z</nodeName>
+                              <value class="float">0.0</value>
+                              <childrenArray/>
+                            </gridCoordinateNode>
+                          </childrenArray>
+                        </gridPositionNode>
+                        <avatarReferenceNode>
+                          <nodeName>owner</nodeName>
+                          <value class="string">Default Avatar</value>
+                          <childrenArray/>
+                        </avatarReferenceNode>
+                        <stringNode>
+                          <nodeName>description</nodeName>
+                          <value class="string"></value>
+                          <childrenArray/>
+                        </stringNode>
+                      </childrenArray>
+                    </primPropertiesNode>
+                  </childrenArray>
+                </primNode>
+              </childrenArray>
+            </lslforge.sim.SimProjectNodes_-InventoryObjectNode>
           </childrenArray>
         </primNode>
         <primNode>
