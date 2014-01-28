@@ -1,0 +1,40 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//Module getGroup for RealFire
+//
+//directly from RealFire 2.2.1 by Rene10957
+//by: Zopf Resident - Ray Zopf (Raz)
+//28. Jan. 2014
+//v0.1
+
+//Files:
+//getGroup.lslm
+//
+//
+//Prequisites: ---
+//
+
+//Changelog
+// 
+
+//bug:
+
+//todo:
+// 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+$module ()
+
+//###
+//getGroup.lslm
+//0.1 - 28Jan2014
+
+string getGroup()
+{
+    string str = llStringTrim(llGetObjectDesc(), STRING_TRIM);
+    if (llToLower(str) == "(no description)" || str == "") str = "Default";
+    return str;
+}
+
+//END getGroup.lslm
+//###

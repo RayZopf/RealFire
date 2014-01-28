@@ -2,7 +2,7 @@
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
 //28. Jan. 2014
-//v0.41
+//v0.42
 //
 //
 // (Realfire by Rene)
@@ -58,7 +58,7 @@ string BACKSOUNDFILE ="17742__krisboruff__fire-crackles-no-room";               
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";     // title
-string g_sVersion = "0.41";       // version
+string g_sVersion = "0.42";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
@@ -69,8 +69,8 @@ string g_sSize = "0";
 float g_fFactor;
 
 //RealFire MESSAGE MAP
-integer COMMAND_CHANNEL = -10950;
-integer SOUND_CHANNEL = -10956;  // smoke channel
+integer COMMAND_CHANNEL = -15700;
+integer SOUND_CHANNEL = -15789;  // smoke channel
 
 
 //===============================================
@@ -98,6 +98,13 @@ CheckSoundFiles()
 	} else g_iSoundAvail = FALSE;
 }
 
+
+string getGroup()
+{
+    string str = llStringTrim(llGetObjectDesc(), STRING_TRIM);
+    if (llToLower(str) == "(no description)" || str == "") str = "Default";
+    return str;
+}
 
 
 //===============================================
@@ -154,6 +161,11 @@ default
 		if (iChan == COMMAND_CHANNEL) RegisterExtension(LINK_SET);	
 		
         if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail || llSubStringIndex(llToLower((string)kId), "sound") >= 0) return; //sound scripts need to have sound in their name, so that we can discard those messages!
+
+        list lKeys = llParseString2List((string)kId, [","], []);
+        string sGroup = llList2String(lKeys, 0);
+		string sScriptName = llList2String(lKeys, 1);
+		if (getGroup() != sGroup || "Default" != sGroup || "Default" != getGroup()) return;
 		list lParams = llParseString2List(sSoundSet, [","], []);
         string sVal = llList2String(lParams, 0);
 		string sMsg = llList2String(lParams, 1);

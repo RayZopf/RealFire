@@ -2,7 +2,7 @@
 // Realfire by Rene - Smoke
 //
 // Author: Rene10957 Resident
-// Date: 17-05-2013
+// Date: 12-01-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -16,7 +16,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
 //28. Jan. 2014
-//v2.2-0.52
+//v2.2.1-0.52
 
 //Files:
 //Smoke.lsl
@@ -69,14 +69,14 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2-0.52";       // version
+string g_sVersion = "2.2.1-0.52";       // version
 string g_sScriptName;
 
 string g_sSize = "0";
 
 //RealFire MESSAGE MAP
-integer COMMAND_CHANNEL = -10950;
-integer SMOKE_CHANNEL = -10957;  // smoke channel
+integer COMMAND_CHANNEL = -15700;
+integer SMOKE_CHANNEL = -15790;  // smoke channel
 
 
 //===============================================
@@ -91,6 +91,12 @@ $import RegisterExtension.lslm(m_iOn=g_iSmoke, m_iComplete=g_iSmoke, channel=SMO
 //PREDEFINED FUNCTIONS
 //===============================================
 
+string getGroup()
+{
+    string str = llStringTrim(llGetObjectDesc(), STRING_TRIM);
+    if (llToLower(str) == "(no description)" || str == "") str = "Default";
+    return str;
+}
 
 
 //===============================================
@@ -135,6 +141,11 @@ default
 		if (iChan == COMMAND_CHANNEL) RegisterExtension(LINK_ALL_OTHERS);
 		
         if (iChan != SMOKE_CHANNEL || !g_iSmoke) return;
+        list lKeys = llParseString2List((string)kId, [","], []);
+        string sGroup = llList2String(lKeys, 0);
+		string sScriptName = llList2String(lKeys, 1);
+		if (getGroup() != sGroup || "Default" != sGroup || "Default" != getGroup()) return;
+		
         if (sMsg == g_sSize) {
 			llSetTimerEvent(0.0);
 			return;

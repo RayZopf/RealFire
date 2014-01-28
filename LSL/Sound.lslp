@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//14. Jan. 2014
-//v0.7
+//28. Jan. 2014
+//v0.71
 //
 //
 // (Realfire by Rene)
@@ -66,7 +66,7 @@ string g_sCurrentSoundFile = g_sSoundFileMedium2;							// standard sound - must
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";     // title
-string g_sVersion = "0.7";       // version
+string g_sVersion = "0.71";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
@@ -77,8 +77,8 @@ float g_fSoundVolumeNew;
 string g_sSize = "0";
 
 //RealFire MESSAGE MAP
-integer COMMAND_CHANNEL = -10950;
-integer SOUND_CHANNEL = -10956;  // smoke channel
+integer COMMAND_CHANNEL = -15700;
+integer SOUND_CHANNEL = -15789;  // smoke channel
 
 
 //===============================================
@@ -155,6 +155,13 @@ SelectSound(float fMsg)
 }
 
 
+string getGroup()
+{
+    string str = llStringTrim(llGetObjectDesc(), STRING_TRIM);
+    if (llToLower(str) == "(no description)" || str == "") str = "Default";
+    return str;
+}
+
 
 //===============================================
 //===============================================
@@ -206,8 +213,12 @@ default
     {
 		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);		
 		if (iChan == COMMAND_CHANNEL) RegisterExtension(LINK_SET);
-		
-        if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail || llSubStringIndex(llToLower((string)kId), "sound")  >= 0) return; //sound scripts need to have sound in their name, so that we can discard those messages!
+
+		list lKeys = llParseString2List((string)kId, [","], []);
+        string sGroup = llList2String(lKeys, 0);
+		string sScriptName = llList2String(lKeys, 1);
+		if (getGroup() != sGroup || "Default" != sGroup || "Default" != getGroup()) return;
+        if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail || llSubStringIndex(llToLower((string)sScriptName), "sound")  >= 0) return; //sound scripts need to have sound in their name, so that we can discard those messages!
 		list lParams = llParseString2List(sSoundSet, [","], []);
         string sVal = llList2String(lParams, 0);
         string sMsg = llList2String(lParams, 1);

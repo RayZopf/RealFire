@@ -2,7 +2,7 @@
 // Realfire by Rene - Fire
 //
 // Author: Rene10957 Resident
-// Date: 31-05-2013
+// Date: 12-01-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -22,7 +22,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
 //28. Jan. 2014
-//v2.2-0.9
+//v2.2.1-0.9
 
 //Files:
 //Fire.lsl
@@ -115,7 +115,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2-0.9";         // version
+string g_sVersion = "2.2.1-0.9";         // version
 string g_sScriptName;
 string g_sAuthors = "Rene10957, Zopf";
 
@@ -131,10 +131,10 @@ float MAX_FALLOFF = 2.0;         // max. light falloff
 float MAX_VOLUME = 1.0;          // max. volume for sound
 
 //RealFire MESSAGE MAP
-integer COMMAND_CHANNEL = -10950;
-integer SMOKE_CHANNEL = -10957;  // smoke channel
-integer SOUND_CHANNEL = -10956;  // sound channel
-integer ANIM_CHANNEL = -10955;  // primfire/textureanim channel
+integer COMMAND_CHANNEL = -15700;
+integer SMOKE_CHANNEL = -15790;  // smoke channel
+integer SOUND_CHANNEL = -15789;  // sound channel
+integer ANIM_CHANNEL = -15788;  // primfire/textureanim channel
 
 
 // Notecard variables
@@ -223,6 +223,15 @@ $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 //===============================================
 //PREDEFINED FUNCTIONS
 //===============================================
+
+
+string getGroup()
+{
+    string str = llStringTrim(llGetObjectDesc(), STRING_TRIM);
+    if (llToLower(str) == "(no description)" || str == "") str = "Default";
+    return str;
+}
+
 
 //===============================================================================
 //= parameters   :    string    sFunction    which function to toggle
@@ -766,11 +775,12 @@ updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadiu
 //===============================================================================
 sendMessage(integer iChan, string sVal, string sMsg )
 {
+	string sId = getGroup() + "," + g_sScriptName;
 	if (iChan == ANIM_CHANNEL|| SOUND_CHANNEL) {
 		string sSet = sVal + "," + sMsg;
-		llMessageLinked(LINK_SET, iChan, sSet, (key)g_sScriptName);
+		llMessageLinked(LINK_SET, iChan, sSet, (key)sId);
 	} else if (iChan == SMOKE_CHANNEL) {
-		llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, sVal, (key)g_sScriptName); //to all other prims (because of only one emitter per prim)
+		llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, sVal, (key)sId); //to all other prims (because of only one emitter per prim)
 	}
 }
 
@@ -939,20 +949,26 @@ default
         Debug("link_message= channel" + (string)iChan + "; Message " + sMsg + "; " + (string)kId);
 		
 		if (iChan == COMMAND_CHANNEL) return;
-		if (iChan == ANIM_CHANNEL && llToLower((string)kId) != llToLower(g_sScriptName)) {
-			if ((string)kId == PRIMFIREANIMSCRIPT) {
+		
+		list lKeys = llParseString2List((string)kId, [","], []);
+        string sGroup = llList2String(lKeys, 0);
+		string sScriptName = llList2String(lKeys, 1);
+		if (getGroup() != sGroup || "Default" != sGroup || "Default" != getGroup()) return;
+		
+		if (iChan == ANIM_CHANNEL && llToLower(sScriptName) != llToLower(g_sScriptName)) {
+			if (sScriptName == PRIMFIREANIMSCRIPT) {
 				if ("1" == sMsg) {
 						g_iPrimFireAvail = TRUE;
 						llWhisper(0, "PrimFire available");
 				} else g_iPrimFireAvail = FALSE;
 			}
-			if ((string)kId == TEXTUREANIMSCRIPT) {
+			if (sScriptName == TEXTUREANIMSCRIPT) {
 				if ("1" == sMsg){
 						//g_iBackSoundAvail = TRUE;
 						llWhisper(0, "Texture animations available");
 				} else ;//g_iBackSoundAvail = FALSE;
 			}
-			if ("1" != sMsg ) llWhisper(0, "Unable to provide animations ("+(string)kId+")");
+			if ("1" != sMsg ) llWhisper(0, "Unable to provide animations ("+sScriptName+")");
 		} else if (iChan == SMOKE_CHANNEL) {
 			if ("1" == sMsg) {
 				g_iSmokeAvail = TRUE;
@@ -965,20 +981,20 @@ default
 				g_iSmokeAvail = FALSE;
 				if ("0" == sMsg) llWhisper(0, "Unable to provide smoke effects");
 			}
-		} else if (iChan == SOUND_CHANNEL && llToLower((string)kId) != llToLower(g_sScriptName)) {
-			if ((string)kId == SOUNDSCRIPT) {
+		} else if (iChan == SOUND_CHANNEL && llToLower(sScriptName) != llToLower(g_sScriptName)) {
+			if (sScriptName == SOUNDSCRIPT) {
 				if ("1" == sMsg) {
 						g_iSoundAvail = TRUE;
 						llWhisper(0, "Noise available");
 				} else g_iSoundAvail = FALSE;
 			}
-			if ((string)kId == BACKSOUNDSCRIPT) {
+			if (sScriptName == BACKSOUNDSCRIPT) {
 				if ("1" == sMsg){
 						g_iBackSoundAvail = TRUE;
 						llWhisper(0, "Ambience sound available");
 				} else g_iBackSoundAvail = FALSE;
 			}
-			if ("1" != sMsg ) llWhisper(0, "Unable to provide sound effects ("+(string)kId+")");
+			if ("1" != sMsg ) llWhisper(0, "Unable to provide sound effects ("+sScriptName+")");
 		} else if (iChan == g_iMsgNumber) {
 			if (kId != "") g_kUser = kId;
 				else {
