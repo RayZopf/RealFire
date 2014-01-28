@@ -49,3 +49,10 @@ http://freesound.org/
 	(http://freesound.org/people/Glaneur%20de%20sons/sounds/104958/)  
 	by Glaneur de sons
 
+
+
+Licensing
+========
+ - for original RealFire see file *License* in directory *LSL*
+ - for used Sound samples see *Attribution.txt* in *Objects\Sounds*
+ - for used Objects see *License-Logs_Embers-SL.txt* in directory *Objects*
