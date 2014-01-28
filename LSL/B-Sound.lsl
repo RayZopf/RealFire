@@ -1,9 +1,9 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Jan 28 22:07:47 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Jan 28 22:21:15 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
 //28. Jan. 2014
-//v0.42
+//v0.43
 //
 //
 // (Realfire by Rene)
@@ -59,7 +59,7 @@ string BACKSOUNDFILE = "17742__krisboruff__fire-crackles-no-room";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";
-string g_sVersion = "0.42";
+string g_sVersion = "0.43";
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
@@ -195,11 +195,11 @@ default {
     link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
         Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSoundSet) + "; kId ") + ((string)kId)));
         if ((iChan == COMMAND_CHANNEL)) RegisterExtension(LINK_SET);
-        if (((((iChan != SOUND_CHANNEL) || (!g_iSound)) || (!g_iSoundAvail)) || (llSubStringIndex(llToLower(((string)kId)),"sound") >= 0))) return;
         list lKeys = llParseString2List(((string)kId),[","],[]);
         string sGroup = llList2String(lKeys,0);
         string sScriptName = llList2String(lKeys,1);
         if ((((getGroup() != sGroup) || ("Default" != sGroup)) || ("Default" != getGroup()))) return;
+        if (((((iChan != SOUND_CHANNEL) || (!g_iSound)) || (!g_iSoundAvail)) || (llSubStringIndex(llToLower(sScriptName),"sound") >= 0))) return;
         list lParams = llParseString2List(sSoundSet,[","],[]);
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);

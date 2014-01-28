@@ -2,7 +2,7 @@
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
 //28. Jan. 2014
-//v0.71
+//v0.72
 //
 //
 // (Realfire by Rene)
@@ -66,7 +66,7 @@ string g_sCurrentSoundFile = g_sSoundFileMedium2;							// standard sound - must
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";     // title
-string g_sVersion = "0.71";       // version
+string g_sVersion = "0.72";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;

@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Jan 28 22:07:55 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Jan 28 22:20:49 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -23,7 +23,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
 //28. Jan. 2014
-//v2.2.1-0.9
+//v2.2.1-0.91
 
 //Files:
 //Fire.lsl
@@ -114,7 +114,7 @@ vector g_vEndColor = <1,0,0>;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";
-string g_sVersion = "2.2.1-0.9";
+string g_sVersion = "2.2.1-0.91";
 string g_sScriptName;
 string g_sAuthors = "Rene10957, Zopf";
 
