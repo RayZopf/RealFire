@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Mon Jan 27 06:05:39 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Jan 28 02:33:22 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -22,7 +22,7 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//27. Jan. 2014
+//28. Jan. 2014
 //v2.2-0.81
 
 //Files:
@@ -821,7 +821,7 @@ default {
         if ((iChan == SMOKE_CHANNEL)) {
             if (("1" == sMsg)) {
                 (g_iSmokeAvail = TRUE);
-                llWhisper(0,"Smoke effects available");
+                llWhisper(0,"Smoke available");
                 if ((g_iDefSmoke && g_iOn)) {
                     (g_iSmokeOn = FALSE);
                     toggleFunktion("smoke");
@@ -836,7 +836,7 @@ default {
             if ((((string)kId) == SOUNDSCRIPT)) {
                 if (("1" == sMsg)) {
                     (g_iSoundAvail = TRUE);
-                    llWhisper(0,"Sound effects available");
+                    llWhisper(0,"Noise available");
                 }
                 else  (g_iSoundAvail = FALSE);
             }

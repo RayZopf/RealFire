@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Mon Jan 27 06:03:58 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Jan 28 02:33:22 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Smoke
 //
@@ -16,7 +16,7 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//27. Jan. 2014
+//28. Jan. 2014
 //v2.2-0.52
 
 //Files:
@@ -168,7 +168,11 @@ default {
     link_message(integer iSender,integer iChan,string sMsg,key kId) {
         Debug(((((((("link_message = channel " + ((string)iChan)) + "; sMsg ") + sMsg) + "; kId ") + ((string)kId)) + " ...g_sSize ") + g_sSize));
         if ((iChan == COMMAND_CHANNEL)) RegisterExtension(LINK_ALL_OTHERS);
-        if ((((iChan != SMOKE_CHANNEL) || (!g_iSmoke)) || (sMsg == g_sSize))) return;
+        if (((iChan != SMOKE_CHANNEL) || (!g_iSmoke))) return;
+        if ((sMsg == g_sSize)) {
+            llSetTimerEvent(0.0);
+            return;
+        }
         if (((((integer)sMsg) > 0) && (((integer)sMsg) <= 100))) {
             llSetTimerEvent(0.0);
             float fAlpha = ((g_fStartAlpha / 100.0) * ((float)sMsg));

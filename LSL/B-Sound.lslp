@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//27. Jan. 2014
+//28. Jan. 2014
 //v0.41
 //
 //
@@ -159,13 +159,14 @@ default
 		string sMsg = llList2String(lParams, 1);
 		
 		Debug("no changes? backround on/off? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
-		if (((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) || "110" ==sMsg) return; //no "backround sound off" currently, 110 = Sound.lsl
+		if ("110" ==sMsg) return; // 110 = Sound.lsl
+		llSetTimerEvent(0.0);
+		if ((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) return; //no "backround sound off" currently, 110 = Sound.lsl
 		Debug("work on link_message");
 		
 		g_fSoundVolumeNew = (float)sVal;
 		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1) { //background sound on/volume adjust
 			Debug("Factor start "+(string)g_fFactor);
-			llSetTimerEvent(0.0);
 			//simple adjustment to different fire sizes (full, at start, when special B_Sound message with sMsg = -1)
 			if ("-1" == sMsg) g_fFactor = 1.0;
 				else if ( 0 < (integer)sMsg && 100 >= (integer)sMsg) {

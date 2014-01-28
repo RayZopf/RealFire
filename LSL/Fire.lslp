@@ -21,7 +21,7 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//27. Jan. 2014
+//28. Jan. 2014
 //v2.2-0.81
 
 //Files:
@@ -898,7 +898,7 @@ default
 		if (iChan == SMOKE_CHANNEL) {
 			if ("1" == sMsg) {
 				g_iSmokeAvail = TRUE;
-				llWhisper(0, "Smoke effects available");
+				llWhisper(0, "Smoke available");
 				if (g_iDefSmoke && g_iOn) { //if only smoke scripts gets resetted
 					g_iSmokeOn = FALSE; //important to get it toggled
 					toggleFunktion("smoke");
@@ -911,7 +911,7 @@ default
 			if ((string)kId == SOUNDSCRIPT) {
 				if ("1" == sMsg) {
 						g_iSoundAvail = TRUE;
-						llWhisper(0, "Sound effects available");
+						llWhisper(0, "Noise available");
 				} else g_iSoundAvail = FALSE;
 			}
 			if ((string)kId == BACKSOUNDSCRIPT) {

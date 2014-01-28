@@ -1,8 +1,8 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Mon Jan 27 06:03:58 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Jan 28 02:33:22 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//27. Jan. 2014
+//28. Jan. 2014
 //v0.41
 //
 //
@@ -192,12 +192,13 @@ default {
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);
         Debug(((((((("no changes? backround on/off? " + sVal) + "-") + sMsg) + "...g_fSoundVolumeCur=") + ((string)g_fSoundVolumeCur)) + "-g_sSize=") + g_sSize));
-        if ((((((float)sVal) == g_fSoundVolumeCur) && ((sMsg == g_sSize) || ("" == sMsg))) || ("110" == sMsg))) return;
+        if (("110" == sMsg)) return;
+        llSetTimerEvent(0.0);
+        if (((((float)sVal) == g_fSoundVolumeCur) && ((sMsg == g_sSize) || ("" == sMsg)))) return;
         Debug("work on link_message");
         (g_fSoundVolumeNew = ((float)sVal));
         if (((g_fSoundVolumeNew > 0) && (g_fSoundVolumeNew <= 1))) {
             Debug(("Factor start " + ((string)g_fFactor)));
-            llSetTimerEvent(0.0);
             if (("-1" == sMsg)) (g_fFactor = 1.0);
             else  if (((0 < ((integer)sMsg)) && (100 >= ((integer)sMsg)))) {
                 if ((((integer)sMsg) <= 15)) (g_fFactor = (5.0 / 6.0));
