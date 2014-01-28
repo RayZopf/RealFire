@@ -6,8 +6,12 @@ trying to get a nicer fire, smoke, sound, animated logs
 
 Todo
 ----
-keeping it low prim (using particles, producing lag)
-maybe add some flexi-prims later (more landimpact, less laggy)
+keeping it low prim (using particles, producing lag)  
+maybe add some flexi-prims (more landimpact, less laggy)  
+rework some internal functions like
+ - size of fire
+ - change of fire/sound
+ - settings notecard and verbosity
 
 
 
