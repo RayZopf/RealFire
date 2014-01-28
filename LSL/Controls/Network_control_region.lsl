@@ -13,7 +13,7 @@
 
 string title = "Network Control";   // title
 string version = "2.0";             // version
-integer linkSet = TRUE;             // LINKSET mode
+integer linkSet = FALSE;            // REGION mode
 integer debug = FALSE;              // show/hide debug messages
 
 // Constants
