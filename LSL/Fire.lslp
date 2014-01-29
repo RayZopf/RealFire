@@ -298,7 +298,7 @@ updateSize(float size)
 	if (g_iSoundAvail || g_iBackSoundAvail) { //needs to be improved
 		g_fSoundVolume = g_fStartVolume; //to start again with default (e.g. menu setting)
 		if (0 <= size && 100 >= size) g_sCurrentSound = (string)size;
-		//if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound);
+		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound); // used when changing fire size via menu
 	}
 	
     if (size > 25.0) {

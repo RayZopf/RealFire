@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Wed Jan 29 06:43:20 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Wed Jan 29 07:25:07 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -326,6 +326,7 @@ updateSize(float size){
     if ((g_iSoundAvail || g_iBackSoundAvail)) {
         (g_fSoundVolume = g_fStartVolume);
         if (((0 <= size) && (100 >= size))) (g_sCurrentSound = ((string)size));
+        if (g_iSoundOn) sendMessage(SOUND_CHANNEL,((string)g_fSoundVolume),g_sCurrentSound);
     }
     if ((size > 25.0)) {
         (vStart = ((g_vStartScale / 100.0) * size));

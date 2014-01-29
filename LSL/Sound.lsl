@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Wed Jan 29 06:37:21 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Wed Jan 29 07:25:07 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -278,7 +278,7 @@ default {
             if ((("" == sMsg) || (sMsg == g_sSize))) {
                 if ((g_fSoundVolumeCur > 0)) {
                     llAdjustSoundVolume(g_fSoundVolumeNew);
-                    if (g_iVerbose) llWhisper(0,"Fire changes it's volume level");
+                    if (g_iVerbose) llWhisper(0,"Sound range for fire has changed");
                 }
                 else  {
                     llLoopSound(g_sCurrentSoundFile,g_fSoundVolumeNew);
@@ -289,7 +289,11 @@ default {
             }
             string sCurrentSoundFileTemp = g_sCurrentSoundFile;
             SelectSound(((float)sMsg));
-            if ((("110" == sMsg) || (g_sCurrentSoundFile == sCurrentSoundFileTemp))) return;
+            if ((g_sCurrentSoundFile == sCurrentSoundFileTemp)) {
+                llAdjustSoundVolume(g_fSoundVolumeNew);
+                if (g_iVerbose) llWhisper(0,"Sound range for fire has changed");
+                return;
+            }
             if ((g_iVerbose && ("0" != g_sSize))) llWhisper(0,"The fire changes it's sound");
             Debug(("play sound: " + g_sCurrentSoundFile));
             llPreloadSound(g_sCurrentSoundFile);
