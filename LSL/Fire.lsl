@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Wed Jan 29 03:03:31 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Wed Jan 29 06:43:20 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -199,7 +199,7 @@ integer g_iOn = FALSE;
 integer g_iBurning = FALSE;
 integer g_iSmokeOn = FALSE;
 integer g_iSoundOn = FALSE;
-integer g_iParticleFireOn = TRUE;
+integer g_iParticleFireOn = FALSE;
 integer g_iPrimFireOn = FALSE;
 integer g_iMenuOpen = FALSE;
 float g_fTime;
@@ -326,7 +326,6 @@ updateSize(float size){
     if ((g_iSoundAvail || g_iBackSoundAvail)) {
         (g_fSoundVolume = g_fStartVolume);
         if (((0 <= size) && (100 >= size))) (g_sCurrentSound = ((string)size));
-        sendMessage(SOUND_CHANNEL,((string)g_fSoundVolume),g_sCurrentSound);
     }
     if ((size > 25.0)) {
         (vStart = ((g_vStartScale / 100.0) * size));
@@ -514,7 +513,9 @@ readNotecard(string ncLine){
         (par = llStringTrim(par,STRING_TRIM));
         (val = llStringTrim(val,STRING_TRIM));
         string lcpar = llToLower(par);
-        if (("LINKSETID" == lcpar)) if (("" != val)) (LINKSETID = val);
+        if (("LINKSETID" == lcpar)) {
+            if (("" != val)) (LINKSETID = val);
+        }
         else  if ((lcpar == "verbose")) (g_iVerbose = checkYesNo("verbose",val));
         else  if ((lcpar == "switchaccess")) (g_iSwitchAccess = checkInt("switchAccess",((integer)val),0,7));
         else  if ((lcpar == "menuaccess")) (g_iMenuAccess = checkInt("menuAccess",((integer)val),0,7));
@@ -572,7 +573,7 @@ menuDialog(key id){
     (g_iMenuHandle = llListen(menuChannel,"","",""));
     llSetTimerEvent(0);
     llSetTimerEvent(120);
-    llDialog(id,(((((((((((((((g_sTitle + " ") + g_sVersion) + "\n\nSize: ") + ((string)g_iPerSize)) + "%\t\tVolume: ") + ((string)g_iPerVolume)) + "%") + "\nParticleFire: ") + sParticleFire) + "\tSmoke: ") + strSmoke) + "\tSound: ") + strSound) + "\nPrimFire: ") + sPrimFire),["Options"," ","Close","-Volume","+Volume"," ","-Fire","+Fire"," ","Small","Medium","Large"],menuChannel);
+    llDialog(id,(((((((((((((((g_sTitle + " ") + g_sVersion) + "\n\nSize: ") + ((string)g_iPerSize)) + "%\t\tVolume: ") + ((string)g_iPerVolume)) + "%") + "\nParticleFire: ") + sParticleFire) + "\tSmoke: ") + strSmoke) + "\tSound: ") + strSound) + "\nPrimFire: ") + sPrimFire),["Options","---","Close","-Volume","+Volume","---","-Fire","+Fire","---","Small","Medium","Large"],menuChannel);
 }
 
 startColorDialog(key id){
@@ -582,7 +583,7 @@ startColorDialog(key id){
     (g_iStartColorHandle = llListen(g_iStartColorChannel,"","",""));
     llSetTimerEvent(0);
     llSetTimerEvent(120);
-    llDialog(id,((((((((("Bottom color" + "\n\nRed: ") + ((string)g_iPerRedStart)) + "%") + "\nGreen: ") + ((string)g_iPerGreenStart)) + "%") + "\nBlue: ") + ((string)g_iPerBlueStart)) + "%"),["Top color","One color","Main menu","-Blue","+Blue","B min/max","-Green","+Green","G min/max","-Red","+Red","R min/max"],g_iStartColorChannel);
+    llDialog(id,((((((((("Bottom color" + "\n\nRed: ") + ((string)g_iPerRedStart)) + "%") + "\nGreen: ") + ((string)g_iPerGreenStart)) + "%") + "\nBlue: ") + ((string)g_iPerBlueStart)) + "%"),["Top color","One color","^Main menu","-Blue","+Blue","B min/max","-Green","+Green","G min/max","-Red","+Red","R min/max"],g_iStartColorChannel);
 }
 
 endColorDialog(key id){
@@ -592,7 +593,7 @@ endColorDialog(key id){
     (g_iEndColorHandle = llListen(g_iEndColorChannel,"","",""));
     llSetTimerEvent(0);
     llSetTimerEvent(120);
-    llDialog(id,((((((((("Top color" + "\n\nRed: ") + ((string)g_iPerRedEnd)) + "%") + "\nGreen: ") + ((string)g_iPerGreenEnd)) + "%") + "\nBlue: ") + ((string)g_iPerBlueEnd)) + "%"),["Bottom color","One color","Main menu","-Blue","+Blue","B min/max","-Green","+Green","G min/max","-Red","+Red","R min/max"],g_iEndColorChannel);
+    llDialog(id,((((((((("Top color" + "\n\nRed: ") + ((string)g_iPerRedEnd)) + "%") + "\nGreen: ") + ((string)g_iPerGreenEnd)) + "%") + "\nBlue: ") + ((string)g_iPerBlueEnd)) + "%"),["Bottom color","One color","^Options","-Blue","+Blue","B min/max","-Green","+Green","G min/max","-Red","+Red","R min/max"],g_iEndColorChannel);
 }
 
 OptionsDialog(key kId){
@@ -619,7 +620,7 @@ OptionsDialog(key kId){
     (g_iOptionsHandle = llListen(g_iOptionsChannel,"","",""));
     llSetTimerEvent(0);
     llSetTimerEvent(120);
-    llDialog(kId,((((((("\nParticleFire: " + sParticleFire) + "\tSmoke: ") + strSmoke) + "\tSound: ") + strSound) + "\nPrimFire: ") + sPrimFire),[" ","RESET","Main menu","Color"," "," ","PrimFire"," "," ","ParticleFire","Smoke","Sound"],g_iOptionsChannel);
+    llDialog(kId,(((((((("\t\tOptions" + "\n\nParticleFire: ") + sParticleFire) + "\tSmoke: ") + strSmoke) + "\tSound: ") + strSound) + "\nPrimFire: ") + sPrimFire),["---","RESET","^Main menu","Color","---","---","PrimFire","---","---","ParticleFire","Smoke","Sound"],g_iOptionsChannel);
 }
 
 float percentage(float per,float num){
@@ -656,7 +657,7 @@ reset(){
     sendMessage(SOUND_CHANNEL,"0","");
     sendMessage(ANIM_CHANNEL,"0","");
     llStopSound();
-    if (g_iVerbose) llWhisper(0,"The fire get's taken care off");
+    if (g_iVerbose) llWhisper(0,"The fire gets taken care off");
 }
 
 startSystem(){
@@ -724,8 +725,8 @@ updateParticles(vector vStart,vector vEnd,float fMin,float fMax,float fRadius,ve
 //=
 //===============================================================================
 sendMessage(integer iChan,string sVal,string sMsg){
-    string sId = ((getGroup() + ",") + g_sScriptName);
-    if (((iChan == ANIM_CHANNEL) || SOUND_CHANNEL)) {
+    string sId = ((getGroup() + ";") + g_sScriptName);
+    if (((iChan == ANIM_CHANNEL) || (iChan == SOUND_CHANNEL))) {
         string sSet = ((sVal + ",") + sMsg);
         llMessageLinked(LINK_SET,iChan,sSet,((key)sId));
     }
@@ -758,7 +759,8 @@ default {
         Debug((((string)llGetFreeMemory()) + " bytes free"));
         llWhisper(0,((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors));
         llWhisper(0,"Touch to start/stop fire\n *Long touch to show menu*");
-        llMessageLinked(LINK_SET,COMMAND_CHANNEL,"register",((key)g_sScriptName));
+        string sId = ((getGroup() + ";") + g_sScriptName);
+        llMessageLinked(LINK_SET,COMMAND_CHANNEL,"register",((key)sId));
         if (g_iVerbose) llWhisper(0,"Loading notecard...");
         loadNotecard();
     }
@@ -844,8 +846,8 @@ default {
                 reset();
                 startSystem();
             }
-            else  if ((msg == "Main menu")) menuDialog(g_kUser);
-            if ((("Color" != msg) && (msg != "Main menu"))) {
+            else  if ((msg == "^Main menu")) menuDialog(g_kUser);
+            if ((("Color" != msg) && (msg != "^Main menu"))) {
                 if (("ParticleFire" == msg)) updateSize(((float)g_iPerSize));
                 OptionsDialog(g_kUser);
             }
@@ -871,13 +873,13 @@ default {
                 else  (g_iPerBlueStart = 100);
             }
             else  if ((msg == "Top color")) endColorDialog(g_kUser);
-            else  if ((msg == "Options menu")) menuDialog(g_kUser);
+            else  if ((msg == "^Main menu")) menuDialog(g_kUser);
             else  if ((msg == "One color")) {
                 (g_iPerRedEnd = g_iPerRedStart);
                 (g_iPerGreenEnd = g_iPerGreenStart);
                 (g_iPerBlueEnd = g_iPerBlueStart);
             }
-            if (((msg != "Top color") && (msg != "Main menu"))) {
+            if (((msg != "Top color") && (msg != "^Main menu"))) {
                 updateSize(((float)g_iPerSize));
                 startColorDialog(g_kUser);
             }
@@ -903,13 +905,13 @@ default {
                 else  (g_iPerBlueEnd = 100);
             }
             else  if ((msg == "Bottom color")) startColorDialog(g_kUser);
-            else  if ((msg == "Options menu")) OptionsDialog(g_kUser);
+            else  if ((msg == "^Options")) OptionsDialog(g_kUser);
             else  if ((msg == "One color")) {
                 (g_iPerRedStart = g_iPerRedEnd);
                 (g_iPerGreenStart = g_iPerGreenEnd);
                 (g_iPerBlueStart = g_iPerBlueEnd);
             }
-            if (((msg != "Bottom color") && (msg != "Main menu"))) {
+            if (((msg != "Bottom color") && (msg != "^Options"))) {
                 updateSize(((float)g_iPerSize));
                 endColorDialog(g_kUser);
             }
@@ -920,7 +922,7 @@ default {
 //listen for linked messages from other RealFire scripts and devices
 //-----------------------------------------------
     link_message(integer iSender_number,integer iChan,string sMsg,key kId) {
-        Debug(((((("link_message= channel" + ((string)iChan)) + "; Message ") + sMsg) + "; ") + ((string)kId)));
+        Debug(((((("link_message= channel: " + ((string)iChan)) + "; Message: ") + sMsg) + ";Key: ") + ((string)kId)));
         if ((iChan == COMMAND_CHANNEL)) return;
         list lKeys = llParseString2List(((string)kId),[";"],[]);
         string sGroup = llList2String(lKeys,0);

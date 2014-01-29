@@ -141,7 +141,7 @@ default
         list lKeys = llParseString2List((string)kId, [";"], []);
         string sGroup = llList2String(lKeys, 0);
 		string sScriptName = llList2String(lKeys, 1);
-		if (!(getGroup() == sGroup) && !(LINKSETID == sGroup) && !(LINKSETID == getGroup())) return;		
+		if (!(getGroup() == sGroup) && !(LINKSETID == sGroup) && !(LINKSETID == getGroup())) return;
         if (sMsg == g_sSize) {
 			llSetTimerEvent(0.0);
 			return;

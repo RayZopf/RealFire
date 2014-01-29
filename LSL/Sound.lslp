@@ -258,7 +258,7 @@ default
 				llStopSound();
 				if (g_iVerbose) llWhisper(0, "Noise from fire ended");
 				g_fSoundVolumeNew =g_fSoundVolumeCur = 0.0;
-				g_sSize = "0";
+				//g_sSize = "0";
 			}
     }
     

@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Wed Jan 29 03:03:31 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Wed Jan 29 06:37:21 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -302,7 +302,6 @@ default {
             llStopSound();
             if (g_iVerbose) llWhisper(0,"Noise from fire ended");
             (g_fSoundVolumeNew = (g_fSoundVolumeCur = 0.0));
-            (g_sSize = "0");
         }
     }
 }

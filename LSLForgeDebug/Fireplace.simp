@@ -148,7 +148,7 @@
               </childrenArray>
             </primPropertiesNode>
             <scriptNode>
-              <nodeName>Fire</nodeName>
+              <nodeName>Fire.lsl</nodeName>
               <value class="string">RealFire-Rene10957.LSL.Fire.lslp</value>
               <childrenArray/>
             </scriptNode>
@@ -208,7 +208,7 @@
               </childrenArray>
             </notecardNode>
             <scriptNode>
-              <nodeName>B-Sound</nodeName>
+              <nodeName>B-Sound.lsl</nodeName>
               <value class="string">RealFire-Rene10957.LSL.B-Sound.lslp</value>
               <childrenArray/>
             </scriptNode>
@@ -476,12 +476,12 @@
               </childrenArray>
             </primPropertiesNode>
             <scriptNode>
-              <nodeName>Smoke</nodeName>
+              <nodeName>Smoke.lsl</nodeName>
               <value class="string">RealFire-Rene10957.LSL.Smoke.lslp</value>
               <childrenArray/>
             </scriptNode>
             <scriptNode>
-              <nodeName>Sound</nodeName>
+              <nodeName>Sound.lsl</nodeName>
               <value class="string">RealFire-Rene10957.LSL.Sound.lslp</value>
               <childrenArray/>
             </scriptNode>
