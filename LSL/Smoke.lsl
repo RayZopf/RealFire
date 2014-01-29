@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Jan 28 22:21:02 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Wed Jan 29 03:03:31 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Smoke
 //
@@ -16,8 +16,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//28. Jan. 2014
-//v2.2.1-0.53
+//29. Jan. 2014
+//v2.2.1-0.54
 
 //Files:
 //Smoke.lsl
@@ -60,6 +60,8 @@ integer g_iDebugMode = FALSE;
 integer g_iSmoke = TRUE;
 integer g_iVerbose = TRUE;
 
+string LINKSETID = "RealFire";
+
 // Particle parameters
 float g_fAge = 10.0;
 float g_fRate = 0.5;
@@ -70,7 +72,7 @@ float g_fStartAlpha = 0.4;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";
-string g_sVersion = "2.2.1-0.53";
+string g_sVersion = "2.2.1-0.54";
 string g_sScriptName;
 
 string g_sSize = "0";
@@ -112,21 +114,25 @@ InfoLines(){
 
 //###
 //getGroup.lslm
-//0.1 - 28Jan2014
+//0.2 - 29Jan2014
 
 string getGroup(){
     string str = llStringTrim(llGetObjectDesc(),STRING_TRIM);
-    if (((llToLower(str) == "(no description)") || (str == ""))) (str = "Default");
+    if (((llToLower(str) == "(no description)") || (str == ""))) (str = LINKSETID);
+    else  {
+        list lGroup = llParseString2List(str,[" "],[]);
+        (str = llList2String(lGroup,0));
+    }
     return str;
 }
 
 
 //###
 //RegisterExtension.lslm
-//0.2 - 28Jan2014
+//0.21 - 29Jan2014
 
 RegisterExtension(integer link){
-    string sId = ((getGroup() + ",") + g_sScriptName);
+    string sId = ((getGroup() + ";") + g_sScriptName);
     if ((g_iSmoke && g_iSmoke)) llMessageLinked(link,SMOKE_CHANNEL,"1",((key)sId));
     else  llMessageLinked(link,SMOKE_CHANNEL,"0",((key)sId));
 }
@@ -177,10 +183,10 @@ default {
         Debug(((((((("link_message = channel " + ((string)iChan)) + "; sMsg ") + sMsg) + "; kId ") + ((string)kId)) + " ...g_sSize ") + g_sSize));
         if ((iChan == COMMAND_CHANNEL)) RegisterExtension(LINK_ALL_OTHERS);
         if (((iChan != SMOKE_CHANNEL) || (!g_iSmoke))) return;
-        list lKeys = llParseString2List(((string)kId),[","],[]);
+        list lKeys = llParseString2List(((string)kId),[";"],[]);
         string sGroup = llList2String(lKeys,0);
         string sScriptName = llList2String(lKeys,1);
-        if ((((getGroup() != sGroup) || ("Default" != sGroup)) || ("Default" != getGroup()))) return;
+        if ((((!(getGroup() == sGroup)) && (!(LINKSETID == sGroup))) && (!(LINKSETID == getGroup())))) return;
         if ((sMsg == g_sSize)) {
             llSetTimerEvent(0.0);
             return;

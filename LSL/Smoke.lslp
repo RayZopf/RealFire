@@ -15,8 +15,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//28. Jan. 2014
-//v2.2.1-0.53
+//29. Jan. 2014
+//v2.2.1-0.54
 
 //Files:
 //Smoke.lsl
@@ -59,6 +59,8 @@ integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 integer g_iSmoke = TRUE;			// Smoke on/off in this prim
 integer g_iVerbose = TRUE;
 
+string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
+
 // Particle parameters
 float g_fAge = 10.0;               // life of each particle
 float g_fRate = 0.5;               // how fast (rate) to emit particles
@@ -69,7 +71,7 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2.1-0.53";       // version
+string g_sVersion = "2.2.1-0.54";       // version
 string g_sScriptName;
 
 string g_sSize = "0";
@@ -84,8 +86,8 @@ integer SMOKE_CHANNEL = -15790;  // smoke channel
 //===============================================
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSmoke, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSmoke, m_sVersion=g_sVersion);
-$import getGroup.lslm();
-$import RegisterExtension.lslm(m_iOn=g_iSmoke, m_iComplete=g_iSmoke, channel=SMOKE_CHANNEL, m_sScriptName=g_sScriptName);
+$import getGroup.lslm(m_sDefGroup=LINKSETID);
+$import RegisterExtension.lslm(m_sGroup=LINKSETID, m_iOn=g_iSmoke, m_iComplete=g_iSmoke, channel=SMOKE_CHANNEL, m_sScriptName=g_sScriptName);
 
 
 //===============================================
@@ -136,11 +138,10 @@ default
 		if (iChan == COMMAND_CHANNEL) RegisterExtension(LINK_ALL_OTHERS);
 		
         if (iChan != SMOKE_CHANNEL || !g_iSmoke) return;
-        list lKeys = llParseString2List((string)kId, [","], []);
+        list lKeys = llParseString2List((string)kId, [";"], []);
         string sGroup = llList2String(lKeys, 0);
 		string sScriptName = llList2String(lKeys, 1);
-		if (getGroup() != sGroup || "Default" != sGroup || "Default" != getGroup()) return;
-		
+		if (!(getGroup() == sGroup) && !(LINKSETID == sGroup) && !(LINKSETID == getGroup())) return;		
         if (sMsg == g_sSize) {
 			llSetTimerEvent(0.0);
 			return;

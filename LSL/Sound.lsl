@@ -1,9 +1,9 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Tue Jan 28 22:21:30 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Wed Jan 29 03:03:31 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//28. Jan. 2014
-//v0.72
+//29. Jan. 2014
+//v0.73
 //
 //
 // (Realfire by Rene)
@@ -63,11 +63,13 @@ integer g_iSoundNFiles = 5;
 list g_lSoundFileList = [g_sSoundFileStart,g_sSoundFileSmall,g_sSoundFileMedium1,g_sSoundFileMedium2,g_sSoundFileFull];
 string g_sCurrentSoundFile = g_sSoundFileMedium2;
 
+string LINKSETID = "RealFire";
+
 
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";
-string g_sVersion = "0.72";
+string g_sVersion = "0.73";
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
@@ -114,21 +116,25 @@ InfoLines(){
 
 //###
 //getGroup.lslm
-//0.1 - 28Jan2014
+//0.2 - 29Jan2014
 
 string getGroup(){
     string str = llStringTrim(llGetObjectDesc(),STRING_TRIM);
-    if (((llToLower(str) == "(no description)") || (str == ""))) (str = "Default");
+    if (((llToLower(str) == "(no description)") || (str == ""))) (str = LINKSETID);
+    else  {
+        list lGroup = llParseString2List(str,[" "],[]);
+        (str = llList2String(lGroup,0));
+    }
     return str;
 }
 
 
 //###
 //RegisterExtension.lslm
-//0.2 - 28Jan2014
+//0.21 - 29Jan2014
 
 RegisterExtension(integer link){
-    string sId = ((getGroup() + ",") + g_sScriptName);
+    string sId = ((getGroup() + ";") + g_sScriptName);
     if ((g_iSound && g_iSoundAvail)) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
     else  llMessageLinked(link,SOUND_CHANNEL,"0",((key)sId));
 }
@@ -251,10 +257,10 @@ default {
     link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
         Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSoundSet) + "; kId ") + ((string)kId)));
         if ((iChan == COMMAND_CHANNEL)) RegisterExtension(LINK_SET);
-        list lKeys = llParseString2List(((string)kId),[","],[]);
+        list lKeys = llParseString2List(((string)kId),[";"],[]);
         string sGroup = llList2String(lKeys,0);
         string sScriptName = llList2String(lKeys,1);
-        if ((((getGroup() != sGroup) || ("Default" != sGroup)) || ("Default" != getGroup()))) return;
+        if ((((!(getGroup() == sGroup)) && (!(LINKSETID == sGroup))) && (!(LINKSETID == getGroup())))) return;
         if (((((iChan != SOUND_CHANNEL) || (!g_iSound)) || (!g_iSoundAvail)) || (llSubStringIndex(llToLower(((string)sScriptName)),"sound") >= 0))) return;
         list lParams = llParseString2List(sSoundSet,[","],[]);
         string sVal = llList2String(lParams,0);

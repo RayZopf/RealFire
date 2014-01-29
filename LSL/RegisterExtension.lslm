@@ -2,8 +2,8 @@
 //Module Register RealFire Extensions
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//28. Jan. 2014
-//v0.2
+//29. Jan. 2014
+//v0.21
 
 //Files:
 //RegisterExtensions.lslm
@@ -22,18 +22,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-$module (integer m_iOn, integer m_iComplete,integer channel, string m_sScriptName)
+$module (string m_sGroup, integer m_iOn, integer m_iComplete,integer channel, string m_sScriptName)
 
-$import getGroup.lslm();
+$import getGroup.lslm(m_sDefGroup=m_sGroup);
 
 
 //###
 //RegisterExtension.lslm
-//0.2 - 28Jan2014
+//0.21 - 29Jan2014
 
 RegisterExtension(integer link)
 {
-	string sId = getGroup() + "," + m_sScriptName;
+	string sId = getGroup() + ";" + m_sScriptName;
 	if (m_iOn && m_iComplete) llMessageLinked(link, channel, "1", (key)sId);
 		else llMessageLinked(link, channel, "0", (key)sId);
 }

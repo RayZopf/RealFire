@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//28. Jan. 2014
-//v0.43
+//29. Jan. 2014
+//v0.44
 //
 //
 // (Realfire by Rene)
@@ -54,11 +54,13 @@ integer g_iVerbose = TRUE;
 
 string BACKSOUNDFILE ="17742__krisboruff__fire-crackles-no-room";                   // backroundsound for small fire
 
+string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
+
 
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";     // title
-string g_sVersion = "0.43";       // version
+string g_sVersion = "0.44";       // version
 string g_sScriptName;
 
 integer g_iSoundAvail = FALSE;
@@ -78,8 +80,8 @@ integer SOUND_CHANNEL = -15789;  // smoke channel
 //===============================================
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSound, m_sVersion=g_sVersion);
-$import getGroup.lslm();
-$import RegisterExtension.lslm(m_iOn=g_iSound, m_iComplete=g_iSoundAvail, channel=SOUND_CHANNEL, m_sScriptName=g_sScriptName);
+$import getGroup.lslm(m_sDefGroup=LINKSETID);
+$import RegisterExtension.lslm(m_sGroup=LINKSETID, m_iOn=g_iSound, m_iComplete=g_iSoundAvail, channel=SOUND_CHANNEL, m_sScriptName=g_sScriptName);
 
 
 //===============================================
@@ -154,10 +156,10 @@ default
 		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);
 		if (iChan == COMMAND_CHANNEL) RegisterExtension(LINK_SET);	
 		
-        list lKeys = llParseString2List((string)kId, [","], []);
+        list lKeys = llParseString2List((string)kId, [";"], []);
         string sGroup = llList2String(lKeys, 0);
 		string sScriptName = llList2String(lKeys, 1);
-		if (getGroup() != sGroup || "Default" != sGroup || "Default" != getGroup()) return;
+		if (!(getGroup() == sGroup) && !(LINKSETID == sGroup) && !(LINKSETID == getGroup())) return;
         if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail || llSubStringIndex(llToLower(sScriptName), "sound") >= 0) return; //sound scripts need to have sound in their name, so that we can discard those messages!
 		list lParams = llParseString2List(sSoundSet, [","], []);
         string sVal = llList2String(lParams, 0);

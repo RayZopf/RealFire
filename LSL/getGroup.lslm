@@ -3,8 +3,8 @@
 //
 //directly from RealFire 2.2.1 by Rene10957
 //by: Zopf Resident - Ray Zopf (Raz)
-//28. Jan. 2014
-//v0.1
+//29. Jan. 2014
+//v0.2
 
 //Files:
 //getGroup.lslm
@@ -23,16 +23,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-$module ()
+$module (string m_sDefGroup)
 
 //###
 //getGroup.lslm
-//0.1 - 28Jan2014
+//0.2 - 29Jan2014
 
 string getGroup()
 {
     string str = llStringTrim(llGetObjectDesc(), STRING_TRIM);
-    if (llToLower(str) == "(no description)" || str == "") str = "Default";
+    if (llToLower(str) == "(no description)" || str == "") str = m_sDefGroup;
+    	else {
+    		list lGroup = llParseString2List(str, [" "], []);
+    		str = llList2String(lGroup, 0);
+    	}
     return str;
 }
 

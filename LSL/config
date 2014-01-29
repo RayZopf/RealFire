@@ -1,8 +1,9 @@
 # Configuration notecard for RealFire
 #
-# Date: 31-05-2013 - 28.Jan.2014
-# Version: 2.2-0.1
+# Date: 31-05-2013 - 29.Jan.2014
+# Version: 2.2-0.2
 
+LINKSETID = RealFire			# group the script is in (1: first word of prim desc is identical, or 2: 
 verbose = YES                   # show more/less info during startup
 switchAccess = 1                # access level for switch (1 = world, 2 = group, 4 = owner, 6 = group + owner)
 menuAccess = 1                  # access level for menu (1 = world, 2 = group, 4 = owner, 6 = group + owner)
