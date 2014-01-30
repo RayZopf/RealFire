@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Thu Jan 30 02:22:37 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Thu Jan 30 02:41:59 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -287,7 +287,7 @@ default {
         MasterCommand(iChan,sSoundSet);
         string sScriptName = GroupCheck(kId);
         if (("exit" == sScriptName)) return;
-        if ((((iChan != SOUND_CHANNEL) || ((!g_iSound) && (!g_iSoundAvail))) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
+        if (((((iChan != SOUND_CHANNEL) || (!g_iSound)) || (!g_iSoundAvail)) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
         list lParams = llParseString2List(sSoundSet,[","],[]);
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);
