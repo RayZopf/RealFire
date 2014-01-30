@@ -76,6 +76,7 @@
 //todo: always check for llGetFreeMemory()
 //todo: check if other particle scripts are in same prim
 //todo: rethink system of verbose messages - use settings notecard!
+//todo: create a module sizeSelect, put size class borders into variables and settings notecard
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 

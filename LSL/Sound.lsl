@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Thu Jan 30 04:06:29 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Thu Jan 30 17:20:27 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -34,6 +34,7 @@
 //todo: think about fire size = 0 what happens to normal sound (B-sound would just go working on)
 //todo: use more sounds and change them randomly http://wiki.secondlife.com/wiki/Script:Random_Sounds
 //todo: check if other sound scripts are in same prim
+//todo: create a module sizeSelect, put size class borders into variables and settings notecard
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -75,7 +76,7 @@ string g_sType = "sound";
 integer g_iType = LINK_SET;
 
 integer g_iSoundAvail = FALSE;
-list g_lSoundFileAvail = [];
+integer g_iInvType = INVENTORY_SOUND;
 integer g_iSoundFileStartAvail = TRUE;
 float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
@@ -175,45 +176,49 @@ string GroupCheck(key kId){
 }
 
 
-//===============================================
-//PREDEFINED FUNCTIONS
-//===============================================
+//###
+//checkforFiles.lslm
+//0.1 - 30Jan2014
 
-CheckSoundFiles(){
-    integer iSoundNumber = llGetInventoryNumber(INVENTORY_SOUND);
-    Debug(("Sound number = " + ((string)iSoundNumber)));
-    if ((iSoundNumber > 0)) {
-        (g_lSoundFileAvail = []);
-        list lSoundList = [];
+checkforFiles(integer iNFiles,list lgivenFileList,string sCurrentFile){
+    integer iFileNumber = llGetInventoryNumber(g_iInvType);
+    Debug(("File number = " + ((string)iFileNumber)));
+    if ((iFileNumber > 0)) {
+        list lFileAvail = [];
+        list lFileList = [];
         integer i;
-        for ((i = 0); (i < iSoundNumber); (++i)) {
-            (lSoundList += llGetInventoryName(INVENTORY_SOUND,i));
+        for ((i = 0); (i < iFileNumber); (++i)) {
+            (lFileList += llGetInventoryName(g_iInvType,i));
         }
-        for ((i = 0); (i < g_iSoundNFiles); (++i)) {
-            list lSoundCompare = llList2List(g_lSoundFileList,i,i);
-            if ((ERR_GENERIC == llListFindList(lSoundList,lSoundCompare))) {
-                (g_lSoundFileAvail += FALSE);
-                if ((((0 < i) && (((string)lSoundCompare) == g_sCurrentSoundFile)) && (2 < g_iSoundNFiles))) {
-                    integer g_iSoundFileNAvail = llGetListLength(g_lSoundFileAvail);
-                    if ((g_iSoundNFiles > g_iSoundFileNAvail)) (g_sCurrentSoundFile = ((string)llList2List(g_lSoundFileList,(i + 1),(i + 1))));
+        for ((i = 0); (i < iNFiles); (++i)) {
+            list lFileCompare = llList2List(lgivenFileList,i,i);
+            if ((ERR_GENERIC == llListFindList(lFileList,lFileCompare))) {
+                (lFileAvail += FALSE);
+                if ((((0 < i) && (((string)lFileCompare) == sCurrentFile)) && (2 < iNFiles))) {
+                    integer iFileNAvail = llGetListLength(lFileAvail);
+                    if ((iNFiles > iFileNAvail)) (sCurrentFile = ((string)llList2List(lgivenFileList,(i + 1),(i + 1))));
                     else  {
-                        list lSoundFileAvailTmp = llList2List(g_lSoundFileAvail,1,(g_iSoundNFiles - 1));
-                        integer j = llListFindList(lSoundFileAvailTmp,[TRUE]);
-                        if ((0 <= j)) (g_sCurrentSoundFile = ((string)llList2List(lSoundFileAvailTmp,j,j)));
+                        list lFileAvailTmp = llList2List(lFileAvail,1,(iNFiles - 1));
+                        integer j = llListFindList(lFileAvailTmp,[TRUE]);
+                        if ((0 <= j)) (sCurrentFile = ((string)llList2List(lFileAvailTmp,j,j)));
                     }
                 }
-                llWhisper(0,((g_sTitle + " - Sound not found in inventory: ") + ((string)lSoundCompare)));
+                llWhisper(0,((g_sTitle + " - File not found in inventory: ") + ((string)lFileCompare)));
             }
-            else  (g_lSoundFileAvail += TRUE);
+            else  (lFileAvail += TRUE);
         }
-        if ((0 == llListFindList(g_lSoundFileAvail,[TRUE]))) (g_iSoundFileStartAvail = TRUE);
+        if ((0 == llListFindList(lFileAvail,[TRUE]))) (g_iSoundFileStartAvail = TRUE);
         else  (g_iSoundFileStartAvail = FALSE);
-        if ((ERR_GENERIC != llListFindList(llList2List(g_lSoundFileAvail,1,(g_iSoundNFiles - 1)),[TRUE]))) (g_iSoundAvail = TRUE);
+        if ((ERR_GENERIC != llListFindList(llList2List(lFileAvail,1,(iNFiles - 1)),[TRUE]))) (g_iSoundAvail = TRUE);
         else  (g_iSoundAvail = FALSE);
     }
     else  (g_iSoundAvail = FALSE);
 }
 
+
+//===============================================
+//PREDEFINED FUNCTIONS
+//===============================================
 
 SelectSound(float fMsg){
     Debug(("SelectSound: " + ((string)fMsg)));
@@ -258,7 +263,7 @@ default {
         (g_sScriptName = llGetScriptName());
         Debug("state_entry");
         llStopSound();
-        CheckSoundFiles();
+        checkforFiles(g_iSoundNFiles,g_lSoundFileList,g_sCurrentSoundFile);
         llSleep(1);
         RegisterExtension(g_iType);
         InfoLines();
@@ -278,7 +283,7 @@ default {
         if ((change & CHANGED_INVENTORY)) {
             llWhisper(0,"Inventory changed, checking sound samples...");
             llStopSound();
-            CheckSoundFiles();
+            checkforFiles(g_iSoundNFiles,g_lSoundFileList,g_sCurrentSoundFile);
             llSleep(1);
             RegisterExtension(g_iType);
             InfoLines();

@@ -33,6 +33,7 @@
 //todo: think about fire size = 0 what happens to normal sound (B-sound would just go working on)
 //todo: use more sounds and change them randomly http://wiki.secondlife.com/wiki/Script:Random_Sounds
 //todo: check if other sound scripts are in same prim
+//todo: create a module sizeSelect, put size class borders into variables and settings notecard
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -74,7 +75,7 @@ string g_sType = "sound";
 integer g_iType = LINK_SET;
 
 integer g_iSoundAvail = FALSE;
-list g_lSoundFileAvail = [];
+integer g_iInvType = INVENTORY_SOUND;
 integer g_iSoundFileStartAvail = TRUE;
 float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
@@ -93,46 +94,12 @@ $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSoundAvail, m_sT
 $import MasterCommand.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
 $import GroupCheck.lslm(m_sGroup=LINKSETID);
 $import RegisterExtension.lslm(m_sGroup=LINKSETID, m_iOn=g_iSound, m_iComplete=g_iSoundAvail, channel=SOUND_CHANNEL, m_sScriptName=g_sScriptName);
+$import checkforFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iSoundFileStartAvail, m_sTitle=g_sTitle, m_iAvail=g_iSoundAvail);
 
 
 //===============================================
 //PREDEFINED FUNCTIONS
 //===============================================
-
-CheckSoundFiles()
-{
-	integer iSoundNumber = llGetInventoryNumber(INVENTORY_SOUND);
-	Debug("Sound number = " +(string)iSoundNumber);
-	if ( iSoundNumber > 0) {
-		g_lSoundFileAvail = [];
-		list lSoundList = [];
-		integer i;
-		for (i = 0; i < iSoundNumber; ++i) { //assuming there are no other sound sources (scripts) with sound files in this prim!
-			lSoundList += llGetInventoryName(INVENTORY_SOUND, i);
-		}
-		for (i = 0; i < g_iSoundNFiles; ++i) {
-			list lSoundCompare = llList2List(g_lSoundFileList, i, i);
-			if (ERR_GENERIC == llListFindList(lSoundList, lSoundCompare)) {
-				g_lSoundFileAvail += FALSE;
-				if (0 < i && (string)lSoundCompare == g_sCurrentSoundFile && 2 < g_iSoundNFiles) {
-					integer g_iSoundFileNAvail = llGetListLength(g_lSoundFileAvail);
-					if (g_iSoundNFiles > g_iSoundFileNAvail) g_sCurrentSoundFile = (string)llList2List(g_lSoundFileList, i+1, i+1);
-						else {
-							list lSoundFileAvailTmp = llList2List(g_lSoundFileAvail, 1, g_iSoundNFiles-1);
-							integer j = llListFindList(lSoundFileAvailTmp, [TRUE]);
-							if (0 <= j) g_sCurrentSoundFile = (string)llList2List(lSoundFileAvailTmp, j, j);
-						}
-				}
-				llWhisper(0, g_sTitle+" - Sound not found in inventory: " + (string)lSoundCompare);
-			} else g_lSoundFileAvail += TRUE;
-		}
-		if (0 == llListFindList(g_lSoundFileAvail, [TRUE])) g_iSoundFileStartAvail = TRUE;
-			else g_iSoundFileStartAvail = FALSE;
-		if (ERR_GENERIC != llListFindList(llList2List(g_lSoundFileAvail, 1, g_iSoundNFiles-1), [TRUE])) g_iSoundAvail = TRUE;
-			else g_iSoundAvail = FALSE;
-	} else g_iSoundAvail = FALSE;
-}
-
 
 SelectSound(float fMsg)
 {
@@ -176,7 +143,7 @@ default
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
         llStopSound();
-		CheckSoundFiles();
+        checkforFiles(g_iSoundNFiles, g_lSoundFileList, g_sCurrentSoundFile);
 		llSleep(1);
 		RegisterExtension(g_iType);
 		InfoLines();
@@ -198,7 +165,7 @@ default
 		if (change & CHANGED_INVENTORY) {
 			llWhisper(0, "Inventory changed, checking sound samples...");
 			llStopSound();
-			CheckSoundFiles();
+			checkforFiles(g_iSoundNFiles, g_lSoundFileList, g_sCurrentSoundFile);
 			llSleep(1);
 			RegisterExtension(g_iType);
 			InfoLines();

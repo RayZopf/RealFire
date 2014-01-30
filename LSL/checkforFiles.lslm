@@ -1,0 +1,69 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//Module check for needed files
+//
+//by: Zopf Resident - Ray Zopf (Raz)
+//30. Jan 2014
+//v0.1
+
+//Files:
+//PrintStatusInfo.lslm
+//
+//
+//Prequisites: ----
+//
+
+//Changelog
+// 
+
+//bug:
+
+//todo:
+// 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+$module (integer m_iDebugMode, string m_sScriptName, integer m_iInvType, integer m_iFileStartAvail, string m_sTitle, integer m_iAvail)
+
+$import Debug.lslm(m_iDebugMode=m_iDebugMode, m_sScriptName=m_sScriptName);
+
+
+//###
+//checkforFiles.lslm
+//0.1 - 30Jan2014
+
+checkforFiles(integer iNFiles, list lgivenFileList, string sCurrentFile)
+{
+	integer iFileNumber = llGetInventoryNumber(m_iInvType);
+	Debug("File number = " +(string)iFileNumber);
+	if ( iFileNumber > 0) {
+		list lFileAvail = [];
+		list lFileList = [];
+		integer i;
+		for (i = 0; i < iFileNumber; ++i) { //assuming there are no interfering sources (scripts) with files in this prim!
+			lFileList += llGetInventoryName(m_iInvType, i);
+		}
+		for (i = 0; i < iNFiles; ++i) {
+			list lFileCompare = llList2List(lgivenFileList, i, i);
+			if (ERR_GENERIC == llListFindList(lFileList, lFileCompare)) {
+				lFileAvail += FALSE;
+				if (0 < i && (string)lFileCompare == sCurrentFile && 2 < iNFiles) {
+					integer iFileNAvail = llGetListLength(lFileAvail);
+					if (iNFiles > iFileNAvail) sCurrentFile = (string)llList2List(lgivenFileList, i+1, i+1);
+						else {
+							list lFileAvailTmp = llList2List(lFileAvail, 1, iNFiles-1);
+							integer j = llListFindList(lFileAvailTmp, [TRUE]);
+							if (0 <= j) sCurrentFile = (string)llList2List(lFileAvailTmp, j, j);
+						}
+				}
+				llWhisper(0, m_sTitle+" - File not found in inventory: " + (string)lFileCompare);
+			} else lFileAvail += TRUE;
+		}
+		if (0 == llListFindList(lFileAvail, [TRUE])) m_iFileStartAvail = TRUE;
+			else m_iFileStartAvail = FALSE;
+		if (ERR_GENERIC != llListFindList(llList2List(lFileAvail, 1, iNFiles-1), [TRUE])) m_iAvail = TRUE;
+			else m_iAvail = FALSE;
+	} else m_iAvail = FALSE;
+}
+
+//END checkforFiles.lslm
+//###
