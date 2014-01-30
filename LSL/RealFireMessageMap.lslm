@@ -27,9 +27,10 @@ $module ()
 
 //RealFire MESSAGE MAP
 integer COMMAND_CHANNEL = -15700;
-integer SMOKE_CHANNEL = -15790;  // smoke channel
-integer SOUND_CHANNEL = -15789;  // sound channel
-integer ANIM_CHANNEL = -15788;  // primfire/textureanim channel
+integer SMOKE_CHANNEL = -15790;			// smoke channel
+integer SOUND_CHANNEL = -15780;			// sound channel
+integer ANIM_CHANNEL = -15770;			// primfire/textureanim channel
+integer PRIMCOMMAND_CHANNEL = -15771;	// kill fire prims or make temp prims
 
 
 //###

@@ -139,6 +139,7 @@ float MAX_VOLUME = 1.0;          // max. volume for sound
 //integer SMOKE_CHANNEL =  smoke channel
 //integer SOUND_CHANNEL = sound channel
 //integer ANIM_CHANNEL = primfire/textureanim channel
+//integer PRIMCOMMAND_CHANNEL = kill fire prims or make temp prims
 
 
 // Notecard variables
