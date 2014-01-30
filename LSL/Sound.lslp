@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//29. Jan. 2014
-//v0.73
+//30. Jan. 2014
+//v0.81
 //
 //
 // (Realfire by Rene)
@@ -68,8 +68,10 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";     // title
-string g_sVersion = "0.73";       // version
+string g_sVersion = "0.81";       // version
 string g_sScriptName;
+string g_sType = "sound";
+integer g_iType = LINK_SET;
 
 integer g_iSoundAvail = FALSE;
 list g_lSoundFileAvail = [];
@@ -88,7 +90,8 @@ integer SOUND_CHANNEL = -15789;  // smoke channel
 //===============================================
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSound, m_sVersion=g_sVersion);
-$import getGroup.lslm(m_sDefGroup=LINKSETID);
+$import MasterCommand.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType);
+$import GroupCheck.lslm(m_sGroup=LINKSETID);
 $import RegisterExtension.lslm(m_sGroup=LINKSETID, m_iOn=g_iSound, m_iComplete=g_iSoundAvail, channel=SOUND_CHANNEL, m_sScriptName=g_sScriptName);
 
 
@@ -175,7 +178,7 @@ default
         llStopSound();
 		CheckSoundFiles();
 		llSleep(1);
-		RegisterExtension(LINK_SET);
+		RegisterExtension(g_iType);
 		InfoLines();
     }
 
@@ -197,7 +200,7 @@ default
 			llStopSound();
 			CheckSoundFiles();
 			llSleep(1);
-			RegisterExtension(LINK_SET);
+			RegisterExtension(g_iType);
 			InfoLines();
 		}
     }
@@ -208,21 +211,20 @@ default
     link_message(integer iSender, integer iChan, string sSoundSet, key kId)
     {
 		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);		
-		if (iChan == COMMAND_CHANNEL) RegisterExtension(LINK_SET);
+		MasterCommand(iChan, sSoundSet);
 
-		list lKeys = llParseString2List((string)kId, [";"], []);
-        string sGroup = llList2String(lKeys, 0);
-		string sScriptName = llList2String(lKeys, 1);
-		if (!(getGroup() == sGroup) && !(LINKSETID == sGroup) && !(LINKSETID == getGroup())) return;
-        if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail || llSubStringIndex(llToLower((string)sScriptName), "sound")  >= 0) return; //sound scripts need to have sound in their name, so that we can discard those messages!
+		string sScriptName = GroupCheck(kId);
+		if ("exit" == sScriptName) return;
+		if (iChan != SOUND_CHANNEL || !g_iSound && !g_iSoundAvail || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; // scripts need to have that identifier in their name, so that we can discard those messages
+
 		list lParams = llParseString2List(sSoundSet, [","], []);
         string sVal = llList2String(lParams, 0);
         string sMsg = llList2String(lParams, 1);
-		
 		Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
 		if (((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) || "-1" == sMsg) return; //-1 for background sound script
 		Debug("work on link_message");
 		
+		llSetTimerEvent(0.0);
 		g_fSoundVolumeNew = (float)sVal;
 		//change sound while sound is off
 		if (0 == g_fSoundVolumeNew && sMsg != g_sSize && "" != sMsg && "0" != sMsg) {
@@ -257,15 +259,19 @@ default
 			g_fSoundVolumeCur = g_fSoundVolumeNew;
 			llStopSound();
 			llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
-		} else {
-				llSleep(1);
-				llStopSound();
-				if (g_iVerbose) llWhisper(0, "Noise from fire ended");
-				g_fSoundVolumeNew =g_fSoundVolumeCur = 0.0;
-				//g_sSize = "0";
-			}
+		} else llSetTimerEvent(1.0);
     }
-    
+
+
+	timer()
+	{
+		llStopSound();
+		if (g_iVerbose) llWhisper(0, "Noise from fire ended");
+		g_fSoundVolumeNew =g_fSoundVolumeCur = 0.0;
+		//g_sSize = "0";
+		llSetTimerEvent(0.0);
+	}
+
 //-----------------------------------------------
 //END STATE: default
 //-----------------------------------------------

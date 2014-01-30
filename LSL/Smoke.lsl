@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Wed Jan 29 06:37:21 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Thu Jan 30 02:22:37 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Smoke
 //
@@ -16,8 +16,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//29. Jan. 2014
-//v2.2.1-0.54
+//30. Jan. 2014
+//v2.2.1-0.55
 
 //Files:
 //Smoke.lsl
@@ -72,13 +72,11 @@ float g_fStartAlpha = 0.4;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";
-string g_sVersion = "2.2.1-0.54";
+string g_sVersion = "2.2.1-0.55";
 string g_sScriptName;
+integer g_iType = LINK_ALL_OTHERS;
 
 string g_sSize = "0";
-
-//RealFire MESSAGE MAP
-integer COMMAND_CHANNEL = -15700;
 integer SMOKE_CHANNEL = -15790;
 
 //###
@@ -114,11 +112,12 @@ InfoLines(){
 
 //###
 //getGroup.lslm
-//0.2 - 29Jan2014
+//0.21 - 29Jan2014
 
-string getGroup(){
+string getGroup(string sDefGroup){
+    if (("" == sDefGroup)) (sDefGroup = "Default");
     string str = llStringTrim(llGetObjectDesc(),STRING_TRIM);
-    if (((llToLower(str) == "(no description)") || (str == ""))) (str = LINKSETID);
+    if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
     else  {
         list lGroup = llParseString2List(str,[" "],[]);
         (str = llList2String(lGroup,0));
@@ -129,12 +128,40 @@ string getGroup(){
 
 //###
 //RegisterExtension.lslm
-//0.21 - 29Jan2014
+//0.22 - 29Jan2014
 
 RegisterExtension(integer link){
-    string sId = ((getGroup() + ";") + g_sScriptName);
+    string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);
     if ((g_iSmoke && g_iSmoke)) llMessageLinked(link,SMOKE_CHANNEL,"1",((key)sId));
     else  llMessageLinked(link,SMOKE_CHANNEL,"0",((key)sId));
+}
+
+
+//###
+//MasterCommand.lslm
+//0.1 - 30Jan2014
+
+
+MasterCommand(integer iChan,string sVal){
+    if ((iChan == SMOKE_CHANNEL)) {
+        if (("register" == sVal)) RegisterExtension(g_iType);
+        else  llSetTimerEvent(0.1);
+    }
+}
+
+
+//###
+//GroupCheck.lslm
+//0.4 - 30Jan2014
+
+
+string GroupCheck(key kId){
+    string str = getGroup(LINKSETID);
+    list lKeys = llParseString2List(((string)kId),[";"],[]);
+    string sGroup = llList2String(lKeys,0);
+    string sScriptName = llList2String(lKeys,1);
+    if ((((str == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == str))) return sScriptName;
+    return "exit";
 }
 
 
@@ -158,7 +185,7 @@ default {
         Debug(("state_entry, Particle count = " + ((string)llRound(((((float)g_iCount) * g_fAge) / g_fRate)))));
         if (g_iSmoke) llParticleSystem([]);
         llSleep(1);
-        RegisterExtension(LINK_ALL_OTHERS);
+        RegisterExtension(g_iType);
         InfoLines();
     }
 
@@ -171,7 +198,7 @@ default {
 	changed(integer change) {
         if ((change & CHANGED_INVENTORY)) {
             llSleep(1);
-            RegisterExtension(LINK_ALL_OTHERS);
+            RegisterExtension(g_iType);
             InfoLines();
         }
     }
@@ -181,13 +208,11 @@ default {
 //-----------------------------------------------
     link_message(integer iSender,integer iChan,string sMsg,key kId) {
         Debug(((((((("link_message = channel " + ((string)iChan)) + "; sMsg ") + sMsg) + "; kId ") + ((string)kId)) + " ...g_sSize ") + g_sSize));
-        if ((iChan == COMMAND_CHANNEL)) RegisterExtension(LINK_ALL_OTHERS);
+        MasterCommand(iChan,sMsg);
         if (((iChan != SMOKE_CHANNEL) || (!g_iSmoke))) return;
-        list lKeys = llParseString2List(((string)kId),[";"],[]);
-        string sGroup = llList2String(lKeys,0);
-        string sScriptName = llList2String(lKeys,1);
-        if ((((!(getGroup() == sGroup)) && (!(LINKSETID == sGroup))) && (!(LINKSETID == getGroup())))) return;
-        if ((sMsg == g_sSize)) {
+        string sScriptName = GroupCheck(kId);
+        if (("exit" == GroupCheck(kId))) return;
+        if (((sMsg == g_sSize) && ("0" != sMsg))) {
             llSetTimerEvent(0.0);
             return;
         }
@@ -197,12 +222,12 @@ default {
             Debug(("fAlpha " + ((string)fAlpha)));
             llParticleSystem([PSYS_PART_FLAGS,((0 | PSYS_PART_INTERP_COLOR_MASK) | PSYS_PART_INTERP_SCALE_MASK),PSYS_SRC_PATTERN,PSYS_SRC_PATTERN_EXPLODE,PSYS_SRC_BURST_RADIUS,0.1,PSYS_PART_START_COLOR,<0.5,0.5,0.5>,PSYS_PART_END_COLOR,<0.5,0.5,0.5>,PSYS_PART_START_ALPHA,fAlpha,PSYS_PART_END_ALPHA,0.0,PSYS_PART_START_SCALE,<0.1,0.1,0.0>,PSYS_PART_END_SCALE,<3.0,3.0,0.0>,PSYS_PART_MAX_AGE,g_fAge,PSYS_SRC_BURST_RATE,g_fRate,PSYS_SRC_BURST_PART_COUNT,g_iCount,PSYS_SRC_ACCEL,<0.0,0.0,0.2>,PSYS_SRC_BURST_SPEED_MIN,0.0,PSYS_SRC_BURST_SPEED_MAX,0.1]);
             if ((g_iVerbose && ("0" != g_sSize))) llWhisper(0,"Smoke changes it's appearance");
+            (g_sSize = sMsg);
         }
         else  {
             llWhisper(0,"Fumes are fading");
             llSetTimerEvent(15.0);
         }
-        (g_sSize = sMsg);
     }
 
 
@@ -211,6 +236,7 @@ default {
         llParticleSystem([]);
         if (g_iVerbose) llWhisper(0,"Smoke vanished");
         Debug("smoke particles off");
+        (g_sSize = "0");
         llSetTimerEvent(0.0);
     }
 }

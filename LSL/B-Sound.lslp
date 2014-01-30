@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//29. Jan. 2014
-//v0.44
+//30. Jan. 2014
+//v0.45
 //
 //
 // (Realfire by Rene)
@@ -60,8 +60,10 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";     // title
-string g_sVersion = "0.44";       // version
+string g_sVersion = "0.45";       // version
 string g_sScriptName;
+string g_sType = "sound";
+integer g_iType = LINK_SET;
 
 integer g_iSoundAvail = FALSE;
 float g_fSoundVolumeCur = 0.0;
@@ -80,7 +82,8 @@ integer SOUND_CHANNEL = -15789;  // smoke channel
 //===============================================
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSound, m_sVersion=g_sVersion);
-$import getGroup.lslm(m_sDefGroup=LINKSETID);
+$import MasterCommand.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType);
+$import GroupCheck.lslm(m_sGroup=LINKSETID);
 $import RegisterExtension.lslm(m_sGroup=LINKSETID, m_iOn=g_iSound, m_iComplete=g_iSoundAvail, channel=SOUND_CHANNEL, m_sScriptName=g_sScriptName);
 
 
@@ -121,7 +124,7 @@ default
         if (g_iSound) llStopSound();
 		CheckSoundFiles();
 		llSleep(1);
-		RegisterExtension(LINK_SET);
+		RegisterExtension(g_iType);
 		InfoLines();
     }
 
@@ -143,7 +146,7 @@ default
 			if (g_iSound) llStopSound();
 			CheckSoundFiles();
 			llSleep(1);
-			RegisterExtension(LINK_SET);
+			RegisterExtension(g_iType);
 			InfoLines();
 		}
     }
@@ -153,20 +156,19 @@ default
 //-----------------------------------------------
     link_message(integer iSender, integer iChan, string sSoundSet, key kId)
     {
-		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);
-		if (iChan == COMMAND_CHANNEL) RegisterExtension(LINK_SET);	
+		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);	
+		MasterCommand(iChan, sSoundSet);
+
+		string sScriptName = GroupCheck(kId);
+		if ("exit" == sScriptName) return;
+		if (iChan != SOUND_CHANNEL || !g_iSound && !g_iSoundAvail || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; // scripts need to have that identifier in their name, so that we can discard those messages
 		
-        list lKeys = llParseString2List((string)kId, [";"], []);
-        string sGroup = llList2String(lKeys, 0);
-		string sScriptName = llList2String(lKeys, 1);
-		if (!(getGroup() == sGroup) && !(LINKSETID == sGroup) && !(LINKSETID == getGroup())) return;
-        if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail || llSubStringIndex(llToLower(sScriptName), "sound") >= 0) return; //sound scripts need to have sound in their name, so that we can discard those messages!
 		list lParams = llParseString2List(sSoundSet, [","], []);
         string sVal = llList2String(lParams, 0);
 		string sMsg = llList2String(lParams, 1);
-		
 		Debug("no changes? backround on/off? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
 		if ("110" ==sMsg) return; // 110 = Sound.lsl
+		
 		llSetTimerEvent(0.0);
 		if ((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) return; //no "backround sound off" currently, 110 = Sound.lsl
 		Debug("work on link_message");

@@ -1,9 +1,9 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Wed Jan 29 07:25:07 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Thu Jan 30 02:22:37 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//29. Jan. 2014
-//v0.73
+//30. Jan. 2014
+//v0.81
 //
 //
 // (Realfire by Rene)
@@ -69,8 +69,10 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";
-string g_sVersion = "0.73";
+string g_sVersion = "0.81";
 string g_sScriptName;
+string g_sType = "sound";
+integer g_iType = LINK_SET;
 
 integer g_iSoundAvail = FALSE;
 list g_lSoundFileAvail = [];
@@ -78,9 +80,6 @@ integer g_iSoundFileStartAvail = TRUE;
 float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
-
-//RealFire MESSAGE MAP
-integer COMMAND_CHANNEL = -15700;
 integer SOUND_CHANNEL = -15789;
 
 //###
@@ -116,11 +115,12 @@ InfoLines(){
 
 //###
 //getGroup.lslm
-//0.2 - 29Jan2014
+//0.21 - 29Jan2014
 
-string getGroup(){
+string getGroup(string sDefGroup){
+    if (("" == sDefGroup)) (sDefGroup = "Default");
     string str = llStringTrim(llGetObjectDesc(),STRING_TRIM);
-    if (((llToLower(str) == "(no description)") || (str == ""))) (str = LINKSETID);
+    if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
     else  {
         list lGroup = llParseString2List(str,[" "],[]);
         (str = llList2String(lGroup,0));
@@ -131,12 +131,40 @@ string getGroup(){
 
 //###
 //RegisterExtension.lslm
-//0.21 - 29Jan2014
+//0.22 - 29Jan2014
 
 RegisterExtension(integer link){
-    string sId = ((getGroup() + ";") + g_sScriptName);
+    string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);
     if ((g_iSound && g_iSoundAvail)) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
     else  llMessageLinked(link,SOUND_CHANNEL,"0",((key)sId));
+}
+
+
+//###
+//MasterCommand.lslm
+//0.1 - 30Jan2014
+
+
+MasterCommand(integer iChan,string sVal){
+    if ((iChan == SOUND_CHANNEL)) {
+        if (("register" == sVal)) RegisterExtension(g_iType);
+        else  llSetTimerEvent(0.1);
+    }
+}
+
+
+//###
+//GroupCheck.lslm
+//0.4 - 30Jan2014
+
+
+string GroupCheck(key kId){
+    string str = getGroup(LINKSETID);
+    list lKeys = llParseString2List(((string)kId),[";"],[]);
+    string sGroup = llList2String(lKeys,0);
+    string sScriptName = llList2String(lKeys,1);
+    if ((((str == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == str))) return sScriptName;
+    return "exit";
 }
 
 
@@ -225,7 +253,7 @@ default {
         llStopSound();
         CheckSoundFiles();
         llSleep(1);
-        RegisterExtension(LINK_SET);
+        RegisterExtension(g_iType);
         InfoLines();
     }
 
@@ -245,7 +273,7 @@ default {
             llStopSound();
             CheckSoundFiles();
             llSleep(1);
-            RegisterExtension(LINK_SET);
+            RegisterExtension(g_iType);
             InfoLines();
         }
     }
@@ -256,18 +284,17 @@ default {
 //-----------------------------------------------
     link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
         Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSoundSet) + "; kId ") + ((string)kId)));
-        if ((iChan == COMMAND_CHANNEL)) RegisterExtension(LINK_SET);
-        list lKeys = llParseString2List(((string)kId),[";"],[]);
-        string sGroup = llList2String(lKeys,0);
-        string sScriptName = llList2String(lKeys,1);
-        if ((((!(getGroup() == sGroup)) && (!(LINKSETID == sGroup))) && (!(LINKSETID == getGroup())))) return;
-        if (((((iChan != SOUND_CHANNEL) || (!g_iSound)) || (!g_iSoundAvail)) || (llSubStringIndex(llToLower(((string)sScriptName)),"sound") >= 0))) return;
+        MasterCommand(iChan,sSoundSet);
+        string sScriptName = GroupCheck(kId);
+        if (("exit" == sScriptName)) return;
+        if ((((iChan != SOUND_CHANNEL) || ((!g_iSound) && (!g_iSoundAvail))) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
         list lParams = llParseString2List(sSoundSet,[","],[]);
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);
         Debug(((((((("no changes? background? " + sVal) + "-") + sMsg) + "...g_fSoundVolumeCur=") + ((string)g_fSoundVolumeCur)) + "-g_sSize=") + g_sSize));
         if ((((((float)sVal) == g_fSoundVolumeCur) && ((sMsg == g_sSize) || ("" == sMsg))) || ("-1" == sMsg))) return;
         Debug("work on link_message");
+        llSetTimerEvent(0.0);
         (g_fSoundVolumeNew = ((float)sVal));
         if (((((0 == g_fSoundVolumeNew) && (sMsg != g_sSize)) && ("" != sMsg)) && ("0" != sMsg))) {
             SelectSound(((float)sMsg));
@@ -301,11 +328,15 @@ default {
             llStopSound();
             llLoopSound(g_sCurrentSoundFile,g_fSoundVolumeNew);
         }
-        else  {
-            llSleep(1);
-            llStopSound();
-            if (g_iVerbose) llWhisper(0,"Noise from fire ended");
-            (g_fSoundVolumeNew = (g_fSoundVolumeCur = 0.0));
-        }
+        else  llSetTimerEvent(1.0);
+    }
+
+
+
+	timer() {
+        llStopSound();
+        if (g_iVerbose) llWhisper(0,"Noise from fire ended");
+        (g_fSoundVolumeNew = (g_fSoundVolumeCur = 0.0));
+        llSetTimerEvent(0.0);
     }
 }

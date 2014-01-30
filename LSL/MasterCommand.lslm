@@ -1,0 +1,44 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//Module react on master RealFire Extensions
+//
+//by: Zopf Resident - Ray Zopf (Raz)
+//30. Jan. 2014
+//v0.1
+
+//Files:
+//GroupCheck.lslm
+//
+//
+//Prequisites: ---
+//
+
+//Changelog
+// 
+
+//bug:
+
+//todo:
+// 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+$module (string m_sGroup, integer m_iEnabled, integer m_iAvail, integer m_iChannel, string m_sScriptName, integer m_iLinkType)
+
+$import RegisterExtension.lslm(m_sGroup=m_sGroup, m_iOn=m_iEnabled, m_iComplete=m_iAvail, channel=m_iChannel, m_sScriptName=m_sScriptName);
+
+
+//###
+//MasterCommand.lslm
+//0.1 - 30Jan2014
+
+
+MasterCommand(integer iChan, string sVal)
+{
+	if (iChan == m_iChannel) {
+		if ("register" == sVal) RegisterExtension(m_iLinkType);
+			else llSetTimerEvent(0.1);
+	}
+}
+
+//END GroupCheck.lslm
+//###

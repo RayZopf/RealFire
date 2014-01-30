@@ -21,8 +21,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//29. Jan. 2014
-//v2.2.1-0.92
+//30. Jan. 2014
+//v2.2.1-0.93
 
 //Files:
 //Fire.lsl
@@ -117,8 +117,9 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2.1-0.92";         // version
+string g_sVersion = "2.2.1-0.93";         // version
 string g_sScriptName;
+string g_sType = "main";
 string g_sAuthors = "Rene10957, Zopf";
 
 
@@ -222,7 +223,8 @@ float g_fStartVolume;              // start value of volume (before burning down
 //LSLForge MODULES
 //===============================================
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
-$import getGroup.lslm(m_sDefGroup=LINKSETID);
+$import getGroup.lslm();
+$import GroupCheck.lslm(m_sGroup=LINKSETID);
 
 
 //===============================================
@@ -569,7 +571,7 @@ menuDialog (key id)
     llDialog(id, g_sTitle + " " + g_sVersion +
         "\n\nSize: " + (string)g_iPerSize + "%\t\tVolume: " + (string)g_iPerVolume + "%" +
         "\nParticleFire: " + sParticleFire + "\tSmoke: " + strSmoke + "\tSound: " + strSound + "\nPrimFire: " + sPrimFire, [
-        "Options", "---", "Close",
+        "Options", "FastToggle", "Close",
         "-Volume", "+Volume", "---",
         "-Fire", "+Fire", "---",
         "Small", "Medium", "Large"
@@ -644,8 +646,8 @@ OptionsDialog (key kId)
     llSetTimerEvent(120);
     llDialog(kId, "\t\tOptions" +
     	"\n\nParticleFire: " + sParticleFire + "\tSmoke: " + strSmoke + "\tSound: " + strSound + "\nPrimFire: " + sPrimFire, [
-        "---", "RESET", "^Main menu",
-        "Color", "---", "---",
+        "^Main menu", "RESET", "Close",
+        "Color", "FastToggle", "---",
         "PrimFire", "---", "---",
         "ParticleFire", "Smoke", "Sound" ],
         g_iOptionsChannel);
@@ -685,9 +687,7 @@ reset()
     g_iPerBlueEnd = (integer)g_vDefEndColor.z;
 	
 	//just send, don't check
-	sendMessage(SMOKE_CHANNEL, "0", "");
-	sendMessage(SOUND_CHANNEL, "0", "");
-	sendMessage(ANIM_CHANNEL, "0", "");
+	sendMessage(COMMAND_CHANNEL, "off", "");
 	llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
 	if (g_iVerbose) llWhisper(0, "The fire gets taken care off");
 }
@@ -809,8 +809,9 @@ updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadiu
 //===============================================================================
 sendMessage(integer iChan, string sVal, string sMsg )
 {
-	string sId = getGroup() + ";" + g_sScriptName;
-	if (iChan == ANIM_CHANNEL || iChan == SOUND_CHANNEL) {
+	string sId = getGroup(LINKSETID) + ";" + g_sScriptName;
+	if (iChan == COMMAND_CHANNEL) llMessageLinked(LINK_SET, iChan, sVal, (key)sId); 
+	else if (iChan == ANIM_CHANNEL || iChan == SOUND_CHANNEL) {
 		string sSet = sVal + "," + sMsg;
 		llMessageLinked(LINK_SET, iChan, sSet, (key)sId);
 	} else if (iChan == SMOKE_CHANNEL) {
@@ -845,8 +846,7 @@ default
         Debug((string)llGetFreeMemory() + " bytes free");
 		llWhisper(0, g_sTitle +" "+g_sVersion+" by "+g_sAuthors);
 	    llWhisper(0, "Touch to start/stop fire\n *Long touch to show menu*");
-		string sId = getGroup() + ";" + g_sScriptName;
-		llMessageLinked(LINK_SET, COMMAND_CHANNEL, "register", (key)sId);
+	    sendMessage(COMMAND_CHANNEL, "off", "");
 		if (g_iVerbose) llWhisper(0, "Loading notecard...");
 		loadNotecard();
      }
@@ -913,15 +913,19 @@ default
 				if (g_iSoundOn) g_fSoundVolume = g_fStartVolume;
 					else g_fSoundVolumeTmp = g_fStartVolume;
             }
+            else if ("FastToggle" == msg) {
+            	g_iSmokeOn = g_iSoundOn = g_iParticleFireOn = g_iPrimFireOn = FALSE;
+            	sendMessage(COMMAND_CHANNEL, "off", "");
+            }
+            if (msg != "Close" && "Options" != msg) {
+				updateSize((float)g_iPerSize);
+				menuDialog(g_kUser);
+            }
             else if (msg == "Options") OptionsDialog(g_kUser);
             else if (msg == "Close") {
                 llSetTimerEvent(0); // stop dialog timer
                 llSetTimerEvent(g_fBurnTime); // restart burn timer
                 g_iMenuOpen = FALSE;
-            }
-            if (msg != "Close" && "Options" != msg) {
-				updateSize((float)g_iPerSize);
-				menuDialog(g_kUser);
             }
         }
         if (channel == g_iOptionsChannel) {
@@ -931,11 +935,21 @@ default
             else if (msg == "Smoke" && g_iSmokeAvail) toggleFunktion("smoke");
             else if (msg == "Sound" && (g_iSoundAvail || g_iBackSoundAvail)) toggleFunktion("sound");
             else if (msg == "Color") endColorDialog(g_kUser);
+            else if ("FastToggle" == msg) {
+            	g_iSmokeOn = g_iSoundOn = g_iParticleFireOn = g_iPrimFireOn = FALSE;
+            	sendMessage(COMMAND_CHANNEL, "off", "");
+            }
             else if (msg == "RESET") { reset(); startSystem(); }
-            else if (msg == "^Main menu") menuDialog(g_kUser);
-            if ("Color" != msg && msg != "^Main menu") {
+            
+            if ("Color" != msg && msg != "^Main menu" && "Close" != msg) {
 				if ("ParticleFire" == msg) updateSize((float)g_iPerSize);
                 OptionsDialog(g_kUser);
+            }
+            else if (msg == "^Main menu") menuDialog(g_kUser);
+            else if (msg == "Close") {
+                llSetTimerEvent(0); // stop dialog timer
+                llSetTimerEvent(g_fBurnTime); // restart burn timer
+                g_iMenuOpen = FALSE;
             }
         }
         else if (channel == g_iStartColorChannel) {
@@ -949,17 +963,18 @@ default
             else if (msg == "R min/max") { if (g_iPerRedStart) g_iPerRedStart = 0; else g_iPerRedStart = 100; }
             else if (msg == "G min/max") { if (g_iPerGreenStart) g_iPerGreenStart = 0; else g_iPerGreenStart = 100; }
             else if (msg == "B min/max") { if (g_iPerBlueStart) g_iPerBlueStart = 0; else g_iPerBlueStart = 100; }
-            else if (msg == "Top color") endColorDialog(g_kUser);
-            else if (msg == "^Main menu") menuDialog(g_kUser);
             else if (msg == "One color") {
                 g_iPerRedEnd = g_iPerRedStart;
                 g_iPerGreenEnd = g_iPerGreenStart;
                 g_iPerBlueEnd = g_iPerBlueStart;
             }
+            
             if (msg != "Top color" && msg != "^Main menu") {
                 updateSize((float)g_iPerSize);
                 startColorDialog(g_kUser);
             }
+            else if (msg == "Top color") endColorDialog(g_kUser);
+            else if (msg == "^Main menu") menuDialog(g_kUser);
         }
         else if (channel == g_iEndColorChannel) {
             llListenRemove(g_iEndColorHandle);
@@ -972,17 +987,18 @@ default
             else if (msg == "R min/max") { if (g_iPerRedEnd) g_iPerRedEnd = 0; else g_iPerRedEnd = 100; }
             else if (msg == "G min/max") { if (g_iPerGreenEnd) g_iPerGreenEnd = 0; else g_iPerGreenEnd = 100; }
             else if (msg == "B min/max") { if (g_iPerBlueEnd) g_iPerBlueEnd = 0; else g_iPerBlueEnd = 100; }
-            else if (msg == "Bottom color") startColorDialog(g_kUser);
-            else if (msg == "^Options") OptionsDialog(g_kUser);
             else if (msg == "One color") {
                 g_iPerRedStart = g_iPerRedEnd;
                 g_iPerGreenStart = g_iPerGreenEnd;
                 g_iPerBlueStart = g_iPerBlueEnd;
             }
+            
             if (msg != "Bottom color" && msg != "^Options") {
                 updateSize((float)g_iPerSize);
                 endColorDialog(g_kUser);
             }
+            else if (msg == "Bottom color") startColorDialog(g_kUser);
+            else if (msg == "^Options") OptionsDialog(g_kUser);
         }
     }
 	
@@ -993,12 +1009,9 @@ default
         Debug("link_message= channel: " + (string)iChan + "; Message: " + sMsg + ";Key: " + (string)kId);
 		
 		if (iChan == COMMAND_CHANNEL) return;
-		
-		list lKeys = llParseString2List((string)kId, [";"], []);
-        string sGroup = llList2String(lKeys, 0);
-		string sScriptName = llList2String(lKeys, 1);
-		if (!(getGroup() == sGroup) && !(LINKSETID == sGroup) && !(LINKSETID == getGroup())) return;
-		
+		string sScriptName = GroupCheck(kId);
+		if ("exit" == sScriptName) return;
+
 		if (iChan == ANIM_CHANNEL && llToLower(sScriptName) != llToLower(g_sScriptName)) {
 			if (sScriptName == PRIMFIREANIMSCRIPT) {
 				if ("1" == sMsg) {

@@ -15,8 +15,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//29. Jan. 2014
-//v2.2.1-0.54
+//30. Jan. 2014
+//v2.2.1-0.55
 
 //Files:
 //Smoke.lsl
@@ -71,8 +71,10 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2.1-0.54";       // version
+string g_sVersion = "2.2.1-0.55";       // version
 string g_sScriptName;
+string g_sType = "smoke";
+integer g_iType = LINK_ALL_OTHERS;
 
 string g_sSize = "0";
 
@@ -86,7 +88,8 @@ integer SMOKE_CHANNEL = -15790;  // smoke channel
 //===============================================
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSmoke, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSmoke, m_sVersion=g_sVersion);
-$import getGroup.lslm(m_sDefGroup=LINKSETID);
+$import MasterCommand.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSmoke, m_iAvail=g_iSmoke, m_iChannel=SMOKE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType);
+$import GroupCheck.lslm(m_sGroup=LINKSETID);
 $import RegisterExtension.lslm(m_sGroup=LINKSETID, m_iOn=g_iSmoke, m_iComplete=g_iSmoke, channel=SMOKE_CHANNEL, m_sScriptName=g_sScriptName);
 
 
@@ -112,7 +115,7 @@ default
         if (g_iSmoke) llParticleSystem([]);
 		llSleep(1);
 		//do some linked message to register with Fire.lsl
-		RegisterExtension(LINK_ALL_OTHERS);
+		RegisterExtension(g_iType);
 		InfoLines();
     }
 
@@ -125,7 +128,7 @@ default
     {
 		if (change & CHANGED_INVENTORY) {
 			llSleep(1);
-			RegisterExtension(LINK_ALL_OTHERS);
+			RegisterExtension(g_iType);
 			InfoLines();
 		}
     }
@@ -135,19 +138,18 @@ default
     link_message(integer iSender, integer iChan, string sMsg, key kId)
     {
 		Debug("link_message = channel " + (string)iChan + "; sMsg " + sMsg + "; kId " + (string)kId+" ...g_sSize "+g_sSize);
-		if (iChan == COMMAND_CHANNEL) RegisterExtension(LINK_ALL_OTHERS);
+		MasterCommand(iChan, sMsg);
+
+		if (iChan != SMOKE_CHANNEL || !g_iSmoke) return;
+		string sScriptName = GroupCheck(kId);
+		if ("exit" ==  GroupCheck(kId)) return;
 		
-        if (iChan != SMOKE_CHANNEL || !g_iSmoke) return;
-        list lKeys = llParseString2List((string)kId, [";"], []);
-        string sGroup = llList2String(lKeys, 0);
-		string sScriptName = llList2String(lKeys, 1);
-		if (!(getGroup() == sGroup) && !(LINKSETID == sGroup) && !(LINKSETID == getGroup())) return;
-        if (sMsg == g_sSize) {
+       	if (sMsg == g_sSize && "0" != sMsg) {
 			llSetTimerEvent(0.0);
 			return;
 		}
 
-        if ((integer)sMsg > 0 && (integer)sMsg <= 100) {
+       	if ((integer)sMsg > 0 && (integer)sMsg <= 100) {
 			llSetTimerEvent(0.0);
 			float fAlpha = g_fStartAlpha / 100.0 * (float)sMsg;
 			Debug("fAlpha " + (string)fAlpha);
@@ -198,11 +200,11 @@ default
 				PSYS_SRC_BURST_SPEED_MAX, 0.1
 			]);
 			if (g_iVerbose && "0"!= g_sSize) llWhisper(0, "Smoke changes it's appearance");
+			g_sSize = sMsg;
 		} else {
 			llWhisper(0, "Fumes are fading");
 			llSetTimerEvent(15.0);
 		}
-		g_sSize = sMsg;
 	}
 
 
@@ -211,6 +213,7 @@ default
 		llParticleSystem([]);
 		if (g_iVerbose) llWhisper(0, "Smoke vanished");
 		Debug("smoke particles off");
+		g_sSize = "0";
 		llSetTimerEvent(0.0);
 	}
 	
