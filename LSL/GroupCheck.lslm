@@ -9,7 +9,7 @@
 //GroupCheck.lslm
 //
 //
-//Prequisites: ---
+//Prequisites: getGroup.lslm
 //
 
 //Changelog
@@ -31,10 +31,8 @@ $import getGroup.lslm();
 //GroupCheck.lslm
 //0.4 - 30Jan2014
 
-
 string GroupCheck(key kId)
-{
-		
+{	
 	string str = getGroup(m_sGroup);
 
 	list lKeys = llParseString2List((string)kId, [";"], []);

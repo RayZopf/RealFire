@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Thu Jan 30 02:22:37 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Thu Jan 30 03:47:06 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -72,7 +72,12 @@ float g_fSoundVolumeCurF = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
 float g_fFactor;
+
+//RealFire MESSAGE MAP
+//integer COMMAND_CHANNEL = -15700;
 integer SOUND_CHANNEL = -15789;
+integer COMMAND_CHANNEL = -15700;
+
 
 //###
 //Debug.lslm
@@ -91,6 +96,7 @@ Debug(string sMsg){
     llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
 }
 
+
 //###
 //PrintStatusInfo.lslm
 //0.11 - 28Jan2014
@@ -104,6 +110,7 @@ InfoLines(){
         else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
     }
 }
+
 
 //###
 //getGroup.lslm
@@ -134,12 +141,13 @@ RegisterExtension(integer link){
 
 //###
 //MasterCommand.lslm
-//0.1 - 30Jan2014
-
+//0.2 - 30Jan2014
 
 MasterCommand(integer iChan,string sVal){
-    if ((iChan == SOUND_CHANNEL)) {
+    if ((iChan == COMMAND_CHANNEL)) {
         if (("register" == sVal)) RegisterExtension(g_iType);
+        else  if (("verbose" == sVal)) (g_iVerbose = TRUE);
+        else  if (("nonverbose" == sVal)) (g_iVerbose = FALSE);
         else  llSetTimerEvent(0.1);
     }
 }
@@ -148,7 +156,6 @@ MasterCommand(integer iChan,string sVal){
 //###
 //GroupCheck.lslm
 //0.4 - 30Jan2014
-
 
 string GroupCheck(key kId){
     string str = getGroup(LINKSETID);

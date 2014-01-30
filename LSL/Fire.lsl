@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Jan 30 02:33:17 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Jan 30 03:47:06 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -201,6 +201,7 @@ integer g_iSmokeOn = FALSE;
 integer g_iSoundOn = FALSE;
 integer g_iParticleFireOn = FALSE;
 integer g_iPrimFireOn = FALSE;
+integer g_iVerboseButton = FALSE;
 integer g_iMenuOpen = FALSE;
 float g_fTime;
 float g_fPercent;
@@ -215,6 +216,7 @@ float g_fSoundVolumeTmp;
 float g_fStartIntensity;
 float g_fStartRadius;
 float g_fStartVolume;
+
 
 //###
 //Debug.lslm
@@ -232,6 +234,7 @@ Debug(string sMsg){
     if ((!g_iDebugMode)) return;
     llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
 }
+
 
 //###
 //getGroup.lslm
@@ -252,7 +255,6 @@ string getGroup(string sDefGroup){
 //###
 //GroupCheck.lslm
 //0.4 - 30Jan2014
-
 
 string GroupCheck(key kId){
     string str = getGroup(LINKSETID);
@@ -632,12 +634,18 @@ OptionsDialog(key kId){
         if (g_iSoundOn) (strSound = "ON");
         else  (strSound = "OFF");
     }
+    string sVerbose = "???";
+    if (g_iVerbose) {
+        if (g_iVerboseButton) (sVerbose = "ON");
+        else  (sVerbose = "part. ON");
+    }
+    else  if (g_iVerboseButton) (sVerbose = "OFF");
     (g_iOptionsChannel = ((integer)(llFrand((-1.0e9)) - 1.0e9)));
     llListenRemove(g_iOptionsHandle);
     (g_iOptionsHandle = llListen(g_iOptionsChannel,"","",""));
     llSetTimerEvent(0);
     llSetTimerEvent(120);
-    llDialog(kId,(((((((("\t\tOptions" + "\n\nParticleFire: ") + sParticleFire) + "\tSmoke: ") + strSmoke) + "\tSound: ") + strSound) + "\nPrimFire: ") + sPrimFire),["^Main menu","RESET","Close","Color","FastToggle","---","PrimFire","---","---","ParticleFire","Smoke","Sound"],g_iOptionsChannel);
+    llDialog(kId,(((((((((("\t\tOptions" + "\n\nParticleFire: ") + sParticleFire) + "\tSmoke: ") + strSmoke) + "\tSound: ") + strSound) + "\nPrimFire: ") + sPrimFire) + "\t\tVerbose: ") + sVerbose),["^Main menu","RESET","Close","Color","FastToggle","Verbose","PrimFire","---","---","ParticleFire","Smoke","Sound"],g_iOptionsChannel);
 }
 
 float percentage(float per,float num){
@@ -861,6 +869,17 @@ default {
             else  if (((msg == "Smoke") && g_iSmokeAvail)) toggleFunktion("smoke");
             else  if (((msg == "Sound") && (g_iSoundAvail || g_iBackSoundAvail))) toggleFunktion("sound");
             else  if ((msg == "Color")) endColorDialog(g_kUser);
+            else  if (("Verbose" == msg)) {
+                if ((g_iVerbose && g_iVerboseButton)) {
+                    sendMessage(COMMAND_CHANNEL,"nonverbose","");
+                    (g_iVerbose = FALSE);
+                }
+                else  {
+                    sendMessage(COMMAND_CHANNEL,"verbose","");
+                    (g_iVerbose = TRUE);
+                }
+                (g_iVerboseButton = TRUE);
+            }
             else  if (("FastToggle" == msg)) {
                 (g_iSmokeOn = (g_iSoundOn = (g_iParticleFireOn = (g_iPrimFireOn = FALSE))));
                 sendMessage(COMMAND_CHANNEL,"off","");

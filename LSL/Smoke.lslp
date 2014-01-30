@@ -79,7 +79,7 @@ integer g_iType = LINK_ALL_OTHERS;
 string g_sSize = "0";
 
 //RealFire MESSAGE MAP
-integer COMMAND_CHANNEL = -15700;
+//integer COMMAND_CHANNEL = -15700;
 integer SMOKE_CHANNEL = -15790;  // smoke channel
 
 
@@ -88,7 +88,7 @@ integer SMOKE_CHANNEL = -15790;  // smoke channel
 //===============================================
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSmoke, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSmoke, m_sVersion=g_sVersion);
-$import MasterCommand.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSmoke, m_iAvail=g_iSmoke, m_iChannel=SMOKE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType);
+$import MasterCommand.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSmoke, m_iAvail=g_iSmoke, m_iChannel=SMOKE_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
 $import GroupCheck.lslm(m_sGroup=LINKSETID);
 $import RegisterExtension.lslm(m_sGroup=LINKSETID, m_iOn=g_iSmoke, m_iComplete=g_iSmoke, channel=SMOKE_CHANNEL, m_sScriptName=g_sScriptName);
 

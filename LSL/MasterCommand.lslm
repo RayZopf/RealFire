@@ -3,13 +3,13 @@
 //
 //by: Zopf Resident - Ray Zopf (Raz)
 //30. Jan. 2014
-//v0.1
+//v0.2
 
 //Files:
 //GroupCheck.lslm
 //
 //
-//Prequisites: ---
+//Prequisites: RegisterExtension.lslm
 //
 
 //Changelog
@@ -22,21 +22,26 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-$module (string m_sGroup, integer m_iEnabled, integer m_iAvail, integer m_iChannel, string m_sScriptName, integer m_iLinkType)
+$module (string m_sGroup, integer m_iEnabled, integer m_iAvail, integer m_iChannel, string m_sScriptName, integer m_iVerbose, integer m_iLinkType)
 
 $import RegisterExtension.lslm(m_sGroup=m_sGroup, m_iOn=m_iEnabled, m_iComplete=m_iAvail, channel=m_iChannel, m_sScriptName=m_sScriptName);
 
 
+//RealFire MESSAGE MAP
+integer COMMAND_CHANNEL = -15700;
+
+
 //###
 //MasterCommand.lslm
-//0.1 - 30Jan2014
-
+//0.2 - 30Jan2014
 
 MasterCommand(integer iChan, string sVal)
 {
-	if (iChan == m_iChannel) {
+	if (iChan == COMMAND_CHANNEL) {
 		if ("register" == sVal) RegisterExtension(m_iLinkType);
-			else llSetTimerEvent(0.1);
+		else if ("verbose" == sVal) m_iVerbose = TRUE;
+		else if ("nonverbose" == sVal) m_iVerbose = FALSE;
+		else llSetTimerEvent(0.1);
 	}
 }
 

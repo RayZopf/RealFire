@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Thu Jan 30 02:22:37 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Thu Jan 30 03:47:06 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Smoke
 //
@@ -77,7 +77,12 @@ string g_sScriptName;
 integer g_iType = LINK_ALL_OTHERS;
 
 string g_sSize = "0";
+
+//RealFire MESSAGE MAP
+//integer COMMAND_CHANNEL = -15700;
 integer SMOKE_CHANNEL = -15790;
+integer COMMAND_CHANNEL = -15700;
+
 
 //###
 //Debug.lslm
@@ -96,6 +101,7 @@ Debug(string sMsg){
     llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
 }
 
+
 //###
 //PrintStatusInfo.lslm
 //0.11 - 28Jan2014
@@ -109,6 +115,7 @@ InfoLines(){
         else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
     }
 }
+
 
 //###
 //getGroup.lslm
@@ -139,12 +146,13 @@ RegisterExtension(integer link){
 
 //###
 //MasterCommand.lslm
-//0.1 - 30Jan2014
-
+//0.2 - 30Jan2014
 
 MasterCommand(integer iChan,string sVal){
-    if ((iChan == SMOKE_CHANNEL)) {
+    if ((iChan == COMMAND_CHANNEL)) {
         if (("register" == sVal)) RegisterExtension(g_iType);
+        else  if (("verbose" == sVal)) (g_iVerbose = TRUE);
+        else  if (("nonverbose" == sVal)) (g_iVerbose = FALSE);
         else  llSetTimerEvent(0.1);
     }
 }
@@ -153,7 +161,6 @@ MasterCommand(integer iChan,string sVal){
 //###
 //GroupCheck.lslm
 //0.4 - 30Jan2014
-
 
 string GroupCheck(key kId){
     string str = getGroup(LINKSETID);

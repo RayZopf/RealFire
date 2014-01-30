@@ -203,6 +203,7 @@ integer g_iSmokeOn = FALSE;         // smoke on/off
 integer g_iSoundOn = FALSE;         // sound on/off
 integer g_iParticleFireOn = FALSE;
 integer g_iPrimFireOn = FALSE;
+integer g_iVerboseButton = FALSE;
 integer g_iMenuOpen = FALSE;       // a menu is open or canceled (ignore button)
 float g_fTime;                     // timer interval in seconds
 float g_fPercent;                  // percentage of particle size
@@ -638,16 +639,21 @@ OptionsDialog (key kId)
 		if (g_iSoundOn) strSound = "ON"; 
 			else strSound = "OFF";
 	}
-
+	string sVerbose = "???";
+	if (g_iVerbose) {
+		if (g_iVerboseButton) sVerbose = "ON";
+			else sVerbose = "part. ON";
+	} else if (g_iVerboseButton) sVerbose = "OFF";
+	
     g_iOptionsChannel = (integer)(llFrand(-1000000000.0) - 1000000000.0);
     llListenRemove(g_iOptionsHandle);
     g_iOptionsHandle = llListen(g_iOptionsChannel, "", "", "");
     llSetTimerEvent(0);
     llSetTimerEvent(120);
     llDialog(kId, "\t\tOptions" +
-    	"\n\nParticleFire: " + sParticleFire + "\tSmoke: " + strSmoke + "\tSound: " + strSound + "\nPrimFire: " + sPrimFire, [
+    	"\n\nParticleFire: " + sParticleFire + "\tSmoke: " + strSmoke + "\tSound: " + strSound + "\nPrimFire: " + sPrimFire +"\t\tVerbose: " + sVerbose, [
         "^Main menu", "RESET", "Close",
-        "Color", "FastToggle", "---",
+        "Color", "FastToggle", "Verbose",
         "PrimFire", "---", "---",
         "ParticleFire", "Smoke", "Sound" ],
         g_iOptionsChannel);
@@ -935,6 +941,16 @@ default
             else if (msg == "Smoke" && g_iSmokeAvail) toggleFunktion("smoke");
             else if (msg == "Sound" && (g_iSoundAvail || g_iBackSoundAvail)) toggleFunktion("sound");
             else if (msg == "Color") endColorDialog(g_kUser);
+            else if ("Verbose" == msg) {
+            	if (g_iVerbose && g_iVerboseButton) {
+            		sendMessage(COMMAND_CHANNEL, "nonverbose", "");
+            		g_iVerbose= FALSE;
+            	} else {
+            		sendMessage(COMMAND_CHANNEL, "verbose", "");
+            		g_iVerbose= TRUE;
+            	}
+            	g_iVerboseButton = TRUE;
+            }
             else if ("FastToggle" == msg) {
             	g_iSmokeOn = g_iSoundOn = g_iParticleFireOn = g_iPrimFireOn = FALSE;
             	sendMessage(COMMAND_CHANNEL, "off", "");
