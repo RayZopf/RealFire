@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Thu Jan 30 03:47:06 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Thu Jan 30 04:06:52 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Smoke
 //
@@ -228,7 +228,7 @@ default {
             float fAlpha = ((g_fStartAlpha / 100.0) * ((float)sMsg));
             Debug(("fAlpha " + ((string)fAlpha)));
             llParticleSystem([PSYS_PART_FLAGS,((0 | PSYS_PART_INTERP_COLOR_MASK) | PSYS_PART_INTERP_SCALE_MASK),PSYS_SRC_PATTERN,PSYS_SRC_PATTERN_EXPLODE,PSYS_SRC_BURST_RADIUS,0.1,PSYS_PART_START_COLOR,<0.5,0.5,0.5>,PSYS_PART_END_COLOR,<0.5,0.5,0.5>,PSYS_PART_START_ALPHA,fAlpha,PSYS_PART_END_ALPHA,0.0,PSYS_PART_START_SCALE,<0.1,0.1,0.0>,PSYS_PART_END_SCALE,<3.0,3.0,0.0>,PSYS_PART_MAX_AGE,g_fAge,PSYS_SRC_BURST_RATE,g_fRate,PSYS_SRC_BURST_PART_COUNT,g_iCount,PSYS_SRC_ACCEL,<0.0,0.0,0.2>,PSYS_SRC_BURST_SPEED_MIN,0.0,PSYS_SRC_BURST_SPEED_MAX,0.1]);
-            if ((g_iVerbose && ("0" != g_sSize))) llWhisper(0,"Smoke changes it's appearance");
+            if ((g_iVerbose && ("0" != g_sSize))) llWhisper(0,"(v) Smoke changes it's appearance");
             (g_sSize = sMsg);
         }
         else  {
@@ -241,7 +241,7 @@ default {
 
 	timer() {
         llParticleSystem([]);
-        if (g_iVerbose) llWhisper(0,"Smoke vanished");
+        if (g_iVerbose) llWhisper(0,"(v) Smoke vanished");
         Debug("smoke particles off");
         (g_sSize = "0");
         llSetTimerEvent(0.0);

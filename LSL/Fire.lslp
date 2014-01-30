@@ -695,7 +695,7 @@ reset()
 	//just send, don't check
 	sendMessage(COMMAND_CHANNEL, "off", "");
 	llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
-	if (g_iVerbose) llWhisper(0, "The fire gets taken care off");
+	if (g_iVerbose) llWhisper(0, "(v) The fire gets taken care off");
 }
 
 startSystem()
@@ -714,7 +714,7 @@ startSystem()
 		//if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, "-1"); //background noise - do better not use, gets called to often
 		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fStartVolume, "110");
 	}
-	if (g_iVerbose && !g_iOn) llWhisper(0, "The fire gets lit");
+	if (g_iVerbose && !g_iOn) llWhisper(0, "(v) The fire gets lit");
     updateSize((float)g_iPerSize);
     llSetTimerEvent(0);
     llSetTimerEvent(g_fBurnTime);
@@ -730,7 +730,7 @@ startSystem()
 
 stopSystem()
 {
-	if (g_iVerbose && g_iOn) llWhisper(0, "The fire is dying down");
+	if (g_iVerbose && g_iOn) llWhisper(0, " (v) The fire is dying down");
     g_iOn = FALSE;
     g_iBurning = FALSE;
     g_fPercent = 0.0;
@@ -827,8 +827,8 @@ sendMessage(integer iChan, string sVal, string sMsg )
 
 InfoLines()
 {
-        llWhisper(0, "Switch access:" + showAccess(g_iSwitchAccess));
-        llWhisper(0, "Menu access:" + showAccess(g_iMenuAccess));
+        llWhisper(0, "(v) Switch access:" + showAccess(g_iSwitchAccess));
+        llWhisper(0, "(v) Menu access:" + showAccess(g_iMenuAccess));
 }
 
 
@@ -852,8 +852,8 @@ default
         Debug((string)llGetFreeMemory() + " bytes free");
 		llWhisper(0, g_sTitle +" "+g_sVersion+" by "+g_sAuthors);
 	    llWhisper(0, "Touch to start/stop fire\n *Long touch to show menu*");
-	    sendMessage(COMMAND_CHANNEL, "off", "");
-		if (g_iVerbose) llWhisper(0, "Loading notecard...");
+	    sendMessage(COMMAND_CHANNEL, "register", "");
+		if (g_iVerbose) llWhisper(0, "(v) Loading notecard...");
 		loadNotecard();
      }
 
@@ -875,12 +875,14 @@ default
 	
     touch_start(integer total_number)
     {
+        g_kUser = llDetectedKey(0);
+		llRegionSayTo(g_kUser, 0, "*Long touch to show menu*");
         llResetTime();
     }
 
+
     touch_end(integer total_number)
     {
-        g_kUser = llDetectedKey(0);
 
         if (llGetTime() > 2.0) {
             if (accessGranted(g_kUser, g_iMenuAccess)) {
@@ -1164,7 +1166,7 @@ default
     timer()
     {
         if (g_iMenuOpen) {
-            if (g_iVerbose) llWhisper(0, "MENU TIMEOUT");
+            llWhisper(0, "MENU TIMEOUT");
             llListenRemove(g_iMenuHandle);
             llListenRemove(g_iStartColorHandle);
             llListenRemove(g_iEndColorHandle);

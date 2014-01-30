@@ -195,7 +195,7 @@ default
 				llStopSound(); // just in case...
 				llSleep(2); //make sounds asynchronus
 				llLoopSound(BACKSOUNDFILE, fSoundVolumeF);
-				if (g_iVerbose) llWhisper(0, "Fire emits a crackling background sound");
+				if (g_iVerbose) llWhisper(0, "(v) Fire emits a crackling background sound");
 			}
 			g_fSoundVolumeCur = g_fSoundVolumeNew;
 			g_fSoundVolumeCurF = fSoundVolumeF;
@@ -210,7 +210,7 @@ default
 	timer()
 	{
 		llStopSound();
-		if (g_iVerbose) llWhisper(0, "Background noise off");
+		if (g_iVerbose) llWhisper(0, "(v) Background noise off");
 		g_fSoundVolumeNew = g_fSoundVolumeCur = g_fSoundVolumeCurF = 0.0;
 		g_sSize = "0";
 		llSetTimerEvent(0.0);

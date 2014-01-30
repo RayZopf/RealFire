@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Thu Jan 30 03:47:06 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Thu Jan 30 04:05:55 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -268,7 +268,7 @@ default {
                 llStopSound();
                 llSleep(2);
                 llLoopSound(BACKSOUNDFILE,fSoundVolumeF);
-                if (g_iVerbose) llWhisper(0,"Fire emits a crackling background sound");
+                if (g_iVerbose) llWhisper(0,"(v) Fire emits a crackling background sound");
             }
             (g_fSoundVolumeCur = g_fSoundVolumeNew);
             (g_fSoundVolumeCurF = fSoundVolumeF);
@@ -284,7 +284,7 @@ default {
 
 	timer() {
         llStopSound();
-        if (g_iVerbose) llWhisper(0,"Background noise off");
+        if (g_iVerbose) llWhisper(0,"(v) Background noise off");
         (g_fSoundVolumeNew = (g_fSoundVolumeCur = (g_fSoundVolumeCurF = 0.0)));
         (g_sSize = "0");
         llSetTimerEvent(0.0);

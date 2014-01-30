@@ -199,7 +199,7 @@ default
 				PSYS_SRC_BURST_SPEED_MIN, 0.0,
 				PSYS_SRC_BURST_SPEED_MAX, 0.1
 			]);
-			if (g_iVerbose && "0"!= g_sSize) llWhisper(0, "Smoke changes it's appearance");
+			if (g_iVerbose && "0"!= g_sSize) llWhisper(0, "(v) Smoke changes it's appearance");
 			g_sSize = sMsg;
 		} else {
 			llWhisper(0, "Fumes are fading");
@@ -211,7 +211,7 @@ default
 	timer()
 	{
 		llParticleSystem([]);
-		if (g_iVerbose) llWhisper(0, "Smoke vanished");
+		if (g_iVerbose) llWhisper(0, "(v) Smoke vanished");
 		Debug("smoke particles off");
 		g_sSize = "0";
 		llSetTimerEvent(0.0);

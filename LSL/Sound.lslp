@@ -236,10 +236,10 @@ default
 			if ("" == sMsg || sMsg == g_sSize) {
 				if (g_fSoundVolumeCur > 0) {
 					llAdjustSoundVolume(g_fSoundVolumeNew);
-					if (g_iVerbose) llWhisper(0, "Sound range for fire has changed");
+					if (g_iVerbose) llWhisper(0, "(v) Sound range for fire has changed");
 				} else {
 					llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
-					if (g_iVerbose) llWhisper(0, "The fire starts to make some noise");
+					if (g_iVerbose) llWhisper(0, "(v) The fire starts to make some noise");
 				}
 				g_fSoundVolumeCur = g_fSoundVolumeNew;
 				return;
@@ -249,10 +249,10 @@ default
 			SelectSound((float)sMsg);
 			if (g_sCurrentSoundFile == sCurrentSoundFileTemp) {
 				llAdjustSoundVolume(g_fSoundVolumeNew); // fire size changed - but still same soundsample
-				if (g_iVerbose) llWhisper(0, "Sound range for fire has changed");
+				if (g_iVerbose) llWhisper(0, "(v) Sound range for fire has changed");
 				return;
 			}
-			if (g_iVerbose && "0" != g_sSize) llWhisper(0, "The fire changes it's sound");
+			if (g_iVerbose && "0" != g_sSize) llWhisper(0, "(v) The fire changes it's sound");
 			Debug("play sound: "+g_sCurrentSoundFile);
 			
 			llPreloadSound(g_sCurrentSoundFile);
@@ -266,7 +266,7 @@ default
 	timer()
 	{
 		llStopSound();
-		if (g_iVerbose) llWhisper(0, "Noise from fire ended");
+		if (g_iVerbose) llWhisper(0, "(v) Noise from fire ended");
 		g_fSoundVolumeNew =g_fSoundVolumeCur = 0.0;
 		//g_sSize = "0";
 		llSetTimerEvent(0.0);
