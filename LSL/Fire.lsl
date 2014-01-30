@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Jan 30 04:29:57 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Jan 30 04:51:55 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -1115,6 +1115,7 @@ default {
             llListenRemove(g_iMenuHandle);
             llListenRemove(g_iStartColorHandle);
             llListenRemove(g_iEndColorHandle);
+            llListenRemove(g_iOptionsHandle);
             llSetTimerEvent(0);
             llSetTimerEvent(g_fBurnTime);
             (g_iMenuOpen = FALSE);

@@ -1170,6 +1170,7 @@ default
             llListenRemove(g_iMenuHandle);
             llListenRemove(g_iStartColorHandle);
             llListenRemove(g_iEndColorHandle);
+            llListenRemove(g_iOptionsHandle);
             llSetTimerEvent(0); // stop dialog timer
             llSetTimerEvent(g_fBurnTime); // restart burn timer
             g_iMenuOpen = FALSE;
