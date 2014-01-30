@@ -27,8 +27,7 @@
 
 //bug: ---
 
-//todo: improve sound file check
-//todo: make sound file check (lists) the other way round: check if every inventory file is member of fire sound list?
+//todo: make file check (lists) the other way round: check if every inventory file is member of RealFire file list?
 //todo: decide if touch event should really block touch on child prim and how to preload sound
 //todo: think about fire size = 0 what happens to normal sound (B-sound would just go working on)
 //todo: use more sounds and change them randomly http://wiki.secondlife.com/wiki/Script:Random_Sounds
@@ -82,13 +81,14 @@ float g_fSoundVolumeNew;
 string g_sSize = "0";
 
 //RealFire MESSAGE MAP
-//integer COMMAND_CHANNEL = -15700;
-integer SOUND_CHANNEL = -15789;  // smoke channel
+//integer COMMAND_CHANNEL =
+//integer SOUND_CHANNEL = sound channel
 
 
 //===============================================
 //LSLForge MODULES
 //===============================================
+$import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSound, m_sVersion=g_sVersion);
 $import MasterCommand.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);

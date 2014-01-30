@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Thu Jan 30 04:05:55 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Thu Jan 30 18:08:04 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -72,11 +72,8 @@ float g_fSoundVolumeCurF = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
 float g_fFactor;
-
-//RealFire MESSAGE MAP
-//integer COMMAND_CHANNEL = -15700;
-integer SOUND_CHANNEL = -15789;
 integer COMMAND_CHANNEL = -15700;
+integer SOUND_CHANNEL = -15789;
 
 
 //###

@@ -135,10 +135,10 @@ float MAX_FALLOFF = 2.0;         // max. light falloff
 float MAX_VOLUME = 1.0;          // max. volume for sound
 
 //RealFire MESSAGE MAP
-integer COMMAND_CHANNEL = -15700;
-integer SMOKE_CHANNEL = -15790;  // smoke channel
-integer SOUND_CHANNEL = -15789;  // sound channel
-integer ANIM_CHANNEL = -15788;  // primfire/textureanim channel
+//integer COMMAND_CHANNEL =
+//integer SMOKE_CHANNEL =  smoke channel
+//integer SOUND_CHANNEL = sound channel
+//integer ANIM_CHANNEL = primfire/textureanim channel
 
 
 // Notecard variables
@@ -224,6 +224,7 @@ float g_fStartVolume;              // start value of volume (before burning down
 //===============================================
 //LSLForge MODULES
 //===============================================
+$import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import getGroup.lslm();
 $import GroupCheck.lslm(m_sGroup=LINKSETID);

@@ -73,13 +73,14 @@ string g_sSize = "0";
 float g_fFactor;
 
 //RealFire MESSAGE MAP
-//integer COMMAND_CHANNEL = -15700;
-integer SOUND_CHANNEL = -15789;  // smoke channel
+//integer COMMAND_CHANNEL =
+//integer SOUND_CHANNEL = sound channel
 
 
 //===============================================
 //LSLForge MODULES
 //===============================================
+$import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSound, m_sVersion=g_sVersion);
 $import MasterCommand.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);

@@ -1,0 +1,41 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//Module that only holds the RealFire Message channel constants
+//
+//by: Zopf Resident - Ray Zopf (Raz)
+//30. Jan 2014
+//v0.1
+
+//Files:
+//RealFireMessageMap.lslm
+//
+//
+//Prequisites: ----
+//
+
+//Changelog
+// 
+
+//bug:
+
+//todo: ----
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+$module ()
+
+
+//RealFire MESSAGE MAP
+integer COMMAND_CHANNEL = -15700;
+integer SMOKE_CHANNEL = -15790;  // smoke channel
+integer SOUND_CHANNEL = -15789;  // sound channel
+integer ANIM_CHANNEL = -15788;  // primfire/textureanim channel
+
+
+//###
+//RealFireMessageMap.lslm
+//0.1 - 30Jan2014
+
+
+//END checkforFiles.lslm
+//###

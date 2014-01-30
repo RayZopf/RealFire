@@ -24,11 +24,8 @@
 
 $module (string m_sGroup, integer m_iEnabled, integer m_iAvail, integer m_iChannel, string m_sScriptName, integer m_iVerbose, integer m_iLinkType)
 
+$import RealFireMessageMap.lslm();
 $import RegisterExtension.lslm(m_sGroup=m_sGroup, m_iOn=m_iEnabled, m_iComplete=m_iAvail, channel=m_iChannel, m_sScriptName=m_sScriptName);
-
-
-//RealFire MESSAGE MAP
-integer COMMAND_CHANNEL = -15700;
 
 
 //###

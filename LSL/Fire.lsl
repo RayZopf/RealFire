@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Jan 30 17:20:27 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Jan 30 18:09:04 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -133,10 +133,10 @@ float MAX_FALLOFF = 2.0;
 float MAX_VOLUME = 1.0;
 
 //RealFire MESSAGE MAP
-integer COMMAND_CHANNEL = -15700;
-integer SMOKE_CHANNEL = -15790;
-integer SOUND_CHANNEL = -15789;
-integer ANIM_CHANNEL = -15788;
+//integer COMMAND_CHANNEL =
+//integer SMOKE_CHANNEL =  smoke channel
+//integer SOUND_CHANNEL = sound channel
+//integer ANIM_CHANNEL = primfire/textureanim channel
 
 
 // Notecard variables
@@ -217,6 +217,10 @@ float g_fSoundVolumeTmp;
 float g_fStartIntensity;
 float g_fStartRadius;
 float g_fStartVolume;
+integer COMMAND_CHANNEL = -15700;
+integer SMOKE_CHANNEL = -15790;
+integer SOUND_CHANNEL = -15789;
+integer ANIM_CHANNEL = -15788;
 
 
 //###

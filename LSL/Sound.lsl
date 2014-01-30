@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Thu Jan 30 17:20:27 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Thu Jan 30 18:07:57 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -28,8 +28,7 @@
 
 //bug: ---
 
-//todo: improve sound file check
-//todo: make sound file check (lists) the other way round: check if every inventory file is member of fire sound list?
+//todo: make file check (lists) the other way round: check if every inventory file is member of RealFire file list?
 //todo: decide if touch event should really block touch on child prim and how to preload sound
 //todo: think about fire size = 0 what happens to normal sound (B-sound would just go working on)
 //todo: use more sounds and change them randomly http://wiki.secondlife.com/wiki/Script:Random_Sounds
@@ -81,11 +80,8 @@ integer g_iSoundFileStartAvail = TRUE;
 float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
-
-//RealFire MESSAGE MAP
-//integer COMMAND_CHANNEL = -15700;
-integer SOUND_CHANNEL = -15789;
 integer COMMAND_CHANNEL = -15700;
+integer SOUND_CHANNEL = -15789;
 
 
 //###
