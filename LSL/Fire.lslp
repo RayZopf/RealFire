@@ -871,6 +871,7 @@ default
 			g_iPrimFireAvail = g_iPrimFireOn = FALSE;
 			g_iSmokeAvail = g_iSmokeOn = FALSE;
 			g_iSoundAvail = g_iBackSoundAvail = g_iDefSound = g_iSoundOn = FALSE;
+			sendMessage(COMMAND_CHANNEL, "register", "");
 			llWhisper(0, "Inventory changed, reloading notecard...");
 			loadNotecard();
 		}

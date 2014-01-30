@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Jan 30 23:34:33 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Fri Jan 31 00:48:04 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -805,6 +805,7 @@ default {
             (g_iPrimFireAvail = (g_iPrimFireOn = FALSE));
             (g_iSmokeAvail = (g_iSmokeOn = FALSE));
             (g_iSoundAvail = (g_iBackSoundAvail = (g_iDefSound = (g_iSoundOn = FALSE))));
+            sendMessage(COMMAND_CHANNEL,"register","");
             llWhisper(0,"Inventory changed, reloading notecard...");
             loadNotecard();
         }

@@ -203,7 +203,7 @@ default
 			g_iLowprim = !g_iLowprim;
 		}
 
-		if ((integer)sVal > 0 && 100 <= (integer)sVal) {
+		if ((integer)sVal > 0 && 100 >= (integer)sVal) {
 			llSetTimerEvent(0.0);
 			string sCurrentPrimFireFileTemp = g_sCurrentPrimFireFile;
 			SelectPrimFire((float)sVal);
