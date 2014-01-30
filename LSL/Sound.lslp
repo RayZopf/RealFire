@@ -33,6 +33,7 @@
 //todo: use more sounds and change them randomly http://wiki.secondlife.com/wiki/Script:Random_Sounds
 //todo: check if other sound scripts are in same prim
 //todo: create a module sizeSelect, put size class borders into variables and settings notecard
+//todo: is "change sound while off" really needed? - check sound on/off, sound more/less louder
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 

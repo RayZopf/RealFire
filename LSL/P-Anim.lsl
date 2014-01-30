@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Thu Jan 30 19:57:06 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Thu Jan 30 23:34:23 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -59,6 +59,8 @@ integer g_iPrimFireNFiles = 3;
 list g_lPrimFireFileList = [g_sPrimFireFileSmall,g_sPrimFireFileMedium1,g_sPrimFireFileFull];
 string g_sCurrentPrimFireFile = g_sPrimFireFileMedium1;
 
+float g_fAltitude = 1.0;
+
 string LINKSETID = "RealFire";
 
 
@@ -71,11 +73,12 @@ integer g_iType = LINK_SET;
 
 integer g_iPrimFireAvail = FALSE;
 integer g_iInvType = INVENTORY_OBJECT;
-integer g_iPrimFireFileStartAvail = TRUE;
+//integer g_iPrimFireFileStartAvail = TRUE;
 integer g_iLowprim = FALSE;
 string g_sSize = "0";
 integer COMMAND_CHANNEL = -15700;
 integer ANIM_CHANNEL = -15770;
+integer PRIMCOMMAND_CHANNEL = -15771;
 
 
 //###
@@ -197,12 +200,38 @@ checkforFiles(integer iNFiles,list lgivenFileList,string sCurrentFile){
             }
             else  (lFileAvail += TRUE);
         }
-        if ((0 == llListFindList(lFileAvail,[TRUE]))) (g_iPrimFireFileStartAvail = TRUE);
-        else  (g_iPrimFireFileStartAvail = FALSE);
+        if ((0 == llListFindList(lFileAvail,[TRUE]))) (g_iPrimFireAvail = TRUE);
+        else  (g_iPrimFireAvail = FALSE);
         if ((ERR_GENERIC != llListFindList(llList2List(lFileAvail,1,(iNFiles - 1)),[TRUE]))) (g_iPrimFireAvail = TRUE);
         else  (g_iPrimFireAvail = FALSE);
     }
     else  (g_iPrimFireAvail = FALSE);
+}
+
+
+//===============================================
+//PREDEFINED FUNCTIONS
+//===============================================
+
+SelectPrimFire(float fMsg){
+    Debug(("SelectPrimFire: " + ((string)fMsg)));
+    if ((fMsg <= 25)) {
+        (g_sCurrentPrimFireFile = g_sPrimFireFileSmall);
+    }
+    else  if (((fMsg > 25) && (fMsg <= 50))) {
+        (g_sCurrentPrimFireFile = g_sPrimFireFileMedium1);
+    }
+    else  if (((fMsg > 50) && (fMsg < 80))) {
+        (g_sCurrentPrimFireFile = g_sPrimFireFileMedium1);
+    }
+    else  if (((fMsg >= 80) && (fMsg <= 100))) {
+        (g_sCurrentPrimFireFile = g_sPrimFireFileFull);
+    }
+    else  {
+        (g_sSize = "0");
+        return;
+    }
+    (g_sSize = ((string)fMsg));
 }
 
 
@@ -259,10 +288,32 @@ default {
             if ((((integer)sMsg) == g_iLowprim)) return;
             else  {
                 llSetTimerEvent(0.0);
+                llSay(PRIMCOMMAND_CHANNEL,"toggle");
+                if (g_iLowprim) state temprez;
                 return;
             }
         }
-        if (TRUE) {
+        if ((((integer)sMsg) != g_iLowprim)) {
+            llSetTimerEvent(0.0);
+            if (g_iLowprim) {
+                llSay(PRIMCOMMAND_CHANNEL,"permanent");
+            }
+            else  state temprez;
+            (g_iLowprim = (!g_iLowprim));
+        }
+        if (((((integer)sVal) > 0) && (100 <= ((integer)sVal)))) {
+            llSetTimerEvent(0.0);
+            string sCurrentPrimFireFileTemp = g_sCurrentPrimFireFile;
+            SelectPrimFire(((float)sVal));
+            if (("0" == g_sSize)) llRezObject(g_sCurrentPrimFireFile,(llGetPos() + <0.0,0.0,g_fAltitude>),ZERO_VECTOR,ZERO_ROTATION,0);
+            else  {
+                if ((g_sCurrentPrimFireFile != sCurrentPrimFireFileTemp)) {
+                    llSay(PRIMCOMMAND_CHANNEL,"die");
+                    llRezObject(g_sCurrentPrimFireFile,(llGetPos() + <0.0,0.0,g_fAltitude>),ZERO_VECTOR,ZERO_ROTATION,0);
+                }
+            }
+            (g_sSize = sVal);
+            if (g_iLowprim) state temprez;
         }
         else  llSetTimerEvent(1.0);
     }
@@ -270,8 +321,23 @@ default {
 
 
 	timer() {
+        llSay(PRIMCOMMAND_CHANNEL,"die");
         if (g_iVerbose) llWhisper(0,"(v) Prim fire effects ended");
         (g_sSize = "0");
         llSetTimerEvent(0.0);
+    }
+}
+
+
+
+state temprez {
+
+	state_entry() {
+        state default;
+    }
+
+	
+	timer() {
+        
     }
 }

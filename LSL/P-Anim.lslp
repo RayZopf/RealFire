@@ -58,6 +58,8 @@ integer g_iPrimFireNFiles = 3;
 list g_lPrimFireFileList = [g_sPrimFireFileSmall, g_sPrimFireFileMedium1, g_sPrimFireFileFull];
 string g_sCurrentPrimFireFile = g_sPrimFireFileMedium1;							// standard
 
+float g_fAltitude = 1.0; // for rezzed prim
+
 string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
 
 
@@ -71,7 +73,7 @@ integer g_iType = LINK_SET;
 
 integer g_iPrimFireAvail = FALSE;
 integer g_iInvType = INVENTORY_OBJECT;
-integer g_iPrimFireFileStartAvail = TRUE;
+//integer g_iPrimFireFileStartAvail = TRUE;
 integer g_iLowprim = FALSE;
 string g_sSize = "0";
 
@@ -90,7 +92,7 @@ $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iPrimFireAvail, m
 $import MasterCommand.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iPrimFire, m_iAvail=g_iPrimFireAvail, m_iChannel=ANIM_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
 $import GroupCheck.lslm(m_sGroup=LINKSETID);
 $import RegisterExtension.lslm(m_sGroup=LINKSETID, m_iOn=g_iPrimFire, m_iComplete=g_iPrimFireAvail, channel=ANIM_CHANNEL, m_sScriptName=g_sScriptName);
-$import checkforFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iPrimFireFileStartAvail, m_sTitle=g_sTitle, m_iAvail=g_iPrimFireAvail);
+$import checkforFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_iAvail=g_iPrimFireAvail);
 
 
 //===============================================
@@ -182,62 +184,48 @@ default
 		//Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
 		//if (((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) || "-1" == sMsg) return; //-1 for background sound script
 		Debug("work on link_message");
+
 		if (sVal == g_sSize) {
 			if ((integer)sMsg == g_iLowprim) return;
 				else {
 					llSetTimerEvent(0.0);
-					//llMessage - "die"
+					llSay(PRIMCOMMAND_CHANNEL, "toggle");
+					if (g_iLowprim) state temprez;
 					return;
 				}
 		}
-
-		if (TRUE) {
-		/*
-		g_fSoundVolumeNew = (float)sVal;
-		//change sound while sound is off
-		if (0 == g_fSoundVolumeNew && sMsg != g_sSize && "" != sMsg && "0" != sMsg) {
-			SelectSound((float)sMsg);
-			Debug("change while off");
-			return;
+		if ((integer)sMsg != g_iLowprim) {
+			llSetTimerEvent(0.0);
+			if (g_iLowprim) {
+				//permament
+				llSay(PRIMCOMMAND_CHANNEL, "permanent");
+			} else state temprez;
+			g_iLowprim = !g_iLowprim;
 		}
-		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1) {
-			if ("" == sMsg || sMsg == g_sSize) {
-				if (g_fSoundVolumeCur > 0) {
-					llAdjustSoundVolume(g_fSoundVolumeNew);
-					if (g_iVerbose) llWhisper(0, "(v) Sound range for fire has changed");
-				} else {
-					llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
-					if (g_iVerbose) llWhisper(0, "(v) The fire starts to make some noise");
-				}
-				g_fSoundVolumeCur = g_fSoundVolumeNew;
-				return;
-			}
 
-			string sCurrentSoundFileTemp = g_sCurrentSoundFile;
-			SelectSound((float)sMsg);
-			if (g_sCurrentSoundFile == sCurrentSoundFileTemp) {
-				llAdjustSoundVolume(g_fSoundVolumeNew); // fire size changed - but still same soundsample
-				if (g_iVerbose) llWhisper(0, "(v) Sound range for fire has changed");
-				return;
-			}
-			if (g_iVerbose && "0" != g_sSize) llWhisper(0, "(v) The fire changes it's sound");
-			Debug("play sound: "+g_sCurrentSoundFile);
+		if ((integer)sVal > 0 && 100 <= (integer)sVal) {
+			llSetTimerEvent(0.0);
+			string sCurrentPrimFireFileTemp = g_sCurrentPrimFireFile;
+			SelectPrimFire((float)sVal);
 			
-			llPreloadSound(g_sCurrentSoundFile);
-			g_fSoundVolumeCur = g_fSoundVolumeNew;
-			llStopSound();
-			llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
-			*/
+			if ("0" == g_sSize) llRezObject(g_sCurrentPrimFireFile, llGetPos()+<0.0,0.0,g_fAltitude>,ZERO_VECTOR,ZERO_ROTATION,0);
+				else {
+					if (g_sCurrentPrimFireFile != sCurrentPrimFireFileTemp) {
+						llSay(PRIMCOMMAND_CHANNEL, "die");
+						llRezObject(g_sCurrentPrimFireFile, llGetPos()+<0.0,0.0,g_fAltitude>,ZERO_VECTOR,ZERO_ROTATION,0);
+					}
+				}
+			g_sSize = sVal;
+			if (g_iLowprim) state temprez;
+			
 		} else llSetTimerEvent(1.0);
     }
 
 
 	timer()
 	{
-		//llStopSound();
-		//llMessage - "die"
+		llSay(PRIMCOMMAND_CHANNEL, "die");
 		if (g_iVerbose) llWhisper(0, "(v) Prim fire effects ended");
-		//g_fSoundVolumeNew =g_fSoundVolumeCur = 0.0;
 		g_sSize = "0";
 		llSetTimerEvent(0.0);
 	}
@@ -245,4 +233,20 @@ default
 //-----------------------------------------------
 //END STATE: default
 //-----------------------------------------------
+}
+
+
+
+state temprez
+{
+	state_entry()
+	{
+		//llMessage - "temp"
+		state default; // so that scripts runs, even if temp rez is not done
+	}
+	
+	timer()
+	{
+		;
+	}
 }

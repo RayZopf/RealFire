@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Jan 30 19:57:00 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Jan 30 23:34:33 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -391,7 +391,7 @@ updateSize(float size){
     updateColor();
     if (g_iParticleFireOn) updateParticles(vStart,vEnd,fMin,fMax,fRadius,vPush);
     else  llParticleSystem([]);
-    if ((g_iPrimFireAvail && g_iPrimFireOn)) sendMessage(ANIM_CHANNEL,((string)fRadius),((string)g_iLowprim));
+    if ((g_iPrimFireAvail && g_iPrimFireOn)) sendMessage(ANIM_CHANNEL,((string)size),((string)g_iLowprim));
     llSetPrimitiveParams([PRIM_POINT_LIGHT,TRUE,g_vLightColor,g_fLightIntensity,g_fLightRadius,g_fLightFalloff]);
     if ((g_iSmokeAvail && g_iSmokeOn)) sendMessage(SMOKE_CHANNEL,((string)llRound(g_fPercentSmoke)),"");
     if (((g_iSoundAvail || g_iBackSoundAvail) && g_iSoundOn)) sendMessage(SOUND_CHANNEL,((string)g_fSoundVolume),"");

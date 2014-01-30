@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Thu Jan 30 18:07:57 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Thu Jan 30 23:36:05 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -34,6 +34,7 @@
 //todo: use more sounds and change them randomly http://wiki.secondlife.com/wiki/Script:Random_Sounds
 //todo: check if other sound scripts are in same prim
 //todo: create a module sizeSelect, put size class borders into variables and settings notecard
+//todo: is "change sound while off" really needed? - check sound on/off, sound more/less louder
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -81,7 +82,7 @@ float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
 integer COMMAND_CHANNEL = -15700;
-integer SOUND_CHANNEL = -15789;
+integer SOUND_CHANNEL = -15780;
 
 
 //###
