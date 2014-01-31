@@ -60,7 +60,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";     // title
-string g_sVersion = "0.45";       // version
+string g_sVersion = "0.46";       // version
 string g_sScriptName;
 string g_sType = "sound";
 integer g_iType = LINK_SET;
