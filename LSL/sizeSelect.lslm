@@ -1,0 +1,68 @@
+$module ()
+
+
+
+SelectSound(float fMsg)
+{
+	Debug("SelectSound: "+(string)fMsg);
+	if (fMsg <= 25) {
+			g_sCurrentSoundFile = g_sSoundFileSmall;
+	} else if (fMsg > 25 && fMsg <= 50) {
+		g_sCurrentSoundFile = g_sSoundFileMedium1;
+	} else if (fMsg > 50 && fMsg < 80) {
+			g_sCurrentSoundFile = g_sSoundFileMedium2;
+	} else if (fMsg >= 80 && fMsg <= 100) {
+			g_sCurrentSoundFile = g_sSoundFileFull;
+	} else {
+		Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-");
+		if (g_fSoundVolumeNew > 0 && TRUE == g_iSoundFileStartAvail) {
+			integer n;
+			for (n = 0; n < 3; ++n) { //let sound appear louder
+				llTriggerSound(g_sSoundFileStart, g_fSoundVolumeNew); //preloaded on touch
+			}
+		// to let the sound play additionally to looping ones and without getting stoped
+		}
+		g_sSize = "0";
+		return;
+	}
+	g_sSize = (string)fMsg;
+}
+
+
+
+    if (size > 25.0) {
+        vStart = g_vStartScale / 100.0 * size;     // start scale
+        fRadius = g_fBurstRadius / 100.0 * size;   // burst radius
+        if (size >= 80.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
+			else if (size > 50.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
+				else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
+    }
+    else {
+        if (size >= 15.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
+            else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
+        vStart = g_vStartScale / 4.0;              // start scale
+        fRadius = g_fBurstRadius / 4.0;            // burst radius
+        if (size < 5.0) {
+            vStart.y = g_vStartScale.y / 100.0 * size * 5.0;
+            if (vStart.y < 0.25) vStart.y = 0.25;
+        }
+        if (g_iChangeLight) {
+            g_fLightIntensity = percentage(size * 4.0, g_fStartIntensity);
+            g_fLightRadius = percentage(size * 4.0, g_fStartRadius);
+        }
+        else {
+            g_fLightIntensity = g_fStartIntensity;
+            g_fLightRadius = g_fStartRadius;
+        }
+        if (g_iChangeSmoke && g_iSmokeAvail) g_fPercentSmoke = size * 4.0; //works only here within range 0-100!!!
+			else g_fPercentSmoke = 100.0;
+		Debug("Smoke size: change= "+(string)g_iChangeSmoke+", size= "+(string)size +", percentage= "+(string)g_fPercentSmoke);
+		if (g_iSoundAvail || g_iBackSoundAvail) {
+			if (g_iChangeVolume) {
+				if (g_iSoundOn) g_fSoundVolume = percentage(size * 4.0, g_fStartVolume);
+					else g_fSoundVolumeTmp = percentage(size * 4.0, g_fStartVolume);
+			} else 
+				if (g_iSoundOn) g_fSoundVolume = g_fStartVolume;
+					else g_fSoundVolumeTmp = g_fStartVolume;
+		}
+    }
