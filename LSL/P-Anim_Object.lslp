@@ -54,6 +54,7 @@ integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 //string g_sTitle = "RealPrimFire-Object";     // title
 //string g_sVersion = "0.1";       // version
 string g_sScriptName;
+integer g_iType = LINK_SET;
 
 integer g_iLowprim = TRUE;
 key g_kOwner;                      // object owner
@@ -115,12 +116,13 @@ default
 		//g_sScriptName = llGetScriptName();
 		Debug("state_entry");
 		// Makes the object temporary so the whole 0 prim part works 
-        llSetPrimitiveParams([PRIM_TEMP_ON_REZ, TRUE]);
+        llSetLinkPrimitiveParamsFast(g_iType, [PRIM_TEMP_ON_REZ, TRUE,
+			PRIM_PHANTOM, TRUE]);
     }
 
     on_rez(integer start_param)
     {
-        if (start_param) llSetPrimitiveParams([PRIM_TEMP_ON_REZ, FALSE]); // If not rezzed by the rezzer this stops temporary so we can edit it 
+        if (!start_param) llSetLinkPrimitiveParamsFast(g_iType, [PRIM_TEMP_ON_REZ, FALSE]); // If not rezzed by the rezzer (avi rez/attach) this stops temporary so we can edit it
 	        else llListen(PRIMCOMMAND_CHANNEL, "", NULL_KEY, ""); 
     }
 	
@@ -134,7 +136,7 @@ default
         	g_iLowprim = !g_iLowprim;
         	if (!g_iLowprim) {
             	state temp;
-        	} else llSetPrimitiveParams([PRIM_TEMP_ON_REZ, FALSE]);
+        	} else llSetLinkPrimitiveParamsFast(g_iType, [PRIM_TEMP_ON_REZ, FALSE]);
         } else if ("die" == sSet) llDie();
 //        else if ((integer)sVal > 0 && 100 >= (integer)sVal) {
 //        	SelectPrimFire((float)sVal);

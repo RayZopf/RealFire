@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Fri Jan 31 19:22:36 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Fri Jan 31 20:30:48 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire rezzed object script
 //
@@ -55,6 +55,7 @@ integer g_iDebugMode = FALSE;
 //string g_sTitle = "RealPrimFire-Object";     // title
 //string g_sVersion = "0.1";       // version
 string g_sScriptName;
+integer g_iType = LINK_SET;
 
 integer g_iLowprim = TRUE;
 key g_kOwner;
@@ -122,12 +123,12 @@ default {
     state_entry() {
         (g_kOwner = llGetOwner());
         Debug("state_entry");
-        llSetPrimitiveParams([PRIM_TEMP_ON_REZ,TRUE]);
+        llSetLinkPrimitiveParamsFast(g_iType,[PRIM_TEMP_ON_REZ,TRUE,PRIM_PHANTOM,TRUE]);
     }
 
 
     on_rez(integer start_param) {
-        if (start_param) llSetPrimitiveParams([PRIM_TEMP_ON_REZ,FALSE]);
+        if ((!start_param)) llSetLinkPrimitiveParamsFast(g_iType,[PRIM_TEMP_ON_REZ,FALSE]);
         else  llListen(PRIMCOMMAND_CHANNEL,"",NULL_KEY,"");
     }
 
@@ -141,7 +142,7 @@ default {
             if ((!g_iLowprim)) {
                 state temp;
             }
-            else  llSetPrimitiveParams([PRIM_TEMP_ON_REZ,FALSE]);
+            else  llSetLinkPrimitiveParamsFast(g_iType,[PRIM_TEMP_ON_REZ,FALSE]);
         }
         else  if (("die" == sSet)) llDie();
     }
