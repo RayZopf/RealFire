@@ -21,3 +21,4 @@ Jan.2014
  - ignition sound
  - bugfixes
  - incorporated RealFire 2.2.1 update
+ - added prim fire
