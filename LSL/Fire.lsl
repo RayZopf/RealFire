@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Fri Jan 31 00:48:04 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Fri Jan 31 05:08:15 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -22,8 +22,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//30. Jan. 2014
-//v2.2.1-0.93
+//31. Jan. 2014
+//v2.2.1-0.94
 
 //Files:
 //Fire.lsl
@@ -117,7 +117,7 @@ vector g_vEndColor = <1,0,0>;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";
-string g_sVersion = "2.2.1-0.93";
+string g_sVersion = "2.2.1-0.94";
 string g_sScriptName;
 string g_sAuthors = "Rene10957, Zopf";
 
@@ -243,8 +243,8 @@ Debug(string sMsg){
 
 
 //###
-//getGroup.lslm
-//0.21 - 29Jan2014
+//GroupHandling.lslm
+//0.5 - 31Jan2014
 
 string getGroup(string sDefGroup){
     if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -256,11 +256,6 @@ string getGroup(string sDefGroup){
     }
     return str;
 }
-
-
-//###
-//GroupCheck.lslm
-//0.4 - 30Jan2014
 
 string GroupCheck(key kId){
     string str = getGroup(LINKSETID);

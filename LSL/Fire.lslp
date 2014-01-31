@@ -21,8 +21,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//30. Jan. 2014
-//v2.2.1-0.93
+//31. Jan. 2014
+//v2.2.1-0.94
 
 //Files:
 //Fire.lsl
@@ -118,7 +118,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2.1-0.93";         // version
+string g_sVersion = "2.2.1-0.94";         // version
 string g_sScriptName;
 string g_sType = "main";
 string g_sAuthors = "Rene10957, Zopf";
@@ -227,8 +227,7 @@ float g_fStartVolume;              // start value of volume (before burning down
 //===============================================
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
-$import getGroup.lslm();
-$import GroupCheck.lslm(m_sGroup=LINKSETID);
+$import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
 //===============================================

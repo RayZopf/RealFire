@@ -1,9 +1,9 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Fri Jan 31 02:52:04 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Fri Jan 31 05:08:15 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//30. Jan. 2014
-//v0.1
+//31. Jan. 2014
+//v0.11
 //
 //
 // (Realfire by Rene)
@@ -69,7 +69,7 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealPrimFire";
-string g_sVersion = "0.1";
+string g_sVersion = "0.11";
 string g_sScriptName;
 integer g_iType = LINK_SET;
 
@@ -117,8 +117,8 @@ InfoLines(){
 
 
 //###
-//getGroup.lslm
-//0.21 - 29Jan2014
+//GroupHandling.lslm
+//0.5 - 31Jan2014
 
 string getGroup(string sDefGroup){
     if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -131,21 +131,25 @@ string getGroup(string sDefGroup){
     return str;
 }
 
+string GroupCheck(key kId){
+    string str = getGroup(LINKSETID);
+    list lKeys = llParseString2List(((string)kId),[";"],[]);
+    string sGroup = llList2String(lKeys,0);
+    string sScriptName = llList2String(lKeys,1);
+    if ((((str == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == str))) return sScriptName;
+    return "exit";
+}
+
 
 //###
-//RegisterExtension.lslm
-//0.22 - 29Jan2014
+//ExtensionBasics.lslm
+//0.3 - 31Jan2014
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);
     if ((g_iPrimFire && g_iPrimFireAvail)) llMessageLinked(link,ANIM_CHANNEL,"1",((key)sId));
     else  llMessageLinked(link,ANIM_CHANNEL,"0",((key)sId));
 }
-
-
-//###
-//MasterCommand.lslm
-//0.2 - 30Jan2014
 
 MasterCommand(integer iChan,string sVal){
     if ((iChan == COMMAND_CHANNEL)) {
@@ -154,20 +158,6 @@ MasterCommand(integer iChan,string sVal){
         else  if (("nonverbose" == sVal)) (g_iVerbose = FALSE);
         else  llSetTimerEvent(0.1);
     }
-}
-
-
-//###
-//GroupCheck.lslm
-//0.4 - 30Jan2014
-
-string GroupCheck(key kId){
-    string str = getGroup(LINKSETID);
-    list lKeys = llParseString2List(((string)kId),[";"],[]);
-    string sGroup = llList2String(lKeys,0);
-    string sScriptName = llList2String(lKeys,1);
-    if ((((str == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == str))) return sScriptName;
-    return "exit";
 }
 
 

@@ -15,8 +15,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//30. Jan. 2014
-//v2.2.1-0.55
+//31. Jan. 2014
+//v2.2.1-0.56
 
 //Files:
 //Smoke.lsl
@@ -71,7 +71,7 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2.1-0.55";       // version
+string g_sVersion = "2.2.1-0.56";       // version
 string g_sScriptName;
 string g_sType = "smoke";
 integer g_iType = LINK_ALL_OTHERS;
@@ -89,9 +89,8 @@ string g_sSize = "0";
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSmoke, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSmoke, m_sVersion=g_sVersion);
-$import MasterCommand.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSmoke, m_iAvail=g_iSmoke, m_iChannel=SMOKE_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
-$import GroupCheck.lslm(m_sGroup=LINKSETID);
-$import RegisterExtension.lslm(m_sGroup=LINKSETID, m_iOn=g_iSmoke, m_iComplete=g_iSmoke, channel=SMOKE_CHANNEL, m_sScriptName=g_sScriptName);
+$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSmoke, m_iAvail=g_iSmoke, m_iChannel=SMOKE_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
+$import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
 //===============================================

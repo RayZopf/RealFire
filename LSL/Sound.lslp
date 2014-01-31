@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//30. Jan. 2014
-//v0.81
+//31. Jan. 2014
+//v0.82
 //
 //
 // (Realfire by Rene)
@@ -69,7 +69,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";     // title
-string g_sVersion = "0.81";       // version
+string g_sVersion = "0.82";       // version
 string g_sScriptName;
 string g_sType = "sound";
 integer g_iType = LINK_SET;
@@ -92,9 +92,8 @@ string g_sSize = "0";
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSound, m_sVersion=g_sVersion);
-$import MasterCommand.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
-$import GroupCheck.lslm(m_sGroup=LINKSETID);
-$import RegisterExtension.lslm(m_sGroup=LINKSETID, m_iOn=g_iSound, m_iComplete=g_iSoundAvail, channel=SOUND_CHANNEL, m_sScriptName=g_sScriptName);
+$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
+$import GroupHandling.lslm(m_sGroup=LINKSETID);
 $import checkforFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iSoundFileStartAvail, m_sTitle=g_sTitle, m_iAvail=g_iSoundAvail);
 
 

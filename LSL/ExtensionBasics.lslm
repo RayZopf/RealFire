@@ -1,15 +1,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//Module react on master RealFire Extensions
+//Module register with and react on master for RealFire Extensions
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//30. Jan. 2014
-//v0.2
+//31. Jan. 2014
+//v0.3
 
 //Files:
-//GroupCheck.lslm
+//ExtensionBasics.lslm
 //
 //
-//Prequisites: RegisterExtension.lslm
+//Prequisites: GroupHandling.lslm
 //
 
 //Changelog
@@ -25,12 +25,19 @@
 $module (string m_sGroup, integer m_iEnabled, integer m_iAvail, integer m_iChannel, string m_sScriptName, integer m_iVerbose, integer m_iLinkType)
 
 $import RealFireMessageMap.lslm();
-$import RegisterExtension.lslm(m_sGroup=m_sGroup, m_iOn=m_iEnabled, m_iComplete=m_iAvail, channel=m_iChannel, m_sScriptName=m_sScriptName);
+$import GroupHandling.lslm(m_sGroup=m_sGroup);
 
 
 //###
-//MasterCommand.lslm
-//0.2 - 30Jan2014
+//ExtensionBasics.lslm
+//0.3 - 31Jan2014
+
+RegisterExtension(integer link)
+{
+	string sId = getGroup(m_sGroup) + ";" + m_sScriptName;
+	if (m_iEnabled && m_iAvail) llMessageLinked(link, m_iChannel, "1", (key)sId);
+		else llMessageLinked(link, m_iChannel, "0", (key)sId);
+}
 
 MasterCommand(integer iChan, string sVal)
 {
@@ -42,5 +49,5 @@ MasterCommand(integer iChan, string sVal)
 	}
 }
 
-//END GroupCheck.lslm
+//END ExtensionBasics.lslm
 //###

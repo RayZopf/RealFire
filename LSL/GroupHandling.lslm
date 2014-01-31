@@ -1,19 +1,19 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//Module check for group command RealFire Extensions
+//Module get and check for group
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//30. Jan. 2014
-//v0.4
+//31. Jan. 2014
+//v0.5
 
 //Files:
-//GroupCheck.lslm
+//GroupHandling.lslm
 //
 //
-//Prequisites: getGroup.lslm
+//Prequisites: ----
 //
 
 //Changelog
-// 
+// merged modules getGroup and GroupCheck
 
 //bug:
 
@@ -24,12 +24,22 @@
 
 $module (string m_sGroup)
 
-$import getGroup.lslm();
-
 
 //###
-//GroupCheck.lslm
-//0.4 - 30Jan2014
+//GroupHandling.lslm
+//0.5 - 31Jan2014
+
+string getGroup(string sDefGroup)
+{
+	if ("" == sDefGroup) sDefGroup = "Default";
+    string str = llStringTrim(llGetObjectDesc(), STRING_TRIM);
+    if (llToLower(str) == "(no description)" || str == "") str = sDefGroup;
+    	else {
+    		list lGroup = llParseString2List(str, [" "], []);
+    		str = llList2String(lGroup, 0);
+    	}
+    return str;
+}
 
 string GroupCheck(key kId)
 {	
@@ -42,5 +52,5 @@ string GroupCheck(key kId)
 	return "exit";
 }
 
-//END GroupCheck.lslm
+//END GroupHandling.lslm
 //###

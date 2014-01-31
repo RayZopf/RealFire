@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//30. Jan. 2014
-//v0.1
+//31. Jan. 2014
+//v0.11
 //
 //
 // (Realfire by Rene)
@@ -68,7 +68,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealPrimFire";     // title
-string g_sVersion = "0.1";       // version
+string g_sVersion = "0.11";       // version
 string g_sScriptName;
 string g_sType = "anim";
 integer g_iType = LINK_SET;
@@ -91,9 +91,8 @@ string g_sSize = "0";
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iPrimFire, m_sVersion=g_sVersion);
-$import MasterCommand.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iPrimFire, m_iAvail=g_iPrimFireAvail, m_iChannel=ANIM_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
-$import GroupCheck.lslm(m_sGroup=LINKSETID);
-$import RegisterExtension.lslm(m_sGroup=LINKSETID, m_iOn=g_iPrimFire, m_iComplete=g_iPrimFireAvail, channel=ANIM_CHANNEL, m_sScriptName=g_sScriptName);
+$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iPrimFire, m_iAvail=g_iPrimFireAvail, m_iChannel=ANIM_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
+$import GroupHandling.lslm(m_sGroup=LINKSETID);
 $import checkforFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_iAvail=g_iPrimFireAvail);
 
 

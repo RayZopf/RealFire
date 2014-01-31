@@ -1,9 +1,9 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Thu Jan 30 18:08:04 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Fri Jan 31 05:08:15 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
-//30. Jan. 2014
-//v0.45
+//31. Jan. 2014
+//v0.46
 //
 //
 // (Realfire by Rene)
@@ -73,7 +73,7 @@ float g_fSoundVolumeNew;
 string g_sSize = "0";
 float g_fFactor;
 integer COMMAND_CHANNEL = -15700;
-integer SOUND_CHANNEL = -15789;
+integer SOUND_CHANNEL = -15780;
 
 
 //###
@@ -110,8 +110,8 @@ InfoLines(){
 
 
 //###
-//getGroup.lslm
-//0.21 - 29Jan2014
+//GroupHandling.lslm
+//0.5 - 31Jan2014
 
 string getGroup(string sDefGroup){
     if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -124,21 +124,25 @@ string getGroup(string sDefGroup){
     return str;
 }
 
+string GroupCheck(key kId){
+    string str = getGroup(LINKSETID);
+    list lKeys = llParseString2List(((string)kId),[";"],[]);
+    string sGroup = llList2String(lKeys,0);
+    string sScriptName = llList2String(lKeys,1);
+    if ((((str == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == str))) return sScriptName;
+    return "exit";
+}
+
 
 //###
-//RegisterExtension.lslm
-//0.22 - 29Jan2014
+//ExtensionBasics.lslm
+//0.3 - 31Jan2014
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);
     if ((g_iSound && g_iSoundAvail)) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
     else  llMessageLinked(link,SOUND_CHANNEL,"0",((key)sId));
 }
-
-
-//###
-//MasterCommand.lslm
-//0.2 - 30Jan2014
 
 MasterCommand(integer iChan,string sVal){
     if ((iChan == COMMAND_CHANNEL)) {
@@ -147,20 +151,6 @@ MasterCommand(integer iChan,string sVal){
         else  if (("nonverbose" == sVal)) (g_iVerbose = FALSE);
         else  llSetTimerEvent(0.1);
     }
-}
-
-
-//###
-//GroupCheck.lslm
-//0.4 - 30Jan2014
-
-string GroupCheck(key kId){
-    string str = getGroup(LINKSETID);
-    list lKeys = llParseString2List(((string)kId),[";"],[]);
-    string sGroup = llList2String(lKeys,0);
-    string sScriptName = llList2String(lKeys,1);
-    if ((((str == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == str))) return sScriptName;
-    return "exit";
 }
 
 
