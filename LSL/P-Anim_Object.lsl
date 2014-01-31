@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Fri Jan 31 19:13:06 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Fri Jan 31 19:22:36 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire rezzed object script
 //
@@ -41,6 +41,19 @@
 //debug variables
 //-----------------------------------------------
 integer g_iDebugMode = FALSE;
+
+
+//user changeable variables
+//-----------------------------------------------
+//integer g_iVerbose = TRUE;
+
+//string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
+
+
+//internal variables
+//-----------------------------------------------
+//string g_sTitle = "RealPrimFire-Object";     // title
+//string g_sVersion = "0.1";       // version
 string g_sScriptName;
 
 integer g_iLowprim = TRUE;
@@ -108,7 +121,6 @@ default {
 
     state_entry() {
         (g_kOwner = llGetOwner());
-        (g_sScriptName = llGetScriptName());
         Debug("state_entry");
         llSetPrimitiveParams([PRIM_TEMP_ON_REZ,TRUE]);
     }

@@ -44,23 +44,21 @@ integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 
 //user changeable variables
 //-----------------------------------------------
-integer g_iVerbose = TRUE;
+//integer g_iVerbose = TRUE;
 
-string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
+//string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
 
 
 //internal variables
 //-----------------------------------------------
-string g_sTitle = "RealPrimFire-Object";     // title
-string g_sVersion = "0.1";       // version
+//string g_sTitle = "RealPrimFire-Object";     // title
+//string g_sVersion = "0.1";       // version
 string g_sScriptName;
 
 integer g_iLowprim = TRUE;
 key g_kOwner;                      // object owner
 
 //RealFire MESSAGE MAP
-//integer COMMAND_CHANNEL =
-//integer ANIM_CHANNEL = primfire/textureanim channel
 //integer PRIMCOMMAND_CHANNEL = kill fire prims or make temp prims
 
 
@@ -114,7 +112,7 @@ default
     state_entry()
     {
     	g_kOwner = llGetOwner();
-		g_sScriptName = llGetScriptName();
+		//g_sScriptName = llGetScriptName();
 		Debug("state_entry");
 		// Makes the object temporary so the whole 0 prim part works 
         llSetPrimitiveParams([PRIM_TEMP_ON_REZ, TRUE]);
