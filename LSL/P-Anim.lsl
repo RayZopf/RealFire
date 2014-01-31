@@ -1,9 +1,9 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Fri Jan 31 05:08:15 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Fri Jan 31 19:13:06 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
 //31. Jan. 2014
-//v0.11
+//v0.12
 //
 //
 // (Realfire by Rene)
@@ -32,6 +32,8 @@
 //todo: selectPrimFire needs more work - less stages than selectSound in Sound.lsl
 //todo: fire objects need to be phantom... maybe make them flexiprim too
 //todo: temp prim handling not good
+//todo: listen event + timer to check if fire prim really was created
+//todo: check if fire prim is "copy"
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -69,7 +71,7 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealPrimFire";
-string g_sVersion = "0.11";
+string g_sVersion = "0.12";
 string g_sScriptName;
 integer g_iType = LINK_SET;
 
@@ -240,6 +242,7 @@ default {
     state_entry() {
         (g_sScriptName = llGetScriptName());
         Debug("state_entry");
+        llSay(PRIMCOMMAND_CHANNEL,"die");
         checkforFiles(g_iPrimFireNFiles,g_lPrimFireFileList,g_sCurrentPrimFireFile);
         llSleep(1);
         RegisterExtension(g_iType);
@@ -276,25 +279,42 @@ default {
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);
         Debug("work on link_message");
-        if (((((integer)sMsg) != g_iLowprim) && (("0" == sMsg) || ("1" == sMsg)))) {
-            llSetTimerEvent(0.0);
-            llSay(PRIMCOMMAND_CHANNEL,"toggle");
-            (g_iLowprim = (!g_iLowprim));
-            if (g_iLowprim) state temprez;
+        if (((sVal != g_sSize) || (((integer)sMsg) != g_iLowprim))) {
+            if (((sVal == g_sSize) && (("0" == sMsg) || ("1" == sMsg)))) {
+                llSetTimerEvent(0.0);
+                llSay(PRIMCOMMAND_CHANNEL,"toggle");
+                (g_iLowprim = (!g_iLowprim));
+                if (g_iLowprim) state temprez;
+                return;
+            }
         }
-        if ((sVal == g_sSize)) return;
+        else  return;
         if (((((integer)sVal) > 0) && (100 >= ((integer)sVal)))) {
             llSetTimerEvent(0.0);
+            if (((((integer)sMsg) != g_iLowprim) && (("0" == sMsg) || ("1" == sMsg)))) (g_iLowprim = (!g_iLowprim));
             string sCurrentPrimFireFileTemp = g_sCurrentPrimFireFile;
             string g_sSizeTemp = g_sSize;
             SelectPrimFire(((float)sVal));
-            if (("0" == g_sSizeTemp)) llRezObject(g_sCurrentPrimFireFile,(llGetPos() + <0.0,0.0,g_fAltitude>),ZERO_VECTOR,ZERO_ROTATION,1);
+            if (("0" == g_sSizeTemp)) {
+                llRezObject(g_sCurrentPrimFireFile,(llGetPos() + <0.0,0.0,g_fAltitude>),ZERO_VECTOR,ZERO_ROTATION,1);
+                if ((!g_iLowprim)) {
+                    llSleep(3.0);
+                    llSay(PRIMCOMMAND_CHANNEL,"toggle");
+                    llSay(PRIMCOMMAND_CHANNEL,sVal);
+                }
+            }
             else  {
                 if ((g_sCurrentPrimFireFile != sCurrentPrimFireFileTemp)) {
                     llSay(PRIMCOMMAND_CHANNEL,"die");
                     llRezObject(g_sCurrentPrimFireFile,(llGetPos() + <0.0,0.0,g_fAltitude>),ZERO_VECTOR,ZERO_ROTATION,1);
+                    if ((!g_iLowprim)) {
+                        llSleep(3.0);
+                        llSay(PRIMCOMMAND_CHANNEL,"toggle");
+                    }
                 }
+                else  llSay(PRIMCOMMAND_CHANNEL,sVal);
             }
+            if (g_iLowprim) state temprez;
         }
         else  llSetTimerEvent(1.0);
     }

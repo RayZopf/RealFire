@@ -2,7 +2,7 @@
 //PrimFire Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
 //31. Jan. 2014
-//v0.11
+//v0.12
 //
 //
 // (Realfire by Rene)
@@ -31,6 +31,8 @@
 //todo: selectPrimFire needs more work - less stages than selectSound in Sound.lsl
 //todo: fire objects need to be phantom... maybe make them flexiprim too
 //todo: temp prim handling not good
+//todo: listen event + timer to check if fire prim really was created
+//todo: check if fire prim is "copy"
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -68,7 +70,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealPrimFire";     // title
-string g_sVersion = "0.11";       // version
+string g_sVersion = "0.12";       // version
 string g_sScriptName;
 string g_sType = "anim";
 integer g_iType = LINK_SET;
@@ -141,8 +143,7 @@ default
     {
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
-        //llStopSound();
-        //llMessage - "die"
+        llSay(PRIMCOMMAND_CHANNEL, "die");
         checkforFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_sCurrentPrimFireFile);
 		llSleep(1);
 		RegisterExtension(g_iType);
@@ -183,31 +184,43 @@ default
         string sVal = llList2String(lParams, 0);
         string sMsg = llList2String(lParams, 1);
 		//Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
-		//if (((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) || "-1" == sMsg) return; //-1 for background sound script
 		Debug("work on link_message");
 
-		if ((integer)sMsg != g_iLowprim && ("0" == sMsg || "1" == sMsg)) {
-			llSetTimerEvent(0.0);
-			llSay(PRIMCOMMAND_CHANNEL, "toggle");
-			g_iLowprim = !g_iLowprim;
-			if (g_iLowprim) state temprez;
-		}
+		if (sVal != g_sSize || (integer)sMsg != g_iLowprim) {
+			if (sVal == g_sSize && ("0" == sMsg || "1" == sMsg)) {
+				llSetTimerEvent(0.0);
+				llSay(PRIMCOMMAND_CHANNEL, "toggle");
+				g_iLowprim = !g_iLowprim;
+				if (g_iLowprim) state temprez;
+				return; // should not happen - as for temp prim, script should allready be in state temprez
+			}
+		} else return;
 
-		if (sVal == g_sSize) return;
-		
 		if ((integer)sVal > 0 && 100 >= (integer)sVal) {
 			llSetTimerEvent(0.0);
+			if ((integer)sMsg != g_iLowprim && ("0" == sMsg || "1" == sMsg)) g_iLowprim = !g_iLowprim;
 			string sCurrentPrimFireFileTemp = g_sCurrentPrimFireFile;
 			string g_sSizeTemp = g_sSize;
 			SelectPrimFire((float)sVal);
 			
-			if ("0" == g_sSizeTemp) llRezObject(g_sCurrentPrimFireFile, llGetPos()+<0.0,0.0,g_fAltitude>,ZERO_VECTOR,ZERO_ROTATION,1);
-				else {
+			if ("0" == g_sSizeTemp) {
+				llRezObject(g_sCurrentPrimFireFile, llGetPos()+<0.0,0.0,g_fAltitude>,ZERO_VECTOR,ZERO_ROTATION,1);
+				if (!g_iLowprim) {
+					llSleep(3.0);
+					llSay(PRIMCOMMAND_CHANNEL, "toggle");
+					llSay(PRIMCOMMAND_CHANNEL, sVal); //make sure texture animation is correct
+				}
+			} else {
 					if (g_sCurrentPrimFireFile != sCurrentPrimFireFileTemp) {
 						llSay(PRIMCOMMAND_CHANNEL, "die");
 						llRezObject(g_sCurrentPrimFireFile, llGetPos()+<0.0,0.0,g_fAltitude>,ZERO_VECTOR,ZERO_ROTATION,1);
-					}
+						if (!g_iLowprim) {
+							llSleep(3.0);
+							llSay(PRIMCOMMAND_CHANNEL, "toggle");
+						}
+					} else llSay(PRIMCOMMAND_CHANNEL, sVal); //texture animation change
 				}
+			if (g_iLowprim) state temprez;
 		} else llSetTimerEvent(1.0);
     }
 
@@ -239,4 +252,8 @@ state temprez
 	{
 		;
 	}
+
+//-----------------------------------------------
+//END STATE: temprez
+//-----------------------------------------------
 }
