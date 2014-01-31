@@ -178,7 +178,7 @@ default
 
 		string sScriptName = GroupCheck(kId);
 		if ("exit" == sScriptName) return;
-		if (iChan != ANIM_CHANNEL || !g_iPrimFire || !g_iPrimFireAvail || llToLower(sScriptName) == llToLower(g_sScriptName)) return; // scripts need to have that identifier in their name, so that we can discard those messages
+		if (iChan != ANIM_CHANNEL || !g_iPrimFire || !g_iPrimFireAvail || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; // scripts need to have that identifier in their name, so that we can discard those messages
 
 		list lParams = llParseString2List(sSet, [","], []);
         string sVal = llList2String(lParams, 0);

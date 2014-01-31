@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Fri Jan 31 19:13:06 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Fri Jan 31 20:31:52 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -73,6 +73,7 @@ string LINKSETID = "RealFire";
 string g_sTitle = "RealPrimFire";
 string g_sVersion = "0.12";
 string g_sScriptName;
+string g_sType = "anim";
 integer g_iType = LINK_SET;
 
 integer g_iPrimFireAvail = FALSE;
@@ -274,7 +275,7 @@ default {
         MasterCommand(iChan,sSet);
         string sScriptName = GroupCheck(kId);
         if (("exit" == sScriptName)) return;
-        if (((((iChan != ANIM_CHANNEL) || (!g_iPrimFire)) || (!g_iPrimFireAvail)) || (llToLower(sScriptName) == llToLower(g_sScriptName)))) return;
+        if (((((iChan != ANIM_CHANNEL) || (!g_iPrimFire)) || (!g_iPrimFireAvail)) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
         list lParams = llParseString2List(sSet,[","],[]);
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);
