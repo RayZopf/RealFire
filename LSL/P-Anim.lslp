@@ -189,8 +189,8 @@ default
 		if (sVal != g_sSize || (integer)sMsg != g_iLowprim) {
 			if (sVal == g_sSize && ("0" == sMsg || "1" == sMsg)) {
 				llSetTimerEvent(0.0);
-				llSay(PRIMCOMMAND_CHANNEL, "toggle");
 				g_iLowprim = !g_iLowprim;
+				llSay(PRIMCOMMAND_CHANNEL, "toggle");
 				if (g_iLowprim) state temprez;
 				return; // should not happen - as for temp prim, script should allready be in state temprez
 			}
@@ -246,11 +246,18 @@ state temprez
 	{
 		//llMessage - "temp"
 		state default; // so that scripts runs, even if temp rez is not done
+		llSetTimerEvent(0.0);
+		
 	}
+	
+//listen for linked messages from Fire (main) script
+//-----------------------------------------------
+    //link_message(integer iSender, integer iChan, string sSet, key kId)	
+	
 	
 	timer()
 	{
-		;
+		llRezObject(g_sCurrentPrimFireFile, llGetPos()+<0.0,0.0,g_fAltitude>,ZERO_VECTOR,ZERO_ROTATION,1);
 	}
 
 //-----------------------------------------------

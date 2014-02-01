@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Fri Jan 31 20:31:52 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Sat Feb  1 04:48:15 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -283,8 +283,8 @@ default {
         if (((sVal != g_sSize) || (((integer)sMsg) != g_iLowprim))) {
             if (((sVal == g_sSize) && (("0" == sMsg) || ("1" == sMsg)))) {
                 llSetTimerEvent(0.0);
-                llSay(PRIMCOMMAND_CHANNEL,"toggle");
                 (g_iLowprim = (!g_iLowprim));
+                llSay(PRIMCOMMAND_CHANNEL,"toggle");
                 if (g_iLowprim) state temprez;
                 return;
             }
@@ -336,10 +336,16 @@ state temprez {
 
 	state_entry() {
         state default;
+        llSetTimerEvent(0.0);
     }
 
 	
+//listen for linked messages from Fire (main) script
+//-----------------------------------------------
+    //link_message(integer iSender, integer iChan, string sSet, key kId)	
+	
+	
 	timer() {
-        
+        llRezObject(g_sCurrentPrimFireFile,(llGetPos() + <0.0,0.0,g_fAltitude>),ZERO_VECTOR,ZERO_ROTATION,1);
     }
 }

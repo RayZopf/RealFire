@@ -1,9 +1,9 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Fri Jan 31 20:30:48 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Sat Feb  1 04:49:12 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire rezzed object script
 //
-//31. Jan. 2014
-//v0.1
+//01. Feb. 2014
+//v0.2
 //
 //
 // (Realfire by Rene)
@@ -53,11 +53,11 @@ integer g_iDebugMode = FALSE;
 //internal variables
 //-----------------------------------------------
 //string g_sTitle = "RealPrimFire-Object";     // title
-//string g_sVersion = "0.1";       // version
+//string g_sVersion = "0.2";       // version
 string g_sScriptName;
 integer g_iType = LINK_SET;
 
-integer g_iLowprim = TRUE;
+integer g_iLowprim = FALSE;
 key g_kOwner;
 integer PRIMCOMMAND_CHANNEL = -15771;
 
@@ -123,55 +123,44 @@ default {
     state_entry() {
         (g_kOwner = llGetOwner());
         Debug("state_entry");
-        llSetLinkPrimitiveParamsFast(g_iType,[PRIM_TEMP_ON_REZ,TRUE,PRIM_PHANTOM,TRUE]);
+        llSetPrimitiveParams([PRIM_TEMP_ON_REZ,FALSE,PRIM_PHANTOM,TRUE]);
+        llListen(PRIMCOMMAND_CHANNEL,"",NULL_KEY,"");
+        llOwnerSay("Wait, if you want to make object temp - else react within next 10 seconds");
+        llSleep(10);
+        llSetPrimitiveParams([PRIM_TEMP_ON_REZ,TRUE]);
+        integer g_iLowprim = TRUE;
+        llOwnerSay("Now, object is temp and will vanish shortly");
     }
 
+    
+    /*changed(integer change)
+    {
+		if (change & CHANGED_OWNER) {
+			llResetScript();
+		}
+	}*/
 
     on_rez(integer start_param) {
-        if ((!start_param)) llSetLinkPrimitiveParamsFast(g_iType,[PRIM_TEMP_ON_REZ,FALSE]);
-        else  llListen(PRIMCOMMAND_CHANNEL,"",NULL_KEY,"");
+        Debug(("on_rez: " + ((string)start_param)));
+        if ((0 == start_param)) {
+            llSetLinkPrimitiveParamsFast(g_iType,[PRIM_TEMP_ON_REZ,FALSE]);
+            integer g_iLowprim = TRUE;
+        }
+        (g_kOwner = llGetOwner());
     }
 
 	
 //listen for messages from PrimFire script
 //-----------------------------------------------
     listen(integer iChan,string name,key kId,string sSet) {
+        Debug(("listen: " + sSet));
         if ((llGetOwnerKey(kId) != g_kOwner)) return;
         if (("toggle" == sSet)) {
+            Debug("listen - toggle");
             (g_iLowprim = (!g_iLowprim));
-            if ((!g_iLowprim)) {
-                state temp;
-            }
+            if (g_iLowprim) llSetLinkPrimitiveParamsFast(g_iType,[PRIM_TEMP_ON_REZ,TRUE]);
             else  llSetLinkPrimitiveParamsFast(g_iType,[PRIM_TEMP_ON_REZ,FALSE]);
         }
         else  if (("die" == sSet)) llDie();
-    }
-}
-
-
-
-state temp {
-
-	state_entry() {
-        llSetPrimitiveParams([PRIM_TEMP_ON_REZ,TRUE]);
-        state default;
-    }
-
-	
-	listen(integer iChan,string name,key kId,string sSet) {
-        if ((llGetOwnerKey(kId) != g_kOwner)) return;
-        if (("toggle" == sSet)) {
-            (g_iLowprim = g_iLowprim);
-            if ((!g_iLowprim)) {
-                llSetPrimitiveParams([PRIM_TEMP_ON_REZ,FALSE]);
-            }
-            else  state temp;
-            if (("die" == sSet)) llDie();
-        }
-    }
-
-    
-	timer() {
-        
     }
 }

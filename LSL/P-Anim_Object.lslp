@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire rezzed object script
 //
-//31. Jan. 2014
-//v0.1
+//01. Feb. 2014
+//v0.2
 //
 //
 // (Realfire by Rene)
@@ -52,11 +52,11 @@ integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 //internal variables
 //-----------------------------------------------
 //string g_sTitle = "RealPrimFire-Object";     // title
-//string g_sVersion = "0.1";       // version
+//string g_sVersion = "0.2";       // version
 string g_sScriptName;
 integer g_iType = LINK_SET;
 
-integer g_iLowprim = TRUE;
+integer g_iLowprim = FALSE;
 key g_kOwner;                      // object owner
 
 //RealFire MESSAGE MAP
@@ -112,31 +112,50 @@ default
 {
     state_entry()
     {
-    	g_kOwner = llGetOwner();
+        g_kOwner = llGetOwner();
 		//g_sScriptName = llGetScriptName();
 		Debug("state_entry");
-		// Makes the object temporary so the whole 0 prim part works 
-        llSetLinkPrimitiveParamsFast(g_iType, [PRIM_TEMP_ON_REZ, TRUE,
+		// !make permanent on state_entry, so that object does not get deleted after putting the script in a prim! 
+        llSetPrimitiveParams([PRIM_TEMP_ON_REZ, FALSE,
 			PRIM_PHANTOM, TRUE]);
+	    llListen(PRIMCOMMAND_CHANNEL, "", NULL_KEY, "");
+	    llOwnerSay("Wait, if you want to make object temp - else react within next 10 seconds");
+	    llSleep(10); // gives you some time to react 
+		// Makes the object temporary so the whole 0 prim part works
+		llSetPrimitiveParams([PRIM_TEMP_ON_REZ, TRUE]);
+		integer g_iLowprim = TRUE;
+		llOwnerSay("Now, object is temp and will vanish shortly");
     }
+    
+    /*changed(integer change)
+    {
+		if (change & CHANGED_OWNER) {
+			llResetScript();
+		}
+	}*/
 
     on_rez(integer start_param)
     {
-        if (!start_param) llSetLinkPrimitiveParamsFast(g_iType, [PRIM_TEMP_ON_REZ, FALSE]); // If not rezzed by the rezzer (avi rez/attach) this stops temporary so we can edit it
-	        else llListen(PRIMCOMMAND_CHANNEL, "", NULL_KEY, ""); 
+		Debug("on_rez: " +(string)start_param);
+		if (0 == start_param) {
+			llSetLinkPrimitiveParamsFast(g_iType, [PRIM_TEMP_ON_REZ, FALSE]); // make it permanent if not rezzed/attached by avi - do not use "0" as llRezObject start param
+			integer g_iLowprim = TRUE;
+		}
+        g_kOwner = llGetOwner();
     }
 	
 //listen for messages from PrimFire script
 //-----------------------------------------------
     listen(integer iChan, string name, key kId, string sSet) 
-    { 
-        // Security - check the object belongs to our owner
+    {
+        Debug("listen: "+sSet);
+        // Security - check the object belongs to our owner, not using llListen - filter, as we have state_entry and on_rez events
         if (llGetOwnerKey(kId) != g_kOwner) return;
         if ("toggle" == sSet) {
+        	Debug("listen - toggle");
         	g_iLowprim = !g_iLowprim;
-        	if (!g_iLowprim) {
-            	state temp;
-        	} else llSetLinkPrimitiveParamsFast(g_iType, [PRIM_TEMP_ON_REZ, FALSE]);
+        	if (g_iLowprim) llSetLinkPrimitiveParamsFast(g_iType, [PRIM_TEMP_ON_REZ, TRUE]);
+        		else llSetLinkPrimitiveParamsFast(g_iType, [PRIM_TEMP_ON_REZ, FALSE]);
         } else if ("die" == sSet) llDie();
 //        else if ((integer)sVal > 0 && 100 >= (integer)sVal) {
 //        	SelectPrimFire((float)sVal);
@@ -145,38 +164,5 @@ default
 
 //-----------------------------------------------
 //END STATE: default
-//-----------------------------------------------
-}
-
-
-
-state temp
-{
-	state_entry()
-	{
-		llSetPrimitiveParams([PRIM_TEMP_ON_REZ, TRUE]);
-		state default; // so that scripts runs, even if temp rez is not done
-	}
-	
-	listen(integer iChan, string name, key kId, string sSet) 
-    { 
-        // Security - check the object belongs to our owner 
-        if (llGetOwnerKey(kId) != g_kOwner) return; 
-        if ("toggle" == sSet) {
-        	g_iLowprim = g_iLowprim; 
-        	if (!g_iLowprim) {
-            	llSetPrimitiveParams([PRIM_TEMP_ON_REZ, FALSE]); 
-        	} else state temp;
-        if ("die" == sSet) llDie();
-        }
-    }
-    
-	timer()
-	{
-		;
-	}
-
-//-----------------------------------------------
-//END STATE: temp
 //-----------------------------------------------
 }
