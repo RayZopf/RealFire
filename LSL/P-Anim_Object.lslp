@@ -123,7 +123,7 @@ default
 	    llSleep(10); // gives you some time to react 
 		// Makes the object temporary so the whole 0 prim part works
 		llSetPrimitiveParams([PRIM_TEMP_ON_REZ, TRUE]);
-		integer g_iLowprim = TRUE;
+		g_iLowprim = TRUE;
 		llOwnerSay("Now, object is temp and will vanish shortly");
     }
     
@@ -152,8 +152,8 @@ default
         // Security - check the object belongs to our owner, not using llListen - filter, as we have state_entry and on_rez events
         if (llGetOwnerKey(kId) != g_kOwner) return;
         if ("toggle" == sSet) {
-        	Debug("listen - toggle");
         	g_iLowprim = !g_iLowprim;
+        	Debug("listen - toggle:" + (string)g_iLowprim);
         	if (g_iLowprim) llSetLinkPrimitiveParamsFast(g_iType, [PRIM_TEMP_ON_REZ, TRUE]);
         		else llSetLinkPrimitiveParamsFast(g_iType, [PRIM_TEMP_ON_REZ, FALSE]);
         } else if ("die" == sSet) llDie();

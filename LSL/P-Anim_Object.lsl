@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Sat Feb  1 04:49:12 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Sat Feb  1 05:00:11 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire rezzed object script
 //
@@ -128,7 +128,7 @@ default {
         llOwnerSay("Wait, if you want to make object temp - else react within next 10 seconds");
         llSleep(10);
         llSetPrimitiveParams([PRIM_TEMP_ON_REZ,TRUE]);
-        integer g_iLowprim = TRUE;
+        (g_iLowprim = TRUE);
         llOwnerSay("Now, object is temp and will vanish shortly");
     }
 
@@ -156,8 +156,8 @@ default {
         Debug(("listen: " + sSet));
         if ((llGetOwnerKey(kId) != g_kOwner)) return;
         if (("toggle" == sSet)) {
-            Debug("listen - toggle");
             (g_iLowprim = (!g_iLowprim));
+            Debug(("listen - toggle:" + ((string)g_iLowprim)));
             if (g_iLowprim) llSetLinkPrimitiveParamsFast(g_iType,[PRIM_TEMP_ON_REZ,TRUE]);
             else  llSetLinkPrimitiveParamsFast(g_iType,[PRIM_TEMP_ON_REZ,FALSE]);
         }
