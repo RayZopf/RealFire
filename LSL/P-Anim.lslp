@@ -204,6 +204,7 @@ default
 			SelectPrimFire((float)sVal);
 			
 			if ("0" == g_sSizeTemp) {
+				llSleep(2.0); // let fire slowly begin (not counting on lag when rezzing)
 				llRezObject(g_sCurrentPrimFireFile, llGetPos()+<0.0,0.0,g_fAltitude>,ZERO_VECTOR,ZERO_ROTATION,1);
 				if (!g_iLowprim) {
 					llSleep(3.0);

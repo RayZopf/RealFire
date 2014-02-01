@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Fri Jan 31 05:08:15 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Sat Feb  1 05:41:19 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -533,7 +533,7 @@ readNotecard(string ncLine){
         (par = llStringTrim(par,STRING_TRIM));
         (val = llStringTrim(val,STRING_TRIM));
         string lcpar = llToLower(par);
-        if (("LINKSETID" == lcpar)) {
+        if (("linksetid" == lcpar)) {
             if (("" != val)) (LINKSETID = val);
         }
         else  if ((lcpar == "verbose")) (g_iVerbose = checkYesNo("verbose",val));
@@ -575,7 +575,10 @@ menuDialog(key id){
     if ((!g_iParticleFireOn)) (sParticleFire = "OFF");
     string sPrimFire = "N/A";
     if (g_iPrimFireAvail) {
-        if (g_iPrimFireOn) (sPrimFire = "ON");
+        if (g_iPrimFireOn) {
+            if (g_iLowprim) (sPrimFire = "ON, temp-prim");
+            else  (sPrimFire = "ON");
+        }
         else  (sPrimFire = "OFF");
     }
     string strSmoke = "N/A";
@@ -622,7 +625,10 @@ OptionsDialog(key kId){
     if ((!g_iParticleFireOn)) (sParticleFire = "OFF");
     string sPrimFire = "N/A";
     if (g_iPrimFireAvail) {
-        if (g_iPrimFireOn) (sPrimFire = "ON");
+        if (g_iPrimFireOn) {
+            if (g_iLowprim) (sPrimFire = "ON, temp-prim");
+            else  (sPrimFire = "ON");
+        }
         else  (sPrimFire = "OFF");
     }
     string strSmoke = "N/A";

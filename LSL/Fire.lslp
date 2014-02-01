@@ -509,7 +509,7 @@ readNotecard (string ncLine)
         par = llStringTrim(par, STRING_TRIM);
         val = llStringTrim(val, STRING_TRIM);
         string lcpar = llToLower(par);
-        if ("LINKSETID" == lcpar) {
+        if ("linksetid" == lcpar) {
         	if ("" != val) LINKSETID = val;
         } else if (lcpar == "verbose") g_iVerbose = checkYesNo("verbose", val);
         else if (lcpar == "switchaccess") g_iSwitchAccess = checkInt("switchAccess", (integer)val, 0, 7);
@@ -553,8 +553,10 @@ menuDialog (key id)
 	if (!g_iParticleFireOn) sParticleFire = "OFF";
 	string sPrimFire = "N/A";
 	if (g_iPrimFireAvail) {
-		if (g_iPrimFireOn) sPrimFire = "ON";
-			else sPrimFire = "OFF";
+		if (g_iPrimFireOn) {
+			if (g_iLowprim) sPrimFire = "ON, temp-prim";
+				else sPrimFire = "ON";
+		} else sPrimFire = "OFF";
 	}
     string strSmoke = "N/A";
 	if (g_iSmokeAvail) {
@@ -628,8 +630,10 @@ OptionsDialog (key kId)
 	if (!g_iParticleFireOn) sParticleFire = "OFF";
 	string sPrimFire = "N/A";
 	if (g_iPrimFireAvail) {
-		if (g_iPrimFireOn) sPrimFire = "ON";
-			else sPrimFire = "OFF";
+		if (g_iPrimFireOn) {
+			if (g_iLowprim) sPrimFire = "ON, temp-prim";
+				else sPrimFire = "ON";
+		} else sPrimFire = "OFF";
 	}
     string strSmoke = "N/A";
 	if (g_iSmokeAvail) {

@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Sat Feb  1 04:48:15 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Sat Feb  1 05:20:41 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -297,6 +297,7 @@ default {
             string g_sSizeTemp = g_sSize;
             SelectPrimFire(((float)sVal));
             if (("0" == g_sSizeTemp)) {
+                llSleep(2.0);
                 llRezObject(g_sCurrentPrimFireFile,(llGetPos() + <0.0,0.0,g_fAltitude>),ZERO_VECTOR,ZERO_ROTATION,1);
                 if ((!g_iLowprim)) {
                     llSleep(3.0);
