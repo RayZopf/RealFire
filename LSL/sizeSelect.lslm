@@ -1,8 +1,48 @@
-$module ()
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//Module select different stages
+//
+//by: Zopf Resident - Ray Zopf (Raz)
+//01. Feb 2014
+//v0.1
+
+//Files:
+//sizeSelect.lslm
+//
+//
+//Prequisites: ----
+//
+
+//Changelog
+// 
+
+//bug:
+
+//todo:
+// 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+$module (integer m_iDebugMode, string m_sScriptName)
+
+$import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
+
+
+//###
+//sizeSelect.lslm
+//0.1 - 02Feb2014
+
+selectSize(float fMsg, integer iStart)
+{
+	Debug("SelectSize: "+(string)fMsg+"-"+(string)iStart);
+
+}
+
+//END sizeSelect.lslm
+//###
 
 
 
-SelectSound(float fMsg)
+SelectSound(float fMsg, integer iStart)
 {
 	Debug("SelectSound: "+(string)fMsg);
 	if (fMsg <= 25) {
@@ -57,12 +97,5 @@ SelectSound(float fMsg)
         if (g_iChangeSmoke && g_iSmokeAvail) g_fPercentSmoke = size * 4.0; //works only here within range 0-100!!!
 			else g_fPercentSmoke = 100.0;
 		Debug("Smoke size: change= "+(string)g_iChangeSmoke+", size= "+(string)size +", percentage= "+(string)g_fPercentSmoke);
-		if (g_iSoundAvail || g_iBackSoundAvail) {
-			if (g_iChangeVolume) {
-				if (g_iSoundOn) g_fSoundVolume = percentage(size * 4.0, g_fStartVolume);
-					else g_fSoundVolumeTmp = percentage(size * 4.0, g_fStartVolume);
-			} else 
-				if (g_iSoundOn) g_fSoundVolume = g_fStartVolume;
-					else g_fSoundVolumeTmp = g_fStartVolume;
-		}
+		if (g_iChangeVolume) g_fSoundVolume = percentage(size * 4.0, g_fStartVolume);
     }
