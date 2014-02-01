@@ -199,7 +199,7 @@ integer g_iPerBlueStart;           // percent blue for startColor
 integer g_iPerRedEnd;              // percent red for endColor
 integer g_iPerGreenEnd;            // percent green for endColor
 integer g_iPerBlueEnd;             // percent blue for endColor
-integer g_iPerSize;                // percent particle size
+float g_fPerSize;                // percent particle size
 integer g_iPerVolume;              // percent volume
 integer g_iOn = FALSE;             // fire on/off
 integer g_iBurning = FALSE;        // burning constantly
@@ -255,13 +255,13 @@ toggleFunktion(string sFunction)
 		} else {
 			g_iParticleFireOn = TRUE;
 		}
-		updateSize((float)g_iPerSize);
+		updateSize(g_fPerSize);
 	} else if ("primfire" == sFunction) {
 		if (g_iPrimFireOn) {
 			sendMessage(ANIM_CHANNEL, "0", (string)g_iLowprim);
 			g_iPrimFireOn = FALSE;
 		} else {
-			sendMessage(ANIM_CHANNEL, (string)llRound(g_iPerSize), (string)g_iLowprim);
+			sendMessage(ANIM_CHANNEL, (string)llRound(g_fPerSize), (string)g_iLowprim);
 			g_iPrimFireOn = TRUE;
 		}
 	} else if ("smoke" == sFunction) {
@@ -302,19 +302,19 @@ updateSize(float size)
 
 	g_fSoundVolume = g_fStartVolume;
 
-		if (size > 25.0) {
+		if (size > SIZE_SMALL) {
 				vStart = g_vStartScale / 100.0 * size;     // start scale
 				fRadius = g_fBurstRadius / 100.0 * size;   // burst radius
-				if (size >= 80.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
-			else if (size > 50.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
+				if (size >= SIZE_LARGE) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
+			else if (size >= SIZE_MEDIUM) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
 				else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
 		}
 		else {
-				if (size >= 15.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
+				if (size >= SIZE_EXTRASMALL) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
 						else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
 				vStart = g_vStartScale / 4.0;              // start scale
 				fRadius = g_fBurstRadius / 4.0;            // burst radius
-				if (size < 5.0) {
+				if (size < SIZE_TINY) {
 						vStart.y = g_vStartScale.y / 100.0 * size * 5.0;
 						if (vStart.y < 0.25) vStart.y = 0.25;
 				}
@@ -567,7 +567,7 @@ menuDialog (key id)
 		llSetTimerEvent(0);
 		llSetTimerEvent(120);
 		llDialog(id, g_sTitle + " " + g_sVersion +
-				"\n\nSize: " + (string)g_iPerSize + "%\t\tVolume: " + (string)g_iPerVolume + "%" +
+				"\n\nSize: " + (string)g_fPerSize + "%\t\tVolume: " + (string)g_iPerVolume + "%" +
 				"\nParticleFire: " + sParticleFire + "\tSmoke: " + strSmoke + "\tSound: " + strSound + "\nPrimFire: " + sPrimFire, [
 				"Options", "FastToggle", "Close",
 				"-Volume", "+Volume", "---",
@@ -685,7 +685,7 @@ reset()
 			g_iSoundOn = g_iDefSound;
 			g_iChangeVolume = g_iDefChangeVolume;
 		}
-		g_iPerSize = g_iDefSize;
+		g_fPerSize = (float)g_iDefSize;
 		g_iPerVolume = g_iDefVolume;
 		g_iPerRedStart = (integer)g_vDefStartColor.x;
 		g_iPerGreenStart = (integer)g_vDefStartColor.y;
@@ -717,7 +717,7 @@ startSystem()
 	}
 	//llParticleSystem([]); // get linden like particles to start fire with
 	if (g_iVerbose) llWhisper(0, "(v) The fire gets lit");
-		updateSize((float)g_iPerSize);
+		updateSize(g_fPerSize);
 		llSetTimerEvent(0);
 		llSetTimerEvent(g_fBurnTime);
 		if (g_iMenuOpen) {
@@ -908,11 +908,11 @@ default
 
 				if (channel == menuChannel) {
 						llListenRemove(g_iMenuHandle);
-						if (msg == "Small") g_iPerSize = 20;
-						else if (msg == "Medium") g_iPerSize = 55;
-						else if (msg == "Large") g_iPerSize = 80;
-						else if (msg == "-Fire") g_iPerSize = max(g_iPerSize - 5, 5);
-						else if (msg == "+Fire") g_iPerSize = min(g_iPerSize + 5, 100);
+						if (msg == "Small") g_fPerSize = SIZE_SMALL;
+						else if (msg == "Medium") g_fPerSize = SIZE_MEDIUM;
+						else if (msg == "Large") g_fPerSize = SIZE_LARGE;
+						else if (msg == "-Fire") g_fPerSize = max((integer)g_fPerSize - 5, 5);
+						else if (msg == "+Fire") g_fPerSize = min((integer)g_fPerSize + 5, 100);
 						else if (msg == "-Volume") {
 								g_iPerVolume = max(g_iPerVolume - 5, 5);
 								g_fStartVolume = percentage(g_iPerVolume, MAX_VOLUME);
@@ -934,7 +934,7 @@ default
 							}
 						}
 						if ("FastToggle" != msg && msg != "Close" && "Options" != msg) {
-				updateSize((float)g_iPerSize);
+				updateSize(g_fPerSize);
 				menuDialog(g_kUser);
 						}
 						else if (msg == "Options") OptionsDialog(g_kUser);
@@ -1003,7 +1003,7 @@ default
 						}
 
 						if (msg != "Top color" && msg != "^Main menu") {
-								updateSize((float)g_iPerSize);
+								updateSize(g_fPerSize);
 								startColorDialog(g_kUser);
 						}
 						else if (msg == "Top color") endColorDialog(g_kUser);
@@ -1027,7 +1027,7 @@ default
 						}
 
 						if (msg != "Bottom color" && msg != "^Options") {
-								updateSize((float)g_iPerSize);
+								updateSize(g_fPerSize);
 								endColorDialog(g_kUser);
 						}
 						else if (msg == "Bottom color") startColorDialog(g_kUser);
@@ -1210,7 +1210,7 @@ default
 
 				if (g_fPercent >= g_fDecPercent) {
 						g_fPercent -= g_fDecPercent;
-						updateSize(g_fPercent / (100.0 / (float)g_iPerSize));
+						updateSize(g_fPercent / (100.0 / g_fPerSize));
 				}
 				else {
 						if (g_iLoop) startSystem();

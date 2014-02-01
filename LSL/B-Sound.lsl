@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Sat Feb  1 20:22:03 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Sat Feb  1 21:25:01 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -72,6 +72,7 @@ float g_fSoundVolumeNew;
 string g_sSize = "0";
 float g_fFactor;
 integer g_iInTimer = FALSE;
+float SIZE_EXTRASMALL = 15.0;
 integer COMMAND_CHANNEL = -15700;
 integer SOUND_CHANNEL = -15780;
 
@@ -241,11 +242,11 @@ default {
             Debug(("Factor start " + ((string)g_fFactor)));
             if (("-1" == sMsg)) (g_fFactor = 1.0);
             else  if (((0 < ((integer)sMsg)) && (100 >= ((integer)sMsg)))) {
-                if ((((integer)sMsg) <= 15)) (g_fFactor = (5.0 / 6.0));
+                if ((((integer)sMsg) <= SIZE_EXTRASMALL)) (g_fFactor = (5.0 / 6.0));
                 else  (g_fFactor = (7.0 / 8.0));
             }
-            else  if ((("" != sMsg) && (((integer)g_sSize) <= 15))) (g_fFactor = (5.0 / 6.0));
-            else  if (((("" != sMsg) && (((integer)g_sSize) > 15)) && (100 <= ((integer)g_sSize)))) (g_fFactor = (5.0 / 6.0));
+            else  if ((("" != sMsg) && (((integer)g_sSize) <= SIZE_EXTRASMALL))) (g_fFactor = (5.0 / 6.0));
+            else  if (((("" != sMsg) && (((integer)g_sSize) > SIZE_EXTRASMALL)) && (100 <= ((integer)g_sSize)))) (g_fFactor = (5.0 / 6.0));
             Debug(("Factor calculated " + ((string)g_fFactor)));
             float fSoundVolumeF = (g_fSoundVolumeNew * g_fFactor);
             if ((g_fSoundVolumeCur > 0)) {

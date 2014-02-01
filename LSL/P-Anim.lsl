@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Sat Feb  1 20:22:03 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Sat Feb  1 21:25:01 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -81,6 +81,9 @@ integer g_iInvType = INVENTORY_OBJECT;
 //integer g_iPrimFireFileStartAvail = TRUE;
 integer g_iLowprim = FALSE;
 string g_sSize = "0";
+float SIZE_SMALL = 25.0;
+float SIZE_MEDIUM = 50.0;
+float SIZE_LARGE = 80.0;
 integer COMMAND_CHANNEL = -15700;
 integer ANIM_CHANNEL = -15770;
 integer PRIMCOMMAND_CHANNEL = -15771;
@@ -210,16 +213,16 @@ checkforFiles(integer iNFiles,list lgivenFileList,string sCurrentFile){
 
 SelectPrimFire(float fMsg){
     Debug(("SelectPrimFire: " + ((string)fMsg)));
-    if ((fMsg <= 25)) {
+    if ((fMsg <= SIZE_SMALL)) {
         (g_sCurrentPrimFireFile = g_sPrimFireFileSmall);
     }
-    else  if (((fMsg > 25) && (fMsg <= 50))) {
+    else  if (((fMsg > SIZE_SMALL) && (fMsg < SIZE_MEDIUM))) {
         (g_sCurrentPrimFireFile = g_sPrimFireFileMedium1);
     }
-    else  if (((fMsg > 50) && (fMsg < 80))) {
+    else  if (((fMsg >= SIZE_MEDIUM) && (fMsg < SIZE_LARGE))) {
         (g_sCurrentPrimFireFile = g_sPrimFireFileMedium1);
     }
-    else  if (((fMsg >= 80) && (fMsg <= 100))) {
+    else  if (((fMsg >= SIZE_LARGE) && (fMsg <= 100))) {
         (g_sCurrentPrimFireFile = g_sPrimFireFileFull);
     }
     else  {

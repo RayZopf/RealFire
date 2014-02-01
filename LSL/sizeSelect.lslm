@@ -31,9 +31,19 @@ $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 //sizeSelect.lslm
 //0.1 - 02Feb2014
 
-selectSize(float fMsg, integer iStart)
+selectSize(float fSize, integer iStart)
 {
-	Debug("SelectSize: "+(string)fMsg+"-"+(string)iStart);
+	Debug("SelectSize: "+(string)fSize+"-"+(string)iStart);
+
+fSize < 5
+fSize >= 15
+*fSize <=25
+fSize > 25
+fSize <= 50
+fSize > 50
+fSize < 80
+fSize >= 80
+
 
 }
 

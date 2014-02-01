@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Sat Feb  1 20:22:03 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Sat Feb  1 21:25:01 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -81,6 +81,9 @@ integer g_iSoundFileStartAvail = TRUE;
 float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
+float SIZE_SMALL = 25.0;
+float SIZE_MEDIUM = 50.0;
+float SIZE_LARGE = 80.0;
 integer COMMAND_CHANNEL = -15700;
 integer SOUND_CHANNEL = -15780;
 
@@ -209,16 +212,16 @@ checkforFiles(integer iNFiles,list lgivenFileList,string sCurrentFile){
 
 SelectSound(float fMsg){
     Debug(("SelectSound: " + ((string)fMsg)));
-    if ((fMsg <= 25)) {
+    if ((fMsg <= SIZE_SMALL)) {
         (g_sCurrentSoundFile = g_sSoundFileSmall);
     }
-    else  if (((fMsg > 25) && (fMsg <= 50))) {
+    else  if (((fMsg > SIZE_SMALL) && (fMsg < SIZE_MEDIUM))) {
         (g_sCurrentSoundFile = g_sSoundFileMedium1);
     }
-    else  if (((fMsg > 50) && (fMsg < 80))) {
+    else  if (((fMsg >= SIZE_MEDIUM) && (fMsg < SIZE_LARGE))) {
         (g_sCurrentSoundFile = g_sSoundFileMedium2);
     }
-    else  if (((fMsg >= 80) && (fMsg <= 100))) {
+    else  if (((fMsg >= SIZE_LARGE) && (fMsg <= 100))) {
         (g_sCurrentSoundFile = g_sSoundFileFull);
     }
     else  {

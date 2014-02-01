@@ -104,13 +104,13 @@ $import checkforFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptNam
 SelectSound(float fMsg)
 {
 	Debug("SelectSound: "+(string)fMsg);
-	if (fMsg <= 25) {
+	if (fMsg <= SIZE_SMALL) {
 			g_sCurrentSoundFile = g_sSoundFileSmall;
-	} else if (fMsg > 25 && fMsg <= 50) {
+	} else if (fMsg > SIZE_SMALL && fMsg < SIZE_MEDIUM) {
 		g_sCurrentSoundFile = g_sSoundFileMedium1;
-	} else if (fMsg > 50 && fMsg < 80) {
+	} else if (fMsg >= SIZE_MEDIUM && fMsg < SIZE_LARGE) {
 			g_sCurrentSoundFile = g_sSoundFileMedium2;
-	} else if (fMsg >= 80 && fMsg <= 100) {
+	} else if (fMsg >= SIZE_LARGE && fMsg <= 100) {
 			g_sCurrentSoundFile = g_sSoundFileFull;
 	} else {
 		Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-");

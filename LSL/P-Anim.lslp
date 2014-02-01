@@ -105,13 +105,13 @@ $import checkforFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptNam
 SelectPrimFire(float fMsg)
 {
 	Debug("SelectPrimFire: "+(string)fMsg);
-	if (fMsg <= 25) {
+	if (fMsg <= SIZE_SMALL) {
 			g_sCurrentPrimFireFile = g_sPrimFireFileSmall;
-	} else if (fMsg > 25 && fMsg <= 50) {
+	} else if (fMsg > SIZE_SMALL && fMsg < SIZE_MEDIUM) {
 		g_sCurrentPrimFireFile = g_sPrimFireFileMedium1;
-	} else if (fMsg > 50 && fMsg < 80) {
+	} else if (fMsg >= SIZE_MEDIUM && fMsg < SIZE_LARGE) {
 			g_sCurrentPrimFireFile = g_sPrimFireFileMedium1;
-	} else if (fMsg >= 80 && fMsg <= 100) {
+	} else if (fMsg >= SIZE_LARGE && fMsg <= 100) {
 			g_sCurrentPrimFireFile = g_sPrimFireFileFull;
 	} else {
 		//Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-");

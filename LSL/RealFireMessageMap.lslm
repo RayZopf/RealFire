@@ -13,7 +13,7 @@
 //
 
 //Changelog
-// 
+//
 
 //bug:
 
@@ -24,6 +24,13 @@
 
 $module ()
 
+
+//RealFire SIZE MAP
+float SIZE_TINY = 5.0;
+float SIZE_EXTRASMALL = 15.0;
+float SIZE_SMALL = 25.0;
+float SIZE_MEDIUM = 50.0;
+float SIZE_LARGE = 80.0;
 
 //RealFire MESSAGE MAP
 integer COMMAND_CHANNEL = -15700;
