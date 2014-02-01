@@ -21,8 +21,8 @@
 
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//31. Jan. 2014
-//v2.2.1-0.94
+//01. Feb. 2014
+//v2.2.1-0.95
 
 //Files:
 //Fire.lsl
@@ -118,7 +118,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";      // title
-string g_sVersion = "2.2.1-0.94";         // version
+string g_sVersion = "2.2.1-0.95";         // version
 string g_sScriptName;
 string g_sType = "main";
 integer g_iType = LINK_SET;
