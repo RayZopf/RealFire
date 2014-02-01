@@ -67,7 +67,6 @@ integer g_iType = LINK_SET;
 
 integer g_iSoundAvail = FALSE;
 float g_fSoundVolumeCur = 0.0;
-float g_fSoundVolumeCurF = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
 float g_fFactor;
@@ -126,6 +125,7 @@ default
 		CheckSoundFiles();
 		llSleep(1);
 		RegisterExtension(g_iType);
+		if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
 		InfoLines();
     }
 
@@ -148,6 +148,7 @@ default
 			CheckSoundFiles();
 			llSleep(1);
 			RegisterExtension(g_iType);
+			if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
 			InfoLines();
 		}
     }
@@ -187,19 +188,17 @@ default
 			Debug("Factor calculated "+(string)g_fFactor);
 			float fSoundVolumeF = g_fSoundVolumeNew*g_fFactor;
 			
-			if (g_fSoundVolumeCur > 0 && g_fSoundVolumeCurF > 0) { //sound should already run
+			if (g_fSoundVolumeCur > 0) { //sound should already run
 				Debug("Vol-adjust: "+(string)fSoundVolumeF);
 				llAdjustSoundVolume(fSoundVolumeF);
 			} else {
 				Debug("play sound: "+(string)fSoundVolumeF);
-				//llSleep(2); //better not wait to make sound different in timing, find another way
+				llPreloadSound(BACKSOUNDFILE);
 				llStopSound(); // just in case...
-				llSleep(2); //make sounds asynchronus
 				llLoopSound(BACKSOUNDFILE, fSoundVolumeF);
 				if (g_iVerbose) llWhisper(0, "(v) Fire emits a crackling background sound");
 			}
 			g_fSoundVolumeCur = g_fSoundVolumeNew;
-			g_fSoundVolumeCurF = fSoundVolumeF;
 			if ("" != sMsg) g_sSize = sMsg;
 		} else {
 			llWhisper(0, "Background fire noises getting quieter and quieter...");
@@ -213,7 +212,7 @@ default
 	{
 		llStopSound();
 		if (g_iVerbose) llWhisper(0, "(v) Background noise off");
-		g_fSoundVolumeNew = g_fSoundVolumeCur = g_fSoundVolumeCurF = 0.0;
+		g_fSoundVolumeNew = g_fSoundVolumeCur = 0.0;
 		g_sSize = "0";
 		g_iInTimer = FALSE;
 		llSetTimerEvent(0.0);

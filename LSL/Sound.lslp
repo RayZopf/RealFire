@@ -207,6 +207,8 @@ default
 					llAdjustSoundVolume(g_fSoundVolumeNew);
 					if (g_iVerbose) llWhisper(0, "(v) Sound range for fire has changed");
 				} else {
+					llPreloadSound(g_sCurrentSoundFile);
+					llSleep(2.0); // give fire some time to start before making noise
 					llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
 					if (g_iVerbose) llWhisper(0, "(v) The fire starts to make some noise");
 				}
@@ -221,7 +223,6 @@ default
 				} else {
 					if (g_iVerbose && "0" != g_sSize) llWhisper(0, "(v) The fire changes it's sound");
 					Debug("play sound: "+g_sCurrentSoundFile);
-			
 					llPreloadSound(g_sCurrentSoundFile);
 					llStopSound();
 					llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);

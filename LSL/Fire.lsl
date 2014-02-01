@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Sat Feb  1 16:35:52 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Sat Feb  1 17:59:06 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -119,6 +119,7 @@ vector g_vEndColor = <1,0,0>;
 string g_sTitle = "RealFire";
 string g_sVersion = "2.2.1-0.94";
 string g_sScriptName;
+integer g_iType = LINK_SET;
 string g_sAuthors = "Rene10957, Zopf";
 
 
@@ -371,16 +372,16 @@ updateSize(float size){
         if (g_iChangeVolume) (g_fSoundVolume = percentage((size * 4.0),g_fStartVolume));
     }
     updateColor();
-    if (g_iParticleFireOn) updateParticles(vStart,vEnd,fMin,fMax,fRadius,vPush);
-    else  llParticleSystem([]);
     if ((g_iPrimFireAvail && g_iPrimFireOn)) sendMessage(ANIM_CHANNEL,((string)size),((string)g_iLowprim));
-    llSetPrimitiveParams([PRIM_POINT_LIGHT,TRUE,g_vLightColor,g_fLightIntensity,g_fLightRadius,g_fLightFalloff]);
+    llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,TRUE,g_vLightColor,g_fLightIntensity,g_fLightRadius,g_fLightFalloff]);
     if ((g_iSmokeAvail && g_iSmokeOn)) sendMessage(SMOKE_CHANNEL,((string)llRound(g_fPercentSmoke)),"");
     if ((g_iSoundAvail || g_iBackSoundAvail)) {
         if (((0 <= size) && (100 >= size))) (g_sCurrentSound = ((string)size));
         if (g_iSoundOn) sendMessage(SOUND_CHANNEL,((string)g_fSoundVolume),g_sCurrentSound);
         else  sendMessage(SOUND_CHANNEL,"0",g_sCurrentSound);
     }
+    if (g_iParticleFireOn) updateParticles(vStart,vEnd,fMin,fMax,fRadius,vPush);
+    else  llParticleSystem([]);
     Debug(((((((string)llRound(size)) + "% ") + ((string)vStart)) + " ") + ((string)vEnd)));
 }
 
@@ -695,10 +696,9 @@ startSystem(){
     (g_fLightRadius = g_fStartRadius);
     if ((g_iSoundAvail || g_iBackSoundAvail)) {
         (g_fStartVolume = percentage(((float)g_iPerVolume),MAX_VOLUME));
-        (g_fSoundVolume = g_fStartVolume);
         if (g_iSoundOn) sendMessage(SOUND_CHANNEL,((string)g_fStartVolume),"110");
     }
-    if ((g_iVerbose && (!g_iOn))) llWhisper(0,"(v) The fire gets lit");
+    if (g_iVerbose) llWhisper(0,"(v) The fire gets lit");
     updateSize(((float)g_iPerSize));
     llSetTimerEvent(0);
     llSetTimerEvent(g_fBurnTime);
@@ -720,7 +720,7 @@ stopSystem(){
     (g_fPercentSmoke = 0.0);
     llSetTimerEvent(0);
     llParticleSystem([]);
-    llSetPrimitiveParams([PRIM_POINT_LIGHT,FALSE,ZERO_VECTOR,0,0,0]);
+    llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,FALSE,ZERO_VECTOR,0,0,0]);
     if (g_iPrimFireAvail) sendMessage(ANIM_CHANNEL,"0","");
     if ((g_iSoundAvail || g_iBackSoundAvail)) sendMessage(SOUND_CHANNEL,"0","0");
     if (g_iSmokeAvail) sendMessage(SMOKE_CHANNEL,"0","");
@@ -735,6 +735,7 @@ stopSystem(){
 }
 
 updateParticles(vector vStart,vector vEnd,float fMin,float fMax,float fRadius,vector vPush){
+    llSleep(0.8);
     llParticleSystem([PSYS_PART_FLAGS,(((0 | PSYS_PART_EMISSIVE_MASK) | PSYS_PART_INTERP_COLOR_MASK) | PSYS_PART_INTERP_SCALE_MASK),PSYS_SRC_PATTERN,PSYS_SRC_PATTERN_EXPLODE,PSYS_SRC_BURST_RADIUS,fRadius,PSYS_PART_START_COLOR,g_vStartColor,PSYS_PART_END_COLOR,g_vEndColor,PSYS_PART_START_ALPHA,1.0,PSYS_PART_END_ALPHA,0.0,PSYS_PART_START_SCALE,vStart,PSYS_PART_END_SCALE,vEnd,PSYS_PART_MAX_AGE,g_fAge,PSYS_SRC_BURST_RATE,g_fRate,PSYS_SRC_BURST_PART_COUNT,g_iCount,PSYS_SRC_ACCEL,vPush,PSYS_SRC_BURST_SPEED_MIN,fMin,PSYS_SRC_BURST_SPEED_MAX,fMax]);
 }
 

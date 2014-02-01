@@ -121,6 +121,7 @@ string g_sTitle = "RealFire";      // title
 string g_sVersion = "2.2.1-0.94";         // version
 string g_sScriptName;
 string g_sType = "main";
+integer g_iType = LINK_SET;
 string g_sAuthors = "Rene10957, Zopf";
 
 
@@ -332,16 +333,16 @@ updateSize(float size)
     }
 
 	updateColor();
-    if (g_iParticleFireOn) updateParticles(vStart, vEnd, fMin, fMax, fRadius, vPush);
-    	else llParticleSystem([]);
     if (g_iPrimFireAvail && g_iPrimFireOn) sendMessage(ANIM_CHANNEL, (string)size, (string)g_iLowprim);
-    llSetPrimitiveParams([PRIM_POINT_LIGHT, TRUE, g_vLightColor, g_fLightIntensity, g_fLightRadius, g_fLightFalloff]);
+    llSetLinkPrimitiveParamsFast(g_iType ,[PRIM_POINT_LIGHT, TRUE, g_vLightColor, g_fLightIntensity, g_fLightRadius, g_fLightFalloff]);
     if (g_iSmokeAvail && g_iSmokeOn) sendMessage(SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
 	if (g_iSoundAvail || g_iBackSoundAvail) { //needs to be improved
 		if (0 <= size && 100 >= size) g_sCurrentSound = (string)size;
 		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound); // used when changing fire size via menu
 			else sendMessage(SOUND_CHANNEL, "0", g_sCurrentSound);
 	}
+    if (g_iParticleFireOn) updateParticles(vStart, vEnd, fMin, fMax, fRadius, vPush);
+    	else llParticleSystem([]);
     Debug((string)llRound(size) + "% " + (string)vStart + " " + (string)vEnd);
 }
 
@@ -711,11 +712,11 @@ startSystem()
     g_fLightRadius = g_fStartRadius;
     if (g_iSoundAvail || g_iBackSoundAvail) { //needs some more rework, move all calculation inside
 		g_fStartVolume = percentage((float)g_iPerVolume, MAX_VOLUME);
-		g_fSoundVolume = g_fStartVolume;
 		//if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fStartVolume, "-1"); //background noise - do better not use, gets called to often
 		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fStartVolume, "110"); // special start sound
 	}
-	if (g_iVerbose && !g_iOn) llWhisper(0, "(v) The fire gets lit");
+	//llParticleSystem([]); // get linden like particles to start fire with
+	if (g_iVerbose) llWhisper(0, "(v) The fire gets lit");
     updateSize((float)g_iPerSize);
     llSetTimerEvent(0);
     llSetTimerEvent(g_fBurnTime);
@@ -738,7 +739,7 @@ stopSystem()
     g_fPercentSmoke = 0.0;
     llSetTimerEvent(0);
     llParticleSystem([]);
-    llSetPrimitiveParams([PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
+    llSetLinkPrimitiveParamsFast(g_iType, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
     if (g_iPrimFireAvail) sendMessage(ANIM_CHANNEL, "0", "");
 	if (g_iSoundAvail || g_iBackSoundAvail) sendMessage(SOUND_CHANNEL, "0", "0"); //volume off and size off
     //llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
@@ -755,6 +756,7 @@ stopSystem()
 
 updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadius, vector vPush)
 {
+	llSleep(0.8); // give other effects some time to start - also delays updating colour 
     llParticleSystem ([
 	//System Behavior
         PSYS_PART_FLAGS,
@@ -1061,7 +1063,7 @@ default
 			if ("1" == sMsg) {
 				g_iSmokeAvail = TRUE;
 				llWhisper(0, "Smoke available");
-				if (g_iDefSmoke && g_iOn) { //if only smoke scripts gets resetted
+				if (g_iDefSmoke && g_iOn) { //if only smoke scripts gets resetted - is normally in another prim!
 					g_iSmokeOn = FALSE; //important to get it toggled
 					toggleFunktion("smoke");
 				}
@@ -1075,7 +1077,7 @@ default
 					g_iSoundAvail = TRUE;
 					g_iChangeVolume = g_iDefChangeVolume;
 					llWhisper(0, "Noise available");
-					if (g_iDefSound && g_iOn) { //if only sound scripts gets resetted
+					if (g_iDefSound && g_iOn) { //if only sound scripts gets resetted - one of them should be another prim!
 						g_iSoundOn = FALSE; //important to get it toggled
 						toggleFunktion("smoke");
 					}

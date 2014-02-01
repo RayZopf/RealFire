@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Sat Feb  1 16:34:46 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Sat Feb  1 18:00:25 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -68,7 +68,6 @@ integer g_iType = LINK_SET;
 
 integer g_iSoundAvail = FALSE;
 float g_fSoundVolumeCur = 0.0;
-float g_fSoundVolumeCurF = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
 float g_fFactor;
@@ -192,6 +191,7 @@ default {
         CheckSoundFiles();
         llSleep(1);
         RegisterExtension(g_iType);
+        if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
         InfoLines();
     }
 
@@ -213,6 +213,7 @@ default {
             CheckSoundFiles();
             llSleep(1);
             RegisterExtension(g_iType);
+            if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
             InfoLines();
         }
     }
@@ -247,19 +248,18 @@ default {
             else  if (((("" != sMsg) && (((integer)g_sSize) > 15)) && (100 <= ((integer)g_sSize)))) (g_fFactor = (5.0 / 6.0));
             Debug(("Factor calculated " + ((string)g_fFactor)));
             float fSoundVolumeF = (g_fSoundVolumeNew * g_fFactor);
-            if (((g_fSoundVolumeCur > 0) && (g_fSoundVolumeCurF > 0))) {
+            if ((g_fSoundVolumeCur > 0)) {
                 Debug(("Vol-adjust: " + ((string)fSoundVolumeF)));
                 llAdjustSoundVolume(fSoundVolumeF);
             }
             else  {
                 Debug(("play sound: " + ((string)fSoundVolumeF)));
+                llPreloadSound(BACKSOUNDFILE);
                 llStopSound();
-                llSleep(2);
                 llLoopSound(BACKSOUNDFILE,fSoundVolumeF);
                 if (g_iVerbose) llWhisper(0,"(v) Fire emits a crackling background sound");
             }
             (g_fSoundVolumeCur = g_fSoundVolumeNew);
-            (g_fSoundVolumeCurF = fSoundVolumeF);
             if (("" != sMsg)) (g_sSize = sMsg);
         }
         else  {
@@ -274,7 +274,7 @@ default {
 	timer() {
         llStopSound();
         if (g_iVerbose) llWhisper(0,"(v) Background noise off");
-        (g_fSoundVolumeNew = (g_fSoundVolumeCur = (g_fSoundVolumeCurF = 0.0)));
+        (g_fSoundVolumeNew = (g_fSoundVolumeCur = 0.0));
         (g_sSize = "0");
         (g_iInTimer = FALSE);
         llSetTimerEvent(0.0);
