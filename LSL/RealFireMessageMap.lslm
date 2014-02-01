@@ -2,8 +2,8 @@
 //Module that only holds the RealFire Message channel constants
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//30. Jan 2014
-//v0.1
+//01. Feb. 2014
+//v0.2
 
 //Files:
 //RealFireMessageMap.lslm
@@ -42,7 +42,7 @@ integer PRIMCOMMAND_CHANNEL = -15771;	// kill fire prims or make temp prims
 
 //###
 //RealFireMessageMap.lslm
-//0.1 - 30Jan2014
+//0.2 - 01Feb2014
 
 
 //END checkforFiles.lslm
