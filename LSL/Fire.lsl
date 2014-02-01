@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Sat Feb  1 05:41:19 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Sat Feb  1 16:35:52 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -161,6 +161,7 @@ integer g_iDefSize;
 vector g_vDefStartColor;
 vector g_vDefEndColor;
 integer g_iDefVolume;
+integer g_iDefChangeVolume = TRUE;
 integer g_iDefSmoke = TRUE;
 integer g_iDefSound = FALSE;
 integer g_iDefParticleFire = TRUE;
@@ -214,7 +215,6 @@ float g_fLightIntensity;
 float g_fLightRadius;
 float g_fLightFalloff;
 float g_fSoundVolume = 0.0;
-float g_fSoundVolumeTmp;
 float g_fStartIntensity;
 float g_fStartRadius;
 float g_fStartVolume;
@@ -292,6 +292,7 @@ toggleFunktion(string sFunction){
         else  {
             (g_iParticleFireOn = TRUE);
         }
+        updateSize(((float)g_iPerSize));
     }
     else  if (("primfire" == sFunction)) {
         if (g_iPrimFireOn) {
@@ -299,7 +300,7 @@ toggleFunktion(string sFunction){
             (g_iPrimFireOn = FALSE);
         }
         else  {
-            if (g_iPrimFireAvail) sendMessage(ANIM_CHANNEL,((string)llRound(g_iPerSize)),((string)g_iLowprim));
+            sendMessage(ANIM_CHANNEL,((string)llRound(g_iPerSize)),((string)g_iLowprim));
             (g_iPrimFireOn = TRUE);
         }
     }
@@ -315,14 +316,11 @@ toggleFunktion(string sFunction){
     }
     else  if (("sound" == sFunction)) {
         if (g_iSoundOn) {
-            (g_fSoundVolumeTmp = g_fSoundVolume);
-            (g_fSoundVolume = 0.0);
-            sendMessage(SOUND_CHANNEL,((string)g_fSoundVolume),"");
+            sendMessage(SOUND_CHANNEL,"0","");
             (g_iSoundOn = FALSE);
         }
         else  {
-            if (((g_fSoundVolumeTmp > 0) && (g_fSoundVolumeTmp <= 1))) (g_fSoundVolume = g_fSoundVolumeTmp);
-            if ((g_iSoundAvail || g_iBackSoundAvail)) sendMessage(SOUND_CHANNEL,((string)g_fSoundVolume),g_sCurrentSound);
+            sendMessage(SOUND_CHANNEL,((string)g_fSoundVolume),g_sCurrentSound);
             (g_iSoundOn = TRUE);
         }
     }
@@ -342,11 +340,7 @@ updateSize(float size){
     (fMin = ((g_fMinSpeed / 100.0) * size));
     (fMax = ((g_fMaxSpeed / 100.0) * size));
     (vPush = ((g_vPartAccel / 100.0) * size));
-    if ((g_iSoundAvail || g_iBackSoundAvail)) {
-        (g_fSoundVolume = g_fStartVolume);
-        if (((0 <= size) && (100 >= size))) (g_sCurrentSound = ((string)size));
-        if (g_iSoundOn) sendMessage(SOUND_CHANNEL,((string)g_fSoundVolume),g_sCurrentSound);
-    }
+    (g_fSoundVolume = g_fStartVolume);
     if ((size > 25.0)) {
         (vStart = ((g_vStartScale / 100.0) * size));
         (fRadius = ((g_fBurstRadius / 100.0) * size));
@@ -374,14 +368,7 @@ updateSize(float size){
         if ((g_iChangeSmoke && g_iSmokeAvail)) (g_fPercentSmoke = (size * 4.0));
         else  (g_fPercentSmoke = 100.0);
         Debug(((((("Smoke size: change= " + ((string)g_iChangeSmoke)) + ", size= ") + ((string)size)) + ", percentage= ") + ((string)g_fPercentSmoke)));
-        if ((g_iSoundAvail || g_iBackSoundAvail)) {
-            if (g_iChangeVolume) {
-                if (g_iSoundOn) (g_fSoundVolume = percentage((size * 4.0),g_fStartVolume));
-                else  (g_fSoundVolumeTmp = percentage((size * 4.0),g_fStartVolume));
-            }
-            else  if (g_iSoundOn) (g_fSoundVolume = g_fStartVolume);
-            else  (g_fSoundVolumeTmp = g_fStartVolume);
-        }
+        if (g_iChangeVolume) (g_fSoundVolume = percentage((size * 4.0),g_fStartVolume));
     }
     updateColor();
     if (g_iParticleFireOn) updateParticles(vStart,vEnd,fMin,fMax,fRadius,vPush);
@@ -389,7 +376,11 @@ updateSize(float size){
     if ((g_iPrimFireAvail && g_iPrimFireOn)) sendMessage(ANIM_CHANNEL,((string)size),((string)g_iLowprim));
     llSetPrimitiveParams([PRIM_POINT_LIGHT,TRUE,g_vLightColor,g_fLightIntensity,g_fLightRadius,g_fLightFalloff]);
     if ((g_iSmokeAvail && g_iSmokeOn)) sendMessage(SMOKE_CHANNEL,((string)llRound(g_fPercentSmoke)),"");
-    if (((g_iSoundAvail || g_iBackSoundAvail) && g_iSoundOn)) sendMessage(SOUND_CHANNEL,((string)g_fSoundVolume),"");
+    if ((g_iSoundAvail || g_iBackSoundAvail)) {
+        if (((0 <= size) && (100 >= size))) (g_sCurrentSound = ((string)size));
+        if (g_iSoundOn) sendMessage(SOUND_CHANNEL,((string)g_fSoundVolume),g_sCurrentSound);
+        else  sendMessage(SOUND_CHANNEL,"0",g_sCurrentSound);
+    }
     Debug(((((((string)llRound(size)) + "% ") + ((string)vStart)) + " ") + ((string)vEnd)));
 }
 
@@ -470,11 +461,11 @@ loadNotecard(){
         (g_iLoop = FALSE);
         (g_iChangeLight = TRUE);
         (g_iChangeSmoke = TRUE);
-        (g_iChangeVolume = TRUE);
         (g_iDefSize = 25);
         (g_vDefStartColor = <100,100,0>);
         (g_vDefEndColor = <100,0,0>);
         (g_iDefVolume = 100);
+        (g_iDefChangeVolume = TRUE);
         (g_iDefSmoke = TRUE);
         (g_iDefSound = FALSE);
         (g_iDefParticleFire = TRUE);
@@ -550,7 +541,7 @@ readNotecard(string ncLine){
         else  if ((lcpar == "loop")) (g_iLoop = checkYesNo("loop",val));
         else  if ((lcpar == "changelight")) (g_iChangeLight = checkYesNo("changeLight",val));
         else  if ((lcpar == "changesmoke")) (g_iChangeSmoke = checkYesNo("changeSmoke",val));
-        else  if ((lcpar == "changevolume")) (g_iChangeVolume = checkYesNo("changeVolume",val));
+        else  if ((lcpar == "changevolume")) (g_iDefChangeVolume = checkYesNo("changeVolume",val));
         else  if ((lcpar == "size")) (g_iDefSize = checkInt("size",((integer)val),0,100));
         else  if ((lcpar == "topcolor")) (g_vDefEndColor = checkVector("topColor",((vector)val)));
         else  if ((lcpar == "bottomcolor")) (g_vDefStartColor = checkVector("bottomColor",((vector)val)));
@@ -675,8 +666,11 @@ reset(){
     else  (g_iPrimFireOn = g_iDefPrimFire);
     if ((!g_iSmokeAvail)) (g_iSmokeOn = FALSE);
     else  (g_iSmokeOn = g_iDefSmoke);
-    if (((!g_iSoundAvail) && (!g_iBackSoundAvail))) (g_iSoundOn = FALSE);
-    else  (g_iSoundOn = g_iDefSound);
+    if (((!g_iSoundAvail) && (!g_iBackSoundAvail))) (g_iSoundOn = (g_iChangeVolume = FALSE));
+    else  {
+        (g_iSoundOn = g_iDefSound);
+        (g_iChangeVolume = g_iDefChangeVolume);
+    }
     (g_iPerSize = g_iDefSize);
     (g_iPerVolume = g_iDefVolume);
     (g_iPerRedStart = ((integer)g_vDefStartColor.x));
@@ -701,6 +695,7 @@ startSystem(){
     (g_fLightRadius = g_fStartRadius);
     if ((g_iSoundAvail || g_iBackSoundAvail)) {
         (g_fStartVolume = percentage(((float)g_iPerVolume),MAX_VOLUME));
+        (g_fSoundVolume = g_fStartVolume);
         if (g_iSoundOn) sendMessage(SOUND_CHANNEL,((string)g_fStartVolume),"110");
     }
     if ((g_iVerbose && (!g_iOn))) llWhisper(0,"(v) The fire gets lit");
@@ -848,20 +843,25 @@ default {
             else  if ((msg == "-Volume")) {
                 (g_iPerVolume = max((g_iPerVolume - 5),5));
                 (g_fStartVolume = percentage(g_iPerVolume,MAX_VOLUME));
-                if (g_iSoundOn) (g_fSoundVolume = g_fStartVolume);
-                else  (g_fSoundVolumeTmp = g_fStartVolume);
             }
             else  if ((msg == "+Volume")) {
                 (g_iPerVolume = min((g_iPerVolume + 5),100));
                 (g_fStartVolume = percentage(g_iPerVolume,MAX_VOLUME));
-                if (g_iSoundOn) (g_fSoundVolume = g_fStartVolume);
-                else  (g_fSoundVolumeTmp = g_fStartVolume);
             }
             else  if (("FastToggle" == msg)) {
-                (g_iSmokeOn = (g_iSoundOn = (g_iParticleFireOn = (g_iPrimFireOn = FALSE))));
-                sendMessage(COMMAND_CHANNEL,"off","");
+                if ((((g_iSmokeOn || g_iSoundOn) || g_iParticleFireOn) || g_iPrimFireOn)) {
+                    if (g_iParticleFireOn) toggleFunktion("particlefire");
+                    sendMessage(COMMAND_CHANNEL,"off","");
+                    (g_iSmokeOn = (g_iSoundOn = (g_iPrimFireOn = FALSE)));
+                }
+                else  {
+                    if ((!g_iParticleFireOn)) toggleFunktion("particlefire");
+                    if (((!g_iPrimFireOn) && g_iPrimFireAvail)) toggleFunktion("primfire");
+                    if (((!g_iSmokeOn) && g_iSmokeAvail)) toggleFunktion("smoke");
+                    if (((!g_iSoundOn) && (g_iSoundAvail || g_iBackSoundAvail))) toggleFunktion("sound");
+                }
             }
-            if (((msg != "Close") && ("Options" != msg))) {
+            if (((("FastToggle" != msg) && (msg != "Close")) && ("Options" != msg))) {
                 updateSize(((float)g_iPerSize));
                 menuDialog(g_kUser);
             }
@@ -891,15 +891,23 @@ default {
                 (g_iVerboseButton = TRUE);
             }
             else  if (("FastToggle" == msg)) {
-                (g_iSmokeOn = (g_iSoundOn = (g_iParticleFireOn = (g_iPrimFireOn = FALSE))));
-                sendMessage(COMMAND_CHANNEL,"off","");
+                if ((((g_iSmokeOn || g_iSoundOn) || g_iParticleFireOn) || g_iPrimFireOn)) {
+                    if (g_iParticleFireOn) toggleFunktion("particlefire");
+                    sendMessage(COMMAND_CHANNEL,"off","");
+                    (g_iSmokeOn = (g_iSoundOn = (g_iPrimFireOn = FALSE)));
+                }
+                else  {
+                    if ((!g_iParticleFireOn)) toggleFunktion("particlefire");
+                    if (((!g_iPrimFireOn) && g_iPrimFireAvail)) toggleFunktion("primfire");
+                    if (((!g_iSmokeOn) && g_iSmokeAvail)) toggleFunktion("smoke");
+                    if (((!g_iSoundOn) && (g_iSoundAvail || g_iBackSoundAvail))) toggleFunktion("sound");
+                }
             }
             else  if ((msg == "RESET")) {
                 reset();
                 startSystem();
             }
             if (((("Color" != msg) && (msg != "^Main menu")) && ("Close" != msg))) {
-                if (("ParticleFire" == msg)) updateSize(((float)g_iPerSize));
                 OptionsDialog(g_kUser);
             }
             else  if ((msg == "^Main menu")) menuDialog(g_kUser);
@@ -1016,14 +1024,24 @@ default {
             if ((sScriptName == SOUNDSCRIPT)) {
                 if (("1" == sMsg)) {
                     (g_iSoundAvail = TRUE);
+                    (g_iChangeVolume = g_iDefChangeVolume);
                     llWhisper(0,"Noise available");
+                    if ((g_iDefSound && g_iOn)) {
+                        (g_iSoundOn = FALSE);
+                        toggleFunktion("smoke");
+                    }
                 }
                 else  (g_iSoundAvail = FALSE);
             }
             if ((sScriptName == BACKSOUNDSCRIPT)) {
                 if (("1" == sMsg)) {
                     (g_iBackSoundAvail = TRUE);
+                    (g_iChangeVolume = g_iDefChangeVolume);
                     llWhisper(0,"Ambience sound available");
+                    if ((g_iDefSound && g_iOn)) {
+                        (g_iSoundOn = FALSE);
+                        toggleFunktion("smoke");
+                    }
                 }
                 else  (g_iBackSoundAvail = FALSE);
             }

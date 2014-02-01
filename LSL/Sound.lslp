@@ -191,14 +191,16 @@ default
 		if (((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) || "-1" == sMsg) return; //-1 for background sound script
 		Debug("work on link_message");
 		
-		llSetTimerEvent(0.0);
 		g_fSoundVolumeNew = (float)sVal;
 		//change sound while sound is off
 		if (0 == g_fSoundVolumeNew && sMsg != g_sSize && "" != sMsg && "0" != sMsg) {
 			SelectSound((float)sMsg);
+			llPreloadSound(g_sCurrentSoundFile);
 			Debug("change while off");
 			return;
 		}
+		
+		llSetTimerEvent(0.0);
 		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1) {
 			if ("" == sMsg || sMsg == g_sSize) {
 				if (g_fSoundVolumeCur > 0) {
@@ -208,25 +210,25 @@ default
 					llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
 					if (g_iVerbose) llWhisper(0, "(v) The fire starts to make some noise");
 				}
-				g_fSoundVolumeCur = g_fSoundVolumeNew;
-				return;
-			}
+			} else {
 
-			string sCurrentSoundFileTemp = g_sCurrentSoundFile;
-			SelectSound((float)sMsg);
-			if (g_sCurrentSoundFile == sCurrentSoundFileTemp) {
-				llAdjustSoundVolume(g_fSoundVolumeNew); // fire size changed - but still same soundsample
-				if (g_iVerbose) llWhisper(0, "(v) Sound range for fire has changed");
-				return;
-			}
-			if (g_iVerbose && "0" != g_sSize) llWhisper(0, "(v) The fire changes it's sound");
-			Debug("play sound: "+g_sCurrentSoundFile);
+				string sCurrentSoundFileTemp = g_sCurrentSoundFile;
+				SelectSound((float)sMsg);
 			
-			llPreloadSound(g_sCurrentSoundFile);
+				if (g_sCurrentSoundFile == sCurrentSoundFileTemp) {
+					llAdjustSoundVolume(g_fSoundVolumeNew); // fire size changed - but still same soundsample
+					if (g_iVerbose) llWhisper(0, "(v) Sound range for fire has changed");
+				} else {
+					if (g_iVerbose && "0" != g_sSize) llWhisper(0, "(v) The fire changes it's sound");
+					Debug("play sound: "+g_sCurrentSoundFile);
+			
+					llPreloadSound(g_sCurrentSoundFile);
+					llStopSound();
+					llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
+				}
+			}
 			g_fSoundVolumeCur = g_fSoundVolumeNew;
-			llStopSound();
-			llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
-		} else llSetTimerEvent(1.0);
+		} else llSetTimerEvent(1.5);
     }
 
 

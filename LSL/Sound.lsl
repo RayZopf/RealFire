@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Fri Jan 31 05:08:15 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Sat Feb  1 16:34:46 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -293,13 +293,14 @@ default {
         Debug(((((((("no changes? background? " + sVal) + "-") + sMsg) + "...g_fSoundVolumeCur=") + ((string)g_fSoundVolumeCur)) + "-g_sSize=") + g_sSize));
         if ((((((float)sVal) == g_fSoundVolumeCur) && ((sMsg == g_sSize) || ("" == sMsg))) || ("-1" == sMsg))) return;
         Debug("work on link_message");
-        llSetTimerEvent(0.0);
         (g_fSoundVolumeNew = ((float)sVal));
         if (((((0 == g_fSoundVolumeNew) && (sMsg != g_sSize)) && ("" != sMsg)) && ("0" != sMsg))) {
             SelectSound(((float)sMsg));
+            llPreloadSound(g_sCurrentSoundFile);
             Debug("change while off");
             return;
         }
+        llSetTimerEvent(0.0);
         if (((g_fSoundVolumeNew > 0) && (g_fSoundVolumeNew <= 1))) {
             if ((("" == sMsg) || (sMsg == g_sSize))) {
                 if ((g_fSoundVolumeCur > 0)) {
@@ -310,24 +311,25 @@ default {
                     llLoopSound(g_sCurrentSoundFile,g_fSoundVolumeNew);
                     if (g_iVerbose) llWhisper(0,"(v) The fire starts to make some noise");
                 }
-                (g_fSoundVolumeCur = g_fSoundVolumeNew);
-                return;
             }
-            string sCurrentSoundFileTemp = g_sCurrentSoundFile;
-            SelectSound(((float)sMsg));
-            if ((g_sCurrentSoundFile == sCurrentSoundFileTemp)) {
-                llAdjustSoundVolume(g_fSoundVolumeNew);
-                if (g_iVerbose) llWhisper(0,"(v) Sound range for fire has changed");
-                return;
+            else  {
+                string sCurrentSoundFileTemp = g_sCurrentSoundFile;
+                SelectSound(((float)sMsg));
+                if ((g_sCurrentSoundFile == sCurrentSoundFileTemp)) {
+                    llAdjustSoundVolume(g_fSoundVolumeNew);
+                    if (g_iVerbose) llWhisper(0,"(v) Sound range for fire has changed");
+                }
+                else  {
+                    if ((g_iVerbose && ("0" != g_sSize))) llWhisper(0,"(v) The fire changes it's sound");
+                    Debug(("play sound: " + g_sCurrentSoundFile));
+                    llPreloadSound(g_sCurrentSoundFile);
+                    llStopSound();
+                    llLoopSound(g_sCurrentSoundFile,g_fSoundVolumeNew);
+                }
             }
-            if ((g_iVerbose && ("0" != g_sSize))) llWhisper(0,"(v) The fire changes it's sound");
-            Debug(("play sound: " + g_sCurrentSoundFile));
-            llPreloadSound(g_sCurrentSoundFile);
             (g_fSoundVolumeCur = g_fSoundVolumeNew);
-            llStopSound();
-            llLoopSound(g_sCurrentSoundFile,g_fSoundVolumeNew);
         }
-        else  llSetTimerEvent(1.0);
+        else  llSetTimerEvent(1.5);
     }
 
 

@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Fri Jan 31 14:48:07 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Sat Feb  1 16:34:46 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -72,6 +72,7 @@ float g_fSoundVolumeCurF = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
 float g_fFactor;
+integer g_iInTimer = FALSE;
 integer COMMAND_CHANNEL = -15700;
 integer SOUND_CHANNEL = -15780;
 
@@ -230,7 +231,7 @@ default {
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);
         Debug(((((((("no changes? backround on/off? " + sVal) + "-") + sMsg) + "...g_fSoundVolumeCur=") + ((string)g_fSoundVolumeCur)) + "-g_sSize=") + g_sSize));
-        if (("110" == sMsg)) return;
+        if ((("110" == sMsg) || (("0" == sVal) && g_iInTimer))) return;
         llSetTimerEvent(0.0);
         if (((((float)sVal) == g_fSoundVolumeCur) && ((sMsg == g_sSize) || ("" == sMsg)))) return;
         Debug("work on link_message");
@@ -263,6 +264,7 @@ default {
         }
         else  {
             llWhisper(0,"Background fire noises getting quieter and quieter...");
+            (g_iInTimer = TRUE);
             llSetTimerEvent(11.0);
         }
     }
@@ -274,6 +276,7 @@ default {
         if (g_iVerbose) llWhisper(0,"(v) Background noise off");
         (g_fSoundVolumeNew = (g_fSoundVolumeCur = (g_fSoundVolumeCurF = 0.0)));
         (g_sSize = "0");
+        (g_iInTimer = FALSE);
         llSetTimerEvent(0.0);
     }
 }

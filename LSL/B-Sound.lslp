@@ -71,6 +71,7 @@ float g_fSoundVolumeCurF = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
 float g_fFactor;
+integer g_iInTimer = FALSE;
 
 //RealFire MESSAGE MAP
 //integer COMMAND_CHANNEL =
@@ -167,7 +168,7 @@ default
         string sVal = llList2String(lParams, 0);
 		string sMsg = llList2String(lParams, 1);
 		Debug("no changes? backround on/off? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
-		if ("110" ==sMsg) return; // 110 = Sound.lsl
+		if ("110" == sMsg || ("0" == sVal && g_iInTimer)) return; // 110 = Sound.lsl
 		
 		llSetTimerEvent(0.0);
 		if ((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) return; //no "backround sound off" currently, 110 = Sound.lsl
@@ -202,6 +203,7 @@ default
 			if ("" != sMsg) g_sSize = sMsg;
 		} else {
 			llWhisper(0, "Background fire noises getting quieter and quieter...");
+			g_iInTimer = TRUE;
 			llSetTimerEvent(11.0); // wait ... better would be to fade out
 		}
 	}
@@ -213,6 +215,7 @@ default
 		if (g_iVerbose) llWhisper(0, "(v) Background noise off");
 		g_fSoundVolumeNew = g_fSoundVolumeCur = g_fSoundVolumeCurF = 0.0;
 		g_sSize = "0";
+		g_iInTimer = FALSE;
 		llSetTimerEvent(0.0);
 	}
 
