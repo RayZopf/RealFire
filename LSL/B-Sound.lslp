@@ -115,33 +115,33 @@ CheckSoundFiles()
 
 default
 {
-    state_entry()
-    {
+		state_entry()
+		{
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
 		g_fFactor = 7.0 / 8.0;
 		llPassTouches(TRUE); //this need review!
-        if (g_iSound) llStopSound();
+				if (g_iSound) llStopSound();
 		CheckSoundFiles();
 		llSleep(1);
 		RegisterExtension(g_iType);
 		if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
 		InfoLines();
-    }
+		}
 
-    on_rez(integer start_param)
-    {
-        llResetScript();
-    }
-	
+		on_rez(integer start_param)
+		{
+				llResetScript();
+		}
+
 	touch(integer total_number)
-    {
+		{
 		if (g_iSoundAvail && g_iSound) llPreloadSound(BACKSOUNDFILE); //maybe change preloaded soundfile to medium fire sound
 		//this also blocks touch events on this child to be passed to root prim!
-    }
-	
+		}
+
 	changed(integer change)
-    {
+		{
 		if (change & CHANGED_INVENTORY) {
 			llWhisper(0, "Inventory changed, checking sound samples...");
 			if (g_iSound) llStopSound();
@@ -151,30 +151,30 @@ default
 			if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
 			InfoLines();
 		}
-    }
+		}
 
 
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-    link_message(integer iSender, integer iChan, string sSoundSet, key kId)
-    {
-		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);	
+		link_message(integer iSender, integer iChan, string sSoundSet, key kId)
+		{
+		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);
 		MasterCommand(iChan, sSoundSet);
 
 		string sScriptName = GroupCheck(kId);
 		if ("exit" == sScriptName) return;
 		if (iChan != SOUND_CHANNEL || !g_iSound && !g_iSoundAvail || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; // scripts need to have that identifier in their name, so that we can discard those messages
-		
+
 		list lParams = llParseString2List(sSoundSet, [","], []);
-        string sVal = llList2String(lParams, 0);
+				string sVal = llList2String(lParams, 0);
 		string sMsg = llList2String(lParams, 1);
 		Debug("no changes? backround on/off? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
 		if ("110" == sMsg || ("0" == sVal && g_iInTimer)) return; // 110 = Sound.lsl
-		
+
 		llSetTimerEvent(0.0);
 		if ((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) return; //no "backround sound off" currently, 110 = Sound.lsl
 		Debug("work on link_message");
-		
+
 		g_fSoundVolumeNew = (float)sVal;
 		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1) { //background sound on/volume adjust
 			Debug("Factor start "+(string)g_fFactor);
@@ -187,7 +187,7 @@ default
 						else if ("" != sMsg && (integer)g_sSize > 15 && 100 <= (integer)g_sSize) g_fFactor = 5.0 / 6.0;
 			Debug("Factor calculated "+(string)g_fFactor);
 			float fSoundVolumeF = g_fSoundVolumeNew*g_fFactor;
-			
+
 			if (g_fSoundVolumeCur > 0) { //sound should already run
 				Debug("Vol-adjust: "+(string)fSoundVolumeF);
 				llAdjustSoundVolume(fSoundVolumeF);

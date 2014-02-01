@@ -138,30 +138,30 @@ SelectSound(float fMsg)
 
 default
 {
-    state_entry()
-    {
+		state_entry()
+		{
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
-        llStopSound();
-        checkforFiles(g_iSoundNFiles, g_lSoundFileList, g_sCurrentSoundFile);
+				llStopSound();
+				checkforFiles(g_iSoundNFiles, g_lSoundFileList, g_sCurrentSoundFile);
 		llSleep(1);
 		RegisterExtension(g_iType);
 		InfoLines();
-    }
+		}
 
-    on_rez(integer start_param)
-    {
-        llResetScript();
-    }
-	
+		on_rez(integer start_param)
+		{
+				llResetScript();
+		}
+
 	touch(integer total_number)
-    {
+		{
 		// if (g_iSoundAvail && g_iSound) llPreloadSound(g_sSoundFileMedium1); //maybe change preloaded soundfile to medium fire sound
 		//this also blocks touch events on this child to be passed to root prim! only works if child prim is touched
-    }
-	
+		}
+
 	changed(integer change)
-    {
+		{
 		if (change & CHANGED_INVENTORY) {
 			llWhisper(0, "Inventory changed, checking sound samples...");
 			llStopSound();
@@ -170,14 +170,14 @@ default
 			RegisterExtension(g_iType);
 			InfoLines();
 		}
-    }
+		}
 
-	
+
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-    link_message(integer iSender, integer iChan, string sSoundSet, key kId)
-    {
-		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);		
+		link_message(integer iSender, integer iChan, string sSoundSet, key kId)
+		{
+		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);
 		MasterCommand(iChan, sSoundSet);
 
 		string sScriptName = GroupCheck(kId);
@@ -185,12 +185,12 @@ default
 		if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; // scripts need to have that identifier in their name, so that we can discard those messages
 
 		list lParams = llParseString2List(sSoundSet, [","], []);
-        string sVal = llList2String(lParams, 0);
-        string sMsg = llList2String(lParams, 1);
+				string sVal = llList2String(lParams, 0);
+				string sMsg = llList2String(lParams, 1);
 		Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
 		if (((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) || "-1" == sMsg) return; //-1 for background sound script
 		Debug("work on link_message");
-		
+
 		g_fSoundVolumeNew = (float)sVal;
 		//change sound while sound is off
 		if (0 == g_fSoundVolumeNew && sMsg != g_sSize && "" != sMsg && "0" != sMsg) {
@@ -199,7 +199,7 @@ default
 			Debug("change while off");
 			return;
 		}
-		
+
 		llSetTimerEvent(0.0);
 		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1) {
 			if ("" == sMsg || sMsg == g_sSize) {
@@ -216,7 +216,7 @@ default
 
 				string sCurrentSoundFileTemp = g_sCurrentSoundFile;
 				SelectSound((float)sMsg);
-			
+
 				if (g_sCurrentSoundFile == sCurrentSoundFileTemp) {
 					llAdjustSoundVolume(g_fSoundVolumeNew); // fire size changed - but still same soundsample
 					if (g_iVerbose) llWhisper(0, "(v) Sound range for fire has changed");
@@ -230,7 +230,7 @@ default
 			}
 			g_fSoundVolumeCur = g_fSoundVolumeNew;
 		} else llSetTimerEvent(1.5);
-    }
+		}
 
 
 	timer()

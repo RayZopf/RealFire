@@ -13,12 +13,12 @@
 //
 
 //Changelog
-// 
+//
 
 //bug:
 
 //todo:
-// 
+//
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -70,32 +70,32 @@ SelectSound(float fMsg, integer iStart)
 
 
 
-    if (size > 25.0) {
-        vStart = g_vStartScale / 100.0 * size;     // start scale
-        fRadius = g_fBurstRadius / 100.0 * size;   // burst radius
-        if (size >= 80.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
+		if (size > 25.0) {
+				vStart = g_vStartScale / 100.0 * size;     // start scale
+				fRadius = g_fBurstRadius / 100.0 * size;   // burst radius
+				if (size >= 80.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
 			else if (size > 50.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
 				else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
-    }
-    else {
-        if (size >= 15.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
-            else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
-        vStart = g_vStartScale / 4.0;              // start scale
-        fRadius = g_fBurstRadius / 4.0;            // burst radius
-        if (size < 5.0) {
-            vStart.y = g_vStartScale.y / 100.0 * size * 5.0;
-            if (vStart.y < 0.25) vStart.y = 0.25;
-        }
-        if (g_iChangeLight) {
-            g_fLightIntensity = percentage(size * 4.0, g_fStartIntensity);
-            g_fLightRadius = percentage(size * 4.0, g_fStartRadius);
-        }
-        else {
-            g_fLightIntensity = g_fStartIntensity;
-            g_fLightRadius = g_fStartRadius;
-        }
-        if (g_iChangeSmoke && g_iSmokeAvail) g_fPercentSmoke = size * 4.0; //works only here within range 0-100!!!
+		}
+		else {
+				if (size >= 15.0) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
+						else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
+				vStart = g_vStartScale / 4.0;              // start scale
+				fRadius = g_fBurstRadius / 4.0;            // burst radius
+				if (size < 5.0) {
+						vStart.y = g_vStartScale.y / 100.0 * size * 5.0;
+						if (vStart.y < 0.25) vStart.y = 0.25;
+				}
+				if (g_iChangeLight) {
+						g_fLightIntensity = percentage(size * 4.0, g_fStartIntensity);
+						g_fLightRadius = percentage(size * 4.0, g_fStartRadius);
+				}
+				else {
+						g_fLightIntensity = g_fStartIntensity;
+						g_fLightRadius = g_fStartRadius;
+				}
+				if (g_iChangeSmoke && g_iSmokeAvail) g_fPercentSmoke = size * 4.0; //works only here within range 0-100!!!
 			else g_fPercentSmoke = 100.0;
 		Debug("Smoke size: change= "+(string)g_iChangeSmoke+", size= "+(string)size +", percentage= "+(string)g_fPercentSmoke);
 		if (g_iChangeVolume) g_fSoundVolume = percentage(size * 4.0, g_fStartVolume);
-    }
+		}

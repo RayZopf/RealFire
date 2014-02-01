@@ -139,24 +139,24 @@ SelectPrimFire(float fMsg)
 
 default
 {
-    state_entry()
-    {
+		state_entry()
+		{
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
-        llSay(PRIMCOMMAND_CHANNEL, "die");
-        checkforFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_sCurrentPrimFireFile);
+				llSay(PRIMCOMMAND_CHANNEL, "die");
+				checkforFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_sCurrentPrimFireFile);
 		llSleep(1);
 		RegisterExtension(g_iType);
 		InfoLines();
-    }
+		}
 
-    on_rez(integer start_param)
-    {
-        llResetScript();
-    }
-	
+		on_rez(integer start_param)
+		{
+				llResetScript();
+		}
+
 	changed(integer change)
-    {
+		{
 		if (change & CHANGED_INVENTORY) {
 			llWhisper(0, "Inventory changed, checking objects...");
 			//llStopSound();
@@ -166,14 +166,14 @@ default
 			RegisterExtension(g_iType);
 			InfoLines();
 		}
-    }
+		}
 
-	
+
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-    link_message(integer iSender, integer iChan, string sSet, key kId)
-    {
-		Debug("link_message = channel " + (string)iChan + "; sSet " + sSet + "; kId " + (string)kId);		
+		link_message(integer iSender, integer iChan, string sSet, key kId)
+		{
+		Debug("link_message = channel " + (string)iChan + "; sSet " + sSet + "; kId " + (string)kId);
 		MasterCommand(iChan, sSet);
 
 		string sScriptName = GroupCheck(kId);
@@ -181,8 +181,8 @@ default
 		if (iChan != ANIM_CHANNEL || !g_iPrimFire || !g_iPrimFireAvail || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; // scripts need to have that identifier in their name, so that we can discard those messages
 
 		list lParams = llParseString2List(sSet, [","], []);
-        string sVal = llList2String(lParams, 0);
-        string sMsg = llList2String(lParams, 1);
+				string sVal = llList2String(lParams, 0);
+				string sMsg = llList2String(lParams, 1);
 		//Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
 		Debug("work on link_message");
 
@@ -202,7 +202,7 @@ default
 			string sCurrentPrimFireFileTemp = g_sCurrentPrimFireFile;
 			string g_sSizeTemp = g_sSize;
 			SelectPrimFire((float)sVal);
-			
+
 			if ("0" == g_sSizeTemp) {
 				llSleep(2.0); // let fire slowly begin (not counting on lag when rezzing)
 				llRezObject(g_sCurrentPrimFireFile, llGetPos()+<0.0,0.0,g_fAltitude>,ZERO_VECTOR,ZERO_ROTATION,1);
@@ -223,7 +223,7 @@ default
 				}
 			if (g_iLowprim) state temprez;
 		} else llSetTimerEvent(1.0);
-    }
+		}
 
 
 	timer()
@@ -248,14 +248,14 @@ state temprez
 		//llMessage - "temp"
 		state default; // so that scripts runs, even if temp rez is not done
 		llSetTimerEvent(0.0);
-		
+
 	}
-	
+
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-    //link_message(integer iSender, integer iChan, string sSet, key kId)	
-	
-	
+		//link_message(integer iSender, integer iChan, string sSet, key kId)
+
+
 	timer()
 	{
 		llRezObject(g_sCurrentPrimFireFile, llGetPos()+<0.0,0.0,g_fAltitude>,ZERO_VECTOR,ZERO_ROTATION,1);

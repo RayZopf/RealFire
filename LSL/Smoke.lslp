@@ -108,72 +108,72 @@ $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 default
 {
-    state_entry()
-    {
+	state_entry()
+	{
 		g_sScriptName = llGetScriptName();
-        Debug("state_entry, Particle count = " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
-        if (g_iSmoke) llParticleSystem([]);
+		Debug("state_entry, Particle count = " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
+		if (g_iSmoke) llParticleSystem([]);
 		llSleep(1);
 		//do some linked message to register with Fire.lsl
 		RegisterExtension(g_iType);
 		InfoLines();
-    }
+	}
 
-    on_rez(integer start_param)
-    {
-        llResetScript();
-    }
-	
+	on_rez(integer start_param)
+	{
+		llResetScript();
+	}
+
 	changed(integer change)
-    {
+	{
 		if (change & CHANGED_INVENTORY) {
 			llSleep(1);
 			RegisterExtension(g_iType);
 			InfoLines();
 		}
-    }
-	
+	}
+
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-    link_message(integer iSender, integer iChan, string sMsg, key kId)
-    {
+	link_message(integer iSender, integer iChan, string sMsg, key kId)
+	{
 		Debug("link_message = channel " + (string)iChan + "; sMsg " + sMsg + "; kId " + (string)kId+" ...g_sSize "+g_sSize);
 		MasterCommand(iChan, sMsg);
 
 		if (iChan != SMOKE_CHANNEL || !g_iSmoke) return;
 		string sScriptName = GroupCheck(kId);
 		if ("exit" ==  GroupCheck(kId)) return;
-		
-       	if (sMsg == g_sSize && "0" != sMsg) {
+
+		if (sMsg == g_sSize && "0" != sMsg) {
 			llSetTimerEvent(0.0);
 			return;
 		}
 
-       	if ((integer)sMsg > 0 && (integer)sMsg <= 100) {
+		if ((integer)sMsg > 0 && (integer)sMsg <= 100) {
 			llSetTimerEvent(0.0);
 			float fAlpha = g_fStartAlpha / 100.0 * (float)sMsg;
 			Debug("fAlpha " + (string)fAlpha);
-		    llParticleSystem ([
+			llParticleSystem ([
 			//System Behavior
 				PSYS_PART_FLAGS,
-	  			  0 |
+					0 |
 					//PSYS_PART_BOUNCE_MASK |
 					//PSYS_PART_EMISSIVE_MASK |
 					//PSYS_PART_FOLLOW_SRC_MASK |
 					//PSYS_PART_FOLLOW_VELOCITY_MASK |
-				  PSYS_PART_INTERP_COLOR_MASK |
-				  PSYS_PART_INTERP_SCALE_MASK, // |
+				PSYS_PART_INTERP_COLOR_MASK |
+				PSYS_PART_INTERP_SCALE_MASK, // |
 					//PSYS_PART_RIBBON_MASK |
 					//PSYS_PART_TARGET_LINEAR_MASK |
 					//PSYS_PART_TARGET_POS_MASK |
 					////PSYS_PART_WIND_MASK,
 			//System Presentation
-				PSYS_SRC_PATTERN, 
-				  PSYS_SRC_PATTERN_EXPLODE, //|
+				PSYS_SRC_PATTERN,
+				PSYS_SRC_PATTERN_EXPLODE, //|
 					//PSYS_SRC_PATTERN_ANGLE_CONE |
 					//PSYS_SRC_PATTERN_ANGLE |
 					////PSYS_SRC_PATTERN_DROP,
-				  PSYS_SRC_BURST_RADIUS, 0.1,
+				PSYS_SRC_BURST_RADIUS, 0.1,
 					//PSYS_SRC_ANGLE_BEGIN, float,
 					//PSYS_SRC_ANGLE_END, float,
 					//PSYS_SRC_TARGET_KEY, key,
@@ -216,7 +216,7 @@ default
 		g_sSize = "0";
 		llSetTimerEvent(0.0);
 	}
-	
+
 //-----------------------------------------------
 //END STATE: default
 //-----------------------------------------------

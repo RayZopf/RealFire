@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Sat Feb  1 18:20:22 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Sat Feb  1 20:22:03 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Fire
 //
@@ -55,7 +55,7 @@
 //todo: sound seems to get called twice
 //todo: integrate B-Sound  - use key in lllinkedmessage/link_message to differentiate; add backround sound off
 //todo: scale for effect 0<=x<=100, -1 backround, 110 Sound start -- don't confuse with volume
-//todo: prim fire / flexi prim (need to move/rotate it) / sculpted prims ----- temp rezzer 
+//todo: prim fire / flexi prim (need to move/rotate it) / sculpted prims ----- temp rezzer
 //todo: sparkles
 //todo: fire via particles, using textures?!
 //todo: check //PSYS_PART_RIBBON_MASK effect
@@ -778,7 +778,7 @@ InfoLines(){
 
 default {
 
-    state_entry() {
+		state_entry() {
         (g_kOwner = llGetOwner());
         (g_sScriptName = llGetScriptName());
         stopSystem();
@@ -792,12 +792,12 @@ default {
     }
 
 
-    on_rez(integer start_param) {
+		on_rez(integer start_param) {
         llResetScript();
     }
 
-	
-    changed(integer change) {
+
+		changed(integer change) {
         if ((change & CHANGED_INVENTORY)) {
             (g_iPrimFireAvail = (g_iPrimFireOn = FALSE));
             (g_iSmokeAvail = (g_iSmokeOn = FALSE));
@@ -808,8 +808,8 @@ default {
         }
     }
 
-	
-    touch_start(integer total_number) {
+
+		touch_start(integer total_number) {
         (g_kUser = llDetectedKey(0));
         llRegionSayTo(g_kUser,0,"*Long touch to show menu*");
         llResetTime();
@@ -817,7 +817,7 @@ default {
 
 
 
-    touch_end(integer total_number) {
+		touch_end(integer total_number) {
         if ((llGetTime() > 2.0)) {
             if (accessGranted(g_kUser,g_iMenuAccess)) {
                 if ((!g_iOn)) toggleFunktion("fire");
@@ -832,7 +832,7 @@ default {
     }
 
 
-    listen(integer channel,string name,key id,string msg) {
+		listen(integer channel,string name,key id,string msg) {
         Debug(((("LISTEN event: " + ((string)channel)) + "; ") + msg));
         if ((channel == menuChannel)) {
             llListenRemove(g_iMenuHandle);
@@ -984,10 +984,10 @@ default {
         }
     }
 
-	
+
 //listen for linked messages from other RealFire scripts and devices
 //-----------------------------------------------
-    link_message(integer iSender_number,integer iChan,string sMsg,key kId) {
+		link_message(integer iSender_number,integer iChan,string sMsg,key kId) {
         Debug(((((("link_message= channel: " + ((string)iChan)) + "; Message: ") + sMsg) + ";Key: ") + ((string)kId)));
         if ((iChan == COMMAND_CHANNEL)) return;
         string sScriptName = GroupCheck(kId);
@@ -1076,10 +1076,10 @@ default {
         }
     }
 
-	
+
 //get presets from notecard
 //-----------------------------------------------
-    dataserver(key kQuery_id,string data) {
+		dataserver(key kQuery_id,string data) {
         if ((kQuery_id != g_kQuery)) return;
         if ((data != EOF)) {
             readNotecard(data);
@@ -1136,7 +1136,7 @@ default {
     }
 
 
-    timer() {
+		timer() {
         if (g_iMenuOpen) {
             llWhisper(0,"MENU TIMEOUT");
             llListenRemove(g_iMenuHandle);

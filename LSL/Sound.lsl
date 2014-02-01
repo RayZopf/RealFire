@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Sat Feb  1 18:20:32 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Sat Feb  1 20:22:03 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -246,7 +246,7 @@ SelectSound(float fMsg){
 
 default {
 
-    state_entry() {
+		state_entry() {
         (g_sScriptName = llGetScriptName());
         Debug("state_entry");
         llStopSound();
@@ -257,15 +257,15 @@ default {
     }
 
 
-    on_rez(integer start_param) {
+		on_rez(integer start_param) {
         llResetScript();
     }
 
-	
+
 	touch(integer total_number) {
     }
 
-	
+
 	changed(integer change) {
         if ((change & CHANGED_INVENTORY)) {
             llWhisper(0,"Inventory changed, checking sound samples...");
@@ -278,10 +278,10 @@ default {
     }
 
 
-	
+
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-    link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
+		link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
         Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSoundSet) + "; kId ") + ((string)kId)));
         MasterCommand(iChan,sSoundSet);
         string sScriptName = GroupCheck(kId);

@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Sat Feb  1 05:00:11 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Sat Feb  1 20:22:03 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire rezzed object script
 //
@@ -120,7 +120,7 @@ Debug(string sMsg){
 
 default {
 
-    state_entry() {
+		state_entry() {
         (g_kOwner = llGetOwner());
         Debug("state_entry");
         llSetPrimitiveParams([PRIM_TEMP_ON_REZ,FALSE,PRIM_PHANTOM,TRUE]);
@@ -132,15 +132,15 @@ default {
         llOwnerSay("Now, object is temp and will vanish shortly");
     }
 
-    
-    /*changed(integer change)
-    {
+
+		/*changed(integer change)
+		{
 		if (change & CHANGED_OWNER) {
 			llResetScript();
 		}
 	}*/
 
-    on_rez(integer start_param) {
+		on_rez(integer start_param) {
         Debug(("on_rez: " + ((string)start_param)));
         if ((0 == start_param)) {
             llSetLinkPrimitiveParamsFast(g_iType,[PRIM_TEMP_ON_REZ,FALSE]);
@@ -149,10 +149,10 @@ default {
         (g_kOwner = llGetOwner());
     }
 
-	
+
 //listen for messages from PrimFire script
 //-----------------------------------------------
-    listen(integer iChan,string name,key kId,string sSet) {
+		listen(integer iChan,string name,key kId,string sSet) {
         Debug(("listen: " + sSet));
         if ((llGetOwnerKey(kId) != g_kOwner)) return;
         if (("toggle" == sSet)) {

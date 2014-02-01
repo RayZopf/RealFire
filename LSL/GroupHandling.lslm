@@ -18,7 +18,7 @@
 //bug:
 
 //todo:
-// 
+//
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -32,17 +32,17 @@ $module (string m_sGroup)
 string getGroup(string sDefGroup)
 {
 	if ("" == sDefGroup) sDefGroup = "Default";
-    string str = llStringTrim(llGetObjectDesc(), STRING_TRIM);
-    if (llToLower(str) == "(no description)" || str == "") str = sDefGroup;
-    	else {
-    		list lGroup = llParseString2List(str, [" "], []);
-    		str = llList2String(lGroup, 0);
-    	}
-    return str;
+	string str = llStringTrim(llGetObjectDesc(), STRING_TRIM);
+	if (llToLower(str) == "(no description)" || str == "") str = sDefGroup;
+		else {
+			list lGroup = llParseString2List(str, [" "], []);
+			str = llList2String(lGroup, 0);
+		}
+	return str;
 }
 
 string GroupCheck(key kId)
-{	
+{
 	string str = getGroup(m_sGroup);
 
 	list lKeys = llParseString2List((string)kId, [";"], []);

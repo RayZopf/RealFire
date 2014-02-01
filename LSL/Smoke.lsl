@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Fri Jan 31 05:08:15 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Sat Feb  1 20:22:03 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Realfire by Rene - Smoke
 //
@@ -174,7 +174,7 @@ MasterCommand(integer iChan,string sVal){
 
 default {
 
-    state_entry() {
+	state_entry() {
         (g_sScriptName = llGetScriptName());
         Debug(("state_entry, Particle count = " + ((string)llRound(((((float)g_iCount) * g_fAge) / g_fRate)))));
         if (g_iSmoke) llParticleSystem([]);
@@ -184,11 +184,11 @@ default {
     }
 
 
-    on_rez(integer start_param) {
+	on_rez(integer start_param) {
         llResetScript();
     }
 
-	
+
 	changed(integer change) {
         if ((change & CHANGED_INVENTORY)) {
             llSleep(1);
@@ -197,10 +197,10 @@ default {
         }
     }
 
-	
+
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-    link_message(integer iSender,integer iChan,string sMsg,key kId) {
+	link_message(integer iSender,integer iChan,string sMsg,key kId) {
         Debug(((((((("link_message = channel " + ((string)iChan)) + "; sMsg ") + sMsg) + "; kId ") + ((string)kId)) + " ...g_sSize ") + g_sSize));
         MasterCommand(iChan,sMsg);
         if (((iChan != SMOKE_CHANNEL) || (!g_iSmoke))) return;

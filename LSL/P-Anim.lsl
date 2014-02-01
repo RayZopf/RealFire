@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Sat Feb  1 05:20:41 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Sat Feb  1 20:22:03 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
 //
@@ -240,7 +240,7 @@ SelectPrimFire(float fMsg){
 
 default {
 
-    state_entry() {
+		state_entry() {
         (g_sScriptName = llGetScriptName());
         Debug("state_entry");
         llSay(PRIMCOMMAND_CHANNEL,"die");
@@ -251,11 +251,11 @@ default {
     }
 
 
-    on_rez(integer start_param) {
+		on_rez(integer start_param) {
         llResetScript();
     }
 
-	
+
 	changed(integer change) {
         if ((change & CHANGED_INVENTORY)) {
             llWhisper(0,"Inventory changed, checking objects...");
@@ -267,10 +267,10 @@ default {
     }
 
 
-	
+
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-    link_message(integer iSender,integer iChan,string sSet,key kId) {
+		link_message(integer iSender,integer iChan,string sSet,key kId) {
         Debug(((((("link_message = channel " + ((string)iChan)) + "; sSet ") + sSet) + "; kId ") + ((string)kId)));
         MasterCommand(iChan,sSet);
         string sScriptName = GroupCheck(kId);
@@ -340,12 +340,12 @@ state temprez {
         llSetTimerEvent(0.0);
     }
 
-	
+
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-    //link_message(integer iSender, integer iChan, string sSet, key kId)	
-	
-	
+		//link_message(integer iSender, integer iChan, string sSet, key kId)
+
+
 	timer() {
         llRezObject(g_sCurrentPrimFireFile,(llGetPos() + <0.0,0.0,g_fAltitude>),ZERO_VECTOR,ZERO_ROTATION,1);
     }
