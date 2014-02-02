@@ -6,16 +6,16 @@
 //v0.1
 
 //Files:
-//PrintStatusInfo.lslm
+// PrintStatusInfo.lslm
 //
 //
 //Prequisites: ----
 //
-
+//
 //Changelog
 //
 
-//bug:
+//bug: ----
 
 //todo: improve file check
 //todo: make file check (lists) the other way round: check if every inventory file is member of RealFire file list?
@@ -29,10 +29,10 @@ $import Debug.lslm(m_iDebugMode=m_iDebugMode, m_sScriptName=m_sScriptName);
 
 
 //###
-//checkforFiles.lslm
+//CheckForFiles.lslm
 //0.1 - 30Jan2014
 
-checkforFiles(integer iNFiles, list lgivenFileList, string sCurrentFile)
+CheckForFiles(integer iNFiles, list lgivenFileList, string sCurrentFile)
 {
 	integer iFileNumber = llGetInventoryNumber(m_iInvType);
 	Debug("File number = " +(string)iFileNumber);
@@ -66,5 +66,5 @@ checkforFiles(integer iNFiles, list lgivenFileList, string sCurrentFile)
 	} else m_iAvail = FALSE;
 }
 
-//END checkforFiles.lslm
+//END CheckForFiles.lslm
 //###

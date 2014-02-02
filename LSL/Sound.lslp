@@ -1,5 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
+//Sound Enhancement to Realfire
+// by Zopf Resident - Ray Zopf (Raz)
 //
 //01. Feb. 2014
 //v0.83
@@ -8,6 +9,7 @@
 // (Realfire by Rene)
 // (Author: Rene10957 Resident)
 // (v2.2)
+//
 
 //Files:
 //Sound.lsl
@@ -20,7 +22,7 @@
 //Prequisites: Soundfiles need to be in same prim as Sound.lsl
 //Notecard format: see config NC
 //basic help: User Manual
-
+//
 //Changelog
 // LSLForge Modules
 //
@@ -37,7 +39,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
 //===============================================
 //GLOBAL VARIABLES
 //===============================================
@@ -49,19 +50,19 @@ integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 
 //user changeable variables
 //-----------------------------------------------
-integer g_iSound = TRUE;			// Sound on/off in this prim
+integer g_iSound = TRUE;         // Sound on/off in this prim
 integer g_iVerbose = TRUE;
 
-string g_sSoundFileStart 	= "75145__willc2-45220__struck-match-8b-22k-1-65s";   	// starting fire (somehow special sound!)
-string g_sSoundFileSmall 	= "17742__krisboruff__fire-crackles-no-room";            	// sound for small fire
-string g_sSoundFileMedium1 = "104958__glaneur-de-sons__petit-feu-little-fire-2";    	// first sound for medium fire (yes, file fire-2)
-string g_sSoundFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1";    	// second sound for medium fire
-string g_sSoundFileFull 	= "4211__dobroide__fire-crackling";                   	// standard sound, sound for big fire
+string g_sSoundFileStart = "75145__willc2-45220__struck-match-8b-22k-1-65s";     // starting fire (somehow special sound!)
+string g_sSoundFileSmall = "17742__krisboruff__fire-crackles-no-room";           // sound for small fire
+string g_sSoundFileMedium1 = "104958__glaneur-de-sons__petit-feu-little-fire-2"; // first sound for medium fire (yes, file fire-2)
+string g_sSoundFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1"; // second sound for medium fire
+string g_sSoundFileFull = "4211__dobroide__fire-crackling";                      // standard sound, sound for big fire
 
 integer g_iSoundNFiles = 5;
 //starting sound has to be first in list
 list g_lSoundFileList = [g_sSoundFileStart, g_sSoundFileSmall, g_sSoundFileMedium1, g_sSoundFileMedium2, g_sSoundFileFull];
-string g_sCurrentSoundFile = g_sSoundFileMedium2;							// standard sound - must not be sound for starting fire!
+string g_sCurrentSoundFile = g_sSoundFileMedium2; // standard sound - must not be sound for starting fire!
 
 string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
 
@@ -94,24 +95,24 @@ $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSound, m_sVersion=g_sVersion);
 $import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
-$import checkforFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iSoundFileStartAvail, m_sTitle=g_sTitle, m_iAvail=g_iSoundAvail);
+$import CheckForFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iSoundFileStartAvail, m_sTitle=g_sTitle, m_iAvail=g_iSoundAvail);
 
 
 //===============================================
 //PREDEFINED FUNCTIONS
 //===============================================
 
-SelectSound(float fMsg)
+SelectStuff(float fMsg)
 {
-	Debug("SelectSound: "+(string)fMsg);
+	Debug("SelectStuff: "+(string)fMsg);
 	if (fMsg <= SIZE_SMALL) {
-			g_sCurrentSoundFile = g_sSoundFileSmall;
+		g_sCurrentSoundFile = g_sSoundFileSmall;
 	} else if (fMsg > SIZE_SMALL && fMsg < SIZE_MEDIUM) {
 		g_sCurrentSoundFile = g_sSoundFileMedium1;
 	} else if (fMsg >= SIZE_MEDIUM && fMsg < SIZE_LARGE) {
-			g_sCurrentSoundFile = g_sSoundFileMedium2;
+		g_sCurrentSoundFile = g_sSoundFileMedium2;
 	} else if (fMsg >= SIZE_LARGE && fMsg <= 100) {
-			g_sCurrentSoundFile = g_sSoundFileFull;
+		g_sCurrentSoundFile = g_sSoundFileFull;
 	} else {
 		Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-");
 		if (g_fSoundVolumeNew > 0 && TRUE == g_iSoundFileStartAvail) {
@@ -138,45 +139,45 @@ SelectSound(float fMsg)
 
 default
 {
-		state_entry()
-		{
+	state_entry()
+	{
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
-				llStopSound();
-				checkforFiles(g_iSoundNFiles, g_lSoundFileList, g_sCurrentSoundFile);
+		llStopSound();
+		CheckForFiles(g_iSoundNFiles, g_lSoundFileList, g_sCurrentSoundFile);
 		llSleep(1);
 		RegisterExtension(g_iType);
 		InfoLines();
-		}
+	}
 
-		on_rez(integer start_param)
-		{
-				llResetScript();
-		}
+	on_rez(integer start_param)
+	{
+		llResetScript();
+	}
 
 	touch(integer total_number)
-		{
+	{
 		// if (g_iSoundAvail && g_iSound) llPreloadSound(g_sSoundFileMedium1); //maybe change preloaded soundfile to medium fire sound
 		//this also blocks touch events on this child to be passed to root prim! only works if child prim is touched
-		}
+	}
 
 	changed(integer change)
-		{
+	{
 		if (change & CHANGED_INVENTORY) {
 			llWhisper(0, "Inventory changed, checking sound samples...");
 			llStopSound();
-			checkforFiles(g_iSoundNFiles, g_lSoundFileList, g_sCurrentSoundFile);
+			CheckForFiles(g_iSoundNFiles, g_lSoundFileList, g_sCurrentSoundFile);
 			llSleep(1);
 			RegisterExtension(g_iType);
 			InfoLines();
 		}
-		}
+	}
 
 
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-		link_message(integer iSender, integer iChan, string sSoundSet, key kId)
-		{
+	link_message(integer iSender, integer iChan, string sSoundSet, key kId)
+	{
 		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);
 		MasterCommand(iChan, sSoundSet);
 
@@ -188,13 +189,13 @@ default
 				string sVal = llList2String(lParams, 0);
 				string sMsg = llList2String(lParams, 1);
 		Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
-		if (((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) || "-1" == sMsg) return; //-1 for background sound script
+		if (((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) || "-1" == sMsg) return; // -1 for background sound script
 		Debug("work on link_message");
 
 		g_fSoundVolumeNew = (float)sVal;
 		//change sound while sound is off
 		if (0 == g_fSoundVolumeNew && sMsg != g_sSize && "" != sMsg && "0" != sMsg) {
-			SelectSound((float)sMsg);
+			SelectStuff((float)sMsg);
 			llPreloadSound(g_sCurrentSoundFile);
 			Debug("change while off");
 			return;
@@ -215,7 +216,7 @@ default
 			} else {
 
 				string sCurrentSoundFileTemp = g_sCurrentSoundFile;
-				SelectSound((float)sMsg);
+				SelectStuff((float)sMsg);
 
 				if (g_sCurrentSoundFile == sCurrentSoundFileTemp) {
 					llAdjustSoundVolume(g_fSoundVolumeNew); // fire size changed - but still same soundsample
@@ -229,8 +230,8 @@ default
 				}
 			}
 			g_fSoundVolumeCur = g_fSoundVolumeNew;
-		} else llSetTimerEvent(1.5);
-		}
+		} else llSetTimerEvent(1.2);
+	}
 
 
 	timer()

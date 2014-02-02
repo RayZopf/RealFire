@@ -1,6 +1,7 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Sat Feb  1 21:25:01 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Sun Feb  2 17:10:11 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
+//Sound Enhancement to Realfire
+// by Zopf Resident - Ray Zopf (Raz)
 //
 //01. Feb. 2014
 //v0.83
@@ -9,6 +10,7 @@
 // (Realfire by Rene)
 // (Author: Rene10957 Resident)
 // (v2.2)
+//
 
 //Files:
 //Sound.lsl
@@ -21,7 +23,7 @@
 //Prequisites: Soundfiles need to be in same prim as Sound.lsl
 //Notecard format: see config NC
 //basic help: User Manual
-
+//
 //Changelog
 // LSLForge Modules
 //
@@ -36,7 +38,6 @@
 //todo: create a module sizeSelect, put size class borders into variables and settings notecard
 //todo: is "change sound while off" really needed? - check sound on/off, sound more/less louder
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
 //===============================================
@@ -136,6 +137,7 @@ string getGroup(string sDefGroup){
     return str;
 }
 
+
 string GroupCheck(key kId){
     string str = getGroup(LINKSETID);
     list lKeys = llParseString2List(((string)kId),[";"],[]);
@@ -156,6 +158,7 @@ RegisterExtension(integer link){
     else  llMessageLinked(link,SOUND_CHANNEL,"0",((key)sId));
 }
 
+
 MasterCommand(integer iChan,string sVal){
     if ((iChan == COMMAND_CHANNEL)) {
         if (("register" == sVal)) RegisterExtension(g_iType);
@@ -167,10 +170,10 @@ MasterCommand(integer iChan,string sVal){
 
 
 //###
-//checkforFiles.lslm
+//CheckForFiles.lslm
 //0.1 - 30Jan2014
 
-checkforFiles(integer iNFiles,list lgivenFileList,string sCurrentFile){
+CheckForFiles(integer iNFiles,list lgivenFileList,string sCurrentFile){
     integer iFileNumber = llGetInventoryNumber(g_iInvType);
     Debug(("File number = " + ((string)iFileNumber)));
     if ((iFileNumber > 0)) {
@@ -210,8 +213,8 @@ checkforFiles(integer iNFiles,list lgivenFileList,string sCurrentFile){
 //PREDEFINED FUNCTIONS
 //===============================================
 
-SelectSound(float fMsg){
-    Debug(("SelectSound: " + ((string)fMsg)));
+SelectStuff(float fMsg){
+    Debug(("SelectStuff: " + ((string)fMsg)));
     if ((fMsg <= SIZE_SMALL)) {
         (g_sCurrentSoundFile = g_sSoundFileSmall);
     }
@@ -249,18 +252,18 @@ SelectSound(float fMsg){
 
 default {
 
-		state_entry() {
+	state_entry() {
         (g_sScriptName = llGetScriptName());
         Debug("state_entry");
         llStopSound();
-        checkforFiles(g_iSoundNFiles,g_lSoundFileList,g_sCurrentSoundFile);
+        CheckForFiles(g_iSoundNFiles,g_lSoundFileList,g_sCurrentSoundFile);
         llSleep(1);
         RegisterExtension(g_iType);
         InfoLines();
     }
 
 
-		on_rez(integer start_param) {
+	on_rez(integer start_param) {
         llResetScript();
     }
 
@@ -273,7 +276,7 @@ default {
         if ((change & CHANGED_INVENTORY)) {
             llWhisper(0,"Inventory changed, checking sound samples...");
             llStopSound();
-            checkforFiles(g_iSoundNFiles,g_lSoundFileList,g_sCurrentSoundFile);
+            CheckForFiles(g_iSoundNFiles,g_lSoundFileList,g_sCurrentSoundFile);
             llSleep(1);
             RegisterExtension(g_iType);
             InfoLines();
@@ -284,7 +287,7 @@ default {
 
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-		link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
+	link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
         Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSoundSet) + "; kId ") + ((string)kId)));
         MasterCommand(iChan,sSoundSet);
         string sScriptName = GroupCheck(kId);
@@ -298,7 +301,7 @@ default {
         Debug("work on link_message");
         (g_fSoundVolumeNew = ((float)sVal));
         if (((((0 == g_fSoundVolumeNew) && (sMsg != g_sSize)) && ("" != sMsg)) && ("0" != sMsg))) {
-            SelectSound(((float)sMsg));
+            SelectStuff(((float)sMsg));
             llPreloadSound(g_sCurrentSoundFile);
             Debug("change while off");
             return;
@@ -319,7 +322,7 @@ default {
             }
             else  {
                 string sCurrentSoundFileTemp = g_sCurrentSoundFile;
-                SelectSound(((float)sMsg));
+                SelectStuff(((float)sMsg));
                 if ((g_sCurrentSoundFile == sCurrentSoundFileTemp)) {
                     llAdjustSoundVolume(g_fSoundVolumeNew);
                     if (g_iVerbose) llWhisper(0,"(v) Sound range for fire has changed");
@@ -334,7 +337,7 @@ default {
             }
             (g_fSoundVolumeCur = g_fSoundVolumeNew);
         }
-        else  llSetTimerEvent(1.5);
+        else  llSetTimerEvent(1.2);
     }
 
 

@@ -6,18 +6,18 @@
 //v0.3
 
 //Files:
-//ExtensionBasics.lslm
+// ExtensionBasics.lslm
 //
 //
 //Prequisites: GroupHandling.lslm
 //
-
+//
 //Changelog
 //
 
-//bug:
+//bug: ----
 
-//todo:
+//todo: ----
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -38,6 +38,7 @@ RegisterExtension(integer link)
 	if (m_iEnabled && m_iAvail) llMessageLinked(link, m_iChannel, "1", (key)sId);
 		else llMessageLinked(link, m_iChannel, "0", (key)sId);
 }
+
 
 MasterCommand(integer iChan, string sVal)
 {

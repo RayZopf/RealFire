@@ -6,18 +6,18 @@
 //v0.11
 
 //Files:
-//PrintStatusInfo.lslm
+// PrintStatusInfo.lslm
 //
 //
 //Prequisites: RealFire Sound scripts
 //
-
+//
 //Changelog
 //
 
-//bug:
+//bug: ----
 
-//todo:
+//todo: ----
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,8 +34,10 @@ InfoLines()
 	if (m_iVerbose) {
 		if (m_iAvail) llWhisper(0, m_sTitle+" - File(s) found in inventory: Yes");
 			else llWhisper(0, m_sTitle+" / "+ m_sScriptName +" - Needed files(s) found in inventory: NO");
+
 		if (!m_iOn) llWhisper(0, m_sTitle+" / "+ m_sScriptName +" script disabled");
-	if (m_iOn && m_iAvail) llWhisper(0, m_sTitle + " " + m_sVersion + " ready");
+
+		if (m_iOn && m_iAvail) llWhisper(0, m_sTitle + " " + m_sVersion + " ready");
 			else llWhisper(0, m_sTitle + " " + m_sVersion + " not ready");
 	}
 }

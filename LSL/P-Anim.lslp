@@ -1,5 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//PrimFire Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
+//PrimFire Enhancement to Realfire
+// by Zopf Resident - Ray Zopf (Raz)
 //
 //31. Jan. 2014
 //v0.12
@@ -10,11 +11,11 @@
 // (v2.2)
 
 //Files:
-//P-Anim.lsl
+// P-Anim.lsl
 //
-//Fire.lsl
-//config
-//User Manual
+// Fire.lsl
+// config
+// User Manual
 //
 //
 //Prequisites: Fireobjects need to be in same prim as P-Anim.lsl
@@ -28,7 +29,7 @@
 
 //todo: make file check (lists) the other way round: check if every inventory file is member of RealFire file list?
 //todo: create a module sizeSelect, put size class borders into variables and settings notecard
-//todo: selectPrimFire needs more work - less stages than selectSound in Sound.lsl
+//todo: SelectStuff needs more work - less stages than selectSound in Sound.lsl
 //todo: fire objects need to be phantom... maybe make them flexiprim too
 //todo: temp prim handling not good
 //todo: listen event + timer to check if fire prim really was created
@@ -48,21 +49,21 @@ integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 
 //user changeable variables
 //-----------------------------------------------
-integer g_iPrimFire = TRUE;			// Sound on/off in this prim
+integer g_iPrimFire = TRUE; // Sound on/off in this prim
 integer g_iVerbose = TRUE;
 
-//string g_sPrimFireFileStart 	= "75145__willc2-45220__struck-match-8b-22k-1-65s";   	// starting fire (somehow special sound!)
-string g_sPrimFireFileSmall 	= "Fire_small";            	// for small fire
-string g_sPrimFireFileMedium1 = "Fire_medium";    	// for medium fire
-//string g_sPrimFireFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1";    	// second sound for medium fire
-string g_sPrimFireFileFull 	= "Fire_full";                   	// for big fire
+//string g_sPrimFireFileStart 	= "75145__willc2-45220__struck-match-8b-22k-1-65s";   // starting fire (somehow special sound!)
+string g_sPrimFireFileSmall 	= "Fire_small";            // for small fire
+string g_sPrimFireFileMedium1 = "Fire_medium";    // for medium fire
+//string g_sPrimFireFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1";    // second sound for medium fire
+string g_sPrimFireFileFull 	= "Fire_full";                   // for big fire
 
 integer g_iPrimFireNFiles = 3;
 //starting sound has to be first in list
 list g_lPrimFireFileList = [g_sPrimFireFileSmall, g_sPrimFireFileMedium1, g_sPrimFireFileFull];
-string g_sCurrentPrimFireFile = g_sPrimFireFileMedium1;							// standard
+string g_sCurrentPrimFireFile = g_sPrimFireFileMedium1; // standard
 
-float g_fAltitude = 1.0; // for rezzed prim
+float g_fAltitude = 1.0; // height for rezzed prim
 
 string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
 
@@ -95,24 +96,24 @@ $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iPrimFire, m_sVersion=g_sVersion);
 $import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iPrimFire, m_iAvail=g_iPrimFireAvail, m_iChannel=ANIM_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
-$import checkforFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_iAvail=g_iPrimFireAvail);
+$import CheckForFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_iAvail=g_iPrimFireAvail);
 
 
 //===============================================
 //PREDEFINED FUNCTIONS
 //===============================================
 
-SelectPrimFire(float fMsg)
+SelectStuff(float fMsg)
 {
-	Debug("SelectPrimFire: "+(string)fMsg);
+	Debug("SelectStuff: "+(string)fMsg);
 	if (fMsg <= SIZE_SMALL) {
-			g_sCurrentPrimFireFile = g_sPrimFireFileSmall;
+		g_sCurrentPrimFireFile = g_sPrimFireFileSmall;
 	} else if (fMsg > SIZE_SMALL && fMsg < SIZE_MEDIUM) {
 		g_sCurrentPrimFireFile = g_sPrimFireFileMedium1;
 	} else if (fMsg >= SIZE_MEDIUM && fMsg < SIZE_LARGE) {
-			g_sCurrentPrimFireFile = g_sPrimFireFileMedium1;
+		g_sCurrentPrimFireFile = g_sPrimFireFileMedium1;
 	} else if (fMsg >= SIZE_LARGE && fMsg <= 100) {
-			g_sCurrentPrimFireFile = g_sPrimFireFileFull;
+		g_sCurrentPrimFireFile = g_sPrimFireFileFull;
 	} else {
 		//Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-");
 		//if (g_fSoundVolumeNew > 0 && TRUE == g_iSoundFileStartAvail) {
@@ -141,38 +142,38 @@ default
 {
 		state_entry()
 		{
-		g_sScriptName = llGetScriptName();
-		Debug("state_entry");
-				llSay(PRIMCOMMAND_CHANNEL, "die");
-				checkforFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_sCurrentPrimFireFile);
-		llSleep(1);
-		RegisterExtension(g_iType);
-		InfoLines();
-		}
-
-		on_rez(integer start_param)
-		{
-				llResetScript();
-		}
-
-	changed(integer change)
-		{
-		if (change & CHANGED_INVENTORY) {
-			llWhisper(0, "Inventory changed, checking objects...");
-			//llStopSound();
-			//llMessage - "die"
-			checkforFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_sCurrentPrimFireFile);
+			g_sScriptName = llGetScriptName();
+			Debug("state_entry");
+			llSay(PRIMCOMMAND_CHANNEL, "die");
+			CheckForFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_sCurrentPrimFireFile);
 			llSleep(1);
 			RegisterExtension(g_iType);
 			InfoLines();
 		}
+
+		on_rez(integer start_param)
+		{
+			llResetScript();
 		}
+
+	changed(integer change)
+	{
+		if (change & CHANGED_INVENTORY) {
+			llWhisper(0, "Inventory changed, checking objects...");
+			//llStopSound();
+			//llMessage - "die"
+			CheckForFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_sCurrentPrimFireFile);
+			llSleep(1);
+			RegisterExtension(g_iType);
+			InfoLines();
+		}
+	}
 
 
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-		link_message(integer iSender, integer iChan, string sSet, key kId)
-		{
+	link_message(integer iSender, integer iChan, string sSet, key kId)
+	{
 		Debug("link_message = channel " + (string)iChan + "; sSet " + sSet + "; kId " + (string)kId);
 		MasterCommand(iChan, sSet);
 
@@ -181,8 +182,8 @@ default
 		if (iChan != ANIM_CHANNEL || !g_iPrimFire || !g_iPrimFireAvail || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; // scripts need to have that identifier in their name, so that we can discard those messages
 
 		list lParams = llParseString2List(sSet, [","], []);
-				string sVal = llList2String(lParams, 0);
-				string sMsg = llList2String(lParams, 1);
+		string sVal = llList2String(lParams, 0);
+		string sMsg = llList2String(lParams, 1);
 		//Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
 		Debug("work on link_message");
 
@@ -192,7 +193,7 @@ default
 				g_iLowprim = !g_iLowprim;
 				llSay(PRIMCOMMAND_CHANNEL, "toggle");
 				if (g_iLowprim) state temprez;
-				return; // should not happen - as for temp prim, script should allready be in state temprez
+				return; //should not happen - as for temp prim, script should allready be in state temprez
 			}
 		} else return;
 
@@ -201,7 +202,7 @@ default
 			if ((integer)sMsg != g_iLowprim && ("0" == sMsg || "1" == sMsg)) g_iLowprim = !g_iLowprim;
 			string sCurrentPrimFireFileTemp = g_sCurrentPrimFireFile;
 			string g_sSizeTemp = g_sSize;
-			SelectPrimFire((float)sVal);
+			SelectStuff((float)sVal);
 
 			if ("0" == g_sSizeTemp) {
 				llSleep(2.0); // let fire slowly begin (not counting on lag when rezzing)
@@ -223,7 +224,7 @@ default
 				}
 			if (g_iLowprim) state temprez;
 		} else llSetTimerEvent(1.0);
-		}
+	}
 
 
 	timer()
@@ -246,9 +247,8 @@ state temprez
 	state_entry()
 	{
 		//llMessage - "temp"
-		state default; // so that scripts runs, even if temp rez is not done
+		state default; //so that scripts runs, even if temp rez is not done
 		llSetTimerEvent(0.0);
-
 	}
 
 //listen for linked messages from Fire (main) script

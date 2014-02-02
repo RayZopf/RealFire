@@ -6,18 +6,18 @@
 //v0.5
 
 //Files:
-//GroupHandling.lslm
+// GroupHandling.lslm
 //
 //
 //Prequisites: ----
 //
-
+//
 //Changelog
 // merged modules getGroup and GroupCheck
 
-//bug:
+//bug: ----
 
-//todo:
+//todo: ----
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,6 +40,7 @@ string getGroup(string sDefGroup)
 		}
 	return str;
 }
+
 
 string GroupCheck(key kId)
 {

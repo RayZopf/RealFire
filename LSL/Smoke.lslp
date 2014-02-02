@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Realfire by Rene - Smoke
+//Realfire by Rene - Smoke
 //
 // Author: Rene10957 Resident
 // Date: 12-01-2014
@@ -11,12 +11,13 @@
 // Content creator? Please read the license notecard!
 //
 // See fire.lsl for feature list
-
-
+//
+//
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
 //31. Jan. 2014
 //v2.2.1-0.56
+//
 
 //Files:
 //Smoke.lsl
@@ -29,10 +30,10 @@
 //Prequisites: Smoke.lsl in another prim than Fire.lsl
 //Notecard format: see config NC
 //basic help: User Manual
-
+//
 //Changelog
-//Formatting
-//moved functions into main code
+// Formatting
+// moved functions into main code
 
 //bug: if smoke is turned off via menu, llSleep still applies
 
@@ -42,7 +43,6 @@
 //todo: smoke reflecting fire light
 //todo: check if other sound scripts are in same prim
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
 //===============================================
@@ -56,7 +56,7 @@ integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 
 //user changeable variables
 //-----------------------------------------------
-integer g_iSmoke = TRUE;			// Smoke on/off in this prim
+integer g_iSmoke = TRUE;      // Smoke on/off in this prim
 integer g_iVerbose = TRUE;
 
 string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
@@ -161,8 +161,8 @@ default
 					//PSYS_PART_EMISSIVE_MASK |
 					//PSYS_PART_FOLLOW_SRC_MASK |
 					//PSYS_PART_FOLLOW_VELOCITY_MASK |
-				PSYS_PART_INTERP_COLOR_MASK |
-				PSYS_PART_INTERP_SCALE_MASK, // |
+					PSYS_PART_INTERP_COLOR_MASK |
+					PSYS_PART_INTERP_SCALE_MASK, // |
 					//PSYS_PART_RIBBON_MASK |
 					//PSYS_PART_TARGET_LINEAR_MASK |
 					//PSYS_PART_TARGET_POS_MASK |
@@ -174,9 +174,9 @@ default
 					//PSYS_SRC_PATTERN_ANGLE |
 					////PSYS_SRC_PATTERN_DROP,
 				PSYS_SRC_BURST_RADIUS, 0.1,
-					//PSYS_SRC_ANGLE_BEGIN, float,
-					//PSYS_SRC_ANGLE_END, float,
-					//PSYS_SRC_TARGET_KEY, key,
+				//PSYS_SRC_ANGLE_BEGIN, float,
+				//PSYS_SRC_ANGLE_END, float,
+				//PSYS_SRC_TARGET_KEY, key,
 			//Particle Appearance
 				PSYS_PART_START_COLOR, <0.5, 0.5, 0.5>,
 				PSYS_PART_END_COLOR, <0.5, 0.5, 0.5>,
@@ -184,18 +184,18 @@ default
 				PSYS_PART_END_ALPHA, 0.0,
 				PSYS_PART_START_SCALE, <0.1, 0.1, 0.0>,
 				PSYS_PART_END_SCALE, <3.0, 3.0, 0.0>,
-					//PSYS_SRC_TEXTURE, string,
-					//PSYS_PART_START_GLOW, float,
-					//PSYS_PART_END_GLOW, float,
+				//PSYS_SRC_TEXTURE, string,
+				//PSYS_PART_START_GLOW, float,
+				//PSYS_PART_END_GLOW, float,
 			//Particle Blending
 			//Particle Flow
-					//PSYS_SRC_MAX_AGE, float,
+				//PSYS_SRC_MAX_AGE, float,
 				PSYS_PART_MAX_AGE, g_fAge,
 				PSYS_SRC_BURST_RATE, g_fRate,
 				PSYS_SRC_BURST_PART_COUNT, g_iCount,
 			//Particle Motion
 				PSYS_SRC_ACCEL, <0.0, 0.0, 0.2>,
-					//PSYS_SRC_OMEGA, vector,
+				//PSYS_SRC_OMEGA, vector,
 				PSYS_SRC_BURST_SPEED_MIN, 0.0,
 				PSYS_SRC_BURST_SPEED_MAX, 0.1
 			]);

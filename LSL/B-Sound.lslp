@@ -1,5 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
+//Sound Enhancement to Realfire
+// by Zopf Resident - Ray Zopf (Raz)
 //
 //01. Feb. 2014
 //v0.47
@@ -10,18 +11,18 @@
 // (v2.2)
 
 //Files:
-//B-Sound.lsl
+// B-Sound.lsl
 //
-//Fire.lsl
-//config
-//User Manual
+// Fire.lsl
+// config
+// User Manual
 //
 //
 //Prequisites: Soundfile need to be in same prim as B-Sound.lsl;
-//	for fastest start, keep in prim that get's touched at start
+// for fastest start, keep in prim that get's touched at start
 //Notecard format: see config NC
 //basic help: User Manual
-
+//
 //Changelog
 // LSLForge Modules
 //
@@ -52,7 +53,7 @@ integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 integer g_iSound = TRUE;			// Sound on/off in this prim
 integer g_iVerbose = TRUE;
 
-string BACKSOUNDFILE ="17742__krisboruff__fire-crackles-no-room";                   // backroundsound for small fire
+string BACKSOUNDFILE = "17742__krisboruff__fire-crackles-no-room";                   // backroundsound for small fire
 
 string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
 
@@ -115,33 +116,33 @@ CheckSoundFiles()
 
 default
 {
-		state_entry()
-		{
+	state_entry()
+	{
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
 		g_fFactor = 7.0 / 8.0;
 		llPassTouches(TRUE); //this need review!
-				if (g_iSound) llStopSound();
+		if (g_iSound) llStopSound();
 		CheckSoundFiles();
 		llSleep(1);
 		RegisterExtension(g_iType);
 		if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
 		InfoLines();
-		}
+	}
 
-		on_rez(integer start_param)
-		{
-				llResetScript();
-		}
+	on_rez(integer start_param)
+	{
+		llResetScript();
+	}
 
 	touch(integer total_number)
-		{
+	{
 		if (g_iSoundAvail && g_iSound) llPreloadSound(BACKSOUNDFILE); //maybe change preloaded soundfile to medium fire sound
 		//this also blocks touch events on this child to be passed to root prim!
-		}
+	}
 
 	changed(integer change)
-		{
+	{
 		if (change & CHANGED_INVENTORY) {
 			llWhisper(0, "Inventory changed, checking sound samples...");
 			if (g_iSound) llStopSound();
@@ -151,22 +152,22 @@ default
 			if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
 			InfoLines();
 		}
-		}
+	}
 
 
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-		link_message(integer iSender, integer iChan, string sSoundSet, key kId)
-		{
+	link_message(integer iSender, integer iChan, string sSoundSet, key kId)
+	{
 		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);
 		MasterCommand(iChan, sSoundSet);
 
 		string sScriptName = GroupCheck(kId);
 		if ("exit" == sScriptName) return;
-		if (iChan != SOUND_CHANNEL || !g_iSound && !g_iSoundAvail || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; // scripts need to have that identifier in their name, so that we can discard those messages
+		if (iChan != SOUND_CHANNEL || !g_iSound && !g_iSoundAvail || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; //scripts need to have that identifier in their name, so that we can discard those messages
 
 		list lParams = llParseString2List(sSoundSet, [","], []);
-				string sVal = llList2String(lParams, 0);
+		string sVal = llList2String(lParams, 0);
 		string sMsg = llList2String(lParams, 1);
 		Debug("no changes? backround on/off? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
 		if ("110" == sMsg || ("0" == sVal && g_iInTimer)) return; // 110 = Sound.lsl
@@ -181,10 +182,10 @@ default
 			//simple adjustment to different fire sizes (full, at start, when special B_Sound message with sMsg = -1)
 			if ("-1" == sMsg) g_fFactor = 1.0;
 				else if ( 0 < (integer)sMsg && 100 >= (integer)sMsg) {
-						if ((integer)sMsg <= SIZE_EXTRASMALL ) g_fFactor = 5.0 / 6.0;
-							else g_fFactor = 7.0 / 8.0;
-					} else if ("" != sMsg && (integer)g_sSize <= SIZE_EXTRASMALL ) g_fFactor = 5.0 / 6.0; //fallback - is this still needed?
-						else if ("" != sMsg && (integer)g_sSize > SIZE_EXTRASMALL && 100 <= (integer)g_sSize) g_fFactor = 5.0 / 6.0;
+					if ((integer)sMsg <= SIZE_EXTRASMALL ) g_fFactor = 5.0 / 6.0;
+						else g_fFactor = 7.0 / 8.0;
+				} else if ("" != sMsg && (integer)g_sSize <= SIZE_EXTRASMALL ) g_fFactor = 5.0 / 6.0; //fallback - is this still needed?
+					else if ("" != sMsg && (integer)g_sSize > SIZE_EXTRASMALL && 100 <= (integer)g_sSize) g_fFactor = 5.0 / 6.0;
 			Debug("Factor calculated "+(string)g_fFactor);
 			float fSoundVolumeF = g_fSoundVolumeNew*g_fFactor;
 
@@ -203,7 +204,7 @@ default
 		} else {
 			llWhisper(0, "Background fire noises getting quieter and quieter...");
 			g_iInTimer = TRUE;
-			llSetTimerEvent(11.0); // wait ... better would be to fade out
+			llSetTimerEvent(11.0); //wait ... better would be to fade out
 		}
 	}
 

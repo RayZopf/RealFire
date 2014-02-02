@@ -1,6 +1,7 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Sat Feb  1 21:25:01 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Sun Feb  2 17:10:11 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//Sound Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
+//Sound Enhancement to Realfire
+// by Zopf Resident - Ray Zopf (Raz)
 //
 //01. Feb. 2014
 //v0.47
@@ -11,18 +12,18 @@
 // (v2.2)
 
 //Files:
-//B-Sound.lsl
+// B-Sound.lsl
 //
-//Fire.lsl
-//config
-//User Manual
+// Fire.lsl
+// config
+// User Manual
 //
 //
 //Prequisites: Soundfile need to be in same prim as B-Sound.lsl;
-//	for fastest start, keep in prim that get's touched at start
+// for fastest start, keep in prim that get's touched at start
 //Notecard format: see config NC
 //basic help: User Manual
-
+//
 //Changelog
 // LSLForge Modules
 //
@@ -125,6 +126,7 @@ string getGroup(string sDefGroup){
     return str;
 }
 
+
 string GroupCheck(key kId){
     string str = getGroup(LINKSETID);
     list lKeys = llParseString2List(((string)kId),[";"],[]);
@@ -144,6 +146,7 @@ RegisterExtension(integer link){
     if ((g_iSound && g_iSoundAvail)) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
     else  llMessageLinked(link,SOUND_CHANNEL,"0",((key)sId));
 }
+
 
 MasterCommand(integer iChan,string sVal){
     if ((iChan == COMMAND_CHANNEL)) {
@@ -183,7 +186,7 @@ CheckSoundFiles(){
 
 default {
 
-		state_entry() {
+	state_entry() {
         (g_sScriptName = llGetScriptName());
         Debug("state_entry");
         (g_fFactor = (7.0 / 8.0));
@@ -197,7 +200,7 @@ default {
     }
 
 
-		on_rez(integer start_param) {
+	on_rez(integer start_param) {
         llResetScript();
     }
 
@@ -223,7 +226,7 @@ default {
 
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-		link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
+	link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
         Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSoundSet) + "; kId ") + ((string)kId)));
         MasterCommand(iChan,sSoundSet);
         string sScriptName = GroupCheck(kId);

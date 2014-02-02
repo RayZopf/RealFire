@@ -1,28 +1,25 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Sat Feb  1 21:25:01 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Sun Feb  2 17:10:11 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire rezzed object script
+// by Zopf Resident - Ray Zopf (Raz)
 //
 //01. Feb. 2014
 //v0.2
 //
-//
-// (Realfire by Rene)
-// (Author: Rene10957 Resident)
-// (v2.2)
 
 //Files:
-//P-Anim_Object.lsl
+// P-Anim_Object.lsl
 //
-//Fire.lsl
-//P-Anim.lsl
-//config
-//User Manual
+// Fire.lsl
+// P-Anim.lsl
+// config
+// User Manual
 //
 //
 //Prequisites: Fireobjects need to be in same prim as P-Anim.lsl
 //Notecard format: see config NC
 //basic help: User Manual
-
+//
 //Changelog
 //
 
@@ -31,7 +28,6 @@
 //todo: additional script to animate/change fire prim textures
 //todo: fire objects need to be phantom... maybe make them flexiprim too
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
 //===============================================
@@ -120,27 +116,27 @@ Debug(string sMsg){
 
 default {
 
-		state_entry() {
+	state_entry() {
         (g_kOwner = llGetOwner());
         Debug("state_entry");
         llSetPrimitiveParams([PRIM_TEMP_ON_REZ,FALSE,PRIM_PHANTOM,TRUE]);
         llListen(PRIMCOMMAND_CHANNEL,"",NULL_KEY,"");
         llOwnerSay("Wait, if you want to make object temp - else react within next 10 seconds");
-        llSleep(10);
+        llSleep(10.0);
         llSetPrimitiveParams([PRIM_TEMP_ON_REZ,TRUE]);
         (g_iLowprim = TRUE);
         llOwnerSay("Now, object is temp and will vanish shortly");
     }
 
 
-		/*changed(integer change)
-		{
+	/*changed(integer change)
+	{
 		if (change & CHANGED_OWNER) {
 			llResetScript();
-		}
+	}
 	}*/
 
-		on_rez(integer start_param) {
+	on_rez(integer start_param) {
         Debug(("on_rez: " + ((string)start_param)));
         if ((0 == start_param)) {
             llSetLinkPrimitiveParamsFast(g_iType,[PRIM_TEMP_ON_REZ,FALSE]);
@@ -152,7 +148,7 @@ default {
 
 //listen for messages from PrimFire script
 //-----------------------------------------------
-		listen(integer iChan,string name,key kId,string sSet) {
+	listen(integer iChan,string name,key kId,string sSet) {
         Debug(("listen: " + sSet));
         if ((llGetOwnerKey(kId) != g_kOwner)) return;
         if (("toggle" == sSet)) {

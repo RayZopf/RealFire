@@ -1,6 +1,7 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Sat Feb  1 21:25:01 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Sun Feb  2 17:10:11 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//PrimFire Enhancement to Realfire by Zopf Resident - Ray Zopf (Raz)
+//PrimFire Enhancement to Realfire
+// by Zopf Resident - Ray Zopf (Raz)
 //
 //31. Jan. 2014
 //v0.12
@@ -11,11 +12,11 @@
 // (v2.2)
 
 //Files:
-//P-Anim.lsl
+// P-Anim.lsl
 //
-//Fire.lsl
-//config
-//User Manual
+// Fire.lsl
+// config
+// User Manual
 //
 //
 //Prequisites: Fireobjects need to be in same prim as P-Anim.lsl
@@ -29,7 +30,7 @@
 
 //todo: make file check (lists) the other way round: check if every inventory file is member of RealFire file list?
 //todo: create a module sizeSelect, put size class borders into variables and settings notecard
-//todo: selectPrimFire needs more work - less stages than selectSound in Sound.lsl
+//todo: SelectStuff needs more work - less stages than selectSound in Sound.lsl
 //todo: fire objects need to be phantom... maybe make them flexiprim too
 //todo: temp prim handling not good
 //todo: listen event + timer to check if fire prim really was created
@@ -52,10 +53,10 @@ integer g_iDebugMode = FALSE;
 integer g_iPrimFire = TRUE;
 integer g_iVerbose = TRUE;
 
-//string g_sPrimFireFileStart 	= "75145__willc2-45220__struck-match-8b-22k-1-65s";   	// starting fire (somehow special sound!)
+//string g_sPrimFireFileStart 	= "75145__willc2-45220__struck-match-8b-22k-1-65s";   // starting fire (somehow special sound!)
 string g_sPrimFireFileSmall = "Fire_small";
 string g_sPrimFireFileMedium1 = "Fire_medium";
-//string g_sPrimFireFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1";    	// second sound for medium fire
+//string g_sPrimFireFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1";    // second sound for medium fire
 string g_sPrimFireFileFull = "Fire_full";
 
 integer g_iPrimFireNFiles = 3;
@@ -137,6 +138,7 @@ string getGroup(string sDefGroup){
     return str;
 }
 
+
 string GroupCheck(key kId){
     string str = getGroup(LINKSETID);
     list lKeys = llParseString2List(((string)kId),[";"],[]);
@@ -157,6 +159,7 @@ RegisterExtension(integer link){
     else  llMessageLinked(link,ANIM_CHANNEL,"0",((key)sId));
 }
 
+
 MasterCommand(integer iChan,string sVal){
     if ((iChan == COMMAND_CHANNEL)) {
         if (("register" == sVal)) RegisterExtension(g_iType);
@@ -168,10 +171,10 @@ MasterCommand(integer iChan,string sVal){
 
 
 //###
-//checkforFiles.lslm
+//CheckForFiles.lslm
 //0.1 - 30Jan2014
 
-checkforFiles(integer iNFiles,list lgivenFileList,string sCurrentFile){
+CheckForFiles(integer iNFiles,list lgivenFileList,string sCurrentFile){
     integer iFileNumber = llGetInventoryNumber(g_iInvType);
     Debug(("File number = " + ((string)iFileNumber)));
     if ((iFileNumber > 0)) {
@@ -211,8 +214,8 @@ checkforFiles(integer iNFiles,list lgivenFileList,string sCurrentFile){
 //PREDEFINED FUNCTIONS
 //===============================================
 
-SelectPrimFire(float fMsg){
-    Debug(("SelectPrimFire: " + ((string)fMsg)));
+SelectStuff(float fMsg){
+    Debug(("SelectStuff: " + ((string)fMsg)));
     if ((fMsg <= SIZE_SMALL)) {
         (g_sCurrentPrimFireFile = g_sPrimFireFileSmall);
     }
@@ -247,7 +250,7 @@ default {
         (g_sScriptName = llGetScriptName());
         Debug("state_entry");
         llSay(PRIMCOMMAND_CHANNEL,"die");
-        checkforFiles(g_iPrimFireNFiles,g_lPrimFireFileList,g_sCurrentPrimFireFile);
+        CheckForFiles(g_iPrimFireNFiles,g_lPrimFireFileList,g_sCurrentPrimFireFile);
         llSleep(1);
         RegisterExtension(g_iType);
         InfoLines();
@@ -262,7 +265,7 @@ default {
 	changed(integer change) {
         if ((change & CHANGED_INVENTORY)) {
             llWhisper(0,"Inventory changed, checking objects...");
-            checkforFiles(g_iPrimFireNFiles,g_lPrimFireFileList,g_sCurrentPrimFireFile);
+            CheckForFiles(g_iPrimFireNFiles,g_lPrimFireFileList,g_sCurrentPrimFireFile);
             llSleep(1);
             RegisterExtension(g_iType);
             InfoLines();
@@ -273,7 +276,7 @@ default {
 
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-		link_message(integer iSender,integer iChan,string sSet,key kId) {
+	link_message(integer iSender,integer iChan,string sSet,key kId) {
         Debug(((((("link_message = channel " + ((string)iChan)) + "; sSet ") + sSet) + "; kId ") + ((string)kId)));
         MasterCommand(iChan,sSet);
         string sScriptName = GroupCheck(kId);
@@ -298,7 +301,7 @@ default {
             if (((((integer)sMsg) != g_iLowprim) && (("0" == sMsg) || ("1" == sMsg)))) (g_iLowprim = (!g_iLowprim));
             string sCurrentPrimFireFileTemp = g_sCurrentPrimFireFile;
             string g_sSizeTemp = g_sSize;
-            SelectPrimFire(((float)sVal));
+            SelectStuff(((float)sVal));
             if (("0" == g_sSizeTemp)) {
                 llSleep(2.0);
                 llRezObject(g_sCurrentPrimFireFile,(llGetPos() + <0.0,0.0,g_fAltitude>),ZERO_VECTOR,ZERO_ROTATION,1);

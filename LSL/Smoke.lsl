@@ -1,6 +1,6 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Sat Feb  1 21:25:01 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Sun Feb  2 17:10:11 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Realfire by Rene - Smoke
+//Realfire by Rene - Smoke
 //
 // Author: Rene10957 Resident
 // Date: 12-01-2014
@@ -12,12 +12,13 @@
 // Content creator? Please read the license notecard!
 //
 // See fire.lsl for feature list
-
-
+//
+//
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
 //31. Jan. 2014
 //v2.2.1-0.56
+//
 
 //Files:
 //Smoke.lsl
@@ -30,10 +31,10 @@
 //Prequisites: Smoke.lsl in another prim than Fire.lsl
 //Notecard format: see config NC
 //basic help: User Manual
-
+//
 //Changelog
-//Formatting
-//moved functions into main code
+// Formatting
+// moved functions into main code
 
 //bug: if smoke is turned off via menu, llSleep still applies
 
@@ -43,7 +44,6 @@
 //todo: smoke reflecting fire light
 //todo: check if other sound scripts are in same prim
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
 //===============================================
@@ -129,6 +129,7 @@ string getGroup(string sDefGroup){
     return str;
 }
 
+
 string GroupCheck(key kId){
     string str = getGroup(LINKSETID);
     list lKeys = llParseString2List(((string)kId),[";"],[]);
@@ -148,6 +149,7 @@ RegisterExtension(integer link){
     if ((g_iSmoke && g_iSmoke)) llMessageLinked(link,SMOKE_CHANNEL,"1",((key)sId));
     else  llMessageLinked(link,SMOKE_CHANNEL,"0",((key)sId));
 }
+
 
 MasterCommand(integer iChan,string sVal){
     if ((iChan == COMMAND_CHANNEL)) {
