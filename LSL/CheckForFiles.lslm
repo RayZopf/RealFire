@@ -2,8 +2,8 @@
 //Module check for needed files
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//30. Jan 2014
-//v0.1
+//02. Feb 2014
+//v0.2
 
 //Files:
 // PrintStatusInfo.lslm
@@ -13,7 +13,7 @@
 //
 //
 //Changelog
-//
+// added perm check (needed for prim rezzing)
 
 //FIXME: ----
 
@@ -23,28 +23,30 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-$module (integer m_iDebugMode, string m_sScriptName, integer m_iInvType, integer m_iFileStartAvail, string m_sTitle, integer m_iAvail)
+$module (integer m_iDebugMode, string m_sScriptName, integer m_iInvType, integer m_iFileStartAvail, string m_sTitle, integer m_iNFilesAvail, integer m_iAvail)
 
 $import Debug.lslm(m_iDebugMode=m_iDebugMode, m_sScriptName=m_sScriptName);
 
 
 //###
 //CheckForFiles.lslm
-//0.1 - 30Jan2014
+//0.2 - 02Feb2014
 
-CheckForFiles(integer iNFiles, list lgivenFileList, string sCurrentFile)
+string CheckForFiles(integer iNFiles, list lgivenFileList, integer iPermCheck, string sCurrentFile)
 {
 	integer iFileNumber = llGetInventoryNumber(m_iInvType);
 	Debug("File number = " +(string)iFileNumber);
 	if ( iFileNumber > 0) {
+		m_iNFilesAvail = 0;
 		list lFileAvail = [];
 		list lFileList = [];
 		integer i;
 		for (i = 0; i < iFileNumber; ++i) { //assuming there are no interfering sources (scripts) with files in this prim!
 			lFileList += llGetInventoryName(m_iInvType, i);
 		}
+		list lFileCompare = [];
 		for (i = 0; i < iNFiles; ++i) {
-			list lFileCompare = llList2List(lgivenFileList, i, i);
+			lFileCompare = llList2List(lgivenFileList, i, i);
 			if (ERR_GENERIC == llListFindList(lFileList, lFileCompare)) {
 				lFileAvail += FALSE;
 				if (0 < i && (string)lFileCompare == sCurrentFile && 2 < iNFiles) {
@@ -57,13 +59,30 @@ CheckForFiles(integer iNFiles, list lgivenFileList, string sCurrentFile)
 						}
 				}
 				llWhisper(0, m_sTitle+" - File not found in inventory: " + (string)lFileCompare);
-			} else lFileAvail += TRUE;
+			} else {
+				if (iPermCheck) {
+					if (!(PERM_COPY & llGetInventoryPermMask((string)lFileCompare, MASK_OWNER))) {
+						llWhisper(0, m_sTitle+" - File has wrong permission: " + (string)lFileCompare);
+						lFileAvail += FALSE;
+					} else {
+						lFileAvail += TRUE;
+						m_iNFilesAvail++;
+					}
+				} else {
+					lFileAvail += TRUE;
+					m_iNFilesAvail++;
+				}
+			}
 		}
 		if (0 == llListFindList(lFileAvail, [TRUE])) m_iFileStartAvail = TRUE;
 			else m_iFileStartAvail = FALSE;
 		if (ERR_GENERIC != llListFindList(llList2List(lFileAvail, 1, iNFiles-1), [TRUE])) m_iAvail = TRUE;
 			else m_iAvail = FALSE;
-	} else m_iAvail = FALSE;
+		return sCurrentFile;
+	} else {
+		m_iAvail = FALSE;
+		return "0";
+	}
 }
 
 //END CheckForFiles.lslm

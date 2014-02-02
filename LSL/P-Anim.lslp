@@ -34,6 +34,7 @@
 //TODO: temp prim handling not good
 //TODO: listen event + timer to check if fire prim really was created
 //TODO: check if fire prim is "copy"
+//TODO: add settings for position of different fire prims - enhance SelectStuff()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -52,11 +53,14 @@ integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 integer g_iPrimFire = TRUE; // Sound on/off in this prim
 integer g_iVerbose = TRUE;
 
-//string g_sPrimFireFileStart 	= "75145__willc2-45220__struck-match-8b-22k-1-65s";   // starting fire (somehow special sound!)
-string g_sPrimFireFileSmall 	= "Fire_small";            // for small fire
+//string g_sPrimFireFileStart = "75145__willc2-45220__struck-match-8b-22k-1-65s";   // starting fire (somehow special sound!)
+string g_sPrimFireFileSmall = "Fire_small";            // for small fire
+vector g_vOffsetSmall = <0.0, 0.0, 0.0>;
 string g_sPrimFireFileMedium1 = "Fire_medium";    // for medium fire
+vector g_vOffsetMedium1 = <0.0, 0.0, 0.0>;
 //string g_sPrimFireFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1";    // second sound for medium fire
-string g_sPrimFireFileFull 	= "Fire_full";                   // for big fire
+string g_sPrimFireFileFull = "Fire_full";                   // for big fire
+vector g_vOffsetFull = <0.0, 0.0, 0.0>;
 
 integer g_iPrimFireNFiles = 3;
 //starting sound has to be first in list
@@ -79,8 +83,11 @@ integer g_iType = LINK_SET;
 integer g_iPrimFireAvail = FALSE;
 integer g_iInvType = INVENTORY_OBJECT;
 //integer g_iPrimFireFileStartAvail = TRUE;
+integer g_iPrimFireNFilesAvail;
 integer g_iLowprim = FALSE;
+integer g_iPermCheck = TRUE;
 string g_sSize = "0";
+vector g_vOffset;
 
 //RealFire MESSAGE MAP
 //integer COMMAND_CHANNEL =
@@ -96,7 +103,7 @@ $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iPrimFire, m_sVersion=g_sVersion);
 $import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iPrimFire, m_iAvail=g_iPrimFireAvail, m_iChannel=ANIM_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
-$import CheckForFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_iAvail=g_iPrimFireAvail);
+$import CheckForFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_iNFilesAvail=g_iPrimFireNFilesAvail, m_iAvail=g_iPrimFireAvail);
 
 
 //===============================================
@@ -108,12 +115,16 @@ SelectStuff(float fMsg)
 	Debug("SelectStuff: "+(string)fMsg);
 	if (fMsg <= SIZE_SMALL) {
 		g_sCurrentPrimFireFile = g_sPrimFireFileSmall;
+		g_vOffset = <g_vOffsetSmall.x, g_vOffsetSmall.y, g_vOffsetSmall.z+g_fAltitude>;
 	} else if (fMsg > SIZE_SMALL && fMsg < SIZE_MEDIUM) {
 		g_sCurrentPrimFireFile = g_sPrimFireFileMedium1;
+		g_vOffset = <g_vOffsetMedium1.x, g_vOffsetMedium1.y, g_vOffsetMedium1.z+g_fAltitude>;
 	} else if (fMsg >= SIZE_MEDIUM && fMsg < SIZE_LARGE) {
 		g_sCurrentPrimFireFile = g_sPrimFireFileMedium1;
+		g_vOffset = <g_vOffsetMedium1.x, g_vOffsetMedium1.y, g_vOffsetMedium1.z+g_fAltitude>;
 	} else if (fMsg >= SIZE_LARGE && fMsg <= 100) {
 		g_sCurrentPrimFireFile = g_sPrimFireFileFull;
+		g_vOffset = <g_vOffsetFull.x, g_vOffsetFull.y, g_vOffsetFull.z+g_fAltitude>;
 	} else {
 		//Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-");
 		//if (g_fSoundVolumeNew > 0 && TRUE == g_iSoundFileStartAvail) {
@@ -145,7 +156,7 @@ default
 			g_sScriptName = llGetScriptName();
 			Debug("state_entry");
 			llSay(PRIMCOMMAND_CHANNEL, "die");
-			CheckForFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_sCurrentPrimFireFile);
+			g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_iPermCheck, g_sCurrentPrimFireFile);
 			llSleep(1);
 			RegisterExtension(g_iType);
 			InfoLines();
@@ -162,7 +173,7 @@ default
 			llWhisper(0, "Inventory changed, checking objects...");
 			//llStopSound();
 			//llMessage - "die"
-			CheckForFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_sCurrentPrimFireFile);
+			g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_iPermCheck, g_sCurrentPrimFireFile);
 			llSleep(1);
 			RegisterExtension(g_iType);
 			InfoLines();
@@ -202,11 +213,11 @@ default
 			if ((integer)sMsg != g_iLowprim && ("0" == sMsg || "1" == sMsg)) g_iLowprim = !g_iLowprim;
 			string sCurrentPrimFireFileTemp = g_sCurrentPrimFireFile;
 			string g_sSizeTemp = g_sSize;
-			SelectStuff((float)sVal);
+			if (g_iPrimFireNFilesAvail > 1) SelectStuff((float)sMsg);
 
 			if ("0" == g_sSizeTemp) {
 				llSleep(2.0); // let fire slowly begin (not counting on lag when rezzing)
-				llRezObject(g_sCurrentPrimFireFile, llGetPos()+<0.0,0.0,g_fAltitude>,ZERO_VECTOR,ZERO_ROTATION,1);
+				llRezObject(g_sCurrentPrimFireFile, llGetPos()+g_vOffset,ZERO_VECTOR,ZERO_ROTATION,1);
 				if (!g_iLowprim) {
 					llSleep(3.0);
 					llSay(PRIMCOMMAND_CHANNEL, "toggle");
@@ -215,7 +226,7 @@ default
 			} else {
 					if (g_sCurrentPrimFireFile != sCurrentPrimFireFileTemp) {
 						llSay(PRIMCOMMAND_CHANNEL, "die");
-						llRezObject(g_sCurrentPrimFireFile, llGetPos()+<0.0,0.0,g_fAltitude>,ZERO_VECTOR,ZERO_ROTATION,1);
+						llRezObject(g_sCurrentPrimFireFile, llGetPos()+g_vOffset,ZERO_VECTOR,ZERO_ROTATION,1);
 						if (!g_iLowprim) {
 							llSleep(3.0);
 							llSay(PRIMCOMMAND_CHANNEL, "toggle");
@@ -258,7 +269,7 @@ state temprez
 
 	timer()
 	{
-		llRezObject(g_sCurrentPrimFireFile, llGetPos()+<0.0,0.0,g_fAltitude>,ZERO_VECTOR,ZERO_ROTATION,1);
+		llRezObject(g_sCurrentPrimFireFile, llGetPos()+g_vOffset,ZERO_VECTOR,ZERO_ROTATION,1);
 	}
 
 //-----------------------------------------------

@@ -78,6 +78,8 @@ integer g_iType = LINK_SET;
 integer g_iSoundAvail = FALSE;
 integer g_iInvType = INVENTORY_SOUND;
 integer g_iSoundFileStartAvail = TRUE;
+integer g_iPermCheck = FALSE;
+integer g_iSoundNFilesAvail; // cut some stuff if only one file found
 float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
@@ -95,7 +97,7 @@ $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSound, m_sVersion=g_sVersion);
 $import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
-$import CheckForFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iSoundFileStartAvail, m_sTitle=g_sTitle, m_iAvail=g_iSoundAvail);
+$import CheckForFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iSoundFileStartAvail, m_sTitle=g_sTitle, m_iNFilesAvail=g_iSoundNFilesAvail, m_iAvail=g_iSoundAvail);
 
 
 //===============================================
@@ -144,7 +146,7 @@ default
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
 		llStopSound();
-		CheckForFiles(g_iSoundNFiles, g_lSoundFileList, g_sCurrentSoundFile);
+		g_sCurrentSoundFile = CheckForFiles(g_iSoundNFiles, g_lSoundFileList, g_iPermCheck, g_sCurrentSoundFile);
 		llSleep(1);
 		RegisterExtension(g_iType);
 		InfoLines();
@@ -166,7 +168,7 @@ default
 		if (change & CHANGED_INVENTORY) {
 			llWhisper(0, "Inventory changed, checking sound samples...");
 			llStopSound();
-			CheckForFiles(g_iSoundNFiles, g_lSoundFileList, g_sCurrentSoundFile);
+			g_sCurrentSoundFile = CheckForFiles(g_iSoundNFiles, g_lSoundFileList, g_iPermCheck, g_sCurrentSoundFile);
 			llSleep(1);
 			RegisterExtension(g_iType);
 			InfoLines();
@@ -195,7 +197,7 @@ default
 		g_fSoundVolumeNew = (float)sVal;
 		//change sound while sound is off
 		if (0 == g_fSoundVolumeNew && sMsg != g_sSize && "" != sMsg && "0" != sMsg) {
-			SelectStuff((float)sMsg);
+			if (g_iSoundNFilesAvail > 1) SelectStuff((float)sMsg);
 			llPreloadSound(g_sCurrentSoundFile);
 			Debug("change while off");
 			return;
@@ -216,7 +218,7 @@ default
 			} else {
 
 				string sCurrentSoundFileTemp = g_sCurrentSoundFile;
-				SelectStuff((float)sMsg);
+				if (g_iSoundNFilesAvail > 1) SelectStuff((float)sMsg);
 
 				if (g_sCurrentSoundFile == sCurrentSoundFileTemp) {
 					llAdjustSoundVolume(g_fSoundVolumeNew); // fire size changed - but still same soundsample
