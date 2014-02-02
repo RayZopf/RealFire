@@ -721,6 +721,14 @@ reset()
 startSystem()
 {
 	Debug("startSystem");
+	llSetTimerEvent(0.0);
+	if (g_iMenuOpen) {
+		llListenRemove(g_iMenuHandle);
+		llListenRemove(g_iStartColorHandle);
+		llListenRemove(g_iEndColorHandle);
+		llListenRemove(g_iOptionsHandle);
+		g_iMenuOpen = FALSE;
+	}
 	g_fPercent = 100.0;
 	g_fPercentSmoke = 100.0;
 	if (g_iSmokeAvail && g_iSmokeOn) sendMessage(SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
@@ -729,19 +737,14 @@ startSystem()
 	if (g_iSoundAvail || g_iBackSoundAvail) { //needs some more rework, move all calculation inside
 		g_fStartVolume = percentage((float)g_iPerVolume, MAX_VOLUME);
 		//if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fStartVolume, "-1"); //background noise - do better not use, gets called to often
-		if (g_iSoundOn && !g_iOn) sendMessage(SOUND_CHANNEL, (string)g_fStartVolume, "110"); // special start sound
 	}
-	//llParticleSystem([]); // get linden like particles to start fire with
-	if (g_iVerbose) llWhisper(0, "(v) The fire gets lit");
+	if (!g_iOn) {
+		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fStartVolume, "110"); // special start sound
+		if (g_iVerbose) llWhisper(0, "(v) The fire gets lit");
+		//llParticleSystem([]); // get linden like particles to start fire with
+	}
 	updateSize(g_fPerSize);
-	llSetTimerEvent(0.0);
 	llSetTimerEvent(g_fBurnTime);
-	if (g_iMenuOpen) {
-		llListenRemove(g_iMenuHandle);
-		llListenRemove(g_iStartColorHandle);
-		llListenRemove(g_iEndColorHandle);
-		g_iMenuOpen = FALSE;
-	}
 	g_iOn = TRUE;
 	g_iBurning = TRUE;
 }
@@ -755,19 +758,21 @@ stopSystem()
 	g_fPercent = 0.0;
 	g_fPercentSmoke = 0.0;
 	llSetTimerEvent(0.0);
-	llParticleSystem([]);
-	llSetLinkPrimitiveParamsFast(g_iType, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
-	if (g_iPrimFireAvail) sendMessage(ANIM_CHANNEL, "0", "");
-	if (g_iSoundAvail || g_iBackSoundAvail) sendMessage(SOUND_CHANNEL, "0", "0"); //volume off and size off
-	//llStopSound(); //keep, just in case there wents something wrong and this prim has sound too -kills B_Sound!!!
 	if (g_iSmokeAvail) sendMessage(SMOKE_CHANNEL, "0", "");
+	llSetLinkPrimitiveParamsFast(g_iType, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
+	if (g_iSoundAvail || g_iBackSoundAvail) sendMessage(SOUND_CHANNEL, "0", "0"); //volume off and size off
 	if (g_iMenuOpen) {
 		llListenRemove(g_iMenuHandle);
 		llListenRemove(g_iStartColorHandle);
 		llListenRemove(g_iEndColorHandle);
+		llListenRemove(g_iOptionsHandle);
 		g_iMenuOpen = FALSE;
 	}
-	llSleep(3.5);
+	if (g_iPrimFireAvail) sendMessage(ANIM_CHANNEL, "0", "");
+	//llStopSound(); //keep, just in case there wents something wrong and this prim has sound too -kills B_Sound!!!
+	llSleep(1.5);
+	llParticleSystem([]);
+	llSleep(2.0);
 	llSetLinkTextureAnim(LINK_SET, FALSE, ALL_SIDES,4,4,0,0,1);
 }
 
