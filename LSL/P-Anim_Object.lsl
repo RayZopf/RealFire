@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Sun Feb  2 17:10:11 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Sun Feb  2 18:24:54 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire rezzed object script
 // by Zopf Resident - Ray Zopf (Raz)
@@ -23,10 +23,10 @@
 //Changelog
 //
 
-//bug: ---
+//FIXME: ---
 
-//todo: additional script to animate/change fire prim textures
-//todo: fire objects need to be phantom... maybe make them flexiprim too
+//TODO: additional script to animate/change fire prim textures
+//TODO: fire objects need to be phantom... maybe make them flexiprim too
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 

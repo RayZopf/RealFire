@@ -27,15 +27,15 @@
 // LSLForge Modules
 //
 
-//bug: ---
+//FIXME: ---
 
-//todo: make file check (lists) the other way round: check if every inventory file is member of RealFire file list?
-//todo: decide if touch event should really block touch on child prim and how to preload sound
-//todo: think about fire size = 0 what happens to normal sound (B-sound would just go working on)
-//todo: use more sounds and change them randomly http://wiki.secondlife.com/wiki/Script:Random_Sounds
-//todo: check if other sound scripts are in same prim
-//todo: create a module sizeSelect, put size class borders into variables and settings notecard
-//todo: is "change sound while off" really needed? - check sound on/off, sound more/less louder
+//TODO: make file check (lists) the other way round: check if every inventory file is member of RealFire file list?
+//TODO: decide if touch event should really block touch on child prim and how to preload sound
+//TODO: think about fire size = 0 what happens to normal sound (B-sound would just go working on)
+//TODO: use more sounds and change them randomly http://wiki.secondlife.com/wiki/Script:Random_Sounds
+//TODO: check if other sound scripts are in same prim
+//TODO: create a module sizeSelect, put size class borders into variables and settings notecard
+//TODO: is "change sound while off" really needed? - check sound on/off, sound more/less louder
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 

@@ -22,10 +22,10 @@
 //Changelog
 //
 
-//bug: ---
+//FIXME: ---
 
-//todo: additional script to animate/change fire prim textures
-//todo: fire objects need to be phantom... maybe make them flexiprim too
+//TODO: additional script to animate/change fire prim textures
+//TODO: fire objects need to be phantom... maybe make them flexiprim too
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 

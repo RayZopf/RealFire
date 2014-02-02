@@ -35,13 +35,13 @@
 // Formatting
 // moved functions into main code
 
-//bug: if smoke is turned off via menu, llSleep still applies
+//FIXME: if smoke is turned off via menu, llSleep still applies
 
-//todo: more natural smoke according to fire intensity - low fire with more fume, black smoke, smoke after fire is off, smoke fading instead of turning off
-//todo: en-/disable //PSYS_PART_WIND_MASK, if fire is out-/inside
-//todo: better use cone instead of explode (radius) + cone (placement)
-//todo: smoke reflecting fire light
-//todo: check if other sound scripts are in same prim
+//TODO: more natural smoke according to fire intensity - low fire with more fume, black smoke, smoke after fire is off, smoke fading instead of turning off
+//TODO: en-/disable //PSYS_PART_WIND_MASK, if fire is out-/inside
+//TODO: better use cone instead of explode (radius) + cone (placement)
+//TODO: smoke reflecting fire light
+//TODO: check if other sound scripts are in same prim
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 

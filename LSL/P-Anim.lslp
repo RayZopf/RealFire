@@ -25,15 +25,15 @@
 //Changelog
 //
 
-//bug: ---
+//FIXME: ---
 
-//todo: make file check (lists) the other way round: check if every inventory file is member of RealFire file list?
-//todo: create a module sizeSelect, put size class borders into variables and settings notecard
-//todo: SelectStuff needs more work - less stages than selectSound in Sound.lsl
-//todo: fire objects need to be phantom... maybe make them flexiprim too
-//todo: temp prim handling not good
-//todo: listen event + timer to check if fire prim really was created
-//todo: check if fire prim is "copy"
+//TODO: make file check (lists) the other way round: check if every inventory file is member of RealFire file list?
+//TODO: create a module sizeSelect, put size class borders into variables and settings notecard
+//TODO: SelectStuff needs more work - less stages than selectSound in Sound.lsl
+//TODO: fire objects need to be phantom... maybe make them flexiprim too
+//TODO: temp prim handling not good
+//TODO: listen event + timer to check if fire prim really was created
+//TODO: check if fire prim is "copy"
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 

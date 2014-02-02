@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Sun Feb  2 17:10:11 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Sun Feb  2 18:24:54 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -28,14 +28,14 @@
 // LSLForge Modules
 //
 
-//bug: soundpreload on touch is useless in child prim
+//FIXME: soundpreload on touch is useless in child prim
 
-//todo: decide if touch event should really block touch on child prim and how to preload sound
-//todo: simplify to use only one sound file as background noise (at half? the normal volume - volume == volume falloff!!!)
-//todo: sMsg has to be changed in Fire.lsl
-//todo: make sounds from different prims asynchronus
-//todo: check if other sound scripts are in same prim
-//todo: touch passtrouch/touch event - check if that is handled correctly
+//TODO: decide if touch event should really block touch on child prim and how to preload sound
+//TODO: simplify to use only one sound file as background noise (at half? the normal volume - volume == volume falloff!!!)
+//TODO: sMsg has to be changed in Fire.lsl
+//TODO: make sounds from different prims asynchronus
+//TODO: check if other sound scripts are in same prim
+//TODO: touch passtrouch/touch event - check if that is handled correctly
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 

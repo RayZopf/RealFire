@@ -15,10 +15,10 @@
 //Changelog
 //
 
-//bug: ----
+//FIXME: ----
 
-//todo: improve file check
-//todo: make file check (lists) the other way round: check if every inventory file is member of RealFire file list?
+//TODO: improve file check
+//TODO: make file check (lists) the other way round: check if every inventory file is member of RealFire file list?
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 

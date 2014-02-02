@@ -49,37 +49,37 @@
 // structure for multiple scripts
 // B-Sound
 
-//bug:
+//FIXME: ----
 
-//todo: make sound configurable via notecard - maybe own config file?
-//todo: keep sound running for a short time after turning fire off
-//todo: sound preload on touch
-//todo: sound seems to get called twice
-//todo: integrate B-Sound  - use key in lllinkedmessage/link_message to differentiate; add backround sound off
-//todo: scale for effect 0<=x<=100, -1 backround, 110 Sound start -- don't confuse with volume
-//todo: prim fire / flexi prim (need to move/rotate it) / sculpted prims ----- temp rezzer
-//todo: sparkles
-//todo: fire via particles, using textures?!
-//todo: check //PSYS_PART_RIBBON_MASK effect
-//todo: maybe en-/disable //PSYS_PART_WIND_MASK, if fire is out-/inside (test effect!)
-//todo: test cone instead of explode (radius) + angle (placement)
-//todo: longer break between automatic fire off and going on again, also make fire slowly bigger... and let fire burn down slower (look into function)
-//todo: make 5% lowest setting (glowing)? and adjust fire (100%)  - is way too big for the fireplace
-//todo: better smoke (color, intensity, change when fire changes) - rework smoke in updateSize (currently only changed when size<=25)
-//todo: smoke with textures
-//todo: check change smoke while smoke is off
-//todo: let sound script do calculation of sound percentage, as smoke does it
-//todo: add ping/pong with other scripts in case only fire.lsl gets resetted
-//todo: if script in another prim is removed, Fire.lsl cannot handle the situation
-//todo: move object animation to own script too?
-//todo: ability to change burndown/restart
-//todo: fire size = 0 - but sound on + volume --> at least background sound (glowing embers)
-//todo: HUD?
-//todo: play with llListen()
-//todo: always check for llGetFreeMemory()
-//todo: check if other particle scripts are in same prim
-//todo: rethink system of verbose messages - use settings notecard!
-//todo: create a module sizeSelect, put size class borders into variables and settings notecard
+//TODO: make sound configurable via notecard - maybe own config file?
+//TODO: keep sound running for a short time after turning fire off
+//TODO: sound preload on touch
+//TODO: sound seems to get called twice
+//TODO: integrate B-Sound  - use key in lllinkedmessage/link_message to differentiate; add backround sound off
+//TODO: scale for effect 0<=x<=100, -1 backround, 110 Sound start -- don't confuse with volume
+//TODO: prim fire / flexi prim (need to move/rotate it) / sculpted prims ----- temp rezzer
+//TODO: sparkles
+//TODO: fire via particles, using textures?!
+//TODO: check //PSYS_PART_RIBBON_MASK effect
+//TODO: maybe en-/disable //PSYS_PART_WIND_MASK, if fire is out-/inside (test effect!)
+//TODO: test cone instead of explode (radius) + angle (placement)
+//TODO: longer break between automatic fire off and going on again, also make fire slowly bigger... and let fire burn down slower (look into function)
+//TODO: make 5% lowest setting (glowing)? and adjust fire (100%)  - is way too big for the fireplace
+//TODO: better smoke (color, intensity, change when fire changes) - rework smoke in updateSize (currently only changed when size<=25)
+//TODO: smoke with textures
+//TODO: check change smoke while smoke is off
+//TODO: let sound script do calculation of sound percentage, as smoke does it
+//TODO: add ping/pong with other scripts in case only fire.lsl gets resetted
+//TODO: if script in another prim is removed, Fire.lsl cannot handle the situation
+//TODO: move object animation to own script too?
+//TODO: ability to change burndown/restart
+//TODO: fire size = 0 - but sound on + volume --> at least background sound (glowing embers)
+//TODO: HUD?
+//TODO: play with llListen()
+//TODO: always check for llGetFreeMemory()
+//TODO: check if other particle scripts are in same prim
+//TODO: rethink system of verbose messages - use settings notecard!
+//TODO: create a module sizeSelect, put size class borders into variables and settings notecard
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
