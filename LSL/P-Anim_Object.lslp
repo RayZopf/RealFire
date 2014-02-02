@@ -26,6 +26,7 @@
 
 //TODO: additional script to animate/change fire prim textures
 //TODO: fire objects need to be phantom... maybe make them flexiprim too
+//TODO: sound + message on touch_start (sound, danger message), touch (hot message) and touch_end (menu + burns message)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
