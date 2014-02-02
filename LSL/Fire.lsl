@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Sun Feb  2 18:24:54 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Sun Feb  2 23:38:25 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -605,7 +605,7 @@ menuDialog(key id){
     (g_iMenuHandle = llListen(menuChannel,"","",""));
     llSetTimerEvent(0.0);
     llSetTimerEvent(120.0);
-    llDialog(id,(((((((((((((((g_sTitle + " ") + g_sVersion) + "\n\nSize: ") + ((string)g_fPerSize)) + "%\t\tVolume: ") + ((string)g_iPerVolume)) + "%") + "\nParticleFire: ") + sParticleFire) + "\tSmoke: ") + strSmoke) + "\tSound: ") + strSound) + "\nPrimFire: ") + sPrimFire),["Options","FastToggle","Close","-Volume","+Volume","---","-Fire","+Fire","---","Small","Medium","Large"],menuChannel);
+    llDialog(id,(((((((((((((((g_sTitle + " ") + g_sVersion) + "\n\nSize: ") + ((string)((integer)g_fPerSize))) + "%\t\tVolume: ") + ((string)g_iPerVolume)) + "%") + "\nParticleFire: ") + sParticleFire) + "\tSmoke: ") + strSmoke) + "\tSound: ") + strSound) + "\nPrimFire: ") + sPrimFire),["Options","FastToggle","Close","-Volume","+Volume","---","-Fire","+Fire","---","Small","Medium","Large"],menuChannel);
 }
 
 
@@ -719,7 +719,7 @@ startSystem(){
     (g_fLightRadius = g_fStartRadius);
     if ((g_iSoundAvail || g_iBackSoundAvail)) {
         (g_fStartVolume = percentage(((float)g_iPerVolume),MAX_VOLUME));
-        if (g_iSoundOn) sendMessage(SOUND_CHANNEL,((string)g_fStartVolume),"110");
+        if ((g_iSoundOn && (!g_iOn))) sendMessage(SOUND_CHANNEL,((string)g_fStartVolume),"110");
     }
     if (g_iVerbose) llWhisper(0,"(v) The fire gets lit");
     updateSize(g_fPerSize);

@@ -576,7 +576,7 @@ menuDialog (key id)
 	llSetTimerEvent(0.0);
 	llSetTimerEvent(120.0);
 	llDialog(id, g_sTitle + " " + g_sVersion +
-			"\n\nSize: " + (string)g_fPerSize + "%\t\tVolume: " + (string)g_iPerVolume + "%" +
+			"\n\nSize: " + (string)((integer)g_fPerSize) + "%\t\tVolume: " + (string)g_iPerVolume + "%" +
 			"\nParticleFire: " + sParticleFire + "\tSmoke: " + strSmoke + "\tSound: " + strSound + "\nPrimFire: " + sPrimFire, [
 			"Options", "FastToggle", "Close",
 			"-Volume", "+Volume", "---",
@@ -729,7 +729,7 @@ startSystem()
 	if (g_iSoundAvail || g_iBackSoundAvail) { //needs some more rework, move all calculation inside
 		g_fStartVolume = percentage((float)g_iPerVolume, MAX_VOLUME);
 		//if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fStartVolume, "-1"); //background noise - do better not use, gets called to often
-		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fStartVolume, "110"); // special start sound
+		if (g_iSoundOn && !g_iOn) sendMessage(SOUND_CHANNEL, (string)g_fStartVolume, "110"); // special start sound
 	}
 	//llParticleSystem([]); // get linden like particles to start fire with
 	if (g_iVerbose) llWhisper(0, "(v) The fire gets lit");
