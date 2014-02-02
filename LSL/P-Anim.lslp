@@ -2,8 +2,8 @@
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//31. Jan. 2014
-//v0.12
+//02. Feb. 2014
+//v0.13
 //
 //
 // (Realfire by Rene)
@@ -34,7 +34,6 @@
 //TODO: temp prim handling not good
 //TODO: listen event + timer to check if fire prim really was created
 //TODO: check if fire prim is "copy"
-//TODO: add settings for position of different fire prims - enhance SelectStuff()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -75,7 +74,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealPrimFire";     // title
-string g_sVersion = "0.12";       // version
+string g_sVersion = "0.13";       // version
 string g_sScriptName;
 string g_sType = "anim";
 integer g_iType = LINK_SET;

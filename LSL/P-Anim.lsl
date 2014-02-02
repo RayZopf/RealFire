@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Sun Feb  2 20:11:47 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Sun Feb  2 20:24:11 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//31. Jan. 2014
-//v0.12
+//02. Feb. 2014
+//v0.13
 //
 //
 // (Realfire by Rene)
@@ -35,7 +35,6 @@
 //TODO: temp prim handling not good
 //TODO: listen event + timer to check if fire prim really was created
 //TODO: check if fire prim is "copy"
-//TODO: add settings for position of different fire prims - enhance SelectStuff()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -76,7 +75,7 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealPrimFire";
-string g_sVersion = "0.12";
+string g_sVersion = "0.13";
 string g_sScriptName;
 string g_sType = "anim";
 integer g_iType = LINK_SET;

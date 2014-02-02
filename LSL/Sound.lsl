@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Sun Feb  2 20:09:33 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Sun Feb  2 20:25:18 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//01. Feb. 2014
-//v0.83
+//02. Feb. 2014
+//v0.84
 //
 //
 // (Realfire by Rene)
@@ -71,7 +71,7 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";
-string g_sVersion = "0.83";
+string g_sVersion = "0.84";
 string g_sScriptName;
 string g_sType = "sound";
 integer g_iType = LINK_SET;

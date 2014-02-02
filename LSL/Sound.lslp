@@ -2,8 +2,8 @@
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//01. Feb. 2014
-//v0.83
+//02. Feb. 2014
+//v0.84
 //
 //
 // (Realfire by Rene)
@@ -70,7 +70,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";     // title
-string g_sVersion = "0.83";       // version
+string g_sVersion = "0.84";       // version
 string g_sScriptName;
 string g_sType = "sound";
 integer g_iType = LINK_SET;

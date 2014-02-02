@@ -22,3 +22,10 @@ Jan.2014
  - bugfixes
  - incorporated RealFire 2.2.1 update
  - added prim fire
+
+Feb .2014
+-----------------
+ - working prim fire
+ - reworked some modules
+ - bugfixes
+ - code re-formatting
