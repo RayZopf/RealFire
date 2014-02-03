@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Mon Feb  3 05:12:26 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Mon Feb  3 05:30:37 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -29,7 +29,6 @@
 //
 
 //FIXME: soundpreload on touch is useless in child prim
-//FIXME: sound not always stops
 
 //TODO: decide if touch event should really block touch on child prim and how to preload sound
 //TODO: simplify to use only one sound file as background noise (at half? the normal volume - volume == volume falloff!!!)

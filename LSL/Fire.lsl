@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Mon Feb  3 05:06:42 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Mon Feb  3 05:47:36 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -296,12 +296,13 @@ toggleFunktion(string sFunction){
     }
     else  if (("particlefire" == sFunction)) {
         if (g_iParticleFireOn) {
+            llParticleSystem([]);
             (g_iParticleFireOn = FALSE);
         }
         else  {
             (g_iParticleFireOn = TRUE);
+            updateSize(g_fPerSize);
         }
-        updateSize(g_fPerSize);
     }
     else  if (("primfire" == sFunction)) {
         if (g_iPrimFireOn) {
@@ -754,9 +755,9 @@ stopSystem(){
     (g_fPercent = 0.0);
     (g_fPercentSmoke = 0.0);
     llSetTimerEvent(0.0);
-    if (g_iSmokeAvail) sendMessage(SMOKE_CHANNEL,"0","");
+    if (g_iSmokeOn) sendMessage(SMOKE_CHANNEL,"0","");
     llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,FALSE,ZERO_VECTOR,0,0,0]);
-    if ((g_iSoundAvail || g_iBackSoundAvail)) sendMessage(SOUND_CHANNEL,"0","0");
+    if ((g_iSoundOn || g_iBackSoundAvail)) sendMessage(SOUND_CHANNEL,"0","0");
     if (g_iMenuOpen) {
         llListenRemove(g_iMenuHandle);
         llListenRemove(g_iStartColorHandle);
@@ -764,7 +765,7 @@ stopSystem(){
         llListenRemove(g_iOptionsHandle);
         (g_iMenuOpen = FALSE);
     }
-    if (g_iPrimFireAvail) sendMessage(ANIM_CHANNEL,"0","");
+    if (g_iPrimFireOn) sendMessage(ANIM_CHANNEL,"0","");
     llSleep(0.7);
     llParticleSystem([]);
     llSleep(1.9);
@@ -889,9 +890,9 @@ default {
             }
             else  if (("FastToggle" == msg)) {
                 if ((((g_iSmokeOn || g_iSoundOn) || g_iParticleFireOn) || g_iPrimFireOn)) {
-                    if (g_iParticleFireOn) toggleFunktion("particlefire");
                     sendMessage(COMMAND_CHANNEL,"off","");
                     (g_iSmokeOn = (g_iSoundOn = (g_iPrimFireOn = FALSE)));
+                    if (g_iParticleFireOn) toggleFunktion("particlefire");
                 }
                 else  {
                     if ((!g_iParticleFireOn)) toggleFunktion("particlefire");
@@ -931,9 +932,9 @@ default {
             }
             else  if (("FastToggle" == msg)) {
                 if ((((g_iSmokeOn || g_iSoundOn) || g_iParticleFireOn) || g_iPrimFireOn)) {
-                    if (g_iParticleFireOn) toggleFunktion("particlefire");
                     sendMessage(COMMAND_CHANNEL,"off","");
                     (g_iSmokeOn = (g_iSoundOn = (g_iPrimFireOn = FALSE)));
+                    if (g_iParticleFireOn) toggleFunktion("particlefire");
                 }
                 else  {
                     if ((!g_iParticleFireOn)) toggleFunktion("particlefire");

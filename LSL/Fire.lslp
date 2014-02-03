@@ -253,11 +253,12 @@ toggleFunktion(string sFunction)
 		if (g_iOn) stopSystem(); else startSystem();
 	} else if ("particlefire" == sFunction) {
 		if (g_iParticleFireOn) {
+			llParticleSystem([]);
 			g_iParticleFireOn = FALSE;
 		} else {
 			g_iParticleFireOn = TRUE;
+			updateSize(g_fPerSize);
 		}
-		updateSize(g_fPerSize);
 	} else if ("primfire" == sFunction) {
 		if (g_iPrimFireOn) {
 			sendMessage(ANIM_CHANNEL, "0", (string)g_iLowprim);
@@ -764,9 +765,9 @@ stopSystem()
 	g_fPercent = 0.0;
 	g_fPercentSmoke = 0.0;
 	llSetTimerEvent(0.0);
-	if (g_iSmokeAvail) sendMessage(SMOKE_CHANNEL, "0", "");
+	if (g_iSmokeOn) sendMessage(SMOKE_CHANNEL, "0", "");
 	llSetLinkPrimitiveParamsFast(g_iType, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
-	if (g_iSoundAvail || g_iBackSoundAvail) sendMessage(SOUND_CHANNEL, "0", "0"); //volume off and size off
+	if (g_iSoundOn || g_iBackSoundAvail) sendMessage(SOUND_CHANNEL, "0", "0"); //volume off and size off
 	if (g_iMenuOpen) {
 		llListenRemove(g_iMenuHandle);
 		llListenRemove(g_iStartColorHandle);
@@ -774,7 +775,7 @@ stopSystem()
 		llListenRemove(g_iOptionsHandle);
 		g_iMenuOpen = FALSE;
 	}
-	if (g_iPrimFireAvail) sendMessage(ANIM_CHANNEL, "0", "");
+	if (g_iPrimFireOn) sendMessage(ANIM_CHANNEL, "0", "");
 	//llStopSound(); //keep, just in case there wents something wrong and this prim has sound too -kills B_Sound!!!
 	llSleep(0.7);
 	llParticleSystem([]);
@@ -947,9 +948,9 @@ default
 				g_fStartVolume = percentage(g_iPerVolume, MAX_VOLUME);
 			} else if ("FastToggle" == msg) {
 				if (g_iSmokeOn || g_iSoundOn || g_iParticleFireOn  || g_iPrimFireOn) {
-					if (g_iParticleFireOn) toggleFunktion("particlefire");
 					sendMessage(COMMAND_CHANNEL, "off", "");
 					g_iSmokeOn = g_iSoundOn = g_iPrimFireOn = FALSE;
+					if (g_iParticleFireOn) toggleFunktion("particlefire"); // may interrupt timer effents!
 				} else {
 					if (!g_iParticleFireOn) toggleFunktion("particlefire");
 					if (!g_iPrimFireOn && g_iPrimFireAvail) toggleFunktion("primfire");
@@ -987,9 +988,9 @@ default
 				g_iVerboseButton = TRUE;
 			} else if ("FastToggle" == msg) {
 				if (g_iSmokeOn || g_iSoundOn || g_iParticleFireOn  || g_iPrimFireOn) {
-					if (g_iParticleFireOn) toggleFunktion("particlefire");
-						sendMessage(COMMAND_CHANNEL, "off", "");
-						g_iSmokeOn = g_iSoundOn = g_iPrimFireOn = FALSE;
+					sendMessage(COMMAND_CHANNEL, "off", "");
+					g_iSmokeOn = g_iSoundOn = g_iPrimFireOn = FALSE;
+					if (g_iParticleFireOn) toggleFunktion("particlefire");  // may interrupt timer effents!
 					} else {
 						if (!g_iParticleFireOn) toggleFunktion("particlefire");
 						if (!g_iPrimFireOn && g_iPrimFireAvail) toggleFunktion("primfire");
