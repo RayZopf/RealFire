@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Sun Feb  2 18:24:54 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Mon Feb  3 03:35:51 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Smoke
 //
@@ -222,7 +222,7 @@ default {
         }
         else  {
             llWhisper(0,"Fumes are fading");
-            llSetTimerEvent(15.0);
+            llSetTimerEvent(11.0);
         }
     }
 

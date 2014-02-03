@@ -203,7 +203,7 @@ default
 			g_sSize = sMsg;
 		} else {
 			llWhisper(0, "Fumes are fading");
-			llSetTimerEvent(15.0);
+			llSetTimerEvent(11.0);
 		}
 	}
 

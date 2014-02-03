@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Mon Feb  3 00:20:25 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Mon Feb  3 03:35:51 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -50,7 +50,7 @@
 // structure for multiple scripts
 // B-Sound
 
-//FIXME: ----
+//FIXME: too much llSleep in stopSystem
 
 //TODO: make sound configurable via notecard - maybe own config file?
 //TODO: keep sound running for a short time after turning fire off
@@ -381,7 +381,6 @@ updateSize(float size){
     }
     updateColor();
     if ((g_iPrimFireAvail && g_iPrimFireOn)) sendMessage(ANIM_CHANNEL,((string)size),((string)g_iLowprim));
-    llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,TRUE,g_vLightColor,g_fLightIntensity,g_fLightRadius,g_fLightFalloff]);
     if ((g_iSmokeAvail && g_iSmokeOn)) sendMessage(SMOKE_CHANNEL,((string)llRound(g_fPercentSmoke)),"");
     if ((g_iSoundAvail || g_iBackSoundAvail)) {
         if (((0 <= size) && (100 >= size))) (g_sCurrentSound = ((string)size));
@@ -390,6 +389,7 @@ updateSize(float size){
     }
     if (g_iParticleFireOn) updateParticles(vStart,vEnd,fMin,fMax,fRadius,vPush);
     else  llParticleSystem([]);
+    llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,TRUE,g_vLightColor,g_fLightIntensity,g_fLightRadius,g_fLightFalloff]);
     Debug(((((((string)llRound(size)) + "% ") + ((string)vStart)) + " ") + ((string)vEnd)));
 }
 
@@ -757,9 +757,9 @@ stopSystem(){
         (g_iMenuOpen = FALSE);
     }
     if (g_iPrimFireAvail) sendMessage(ANIM_CHANNEL,"0","");
-    llSleep(1.5);
+    llSleep(0.7);
     llParticleSystem([]);
-    llSleep(2.0);
+    llSleep(1.9);
     llSetLinkTextureAnim(LINK_SET,FALSE,ALL_SIDES,4,4,0,0,1);
 }
 

@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Sun Feb  2 18:24:54 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Mon Feb  3 03:35:51 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -241,7 +241,7 @@ default {
         if (((((float)sVal) == g_fSoundVolumeCur) && ((sMsg == g_sSize) || ("" == sMsg)))) return;
         Debug("work on link_message");
         (g_fSoundVolumeNew = ((float)sVal));
-        if (((g_fSoundVolumeNew > 0) && (g_fSoundVolumeNew <= 1))) {
+        if (((g_fSoundVolumeNew > 0.0) && (g_fSoundVolumeNew <= 1.0))) {
             Debug(("Factor start " + ((string)g_fFactor)));
             if (("-1" == sMsg)) (g_fFactor = 1.0);
             else  if (((0 < ((integer)sMsg)) && (100 >= ((integer)sMsg)))) {
@@ -269,7 +269,7 @@ default {
         else  {
             llWhisper(0,"Background fire noises getting quieter and quieter...");
             (g_iInTimer = TRUE);
-            llSetTimerEvent(11.0);
+            llSetTimerEvent(12.0);
         }
     }
 

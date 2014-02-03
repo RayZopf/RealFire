@@ -177,7 +177,7 @@ default
 		Debug("work on link_message");
 
 		g_fSoundVolumeNew = (float)sVal;
-		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1) { //background sound on/volume adjust
+		if (g_fSoundVolumeNew > 0.0 && g_fSoundVolumeNew <= 1.0) { //background sound on/volume adjust
 			Debug("Factor start "+(string)g_fFactor);
 			//simple adjustment to different fire sizes (full, at start, when special B_Sound message with sMsg = -1)
 			if ("-1" == sMsg) g_fFactor = 1.0;
@@ -204,7 +204,7 @@ default
 		} else {
 			llWhisper(0, "Background fire noises getting quieter and quieter...");
 			g_iInTimer = TRUE;
-			llSetTimerEvent(11.0); //wait ... better would be to fade out
+			llSetTimerEvent(12.0); //wait ... better would be to fade out
 		}
 	}
 
