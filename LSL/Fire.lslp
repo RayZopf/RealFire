@@ -50,6 +50,9 @@
 // B-Sound
 
 //FIXME: too much llSleep in stopSystem
+//FIXME: menu closes when fastToggle (all off, main menu)
+//FIXME: to many backround sound off messages after every option togggle (primfire)
+//FIXME: off messages when touch-off but extensions are allready off in options
 
 //TODO: make sound configurable via notecard - maybe own config file?
 //TODO: keep sound running for a short time after turning fire off
@@ -280,7 +283,7 @@ toggleFunktion(string sFunction)
 			sendMessage(SOUND_CHANNEL, "0", "");
 			g_iSoundOn = FALSE;
 		} else {
-			sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound);
+			sendMessage(SOUND_CHANNEL, g_sCurrentSound, (string)g_fSoundVolume);
 			g_iSoundOn = TRUE;
 		}
 	}
@@ -338,8 +341,8 @@ updateSize(float size)
 	if (g_iSmokeAvail && g_iSmokeOn) sendMessage(SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
 	if (g_iSoundAvail || g_iBackSoundAvail) { //needs to be improved
 	if (0 <= size && 100 >= size) g_sCurrentSound = (string)size;
-	if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fSoundVolume, g_sCurrentSound); //used when changing fire size via menu
-		else sendMessage(SOUND_CHANNEL, "0", g_sCurrentSound);
+	if (g_iSoundOn) sendMessage(SOUND_CHANNEL, g_sCurrentSound, (string)g_fSoundVolume); //used when changing fire size via menu
+		else sendMessage(SOUND_CHANNEL, g_sCurrentSound, "0");
 	}
 	if (g_iParticleFireOn) updateParticles(vStart, vEnd, fMin, fMax, fRadius, vPush);
 		else llParticleSystem([]);
@@ -631,7 +634,7 @@ endColorDialog (key id)
 }
 
 
-OptionsDialog (key kId)
+optionsDialog (key kId)
 {
 	g_iMenuOpen = TRUE;
 
@@ -743,10 +746,10 @@ startSystem()
 	g_fLightRadius = g_fStartRadius;
 	if (g_iSoundAvail || g_iBackSoundAvail) { //needs some more rework, move all calculation inside
 		g_fStartVolume = percentage((float)g_iPerVolume, MAX_VOLUME);
-		//if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fStartVolume, "-1"); //background noise - do better not use, gets called to often
+		//if (g_iSoundOn) sendMessage(SOUND_CHANNEL, "-1", (string)g_fStartVolume); //background noise - do better not use, gets called to often
 	}
 	if (!g_iOn) {
-		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, (string)g_fStartVolume, "110"); // special start sound
+		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, "110", (string)g_fStartVolume); // special start sound
 		if (g_iVerbose) llWhisper(0, "(v) The fire gets lit");
 		//llParticleSystem([]); // get linden like particles to start fire with
 	}
@@ -850,11 +853,11 @@ sendMessage(integer iChan, string sVal, string sMsg )
 {
 	string sId = getGroup(LINKSETID) + ";" + g_sScriptName;
 	if (iChan == COMMAND_CHANNEL) llMessageLinked(LINK_SET, iChan, sVal, (key)sId);
-	else if (iChan == ANIM_CHANNEL || iChan == SOUND_CHANNEL) {
+	else if (iChan == SMOKE_CHANNEL) {
+		llMessageLinked(LINK_ALL_OTHERS, iChan, sVal, (key)sId); //to all other prims (because of only one emitter per prim)
+	} else {
 		string sSet = sVal + "," + sMsg;
 		llMessageLinked(LINK_SET, iChan, sSet, (key)sId);
-	} else if (iChan == SMOKE_CHANNEL) {
-		llMessageLinked(LINK_ALL_OTHERS, SMOKE_CHANNEL, sVal, (key)sId); //to all other prims (because of only one emitter per prim)
 	}
 }
 
@@ -959,10 +962,10 @@ default
 				}
 			}
 
-			if ("FastToggle" != msg && msg != "Close" && "Options" != msg) {
-				updateSize(g_fPerSize);
+			if (msg != "Close" && "Options" != msg) {
+				if ("FastToggle" != msg) updateSize(g_fPerSize);
 				menuDialog(g_kUser);
-			} else if (msg == "Options") OptionsDialog(g_kUser);
+			} else if (msg == "Options") optionsDialog(g_kUser);
 			else if (msg == "Close") {
 				llSetTimerEvent(0.0); // stop dialog timer
 				llSetTimerEvent(g_fBurnTime); // restart burn timer
@@ -1000,7 +1003,7 @@ default
 				} else if (msg == "RESET") reset(); startSystem();
 
 			if ("Color" != msg && msg != "^Main menu" && "Close" != msg) {
-				OptionsDialog(g_kUser);
+				optionsDialog(g_kUser);
 			} else if (msg == "^Main menu") menuDialog(g_kUser);
 				else if (msg == "Close") {
 					llSetTimerEvent(0.0); //stop dialog timer
@@ -1051,7 +1054,7 @@ default
 					updateSize(g_fPerSize);
 					endColorDialog(g_kUser);
 				} else if (msg == "Bottom color") startColorDialog(g_kUser);
-				else if (msg == "^Options") OptionsDialog(g_kUser);
+				else if (msg == "^Options") optionsDialog(g_kUser);
 			}
 		}
 
