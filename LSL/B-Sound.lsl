@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Mon Feb  3 03:35:51 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Mon Feb  3 05:12:26 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -29,6 +29,7 @@
 //
 
 //FIXME: soundpreload on touch is useless in child prim
+//FIXME: sound not always stops
 
 //TODO: decide if touch event should really block touch on child prim and how to preload sound
 //TODO: simplify to use only one sound file as background noise (at half? the normal volume - volume == volume falloff!!!)
@@ -238,6 +239,7 @@ default {
         Debug(((((((("no changes? backround on/off? " + sVal) + "-") + sMsg) + "...g_fSoundVolumeCur=") + ((string)g_fSoundVolumeCur)) + "-g_sSize=") + g_sSize));
         if ((("110" == sMsg) || (("0" == sVal) && g_iInTimer))) return;
         llSetTimerEvent(0.0);
+        (g_iInTimer = FALSE);
         if (((((float)sVal) == g_fSoundVolumeCur) && ((sMsg == g_sSize) || ("" == sMsg)))) return;
         Debug("work on link_message");
         (g_fSoundVolumeNew = ((float)sVal));

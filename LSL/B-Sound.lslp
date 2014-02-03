@@ -28,6 +28,7 @@
 //
 
 //FIXME: soundpreload on touch is useless in child prim
+//FIXME: sound not always stops
 
 //TODO: decide if touch event should really block touch on child prim and how to preload sound
 //TODO: simplify to use only one sound file as background noise (at half? the normal volume - volume == volume falloff!!!)
@@ -173,6 +174,7 @@ default
 		if ("110" == sMsg || ("0" == sVal && g_iInTimer)) return; // 110 = Sound.lsl
 
 		llSetTimerEvent(0.0);
+		g_iInTimer = FALSE;
 		if ((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) return; //no "backround sound off" currently, 110 = Sound.lsl
 		Debug("work on link_message");
 
