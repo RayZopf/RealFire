@@ -1,4 +1,6 @@
-// Remote control (secondary switch) for RealFire
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Mon Feb  3 19:03:35 Mitteleuropäische Zeit 2014
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//Remote control (secondary switch) for RealFire
 //
 // Author: Rene10957 Resident
 // Date: 31-05-2013
@@ -14,51 +16,87 @@
 //
 // A switch can be bound to a fire by entering the same word in the description of both prims
 // Alternatively, you can use the network switch to control up to 9 fires
+//
+//
+//modified by: Zopf Resident - Ray Zopf (Raz)
+//Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
+//03. Feb. 2014
+//v1.0-0.1
+//
 
-string title = "Remote Control";   // title
-string version = "1.0";            // version
+
+integer g_iVerbose = FALSE;
+
+
+//user changeable variables
+//-----------------------------------------------
+string LINKSETID = "RealFire";
+
+
+//internal variables
+//-----------------------------------------------
+string g_sTitle = "RealFire Remote Control";
+string g_sVersion = "1.0-0.1";
+string g_sAuthors = "Rene10957, Zopf";
 
 // Constants
+string SEPARATOR = ";;";
+integer REMOTE_CHANNEL = -975102;
 
-integer remoteChannel = -975102;   // remote channel
-string separator = ";;";           // separator for region messages
 
-// Functions
+//###
+//GroupHandling.lslm
+//0.5 - 31Jan2014
 
-string getGroup()
-{
-    string str = llStringTrim(llGetObjectDesc(), STRING_TRIM);
-    if (llToLower(str) == "(no description)" || str == "") str = "Default";
+string getGroup(string sDefGroup){
+    if (("" == sDefGroup)) (sDefGroup = "Default");
+    string str = llStringTrim(llGetObjectDesc(),STRING_TRIM);
+    if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
+    else  {
+        list lGroup = llParseString2List(str,[" "],[]);
+        (str = llList2String(lGroup,0));
+    }
     return str;
 }
 
-default
-{
-    state_entry()
-    {
-        llWhisper(0, title + " " + version + " ready");
+
+//===============================================
+//PREDEFINED FUNCTIONS
+//===============================================
+
+
+
+//===============================================
+//===============================================
+//MAIN
+//===============================================
+//===============================================
+
+
+default {
+
+    state_entry() {
+        if (g_iVerbose) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + " ready"));
     }
 
-    on_rez(integer start_param)
-    {
+
+    on_rez(integer start_param) {
         llResetScript();
     }
 
-    touch_start(integer total_number)
-    {
+
+    touch_start(integer total_number) {
         llResetTime();
     }
 
-    touch_end(integer total_number)
-    {
-        key user = llDetectedKey(0);
+
+    touch_end(integer total_number) {
+        key kUser = llDetectedKey(0);
         string command;
-
-        if (llGetTime() > 1.0) command = "menu";
-        else command = "switch";
-
-        list msgList = [getGroup(), command, user];
-        string msgData = llDumpList2String(msgList, separator);
-        llRegionSay(remoteChannel, msgData);
+        if ((llGetTime() > 1.0)) (command = "menu");
+        else  (command = "switch");
+        list msgList = [getGroup(LINKSETID),command,kUser];
+        string msgData = llDumpList2String(msgList,SEPARATOR);
+        llRegionSay(REMOTE_CHANNEL,msgData);
     }
 }
