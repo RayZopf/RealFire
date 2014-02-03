@@ -467,7 +467,7 @@ loadNotecard()
 
 		reset(); // initial values for menu
 				if (g_iOn) startSystem();
-		if (g_iVerbose) InfoLines();
+		if (g_iVerbose) infoLines();
 
 		if (g_iDebugMode) {
 			llOwnerSay("verbose = " + (string)g_iVerbose);
@@ -751,7 +751,53 @@ startSystem()
 	if (!g_iOn) {
 		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, "110", (string)g_fStartVolume); // special start sound
 		if (g_iVerbose) llWhisper(0, "(v) The fire gets lit");
-		//llParticleSystem([]); // get linden like particles to start fire with
+		//particles to start fire with
+		llParticleSystem ([
+		//System Behavior
+			PSYS_PART_FLAGS,
+				0 |
+				//PSYS_PART_BOUNCE_MASK |
+				PSYS_PART_EMISSIVE_MASK |
+				//PSYS_PART_FOLLOW_SRC_MASK |
+				//PSYS_PART_FOLLOW_VELOCITY_MASK |
+				PSYS_PART_INTERP_COLOR_MASK |
+				PSYS_PART_INTERP_SCALE_MASK, // |
+				//PSYS_PART_RIBBON_MASK |
+				//PSYS_PART_TARGET_LINEAR_MASK |
+				//PSYS_PART_TARGET_POS_MASK |
+				////PSYS_PART_WIND_MASK,
+		//System Presentation
+			PSYS_SRC_PATTERN,
+				PSYS_SRC_PATTERN_EXPLODE, //|
+				//PSYS_SRC_PATTERN_ANGLE_CONE |
+				//PSYS_SRC_PATTERN_ANGLE |
+				////PSYS_SRC_PATTERN_DROP,
+			PSYS_SRC_BURST_RADIUS, 0.148438,
+			//PSYS_SRC_ANGLE_BEGIN, float,
+			//PSYS_SRC_ANGLE_END, float,
+			//PSYS_SRC_TARGET_KEY, key,
+		//Particle Appearance
+			PSYS_PART_START_COLOR, <0.74902,0.6,0.14902>,
+			PSYS_PART_END_COLOR, <1,0.2,0>,
+			PSYS_PART_START_ALPHA, 0.101961,
+			PSYS_PART_END_ALPHA, 0.0705882,
+			PSYS_PART_START_SCALE, <0.59375,0.59375,0>,
+			PSYS_PART_END_SCALE, <0.09375,0.09375,0>,
+			PSYS_SRC_TEXTURE, (key)"23d133ad-c669-18a8-02a3-a75baa9b214a",
+			//PSYS_PART_START_GLOW, float,
+			//PSYS_PART_END_GLOW, float,
+		//Particle Blending
+		//Particle Flow
+			PSYS_SRC_MAX_AGE, 2.8,
+			PSYS_PART_MAX_AGE, 3.0,
+			PSYS_SRC_BURST_RATE, 0.01,
+			PSYS_SRC_BURST_PART_COUNT, 1,
+		//Particle Motion
+			PSYS_SRC_ACCEL, <0,0,0.203125>,
+			//PSYS_SRC_OMEGA, vector,
+			PSYS_SRC_BURST_SPEED_MIN, 0.0195313,
+			PSYS_SRC_BURST_SPEED_MAX, 0.0273438
+		]);
 	}
 	updateSize(g_fPerSize);
 	llSetTimerEvent(g_fBurnTime);
@@ -861,7 +907,7 @@ sendMessage(integer iChan, string sVal, string sMsg )
 	}
 }
 
-InfoLines()
+infoLines()
 {
 	llWhisper(0, "(v) Switch access:" + showAccess(g_iSwitchAccess));
 	llWhisper(0, "(v) Menu access:" + showAccess(g_iMenuAccess));
@@ -1175,7 +1221,7 @@ default
 			reset(); //initial values for menu
 
 			if (g_iOn) startSystem();
-			if (g_iVerbose) InfoLines();
+			if (g_iVerbose) infoLines();
 
 			if (g_iDebugMode) {
 				llOwnerSay((string)g_iLine + " lines in notecard");

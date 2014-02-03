@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Mon Feb  3 17:22:36 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Mon Feb  3 18:03:22 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -503,7 +503,7 @@ loadNotecard(){
         (g_fStartVolume = percentage(g_iDefVolume,MAX_VOLUME));
         reset();
         if (g_iOn) startSystem();
-        if (g_iVerbose) InfoLines();
+        if (g_iVerbose) infoLines();
         if (g_iDebugMode) {
             llOwnerSay(("verbose = " + ((string)g_iVerbose)));
             llOwnerSay(("switchAccess = " + ((string)g_iSwitchAccess)));
@@ -743,6 +743,7 @@ startSystem(){
     if ((!g_iOn)) {
         if (g_iSoundOn) sendMessage(SOUND_CHANNEL,"110",((string)g_fStartVolume));
         if (g_iVerbose) llWhisper(0,"(v) The fire gets lit");
+        llParticleSystem([PSYS_PART_FLAGS,(((0 | PSYS_PART_EMISSIVE_MASK) | PSYS_PART_INTERP_COLOR_MASK) | PSYS_PART_INTERP_SCALE_MASK),PSYS_SRC_PATTERN,PSYS_SRC_PATTERN_EXPLODE,PSYS_SRC_BURST_RADIUS,0.148438,PSYS_PART_START_COLOR,<0.74902,0.6,0.14902>,PSYS_PART_END_COLOR,<1,0.2,0>,PSYS_PART_START_ALPHA,0.101961,PSYS_PART_END_ALPHA,7.05882e-2,PSYS_PART_START_SCALE,<0.59375,0.59375,0>,PSYS_PART_END_SCALE,<9.375e-2,9.375e-2,0>,PSYS_SRC_TEXTURE,((key)"23d133ad-c669-18a8-02a3-a75baa9b214a"),PSYS_SRC_MAX_AGE,2.8,PSYS_PART_MAX_AGE,3.0,PSYS_SRC_BURST_RATE,1.0e-2,PSYS_SRC_BURST_PART_COUNT,1,PSYS_SRC_ACCEL,<0,0,0.203125>,PSYS_SRC_BURST_SPEED_MIN,1.95313e-2,PSYS_SRC_BURST_SPEED_MAX,2.73438e-2]);
     }
     updateSize(g_fPerSize);
     llSetTimerEvent(g_fBurnTime);
@@ -804,7 +805,7 @@ sendMessage(integer iChan,string sVal,string sMsg){
     }
 }
 
-InfoLines(){
+infoLines(){
     llWhisper(0,("(v) Switch access:" + showAccess(g_iSwitchAccess)));
     llWhisper(0,("(v) Menu access:" + showAccess(g_iMenuAccess)));
 }
@@ -1142,7 +1143,7 @@ default {
             (g_fStartVolume = percentage(((float)g_iDefVolume),MAX_VOLUME));
             reset();
             if (g_iOn) startSystem();
-            if (g_iVerbose) InfoLines();
+            if (g_iVerbose) infoLines();
             if (g_iDebugMode) {
                 llOwnerSay((((string)g_iLine) + " lines in notecard"));
                 llOwnerSay(("verbose = " + ((string)g_iVerbose)));
