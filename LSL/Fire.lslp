@@ -22,7 +22,7 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//01. Feb. 2014
+//03. Feb. 2014
 //v2.2.1-0.95
 //
 
@@ -121,7 +121,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";            // title
-string g_sVersion = "2.2.1-0.95";        // version
+string g_sVersion = "2.2.1-0.96";        // version
 string g_sScriptName;
 string g_sType = "main";
 integer g_iType = LINK_SET;
@@ -556,7 +556,7 @@ menuDialog (key id)
 	string sPrimFire = "N/A";
 	if (g_iPrimFireAvail) {
 		if (g_iPrimFireOn) {
-			if (g_iLowprim) sPrimFire = "ON, temp-prim";
+			if (g_iLowprim) sPrimFire = "ON (temp)";
 				else sPrimFire = "ON";
 		} else sPrimFire = "OFF";
 	}
@@ -567,8 +567,11 @@ menuDialog (key id)
 	}
 	string strSound = "N/A";
 	if (g_iSoundAvail || g_iBackSoundAvail) {
-		if (g_iSoundOn) strSound = "ON";
-			else strSound = "OFF";
+		if (g_iSoundOn) {
+			if (g_iBackSoundAvail && g_iSoundAvail) strSound = "ON";
+			else if (g_iBackSoundAvail) strSound = "ON (back)";
+			else strSound = "ON (normal)";
+		} else strSound = "OFF";
 	}
 	menuChannel = (integer)(llFrand(-1000000000.0) - 1000000000.0);
 	llListenRemove(g_iMenuHandle);
@@ -577,7 +580,7 @@ menuDialog (key id)
 	llSetTimerEvent(120.0);
 	llDialog(id, g_sTitle + " " + g_sVersion +
 			"\n\nSize: " + (string)((integer)g_fPerSize) + "%\t\tVolume: " + (string)g_iPerVolume + "%" +
-			"\nParticleFire: " + sParticleFire + "\tSmoke: " + strSmoke + "\tSound: " + strSound + "\nPrimFire: " + sPrimFire, [
+			"\nParticleFire: " + sParticleFire + "\tSmoke: " + strSmoke + "\tSound: " + strSound + "\nPrimFire:\t " + sPrimFire, [
 			"Options", "FastToggle", "Close",
 			"-Volume", "+Volume", "---",
 			"-Fire", "+Fire", "---",
@@ -637,7 +640,7 @@ OptionsDialog (key kId)
 	string sPrimFire = "N/A";
 	if (g_iPrimFireAvail) {
 		if (g_iPrimFireOn) {
-			if (g_iLowprim) sPrimFire = "ON, temp-prim";
+			if (g_iLowprim) sPrimFire = "ON, (temp)";
 				else sPrimFire = "ON";
 		} else sPrimFire = "OFF";
 	}
@@ -648,8 +651,11 @@ OptionsDialog (key kId)
 	}
 	string strSound = "N/A";
 	if (g_iSoundAvail || g_iBackSoundAvail) {
-		if (g_iSoundOn) strSound = "ON";
-			else strSound = "OFF";
+		if (g_iSoundOn) {
+			if (g_iBackSoundAvail && g_iSoundAvail) strSound = "ON";
+			else if (g_iBackSoundAvail) strSound = "ON (back)";
+			else strSound = "ON (normal)";
+		} else strSound = "OFF";
 	}
 	string sVerbose = "???";
 	if (g_iVerbose) {
@@ -663,7 +669,7 @@ OptionsDialog (key kId)
 	llSetTimerEvent(0.0);
 	llSetTimerEvent(120.0);
 	llDialog(kId, "\t\tOptions" +
-			"\n\nParticleFire: " + sParticleFire + "\tSmoke: " + strSmoke + "\tSound: " + strSound + "\nPrimFire: " + sPrimFire +"\t\tVerbose: " + sVerbose, [
+			"\n\nParticleFire: " + sParticleFire + "\tSmoke: " + strSmoke + "\tSound: " + strSound + "\nPrimFire:\t " + sPrimFire +"\t\t\t\tVerbose: " + sVerbose, [
 			"^Main menu", "RESET", "Close",
 			"Color", "FastToggle", "Verbose",
 			"PrimFire", "---", "---",

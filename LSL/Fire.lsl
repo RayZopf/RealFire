@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Mon Feb  3 03:35:51 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Mon Feb  3 05:06:42 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -23,7 +23,7 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//01. Feb. 2014
+//03. Feb. 2014
 //v2.2.1-0.95
 //
 
@@ -120,7 +120,7 @@ vector g_vEndColor = <1,0,0>;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";
-string g_sVersion = "2.2.1-0.95";
+string g_sVersion = "2.2.1-0.96";
 string g_sScriptName;
 integer g_iType = LINK_SET;
 string g_sAuthors = "Rene10957, Zopf";
@@ -585,7 +585,7 @@ menuDialog(key id){
     string sPrimFire = "N/A";
     if (g_iPrimFireAvail) {
         if (g_iPrimFireOn) {
-            if (g_iLowprim) (sPrimFire = "ON, temp-prim");
+            if (g_iLowprim) (sPrimFire = "ON (temp)");
             else  (sPrimFire = "ON");
         }
         else  (sPrimFire = "OFF");
@@ -597,7 +597,11 @@ menuDialog(key id){
     }
     string strSound = "N/A";
     if ((g_iSoundAvail || g_iBackSoundAvail)) {
-        if (g_iSoundOn) (strSound = "ON");
+        if (g_iSoundOn) {
+            if ((g_iBackSoundAvail && g_iSoundAvail)) (strSound = "ON");
+            else  if (g_iBackSoundAvail) (strSound = "ON (back)");
+            else  (strSound = "ON (normal)");
+        }
         else  (strSound = "OFF");
     }
     (menuChannel = ((integer)(llFrand((-1.0e9)) - 1.0e9)));
@@ -605,7 +609,7 @@ menuDialog(key id){
     (g_iMenuHandle = llListen(menuChannel,"","",""));
     llSetTimerEvent(0.0);
     llSetTimerEvent(120.0);
-    llDialog(id,(((((((((((((((g_sTitle + " ") + g_sVersion) + "\n\nSize: ") + ((string)((integer)g_fPerSize))) + "%\t\tVolume: ") + ((string)g_iPerVolume)) + "%") + "\nParticleFire: ") + sParticleFire) + "\tSmoke: ") + strSmoke) + "\tSound: ") + strSound) + "\nPrimFire: ") + sPrimFire),["Options","FastToggle","Close","-Volume","+Volume","---","-Fire","+Fire","---","Small","Medium","Large"],menuChannel);
+    llDialog(id,(((((((((((((((g_sTitle + " ") + g_sVersion) + "\n\nSize: ") + ((string)((integer)g_fPerSize))) + "%\t\tVolume: ") + ((string)g_iPerVolume)) + "%") + "\nParticleFire: ") + sParticleFire) + "\tSmoke: ") + strSmoke) + "\tSound: ") + strSound) + "\nPrimFire:\t ") + sPrimFire),["Options","FastToggle","Close","-Volume","+Volume","---","-Fire","+Fire","---","Small","Medium","Large"],menuChannel);
 }
 
 
@@ -638,7 +642,7 @@ OptionsDialog(key kId){
     string sPrimFire = "N/A";
     if (g_iPrimFireAvail) {
         if (g_iPrimFireOn) {
-            if (g_iLowprim) (sPrimFire = "ON, temp-prim");
+            if (g_iLowprim) (sPrimFire = "ON, (temp)");
             else  (sPrimFire = "ON");
         }
         else  (sPrimFire = "OFF");
@@ -650,7 +654,11 @@ OptionsDialog(key kId){
     }
     string strSound = "N/A";
     if ((g_iSoundAvail || g_iBackSoundAvail)) {
-        if (g_iSoundOn) (strSound = "ON");
+        if (g_iSoundOn) {
+            if ((g_iBackSoundAvail && g_iSoundAvail)) (strSound = "ON");
+            else  if (g_iBackSoundAvail) (strSound = "ON (back)");
+            else  (strSound = "ON (normal)");
+        }
         else  (strSound = "OFF");
     }
     string sVerbose = "???";
@@ -664,7 +672,7 @@ OptionsDialog(key kId){
     (g_iOptionsHandle = llListen(g_iOptionsChannel,"","",""));
     llSetTimerEvent(0.0);
     llSetTimerEvent(120.0);
-    llDialog(kId,(((((((((("\t\tOptions" + "\n\nParticleFire: ") + sParticleFire) + "\tSmoke: ") + strSmoke) + "\tSound: ") + strSound) + "\nPrimFire: ") + sPrimFire) + "\t\tVerbose: ") + sVerbose),["^Main menu","RESET","Close","Color","FastToggle","Verbose","PrimFire","---","---","ParticleFire","Smoke","Sound"],g_iOptionsChannel);
+    llDialog(kId,(((((((((("\t\tOptions" + "\n\nParticleFire: ") + sParticleFire) + "\tSmoke: ") + strSmoke) + "\tSound: ") + strSound) + "\nPrimFire:\t ") + sPrimFire) + "\t\t\t\tVerbose: ") + sVerbose),["^Main menu","RESET","Close","Color","FastToggle","Verbose","PrimFire","---","---","ParticleFire","Smoke","Sound"],g_iOptionsChannel);
 }
 
 
