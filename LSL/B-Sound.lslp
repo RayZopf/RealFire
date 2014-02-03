@@ -92,7 +92,7 @@ $import GroupHandling.lslm(m_sGroup=LINKSETID);
 //PREDEFINED FUNCTIONS
 //===============================================
 
-CheckSoundFiles()
+checkSoundFiles()
 {
 	integer iSoundNumber = llGetInventoryNumber(INVENTORY_SOUND);
 	Debug("Sound number = " +(string)iSoundNumber);
@@ -123,7 +123,7 @@ default
 		g_fFactor = 7.0 / 8.0;
 		llPassTouches(TRUE); //this need review!
 		if (g_iSound) llStopSound();
-		CheckSoundFiles();
+		checkSoundFiles();
 		llSleep(1);
 		RegisterExtension(g_iType);
 		if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
@@ -146,7 +146,7 @@ default
 		if (change & CHANGED_INVENTORY) {
 			llWhisper(0, "Inventory changed, checking sound samples...");
 			if (g_iSound) llStopSound();
-			CheckSoundFiles();
+			checkSoundFiles();
 			llSleep(1);
 			RegisterExtension(g_iType);
 			if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
@@ -170,23 +170,23 @@ default
 		string sVal = llList2String(lParams, 0);
 		string sMsg = llList2String(lParams, 1);
 		Debug("no changes? backround on/off? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
-		if ("110" == sMsg || ("0" == sVal && g_iInTimer)) return; // 110 = Sound.lsl
+		if ("110" == sVal || ("0" == sMsg && g_iInTimer)) return; // 110 = Sound.lsl
 
 		llSetTimerEvent(0.0);
 		g_iInTimer = FALSE;
-		if ((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) return; //no "backround sound off" currently, 110 = Sound.lsl
+		if ((float)sMsg == g_fSoundVolumeCur && (sVal == g_sSize || "" == sVal)) return; //no "backround sound off" currently, 110 = Sound.lsl
 		Debug("work on link_message");
 
-		g_fSoundVolumeNew = (float)sVal;
+		g_fSoundVolumeNew = (float)sMsg;
 		if (g_fSoundVolumeNew > 0.0 && g_fSoundVolumeNew <= 1.0) { //background sound on/volume adjust
 			Debug("Factor start "+(string)g_fFactor);
-			//simple adjustment to different fire sizes (full, at start, when special B_Sound message with sMsg = -1)
-			if ("-1" == sMsg) g_fFactor = 1.0;
-				else if ( 0 < (integer)sMsg && 100 >= (integer)sMsg) {
-					if ((integer)sMsg <= SIZE_EXTRASMALL ) g_fFactor = 5.0 / 6.0;
+			//simple adjustment to different fire sizes (full, at start, when special B_Sound message with sVal = -1)
+			if ("-1" == sVal) g_fFactor = 1.0;
+				else if ( 0 < (integer)sVal && 100 >= (integer)sVal) {
+					if ((integer)sVal <= SIZE_EXTRASMALL ) g_fFactor = 5.0 / 6.0;
 						else g_fFactor = 7.0 / 8.0;
-				} else if ("" != sMsg && (integer)g_sSize <= SIZE_EXTRASMALL ) g_fFactor = 5.0 / 6.0; //fallback - is this still needed?
-					else if ("" != sMsg && (integer)g_sSize > SIZE_EXTRASMALL && 100 <= (integer)g_sSize) g_fFactor = 5.0 / 6.0;
+				} else if ("" != sVal && (integer)g_sSize <= SIZE_EXTRASMALL ) g_fFactor = 5.0 / 6.0; //fallback - is this still needed?
+					else if ("" != sVal && (integer)g_sSize > SIZE_EXTRASMALL && 100 <= (integer)g_sSize) g_fFactor = 5.0 / 6.0;
 			Debug("Factor calculated "+(string)g_fFactor);
 			float fSoundVolumeF = g_fSoundVolumeNew*g_fFactor;
 
@@ -201,7 +201,7 @@ default
 				if (g_iVerbose) llWhisper(0, "(v) Fire emits a crackling background sound");
 			}
 			g_fSoundVolumeCur = g_fSoundVolumeNew;
-			if ("" != sMsg) g_sSize = sMsg;
+			if ("" != sVal) g_sSize = sVal;
 		} else {
 			llWhisper(0, "Background fire noises getting quieter and quieter...");
 			g_iInTimer = TRUE;

@@ -104,9 +104,9 @@ $import CheckForFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptNam
 //PREDEFINED FUNCTIONS
 //===============================================
 
-SelectStuff(float fMsg)
+selectStuff(float fMsg)
 {
-	Debug("SelectStuff: "+(string)fMsg);
+	Debug("selectStuff: "+(string)fMsg);
 	if (fMsg <= SIZE_SMALL) {
 		g_sCurrentSoundFile = g_sSoundFileSmall;
 	} else if (fMsg > SIZE_SMALL && fMsg < SIZE_MEDIUM) {
@@ -191,13 +191,13 @@ default
 				string sVal = llList2String(lParams, 0);
 				string sMsg = llList2String(lParams, 1);
 		Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
-		if (((float)sVal == g_fSoundVolumeCur && (sMsg == g_sSize || "" == sMsg)) || "-1" == sMsg) return; // -1 for background sound script
+		if (((float)sMsg == g_fSoundVolumeCur && (sVal == g_sSize || "" == sVal)) || "-1" == sVal) return; // -1 for background sound script
 		Debug("work on link_message");
 
-		g_fSoundVolumeNew = (float)sVal;
+		g_fSoundVolumeNew = (float)sMsg;
 		//change sound while sound is off
-		if (0 == g_fSoundVolumeNew && sMsg != g_sSize && "" != sMsg && "0" != sMsg) {
-			if (g_iSoundNFilesAvail > 1) SelectStuff((float)sMsg);
+		if (0 == g_fSoundVolumeNew && sVal != g_sSize && "" != sVal && "0" != sVal) {
+			if (g_iSoundNFilesAvail > 1) selectStuff((float)sVal);
 			llPreloadSound(g_sCurrentSoundFile);
 			Debug("change while off");
 			return;
@@ -205,7 +205,7 @@ default
 
 		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1) {
 		llSetTimerEvent(0.0);
-			if ("" == sMsg || sMsg == g_sSize) {
+			if ("" == sVal || sVal == g_sSize) {
 				if (g_fSoundVolumeCur > 0) {
 					llAdjustSoundVolume(g_fSoundVolumeNew);
 					if (g_iVerbose) llWhisper(0, "(v) Sound range for fire has changed");
@@ -218,7 +218,7 @@ default
 			} else {
 
 				string sCurrentSoundFileTemp = g_sCurrentSoundFile;
-				if (g_iSoundNFilesAvail > 1) SelectStuff((float)sMsg);
+				if (g_iSoundNFilesAvail > 1) selectStuff((float)sVal);
 
 				if (g_sCurrentSoundFile == sCurrentSoundFileTemp) {
 					llAdjustSoundVolume(g_fSoundVolumeNew); // fire size changed - but still same soundsample
