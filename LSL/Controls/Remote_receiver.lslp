@@ -98,33 +98,33 @@ $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 default
 {
-    state_entry()
-    {
-        llListen(REMOTE_CHANNEL, "", "", "");
-        llWhisper(0, g_sTitle + " " + g_sVersion+" by "+g_sAuthors + " ready");
-    }
+	state_entry()
+	{
+		llListen(REMOTE_CHANNEL, "", "", "");
+		llWhisper(0, g_sTitle + " " + g_sVersion+" by "+g_sAuthors + " ready");
+	}
 
-    on_rez(integer start_param)
-    {
-        llResetScript();
-    }
+	on_rez(integer start_param)
+	{
+		llResetScript();
+	}
 
-    listen(integer channel, string name, key kId, string msg)
-    {
+	listen(integer channel, string name, key kId, string msg)
+	{
 		Debug("listen: "+msg);
 
-        if (channel != REMOTE_CHANNEL) return;
-        list msgList = llParseString2List(msg, [SEPARATOR], []);
-        string group = llList2String(msgList, 0);
+		if (channel != REMOTE_CHANNEL) return;
+		list msgList = llParseString2List(msg, [SEPARATOR], []);
+		string group = llList2String(msgList, 0);
 
 		string str = getGroup(LINKSETID);
-        if (str != group && LINKSETID != group && LINKSETID != str) return;
+		if (str != group && LINKSETID != group && LINKSETID != str) return;
 
-        string command = llList2String(msgList, 1);
-        key user = (key)llList2String(msgList, 2);
+		string command = llList2String(msgList, 1);
+		key user = (key)llList2String(msgList, 2);
 
-        llMessageLinked(LINK_THIS, g_iMsgNumber, command, user);
-    }
+		llMessageLinked(LINK_THIS, g_iMsgNumber, command, user);
+	}
 
 //-----------------------------------------------
 //END STATE: default

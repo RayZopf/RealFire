@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Mon Feb  3 19:59:31 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Mon Feb  3 20:02:12 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -124,18 +124,18 @@ string getGroup(string sDefGroup){
 
 default {
 
-    state_entry() {
+	state_entry() {
         llListen(REMOTE_CHANNEL,"","","");
         llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + " ready"));
     }
 
 
-    on_rez(integer start_param) {
+	on_rez(integer start_param) {
         llResetScript();
     }
 
 
-    listen(integer channel,string name,key kId,string msg) {
+	listen(integer channel,string name,key kId,string msg) {
         Debug(("listen: " + msg));
         if ((channel != REMOTE_CHANNEL)) return;
         list msgList = llParseString2List(msg,[SEPARATOR],[]);
