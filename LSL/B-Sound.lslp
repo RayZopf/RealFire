@@ -2,8 +2,8 @@
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//01. Feb. 2014
-//v0.47
+//03. Feb. 2014
+//v0.48
 //
 //
 // (Realfire by Rene)
@@ -61,7 +61,8 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";     // title
-string g_sVersion = "0.47";       // version
+string g_sVersion = "0.48";       // version
+string g_sAuthors = "Zopf";
 string g_sScriptName;
 string g_sType = "sound";
 integer g_iType = LINK_SET;
@@ -83,8 +84,8 @@ integer g_iInTimer = FALSE;
 //===============================================
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
-$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSound, m_sVersion=g_sVersion);
-$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
+$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSound, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
@@ -127,7 +128,7 @@ default
 		llSleep(1);
 		RegisterExtension(g_iType);
 		if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
-		InfoLines();
+		InfoLines(TRUE);
 	}
 
 	on_rez(integer start_param)
@@ -150,7 +151,7 @@ default
 			llSleep(1);
 			RegisterExtension(g_iType);
 			if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
-			InfoLines();
+			InfoLines(TRUE);
 		}
 	}
 

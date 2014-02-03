@@ -2,8 +2,8 @@
 //Module register with and react on master for RealFire Extensions
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//31. Jan. 2014
-//v0.3
+//03. Feb. 2014
+//v0.31
 
 //Files:
 // ExtensionBasics.lslm
@@ -22,15 +22,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-$module (string m_sGroup, integer m_iEnabled, integer m_iAvail, integer m_iChannel, string m_sScriptName, integer m_iVerbose, integer m_iLinkType)
+$module (string m_sGroup, integer m_iEnabled, integer m_iAvail, integer m_iChannel, string m_sScriptName, integer m_iLinkType, integer m_iVerbose, string m_sTitle, string m_sScriptName, string m_sVersion, string m_sAuthors)
 
 $import RealFireMessageMap.lslm();
 $import GroupHandling.lslm(m_sGroup=m_sGroup);
+$import PrintStatusInfo.lslm(m_iVerbose=m_iVerbose, m_iAvail=m_iAvail, m_sTitle=m_sTitle, m_sScriptName=m_sScriptName, m_iOn=m_iEnabled, m_sVersion=m_sVersion, m_sAuthors=m_sAuthors);
 
 
 //###
 //ExtensionBasics.lslm
-//0.3 - 31Jan2014
+//0.31 - 03Feb2014
 
 RegisterExtension(integer link)
 {
@@ -44,7 +45,10 @@ MasterCommand(integer iChan, string sVal)
 {
 	if (iChan == COMMAND_CHANNEL) {
 		if ("register" == sVal) RegisterExtension(m_iLinkType);
-		else if ("verbose" == sVal) m_iVerbose = TRUE;
+		else if ("verbose" == sVal) {
+			m_iVerbose = TRUE;
+			InfoLines(FALSE);
+		}
 		else if ("nonverbose" == sVal) m_iVerbose = FALSE;
 		else llSetTimerEvent(0.1);
 	}

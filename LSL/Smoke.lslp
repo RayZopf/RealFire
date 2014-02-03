@@ -15,8 +15,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//31. Jan. 2014
-//v2.2.1-0.56
+//03. Feb. 2014
+//v2.2.1-0.57
 //
 
 //Files:
@@ -71,7 +71,8 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2.1-0.56";       // version
+string g_sVersion = "2.2.1-0.57";       // version
+string g_sAuthors = "Rene10957, Zopf";
 string g_sScriptName;
 string g_sType = "smoke";
 integer g_iType = LINK_ALL_OTHERS;
@@ -88,8 +89,8 @@ string g_sSize = "0";
 //===============================================
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
-$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSmoke, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSmoke, m_sVersion=g_sVersion);
-$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSmoke, m_iAvail=g_iSmoke, m_iChannel=SMOKE_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
+$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSmoke, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSmoke, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iSmoke, m_iAvail=g_iSmoke, m_iChannel=SMOKE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
@@ -116,7 +117,7 @@ default
 		llSleep(1);
 		//do some linked message to register with Fire.lsl
 		RegisterExtension(g_iType);
-		InfoLines();
+		InfoLines(FALSE);
 	}
 
 	on_rez(integer start_param)
@@ -129,7 +130,7 @@ default
 		if (change & CHANGED_INVENTORY) {
 			llSleep(1);
 			RegisterExtension(g_iType);
-			InfoLines();
+			InfoLines(FALSE);
 		}
 	}
 

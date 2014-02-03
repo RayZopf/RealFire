@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Mon Feb  3 17:22:38 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Mon Feb  3 23:53:32 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//02. Feb. 2014
-//v0.13
+//03. Feb. 2014
+//v0.14
 //
 //
 // (Realfire by Rene)
@@ -74,7 +74,8 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealPrimFire";
-string g_sVersion = "0.13";
+string g_sVersion = "0.14";
+string g_sAuthors = "Zopf";
 string g_sScriptName;
 string g_sType = "anim";
 integer g_iType = LINK_SET;
@@ -115,15 +116,16 @@ Debug(string sMsg){
 
 //###
 //PrintStatusInfo.lslm
-//0.11 - 28Jan2014
+//0.12 - 03Feb2014
 
-InfoLines(){
-    if (g_iVerbose) {
+InfoLines(integer bool){
+    if ((g_iVerbose && bool)) {
         if (g_iPrimFireAvail) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
-        else  llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
-        if ((!g_iPrimFire)) llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " script disabled"));
-        if ((g_iPrimFire && g_iPrimFireAvail)) llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " ready"));
+        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        if ((!g_iPrimFire)) llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+        if ((g_iPrimFire && g_iPrimFireAvail)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
         else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+        llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
     }
 }
 
@@ -156,7 +158,7 @@ string GroupCheck(key kId){
 
 //###
 //ExtensionBasics.lslm
-//0.3 - 31Jan2014
+//0.31 - 03Feb2014
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);
@@ -168,7 +170,10 @@ RegisterExtension(integer link){
 MasterCommand(integer iChan,string sVal){
     if ((iChan == COMMAND_CHANNEL)) {
         if (("register" == sVal)) RegisterExtension(g_iType);
-        else  if (("verbose" == sVal)) (g_iVerbose = TRUE);
+        else  if (("verbose" == sVal)) {
+            (g_iVerbose = TRUE);
+            InfoLines(FALSE);
+        }
         else  if (("nonverbose" == sVal)) (g_iVerbose = FALSE);
         else  llSetTimerEvent(0.1);
     }
@@ -283,7 +288,7 @@ default {
         (g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles,g_lPrimFireFileList,g_iPermCheck,g_sCurrentPrimFireFile));
         llSleep(1);
         RegisterExtension(g_iType);
-        InfoLines();
+        InfoLines(TRUE);
     }
 
 
@@ -298,7 +303,7 @@ default {
             (g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles,g_lPrimFireFileList,g_iPermCheck,g_sCurrentPrimFireFile));
             llSleep(1);
             RegisterExtension(g_iType);
-            InfoLines();
+            InfoLines(TRUE);
         }
     }
 

@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Mon Feb  3 20:06:32 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Mon Feb  3 23:52:31 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -18,7 +18,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
 //03. Feb. 2014
-//v1.1-0.2
+//v1.1-0.21
 //
 
 //Files:
@@ -59,18 +59,21 @@ integer g_iDebugMode = FALSE;
 
 //user changeable variables
 //-----------------------------------------------
+integer g_iVerbose = FALSE;
+integer g_iRemote = TRUE;
 string LINKSETID = "RealFire";
 
 
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Receiver";
-string g_sVersion = "1.1-0.2";
-string g_sScriptName;
+string g_sVersion = "1.1-0.21";
 string g_sAuthors = "Rene10957, Zopf";
+string g_sScriptName;
 
 // Constants
 string SEPARATOR = ";;";
+integer BOOL = TRUE;
 integer g_iMsgNumber = 10957;
 integer REMOTE_CHANNEL = -975102;
 
@@ -90,6 +93,22 @@ integer REMOTE_CHANNEL = -975102;
 Debug(string sMsg){
     if ((!g_iDebugMode)) return;
     llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
+}
+
+
+//###
+//PrintStatusInfo.lslm
+//0.12 - 03Feb2014
+
+InfoLines(integer bool){
+    if ((g_iVerbose && bool)) {
+        if (BOOL) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
+        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        if ((!g_iRemote)) llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+        if ((g_iRemote && BOOL)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+        llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+    }
 }
 
 
@@ -126,7 +145,7 @@ default {
 
 	state_entry() {
         llListen(REMOTE_CHANNEL,"","","");
-        llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + " ready"));
+        InfoLines(FALSE);
     }
 
 

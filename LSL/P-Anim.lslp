@@ -2,8 +2,8 @@
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//02. Feb. 2014
-//v0.13
+//03. Feb. 2014
+//v0.14
 //
 //
 // (Realfire by Rene)
@@ -73,7 +73,8 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealPrimFire";     // title
-string g_sVersion = "0.13";       // version
+string g_sVersion = "0.14";       // version
+string g_sAuthors = "Zopf";
 string g_sScriptName;
 string g_sType = "anim";
 integer g_iType = LINK_SET;
@@ -98,8 +99,8 @@ vector g_vOffset;
 //===============================================
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
-$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iPrimFire, m_sVersion=g_sVersion);
-$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iPrimFire, m_iAvail=g_iPrimFireAvail, m_iChannel=ANIM_CHANNEL, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose, m_iLinkType=g_iType);
+$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iPrimFire, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iPrimFire, m_iAvail=g_iPrimFireAvail, m_iChannel=ANIM_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 $import CheckForFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_iNFilesAvail=g_iPrimFireNFilesAvail, m_iAvail=g_iPrimFireAvail);
 
@@ -157,7 +158,7 @@ default
 			g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_iPermCheck, g_sCurrentPrimFireFile);
 			llSleep(1);
 			RegisterExtension(g_iType);
-			InfoLines();
+			InfoLines(TRUE);
 		}
 
 		on_rez(integer start_param)
@@ -174,7 +175,7 @@ default
 			g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_iPermCheck, g_sCurrentPrimFireFile);
 			llSleep(1);
 			RegisterExtension(g_iType);
-			InfoLines();
+			InfoLines(TRUE);
 		}
 	}
 

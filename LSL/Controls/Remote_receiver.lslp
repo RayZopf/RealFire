@@ -17,7 +17,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
 //03. Feb. 2014
-//v1.1-0.2
+//v1.1-0.21
 //
 
 //Files:
@@ -54,32 +54,34 @@
 //debug variables
 //-----------------------------------------------
 integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
-integer g_iVerbose = FALSE;
 
 
 //user changeable variables
 //-----------------------------------------------
+integer g_iVerbose = FALSE;
+integer g_iRemote = TRUE;         // Remote on/off
 string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
 
 
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Receiver";            // title
-string g_sVersion = "1.1-0.2";        // version
+string g_sVersion = "1.1-0.21";        // version
+string g_sAuthors = "Rene10957, Zopf";
 string g_sScriptName;
 string g_sType = "remote";
 integer g_iType = LINK_SET;
-string g_sAuthors = "Rene10957, Zopf";
 
 // Constants
 string SEPARATOR = ";;";           // separator for region messages
-
+integer BOOL = TRUE;
 
 //===============================================
 //LSLForge MODULES
 //===============================================
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
+$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=BOOL, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iRemote, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
@@ -101,7 +103,7 @@ default
 	state_entry()
 	{
 		llListen(REMOTE_CHANNEL, "", "", "");
-		llWhisper(0, g_sTitle + " " + g_sVersion+" by "+g_sAuthors + " ready");
+		InfoLines(FALSE);
 	}
 
 	on_rez(integer start_param)

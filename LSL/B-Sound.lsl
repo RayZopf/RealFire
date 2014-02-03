@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Mon Feb  3 17:22:48 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Mon Feb  3 23:49:10 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//01. Feb. 2014
-//v0.47
+//03. Feb. 2014
+//v0.48
 //
 //
 // (Realfire by Rene)
@@ -62,7 +62,8 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";
-string g_sVersion = "0.47";
+string g_sVersion = "0.48";
+string g_sAuthors = "Zopf";
 string g_sScriptName;
 string g_sType = "sound";
 integer g_iType = LINK_SET;
@@ -98,15 +99,16 @@ Debug(string sMsg){
 
 //###
 //PrintStatusInfo.lslm
-//0.11 - 28Jan2014
+//0.12 - 03Feb2014
 
-InfoLines(){
-    if (g_iVerbose) {
+InfoLines(integer bool){
+    if ((g_iVerbose && bool)) {
         if (g_iSoundAvail) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
-        else  llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
-        if ((!g_iSound)) llWhisper(0,(((g_sTitle + " / ") + g_sScriptName) + " script disabled"));
-        if ((g_iSound && g_iSoundAvail)) llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " ready"));
+        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        if ((!g_iSound)) llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+        if ((g_iSound && g_iSoundAvail)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
         else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+        llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
     }
 }
 
@@ -139,7 +141,7 @@ string GroupCheck(key kId){
 
 //###
 //ExtensionBasics.lslm
-//0.3 - 31Jan2014
+//0.31 - 03Feb2014
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);
@@ -151,7 +153,10 @@ RegisterExtension(integer link){
 MasterCommand(integer iChan,string sVal){
     if ((iChan == COMMAND_CHANNEL)) {
         if (("register" == sVal)) RegisterExtension(g_iType);
-        else  if (("verbose" == sVal)) (g_iVerbose = TRUE);
+        else  if (("verbose" == sVal)) {
+            (g_iVerbose = TRUE);
+            InfoLines(FALSE);
+        }
         else  if (("nonverbose" == sVal)) (g_iVerbose = FALSE);
         else  llSetTimerEvent(0.1);
     }
@@ -196,7 +201,7 @@ default {
         llSleep(1);
         RegisterExtension(g_iType);
         if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
-        InfoLines();
+        InfoLines(TRUE);
     }
 
 
@@ -218,7 +223,7 @@ default {
             llSleep(1);
             RegisterExtension(g_iType);
             if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
-            InfoLines();
+            InfoLines(TRUE);
         }
     }
 
