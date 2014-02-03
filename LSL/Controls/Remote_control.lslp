@@ -101,33 +101,33 @@ $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 default
 {
-    state_entry()
-    {
-        if (g_iVerbose) llWhisper(0, g_sTitle + " " + g_sVersion+" by "+g_sAuthors + " ready");
-    }
+	state_entry()
+	{
+		if (g_iVerbose) llWhisper(0, g_sTitle + " " + g_sVersion+" by "+g_sAuthors + " ready");
+	}
 
-    on_rez(integer start_param)
-    {
-        llResetScript();
-    }
+	on_rez(integer start_param)
+	{
+		llResetScript();
+	}
 
-    touch_start(integer total_number)
-    {
-        llResetTime();
-    }
+	touch_start(integer total_number)
+	{
+		llResetTime();
+	}
 
-    touch_end(integer total_number)
-    {
-        key kUser = llDetectedKey(0);
-        string command;
+	touch_end(integer total_number)
+	{
+		key kUser = llDetectedKey(0);
+		string command;
 
-        if (llGetTime() > 1.0) command = "menu";
-        	else command = "switch";
+		if (llGetTime() > 1.0) command = "menu";
+			else command = "switch";
 
-        list msgList = [getGroup(LINKSETID), command, kUser];
-        string msgData = llDumpList2String(msgList, SEPARATOR);
-        llRegionSay(REMOTE_CHANNEL, msgData);
-    }
+		list msgList = [getGroup(LINKSETID), command, kUser];
+		string msgData = llDumpList2String(msgList, SEPARATOR);
+		llRegionSay(REMOTE_CHANNEL, msgData);
+	}
 
 //-----------------------------------------------
 //END STATE: default

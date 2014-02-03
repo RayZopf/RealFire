@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Mon Feb  3 19:03:35 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Mon Feb  3 19:05:32 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote control (secondary switch) for RealFire
 //
@@ -75,22 +75,22 @@ string getGroup(string sDefGroup){
 
 default {
 
-    state_entry() {
+	state_entry() {
         if (g_iVerbose) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + " ready"));
     }
 
 
-    on_rez(integer start_param) {
+	on_rez(integer start_param) {
         llResetScript();
     }
 
 
-    touch_start(integer total_number) {
+	touch_start(integer total_number) {
         llResetTime();
     }
 
 
-    touch_end(integer total_number) {
+	touch_end(integer total_number) {
         key kUser = llDetectedKey(0);
         string command;
         if ((llGetTime() > 1.0)) (command = "menu");
