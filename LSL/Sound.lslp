@@ -203,8 +203,8 @@ default
 			return;
 		}
 
-		llSetTimerEvent(0.0);
 		if (g_fSoundVolumeNew > 0 && g_fSoundVolumeNew <= 1) {
+		llSetTimerEvent(0.0);
 			if ("" == sMsg || sMsg == g_sSize) {
 				if (g_fSoundVolumeCur > 0) {
 					llAdjustSoundVolume(g_fSoundVolumeNew);
