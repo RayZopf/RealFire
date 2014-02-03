@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Mon Feb  3 23:52:31 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb  4 00:05:29 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -59,7 +59,7 @@ integer g_iDebugMode = FALSE;
 
 //user changeable variables
 //-----------------------------------------------
-integer g_iVerbose = FALSE;
+integer g_iVerbose = TRUE;
 integer g_iRemote = TRUE;
 string LINKSETID = "RealFire";
 
@@ -101,9 +101,11 @@ Debug(string sMsg){
 //0.12 - 03Feb2014
 
 InfoLines(integer bool){
-    if ((g_iVerbose && bool)) {
-        if (BOOL) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
-        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+    if (g_iVerbose) {
+        if (bool) {
+            if (BOOL) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
+            else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        }
         if ((!g_iRemote)) llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
         if ((g_iRemote && BOOL)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
         else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));

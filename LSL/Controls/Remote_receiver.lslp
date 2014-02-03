@@ -58,7 +58,7 @@ integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 
 //user changeable variables
 //-----------------------------------------------
-integer g_iVerbose = FALSE;
+integer g_iVerbose = TRUE;
 integer g_iRemote = TRUE;         // Remote on/off
 string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
 
