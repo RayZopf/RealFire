@@ -1,0 +1,174 @@
+CONSTANTS
+
+iVariable
+m_iVariable
+g_iVariable
+
+infileFunction()
+ModuleFunctionProject()
+EX_ModulceFunction $import File.lslm () EX_;
+llFunction()
+
+infileFunction()
+{
+}
+
+
+state
+{
+	event()
+	{
+	}
+}
+
+
+if () action;
+
+if () {
+	action;
+}
+
+if () {
+	action()
+} else action;
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//Realfire by Rene - Fire
+//
+// Author: Rene10957 Resident
+// Date: 12-01-2014
+//
+// This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
+// To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
+//
+// Author and license headers must be left intact.
+// Content creator? Please read the license notecard!
+//
+// Features:
+//
+// - Fire with smoke, light and sound
+// - Burns down at any desired speed
+// - Change fire size/color and sound volume
+// - Access control: owner, group, world
+// - Touch to start or stop fire
+// - Long touch to show menu
+//
+//
+//modified by: Zopf Resident - Ray Zopf (Raz)
+//Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
+//01. Feb. 2014
+//v2.2.1-0.95
+//
+
+//Files:
+// Fire.lsl
+//
+// Smoke.lsl
+// Sound.lsl
+// config
+// User Manual
+//
+//
+//Prequisites:
+// Smoke.lsl in another prim than Fire.lsl
+// Soundfiles need to be in same prim as Sound.lsl
+//
+//Notecard format: see config NC
+//basic help: User Manual
+//
+//Changelog
+// Formatting
+// variable naming sheme
+// structure for multiple sound files
+// structure for multiple scripts
+// B-Sound
+
+//FIXME: too much llSleep in stopSystem
+
+//TODO: make sound configurable via notecard - maybe own config file?
+//TODO: keep sound running for a short time after turning fire off
+//TODO: sound preload on touch
+//TODO: sound seems to get called twice
+//TODO: integrate B-Sound  - use key in lllinkedmessage/link_message to differentiate; add backround sound off
+//TODO: scale for effect 0<=x<=100, -1 backround, 110 Sound start -- don't confuse with volume
+//TODO: prim fire / flexi prim (need to move/rotate it) / sculpted prims ----- temp rezzer
+//TODO: sparkles
+//TODO: fire via particles, using textures?!
+//TODO: check //PSYS_PART_RIBBON_MASK effect
+//TODO: maybe en-/disable //PSYS_PART_WIND_MASK, if fire is out-/inside (test effect!)
+//TODO: test cone instead of explode (radius) + angle (placement)
+//TODO: longer break between automatic fire off and going on again, also make fire slowly bigger... and let fire burn down slower (look into function)
+//TODO: make 5% lowest setting (glowing)? and adjust fire (100%)  - is way too big for the fireplace
+//TODO: better smoke (color, intensity, change when fire changes) - rework smoke in updateSize (currently only changed when size<=25)
+//TODO: smoke with textures
+//TODO: check change smoke while smoke is off
+//TODO: let sound script do calculation of sound percentage, as smoke does it
+//TODO: add ping/pong with other scripts in case only fire.lsl gets resetted
+//TODO: if script in another prim is removed, Fire.lsl cannot handle the situation
+//TODO: move object animation to own script too?
+//TODO: ability to change burndown/restart
+//TODO: fire size = 0 - but sound on + volume --> at least background sound (glowing embers)
+//TODO: HUD?
+//TODO: play with llListen()
+//TODO: always check for llGetFreeMemory()
+//TODO: check if other particle scripts are in same prim
+//TODO: rethink system of verbose messages - use settings notecard!
+//TODO: create a module sizeSelect, put size class borders into variables and settings notecard
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//Module register with and react on master for RealFire Extensions
+//
+//by: Zopf Resident - Ray Zopf (Raz)
+//31. Jan. 2014
+//v0.3
+
+//Files:
+// ExtensionBasics.lslm
+//
+//
+//Prequisites: GroupHandling.lslm
+//
+//
+//Changelog
+//
+
+//FIXME: ----
+
+//TODO: ----
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+$module (string m_sGroup, integer m_iEnabled, integer m_iAvail, integer m_iChannel, string m_sScriptName, integer m_iVerbose, integer m_iLinkType)
+
+$import RealFireMessageMap.lslm();
+$import GroupHandling.lslm(m_sGroup=m_sGroup);
+
+
+//###
+//ExtensionBasics.lslm
+//0.3 - 31Jan2014
+
+RegisterExtension(integer link)
+{
+	string sId = getGroup(m_sGroup) + ";" + m_sScriptName;
+	if (m_iEnabled && m_iAvail) llMessageLinked(link, m_iChannel, "1", (key)sId);
+		else llMessageLinked(link, m_iChannel, "0", (key)sId);
+}
+
+
+MasterCommand(integer iChan, string sVal)
+{
+	if (iChan == COMMAND_CHANNEL) {
+		if ("register" == sVal) RegisterExtension(m_iLinkType);
+		else if ("verbose" == sVal) m_iVerbose = TRUE;
+		else if ("nonverbose" == sVal) m_iVerbose = FALSE;
+		else llSetTimerEvent(0.1);
+	}
+}
+
+//END ExtensionBasics.lslm
+//###
