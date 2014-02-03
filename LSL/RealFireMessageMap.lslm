@@ -2,8 +2,8 @@
 //Module that only holds the RealFire Message channel constants
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//01. Feb. 2014
-//v0.2
+//03. Feb. 2014
+//v0.22
 
 //Files:
 // RealFireMessageMap.lslm
@@ -13,7 +13,8 @@
 //
 //
 //Changelog
-//
+// added fire size variables
+// added remote control variables
 
 //FIXME: ----
 
@@ -24,6 +25,13 @@
 
 $module ()
 
+
+// Notecard variables
+integer g_iMsgNumber = 10957;              // number part of incoming link messages
+string g_sMsgSwitch = "switch";               // string part of incoming link message: switch (on/off)
+string g_sMsgOn = "on";                   // string part of incoming link message: switch on
+string g_sMsgOff = "off";                  // string part of incoming link message: switch off
+string g_sMsgMenu = "menu";                 // string part of incoming link message: show menu
 
 //RealFire SIZE MAP
 float SIZE_TINY = 5.0;
@@ -39,10 +47,13 @@ integer SOUND_CHANNEL = -15780;			// sound channel
 integer ANIM_CHANNEL = -15770;			// primfire/textureanim channel
 integer PRIMCOMMAND_CHANNEL = -15771;	// kill fire prims or make temp prims
 
+integer REMOTE_CHANNEL = -975102;   // remote channel
+
+
 
 //###
 //RealFireMessageMap.lslm
-//0.2 - 01Feb2014
+//0.22 - 03Feb2014
 
 
 //END checkforFiles.lslm
