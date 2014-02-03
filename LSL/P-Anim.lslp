@@ -30,10 +30,9 @@
 //TODO: make file check (lists) the other way round: check if every inventory file is member of RealFire file list?
 //TODO: create a module sizeSelect, put size class borders into variables and settings notecard
 //TODO: SelectStuff needs more work - less stages than selectSound in Sound.lsl
-//TODO: fire objects need to be phantom... maybe make them flexiprim too
+//TODO: maybe make them flexiprim too
 //TODO: temp prim handling not good
 //TODO: listen event + timer to check if fire prim really was created
-//TODO: check if fire prim is "copy"
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -212,7 +211,7 @@ default
 			if ((integer)sMsg != g_iLowprim && ("0" == sMsg || "1" == sMsg)) g_iLowprim = !g_iLowprim;
 			string sCurrentPrimFireFileTemp = g_sCurrentPrimFireFile;
 			string g_sSizeTemp = g_sSize;
-			if (g_iPrimFireNFilesAvail > 1) SelectStuff((float)sMsg);
+			if (g_iPrimFireNFilesAvail > 1) SelectStuff((float)sVal);
 
 			if ("0" == g_sSizeTemp) {
 				llSleep(2.0); // let fire slowly begin (not counting on lag when rezzing)

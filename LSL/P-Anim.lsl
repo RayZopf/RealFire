@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Sun Feb  2 20:24:11 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Mon Feb  3 07:37:09 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -31,10 +31,9 @@
 //TODO: make file check (lists) the other way round: check if every inventory file is member of RealFire file list?
 //TODO: create a module sizeSelect, put size class borders into variables and settings notecard
 //TODO: SelectStuff needs more work - less stages than selectSound in Sound.lsl
-//TODO: fire objects need to be phantom... maybe make them flexiprim too
+//TODO: maybe make them flexiprim too
 //TODO: temp prim handling not good
 //TODO: listen event + timer to check if fire prim really was created
-//TODO: check if fire prim is "copy"
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -332,7 +331,7 @@ default {
             if (((((integer)sMsg) != g_iLowprim) && (("0" == sMsg) || ("1" == sMsg)))) (g_iLowprim = (!g_iLowprim));
             string sCurrentPrimFireFileTemp = g_sCurrentPrimFireFile;
             string g_sSizeTemp = g_sSize;
-            if ((g_iPrimFireNFilesAvail > 1)) SelectStuff(((float)sMsg));
+            if ((g_iPrimFireNFilesAvail > 1)) SelectStuff(((float)sVal));
             if (("0" == g_sSizeTemp)) {
                 llSleep(2.0);
                 llRezObject(g_sCurrentPrimFireFile,(llGetPos() + g_vOffset),ZERO_VECTOR,ZERO_ROTATION,1);
