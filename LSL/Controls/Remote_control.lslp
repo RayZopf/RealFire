@@ -121,8 +121,8 @@ default
 		key kUser = llDetectedKey(0);
 		string command;
 
-		if (llGetTime() > 1.0) command = "menu";
-			else command = "switch";
+		if (llGetTime() > 1.0) command = g_sMsgMenu;
+			else command = g_sMsgSwitch;
 
 		list msgList = [getGroup(LINKSETID), command, kUser];
 		string msgData = llDumpList2String(msgList, SEPARATOR);

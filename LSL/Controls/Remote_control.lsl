@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Mon Feb  3 19:05:32 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Mon Feb  3 19:59:37 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote control (secondary switch) for RealFire
 //
@@ -41,6 +41,8 @@ string g_sAuthors = "Rene10957, Zopf";
 
 // Constants
 string SEPARATOR = ";;";
+string g_sMsgSwitch = "switch";
+string g_sMsgMenu = "menu";
 integer REMOTE_CHANNEL = -975102;
 
 
@@ -93,8 +95,8 @@ default {
 	touch_end(integer total_number) {
         key kUser = llDetectedKey(0);
         string command;
-        if ((llGetTime() > 1.0)) (command = "menu");
-        else  (command = "switch");
+        if ((llGetTime() > 1.0)) (command = g_sMsgMenu);
+        else  (command = g_sMsgSwitch);
         list msgList = [getGroup(LINKSETID),command,kUser];
         string msgData = llDumpList2String(msgList,SEPARATOR);
         llRegionSay(REMOTE_CHANNEL,msgData);

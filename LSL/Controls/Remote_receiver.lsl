@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Mon Feb  3 19:31:55 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Mon Feb  3 19:59:31 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -21,7 +21,40 @@
 //v1.1-0.1
 //
 
+//Files:
+// Fire.lsl
+//
+// Smoke.lsl
+// Sound.lsl
+// config
+// User Manual
+//
+//
+//Prequisites:
+// Remote_receiver.lsl in same prim as Fire.lsl
+// Remote_control.lsl to make use of this script
+//
+//Notecard format: see config NC
+//basic help: User Manual and in header
+//
+//Changelog
+// Formatting
+// LSLFore modules
 
+//FIXME: ----
+
+//TODO: ----
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//===============================================
+//GLOBAL VARIABLES
+//===============================================
+
+//debug variables
+//-----------------------------------------------
+integer g_iDebugMode = FALSE;
 
 
 //user changeable variables
@@ -33,12 +66,31 @@ string LINKSETID = "RealFire";
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Receiver";
 string g_sVersion = "1.1-0.1";
+string g_sScriptName;
 string g_sAuthors = "Rene10957, Zopf";
 
 // Constants
 string SEPARATOR = ";;";
-integer msgNumber = 10957;
+integer g_iMsgNumber = 10957;
 integer REMOTE_CHANNEL = -975102;
+
+
+//###
+//Debug.lslm
+//0.1 - 28Jan2014
+
+//===============================================================================
+//= parameters   :    string    sMsg    message string received
+//=
+//= return        :    none
+//=
+//= description  :    output debug messages
+//=
+//===============================================================================
+Debug(string sMsg){
+    if ((!g_iDebugMode)) return;
+    llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
+}
 
 
 //###
@@ -83,15 +135,15 @@ default {
     }
 
 
-    listen(integer channel,string name,key id,string msg) {
+    listen(integer channel,string name,key kId,string msg) {
+        Debug(("listen: " + msg));
         if ((channel != REMOTE_CHANNEL)) return;
         list msgList = llParseString2List(msg,[SEPARATOR],[]);
         string group = llList2String(msgList,0);
+        string str = getGroup(LINKSETID);
+        if ((((str != group) && (LINKSETID != group)) && (LINKSETID != str))) return;
         string command = llList2String(msgList,1);
         key user = ((key)llList2String(msgList,2));
-        string str = getGroup(LINKSETID);
-        if ((((str == group) || (LINKSETID == group)) || (LINKSETID == str))) {
-            llMessageLinked(LINK_THIS,msgNumber,command,user);
-        }
+        llMessageLinked(LINK_THIS,g_iMsgNumber,command,user);
     }
 }

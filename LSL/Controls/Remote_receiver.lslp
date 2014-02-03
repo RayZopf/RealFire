@@ -73,7 +73,6 @@ string g_sAuthors = "Rene10957, Zopf";
 
 // Constants
 string SEPARATOR = ";;";           // separator for region messages
-integer msgNumber = 10957;          // number part of link message
 
 
 //===============================================
@@ -110,19 +109,21 @@ default
         llResetScript();
     }
 
-    listen(integer channel, string name, key id, string msg)
+    listen(integer channel, string name, key kId, string msg)
     {
-        if (channel != REMOTE_CHANNEL) return;
+		Debug("listen: "+msg);
 
+        if (channel != REMOTE_CHANNEL) return;
         list msgList = llParseString2List(msg, [SEPARATOR], []);
         string group = llList2String(msgList, 0);
+
+		string str = getGroup(LINKSETID);
+        if (str != group && LINKSETID != group && LINKSETID != str) return;
+
         string command = llList2String(msgList, 1);
         key user = (key)llList2String(msgList, 2);
 
-		string str = getGroup(LINKSETID);
-        if (str == group || LINKSETID == group || LINKSETID == str) {
-            llMessageLinked(LINK_THIS, msgNumber, command, user);
-        }
+        llMessageLinked(LINK_THIS, g_iMsgNumber, command, user);
     }
 
 //-----------------------------------------------
