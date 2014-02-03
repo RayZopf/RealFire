@@ -1,4 +1,6 @@
-// Remote receiver for RealFire
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Mon Feb  3 19:31:55 Mitteleuropäische Zeit 2014
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//Remote receiver for RealFire
 //
 // Author: Rene10957 Resident
 // Date: 12-01-2014
@@ -11,49 +13,85 @@
 //
 // Drop this into the same prim where the FIRE SCRIPT is located
 // Note: only useful if you are also using the remote control script
+//
+//
+//modified by: Zopf Resident - Ray Zopf (Raz)
+//Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
+//03. Feb. 2014
+//v1.1-0.1
+//
 
-string title = "Remote Receiver";   // title
-string version = "1.1";             // version
+
+
+
+//user changeable variables
+//-----------------------------------------------
+string LINKSETID = "RealFire";
+
+
+//internal variables
+//-----------------------------------------------
+string g_sTitle = "RealFire Remote Receiver";
+string g_sVersion = "1.1-0.1";
+string g_sAuthors = "Rene10957, Zopf";
 
 // Constants
+string SEPARATOR = ";;";
+integer msgNumber = 10957;
+integer REMOTE_CHANNEL = -975102;
 
-integer remoteChannel = -975102;    // remote channel
-integer msgNumber = 10957;          // number part of link message
-string separator = ";;";            // separator for region messages
 
-// Functions
+//###
+//GroupHandling.lslm
+//0.5 - 31Jan2014
 
-string getGroup()
-{
-    string str = llStringTrim(llGetObjectDesc(), STRING_TRIM);
-    if (llToLower(str) == "(no description)" || str == "") str = "Default";
+string getGroup(string sDefGroup){
+    if (("" == sDefGroup)) (sDefGroup = "Default");
+    string str = llStringTrim(llGetObjectDesc(),STRING_TRIM);
+    if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
+    else  {
+        list lGroup = llParseString2List(str,[" "],[]);
+        (str = llList2String(lGroup,0));
+    }
     return str;
 }
 
-default
-{
-    state_entry()
-    {
-        llListen(remoteChannel, "", "", "");
-        llWhisper(0, title + " " + version + " ready");
+
+//===============================================
+//PREDEFINED FUNCTIONS
+//===============================================
+
+
+
+//===============================================
+//===============================================
+//MAIN
+//===============================================
+//===============================================
+
+
+default {
+
+    state_entry() {
+        llListen(REMOTE_CHANNEL,"","","");
+        llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + " ready"));
     }
 
-    on_rez(integer start_param)
-    {
+
+    on_rez(integer start_param) {
         llResetScript();
     }
 
-    listen(integer channel, string name, key id, string msg)
-    {
-        if (channel != remoteChannel) return;
 
-        list msgList = llParseString2List(msg, [separator], []);
-        string group = llList2String(msgList, 0);
-        string command = llList2String(msgList, 1);
-        key user = (key)llList2String(msgList, 2);
-
-        if (group == getGroup() || group == "Default" || getGroup() == "Default") {
-            llMessageLinked(LINK_THIS, msgNumber, command, user);
+    listen(integer channel,string name,key id,string msg) {
+        if ((channel != REMOTE_CHANNEL)) return;
+        list msgList = llParseString2List(msg,[SEPARATOR],[]);
+        string group = llList2String(msgList,0);
+        string command = llList2String(msgList,1);
+        key user = ((key)llList2String(msgList,2));
+        string str = getGroup(LINKSETID);
+        if ((((str == group) || (LINKSETID == group)) || (LINKSETID == str))) {
+            llMessageLinked(LINK_THIS,msgNumber,command,user);
         }
     }
 }
