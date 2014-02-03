@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Mon Feb  3 20:10:43 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Mon Feb  3 23:48:19 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -54,6 +54,7 @@
 //FIXME: menu closes when fastToggle (all off, main menu)
 //FIXME: to many backround sound off messages after every option togggle (primfire)
 //FIXME: off messages when touch-off but extensions are allready off in options
+//FIXME: heap stack collision - make own module for particle fire
 
 //TODO: make sound configurable via notecard - maybe own config file?
 //TODO: keep sound running for a short time after turning fire off
@@ -124,9 +125,9 @@ vector g_vEndColor = <1,0,0>;
 //-----------------------------------------------
 string g_sTitle = "RealFire";
 string g_sVersion = "2.2.1-0.96";
+string g_sAuthors = "Rene10957, Zopf";
 string g_sScriptName;
 integer g_iType = LINK_SET;
-string g_sAuthors = "Rene10957, Zopf";
 
 // Constants
 integer ACCESS_OWNER = 4;
@@ -738,7 +739,6 @@ startSystem(){
     if ((!g_iOn)) {
         if (g_iSoundOn) sendMessage(SOUND_CHANNEL,"110",((string)g_fStartVolume));
         if (g_iVerbose) llWhisper(0,"(v) The fire gets lit");
-        llParticleSystem([PSYS_PART_FLAGS,(((0 | PSYS_PART_EMISSIVE_MASK) | PSYS_PART_INTERP_COLOR_MASK) | PSYS_PART_INTERP_SCALE_MASK),PSYS_SRC_PATTERN,PSYS_SRC_PATTERN_EXPLODE,PSYS_SRC_BURST_RADIUS,0.148438,PSYS_PART_START_COLOR,<0.74902,0.6,0.14902>,PSYS_PART_END_COLOR,<1,0.2,0>,PSYS_PART_START_ALPHA,0.101961,PSYS_PART_END_ALPHA,7.05882e-2,PSYS_PART_START_SCALE,<0.59375,0.59375,0>,PSYS_PART_END_SCALE,<9.375e-2,9.375e-2,0>,PSYS_SRC_TEXTURE,((key)"23d133ad-c669-18a8-02a3-a75baa9b214a"),PSYS_SRC_MAX_AGE,2.8,PSYS_PART_MAX_AGE,3.0,PSYS_SRC_BURST_RATE,1.0e-2,PSYS_SRC_BURST_PART_COUNT,1,PSYS_SRC_ACCEL,<0,0,0.203125>,PSYS_SRC_BURST_SPEED_MIN,1.95313e-2,PSYS_SRC_BURST_SPEED_MAX,2.73438e-2]);
     }
     updateSize(g_fPerSize);
     llSetTimerEvent(g_fBurnTime);
@@ -803,6 +803,7 @@ sendMessage(integer iChan,string sVal,string sMsg){
 infoLines(){
     llWhisper(0,("(v) Switch access:" + showAccess(g_iSwitchAccess)));
     llWhisper(0,("(v) Menu access:" + showAccess(g_iMenuAccess)));
+    llWhisper(0,((((("\n\t -free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
 }
 
 

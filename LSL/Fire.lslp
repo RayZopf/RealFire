@@ -53,6 +53,7 @@
 //FIXME: menu closes when fastToggle (all off, main menu)
 //FIXME: to many backround sound off messages after every option togggle (primfire)
 //FIXME: off messages when touch-off but extensions are allready off in options
+//FIXME: heap stack collision - make own module for particle fire
 
 //TODO: make sound configurable via notecard - maybe own config file?
 //TODO: keep sound running for a short time after turning fire off
@@ -125,10 +126,10 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //-----------------------------------------------
 string g_sTitle = "RealFire";            // title
 string g_sVersion = "2.2.1-0.96";        // version
+string g_sAuthors = "Rene10957, Zopf";
 string g_sScriptName;
 string g_sType = "fire";
 integer g_iType = LINK_SET;
-string g_sAuthors = "Rene10957, Zopf";
 
 // Constants
 integer ACCESS_OWNER = 4;            // owner access bit
@@ -741,7 +742,7 @@ startSystem()
 	if (!g_iOn) {
 		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, "110", (string)g_fStartVolume); // special start sound
 		if (g_iVerbose) llWhisper(0, "(v) The fire gets lit");
-		//particles to start fire with
+/*		//particles to start fire with
 		llParticleSystem ([
 		//System Behavior
 			PSYS_PART_FLAGS,
@@ -788,6 +789,7 @@ startSystem()
 			PSYS_SRC_BURST_SPEED_MIN, 0.0195313,
 			PSYS_SRC_BURST_SPEED_MAX, 0.0273438
 		]);
+	llSleep(1.2);*/
 	}
 	updateSize(g_fPerSize);
 	llSetTimerEvent(g_fBurnTime);
@@ -901,6 +903,7 @@ infoLines()
 {
 	llWhisper(0, "(v) Switch access:" + showAccess(g_iSwitchAccess));
 	llWhisper(0, "(v) Menu access:" + showAccess(g_iMenuAccess));
+	llWhisper(0, "\n\t -free memory: "+(string)llGetFreeMemory()+" -\n(v) "+g_sTitle+"/"+ g_sScriptName);
 }
 
 
