@@ -3,6 +3,7 @@ Project to add some improvements to Linden Home fireplace (Meadowbrooks open fir
 Aims
 ----
 trying to get a nicer fire, smoke, sound, animated logs
+let fire rezz more logs, embers, etc
 
 Todo
 ----
