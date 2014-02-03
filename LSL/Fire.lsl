@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Mon Feb  3 18:03:22 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Mon Feb  3 20:10:43 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -150,11 +150,6 @@ float MAX_VOLUME = 1.0;
 integer g_iVerbose = TRUE;
 integer g_iSwitchAccess;
 integer g_iMenuAccess;
-integer g_iMsgNumber;
-string g_sMsgSwitch;
-string g_sMsgOn;
-string g_sMsgOff;
-string g_sMsgMenu;
 integer g_iLowprim = FALSE;
 integer g_iBurnDown = FALSE;
 float g_fBurnTime;
@@ -224,6 +219,11 @@ float g_fSoundVolume = 0.0;
 float g_fStartIntensity;
 float g_fStartRadius;
 float g_fStartVolume;
+integer g_iMsgNumber = 10957;
+string g_sMsgSwitch = "switch";
+string g_sMsgOn = "on";
+string g_sMsgOff = "off";
+string g_sMsgMenu = "menu";
 float SIZE_TINY = 5.0;
 float SIZE_EXTRASMALL = 15.0;
 float SIZE_SMALL = 25.0;
@@ -469,11 +469,6 @@ loadNotecard(){
         (g_iVerbose = TRUE);
         (g_iSwitchAccess = ACCESS_WORLD);
         (g_iMenuAccess = ACCESS_WORLD);
-        (g_iMsgNumber = 10957);
-        (g_sMsgSwitch = "switch");
-        (g_sMsgOn = "on");
-        (g_sMsgOff = "off");
-        (g_sMsgMenu = "menu");
         (g_iLowprim = FALSE);
         (g_iBurnDown = FALSE);
         (g_fBurnTime = 300.0);

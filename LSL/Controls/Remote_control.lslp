@@ -20,7 +20,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
 //03. Feb. 2014
-//v1.0-0.1
+//v1.0-0.2
 //
 
 //Files:
@@ -68,7 +68,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Control";            // title
-string g_sVersion = "1.0-0.1";        // version
+string g_sVersion = "1.0-0.2";        // version
 string g_sScriptName;
 string g_sType = "remote";
 integer g_iType = LINK_SET;

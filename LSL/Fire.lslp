@@ -126,7 +126,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 string g_sTitle = "RealFire";            // title
 string g_sVersion = "2.2.1-0.96";        // version
 string g_sScriptName;
-string g_sType = "main";
+string g_sType = "fire";
 integer g_iType = LINK_SET;
 string g_sAuthors = "Rene10957, Zopf";
 
@@ -152,11 +152,6 @@ float MAX_VOLUME = 1.0;          // max. volume for sound
 integer g_iVerbose = TRUE;         // show more/less info during startup
 integer g_iSwitchAccess;           // access level for switch
 integer g_iMenuAccess;             // access level for menu
-integer g_iMsgNumber;              // number part of incoming link messages
-string g_sMsgSwitch;               // string part of incoming link message: switch (on/off)
-string g_sMsgOn;                   // string part of incoming link message: switch on
-string g_sMsgOff;                  // string part of incoming link message: switch off
-string g_sMsgMenu;                 // string part of incoming link message: show menu
 integer g_iLowprim = FALSE;        // only use temp prim for PrimFire if set to TRUE
 integer g_iBurnDown = FALSE;       // burn down or burn continuously
 float g_fBurnTime;                 // time to burn in seconds before starting to die
@@ -430,11 +425,6 @@ loadNotecard()
 		g_iVerbose = TRUE;
 		g_iSwitchAccess = ACCESS_WORLD;
 		g_iMenuAccess = ACCESS_WORLD;
-		g_iMsgNumber = 10957;
-		g_sMsgSwitch = "switch";
-		g_sMsgOn = "on";
-		g_sMsgOff = "off";
-		g_sMsgMenu = "menu";
 		g_iLowprim = FALSE;
 		g_iBurnDown = FALSE;
 		g_fBurnTime = 300.0;
