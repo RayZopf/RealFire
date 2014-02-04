@@ -501,7 +501,7 @@ readNotecard (string ncLine)
 		par = llStringTrim(par, STRING_TRIM);
 		val = llStringTrim(val, STRING_TRIM);
 		string lcpar = llToLower(par);
-		if ("gobaldebug" == lcpar && "D E B U G" == val) {
+		if ("globaldebug" == lcpar && "D E B U G" == val) {
 			g_iDebugMode = TRUE;
 			sendMessage(COMMAND_CHANNEL, "globaldebug", "");
 		} else if ("linksetid" == lcpar && "" != val) LINKSETID = val;

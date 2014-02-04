@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Feb  4 23:33:07 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Wed Feb  5 00:04:18 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -540,7 +540,7 @@ readNotecard(string ncLine){
         (par = llStringTrim(par,STRING_TRIM));
         (val = llStringTrim(val,STRING_TRIM));
         string lcpar = llToLower(par);
-        if ((("gobaldebug" == lcpar) && ("D E B U G" == val))) {
+        if ((("globaldebug" == lcpar) && ("D E B U G" == val))) {
             (g_iDebugMode = TRUE);
             sendMessage(COMMAND_CHANNEL,"globaldebug","");
         }
