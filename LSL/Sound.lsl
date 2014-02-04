@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Tue Feb  4 02:39:54 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Tue Feb  4 05:30:27 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//03. Feb. 2014
-//v0.85
+//04. Feb. 2014
+//v0.86
 //
 //
 // (Realfire by Rene)
@@ -71,7 +71,7 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";
-string g_sVersion = "0.85";
+string g_sVersion = "0.86";
 string g_sAuthors = "Zopf";
 string g_sScriptName;
 string g_sType = "sound";
@@ -156,7 +156,7 @@ string GroupCheck(key kId){
 
 //###
 //ExtensionBasics.lslm
-//0.31 - 03Feb2014
+//0.32 - 04Feb2014
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);
@@ -244,18 +244,18 @@ string CheckForFiles(integer iNFiles,list lgivenFileList,integer iPermCheck,stri
 //PREDEFINED FUNCTIONS
 //===============================================
 
-selectStuff(float fMsg){
-    Debug(("selectStuff: " + ((string)fMsg)));
-    if ((fMsg <= SIZE_SMALL)) {
+selectStuff(float fVal){
+    Debug(("selectStuff: " + ((string)fVal)));
+    if ((fVal <= SIZE_SMALL)) {
         (g_sCurrentSoundFile = g_sSoundFileSmall);
     }
-    else  if (((fMsg > SIZE_SMALL) && (fMsg < SIZE_MEDIUM))) {
+    else  if (((fVal > SIZE_SMALL) && (fVal < SIZE_MEDIUM))) {
         (g_sCurrentSoundFile = g_sSoundFileMedium1);
     }
-    else  if (((fMsg >= SIZE_MEDIUM) && (fMsg < SIZE_LARGE))) {
+    else  if (((fVal >= SIZE_MEDIUM) && (fVal < SIZE_LARGE))) {
         (g_sCurrentSoundFile = g_sSoundFileMedium2);
     }
-    else  if (((fMsg >= SIZE_LARGE) && (fMsg <= 100))) {
+    else  if (((fVal >= SIZE_LARGE) && (fVal <= 100))) {
         (g_sCurrentSoundFile = g_sSoundFileFull);
     }
     else  {
@@ -266,10 +266,11 @@ selectStuff(float fMsg){
                 llTriggerSound(g_sSoundFileStart,g_fSoundVolumeNew);
             }
         }
+        (g_fSoundVolumeNew = 0.0);
         (g_sSize = "0");
         return;
     }
-    (g_sSize = ((string)fMsg));
+    (g_sSize = ((string)fVal));
 }
 
 
@@ -331,37 +332,42 @@ default {
         if ((((((float)sMsg) == g_fSoundVolumeCur) && ((sVal == g_sSize) || ("" == sVal))) || ("-1" == sVal))) return;
         Debug("work on link_message");
         (g_fSoundVolumeNew = ((float)sMsg));
-        if (((((0 == g_fSoundVolumeNew) && (sVal != g_sSize)) && ("" != sVal)) && ("0" != sVal))) {
+        if ((((((0 == g_fSoundVolumeNew) && (sVal != g_sSize)) && ("" != sVal)) && ("0" != sVal)) && ("110" != sVal))) {
             if ((g_iSoundNFilesAvail > 1)) selectStuff(((float)sVal));
-            llPreloadSound(g_sCurrentSoundFile);
             Debug("change while off");
             return;
         }
-        if (((g_fSoundVolumeNew > 0) && (g_fSoundVolumeNew <= 1))) {
+        if ((("0" != sVal) && ((g_fSoundVolumeNew > 0) && (g_fSoundVolumeNew <= 1)))) {
             llSetTimerEvent(0.0);
             if ((("" == sVal) || (sVal == g_sSize))) {
-                if ((g_fSoundVolumeCur > 0)) {
+                if ((g_fSoundVolumeCur > 0.0)) {
                     llAdjustSoundVolume(g_fSoundVolumeNew);
                     if (g_iVerbose) llWhisper(0,"(v) Sound range for fire has changed");
                 }
                 else  {
                     llPreloadSound(g_sCurrentSoundFile);
-                    llSleep(2.0);
+                    llStopSound();
                     llLoopSound(g_sCurrentSoundFile,g_fSoundVolumeNew);
-                    if (g_iVerbose) llWhisper(0,"(v) The fire starts to make some noise");
+                    if (g_iVerbose) llWhisper(0,"(v) The fire starts to make noise again");
                 }
             }
             else  {
                 string sCurrentSoundFileTemp = g_sCurrentSoundFile;
+                string sSizeTemp = g_sSize;
                 if ((g_iSoundNFilesAvail > 1)) selectStuff(((float)sVal));
-                if ((g_sCurrentSoundFile == sCurrentSoundFileTemp)) {
+                if (("110" == sMsg)) return;
+                if (((g_sCurrentSoundFile == sCurrentSoundFileTemp) && ("0" != sSizeTemp))) {
                     llAdjustSoundVolume(g_fSoundVolumeNew);
                     if (g_iVerbose) llWhisper(0,"(v) Sound range for fire has changed");
                 }
                 else  {
-                    if ((g_iVerbose && ("0" != g_sSize))) llWhisper(0,"(v) The fire changes it's sound");
+                    if (g_iVerbose) {
+                        if ((g_fSoundVolumeCur > 0.0)) llWhisper(0,"(v) The fire changes it's sound");
+                        else  llWhisper(0,"(v) The fire starts to make noise");
+                    }
                     Debug(("play sound: " + g_sCurrentSoundFile));
                     llPreloadSound(g_sCurrentSoundFile);
+                    llSleep(1.3);
                     llStopSound();
                     llLoopSound(g_sCurrentSoundFile,g_fSoundVolumeNew);
                 }
@@ -377,6 +383,7 @@ default {
         llStopSound();
         if (g_iVerbose) llWhisper(0,"(v) Noise from fire ended");
         (g_fSoundVolumeNew = (g_fSoundVolumeCur = 0.0));
+        (g_sSize = "0");
         llSetTimerEvent(0.0);
     }
 }

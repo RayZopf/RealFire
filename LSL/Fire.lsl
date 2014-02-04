@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Feb  4 02:43:43 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Feb  4 05:30:11 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -23,8 +23,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//03. Feb. 2014
-//v2.2.1-0.95
+//04. Feb. 2014
+//v2.2.1-0.96
 //
 
 //Files:
@@ -51,7 +51,6 @@
 // B-Sound
 
 //FIXME: too much llSleep in stopSystem
-//FIXME: menu closes when fastToggle (all off, main menu)
 //FIXME: to many backround sound off messages after every option togggle (primfire)
 //FIXME: off messages when touch-off but extensions are allready off in options
 //FIXME: heap stack collision - make own module for particle fire
@@ -330,7 +329,7 @@ toggleFunktion(string sFunction){
     }
     else  if (("sound" == sFunction)) {
         if (g_iSoundOn) {
-            sendMessage(SOUND_CHANNEL,"0","");
+            sendMessage(SOUND_CHANNEL,"","0");
             (g_iSoundOn = FALSE);
         }
         else  {
@@ -382,7 +381,7 @@ updateSize(float size){
         if ((g_iChangeSmoke && g_iSmokeAvail)) (g_fPercentSmoke = (size * 4.0));
         else  (g_fPercentSmoke = 100.0);
         Debug(((((("Smoke size: change= " + ((string)g_iChangeSmoke)) + ", size= ") + ((string)size)) + ", percentage= ") + ((string)g_fPercentSmoke)));
-        if (g_iChangeVolume) (g_fSoundVolume = percentage((size * 4.0),g_fStartVolume));
+        if (((g_iSoundAvail || g_iBackSoundAvail) && g_iChangeVolume)) (g_fSoundVolume = percentage((size * 4.0),g_fStartVolume));
     }
     updateColor();
     if ((g_iPrimFireAvail && g_iPrimFireOn)) sendMessage(ANIM_CHANNEL,((string)size),((string)g_iLowprim));
@@ -697,15 +696,10 @@ integer max(integer x,integer y){
 
 reset(){
     (g_iParticleFireOn = g_iDefParticleFire);
-    if ((!g_iPrimFireAvail)) (g_iPrimFireOn = FALSE);
-    else  (g_iPrimFireOn = g_iDefPrimFire);
-    if ((!g_iSmokeAvail)) (g_iSmokeOn = FALSE);
-    else  (g_iSmokeOn = g_iDefSmoke);
-    if (((!g_iSoundAvail) && (!g_iBackSoundAvail))) (g_iSoundOn = (g_iChangeVolume = FALSE));
-    else  {
-        (g_iSoundOn = g_iDefSound);
-        (g_iChangeVolume = g_iDefChangeVolume);
-    }
+    (g_iPrimFireOn = g_iDefPrimFire);
+    (g_iSmokeOn = g_iDefSmoke);
+    (g_iSoundOn = g_iDefSound);
+    (g_iChangeVolume = g_iDefChangeVolume);
     (g_fPerSize = ((float)g_iDefSize));
     (g_iPerVolume = g_iDefVolume);
     (g_iPerRedStart = ((integer)g_vDefStartColor.x));
@@ -739,7 +733,7 @@ startSystem(){
         (g_fStartVolume = percentage(((float)g_iPerVolume),MAX_VOLUME));
     }
     if ((!g_iOn)) {
-        if (g_iSoundOn) sendMessage(SOUND_CHANNEL,"110",((string)g_fStartVolume));
+        if ((g_iSoundAvail && g_iSoundOn)) sendMessage(SOUND_CHANNEL,"110",((string)g_fStartVolume));
         if (g_iVerbose) llWhisper(0,"(v) The fire gets lit");
     }
     updateSize(g_fPerSize);
@@ -758,7 +752,7 @@ stopSystem(){
     llSetTimerEvent(0.0);
     if (g_iSmokeOn) sendMessage(SMOKE_CHANNEL,"0","");
     llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,FALSE,ZERO_VECTOR,0,0,0]);
-    if ((g_iSoundOn || g_iBackSoundAvail)) sendMessage(SOUND_CHANNEL,"0","0");
+    if ((g_iSoundAvail || g_iBackSoundAvail)) sendMessage(SOUND_CHANNEL,"0","0");
     if (g_iMenuOpen) {
         llListenRemove(g_iMenuHandle);
         llListenRemove(g_iStartColorHandle);
@@ -884,7 +878,7 @@ default {
             else  if ((msg == "-Fire")) (g_fPerSize = max((((integer)g_fPerSize) - 5),5));
             else  if ((msg == "+Fire")) (g_fPerSize = min((((integer)g_fPerSize) + 5),100));
             else  if ((msg == "-Volume")) {
-                (g_iPerVolume = max((g_iPerVolume - 5),5));
+                (g_iPerVolume = max((g_iPerVolume - 5),0));
                 (g_fStartVolume = percentage(g_iPerVolume,MAX_VOLUME));
             }
             else  if ((msg == "+Volume")) {
@@ -1038,6 +1032,10 @@ default {
                 if (("1" == sMsg)) {
                     (g_iPrimFireAvail = TRUE);
                     llWhisper(0,"PrimFire available");
+                    if ((g_iDefPrimFire && g_iOn)) {
+                        (g_iPrimFireOn = (!g_iPrimFireOn));
+                        toggleFunktion("primfire");
+                    }
                 }
                 else  (g_iPrimFireAvail = FALSE);
             }
@@ -1053,7 +1051,7 @@ default {
                 (g_iSmokeAvail = TRUE);
                 llWhisper(0,"Smoke available");
                 if ((g_iDefSmoke && g_iOn)) {
-                    (g_iSmokeOn = FALSE);
+                    (g_iSmokeOn = (!g_iSmokeOn));
                     toggleFunktion("smoke");
                 }
             }
@@ -1066,11 +1064,10 @@ default {
             if ((sScriptName == SOUNDSCRIPT)) {
                 if (("1" == sMsg)) {
                     (g_iSoundAvail = TRUE);
-                    (g_iChangeVolume = g_iDefChangeVolume);
                     llWhisper(0,"Noise available");
                     if ((g_iDefSound && g_iOn)) {
-                        (g_iSoundOn = FALSE);
-                        toggleFunktion("smoke");
+                        (g_iSoundOn = (!g_iSoundOn));
+                        toggleFunktion("sound");
                     }
                 }
                 else  (g_iSoundAvail = FALSE);
@@ -1078,11 +1075,10 @@ default {
             else  if ((sScriptName == BACKSOUNDSCRIPT)) {
                 if (("1" == sMsg)) {
                     (g_iBackSoundAvail = TRUE);
-                    (g_iChangeVolume = g_iDefChangeVolume);
                     llWhisper(0,"Ambience sound available");
                     if ((g_iDefSound && g_iOn)) {
-                        (g_iSoundOn = FALSE);
-                        toggleFunktion("smoke");
+                        (g_iSoundOn = (!g_iSoundOn));
+                        toggleFunktion("sound");
                     }
                 }
                 else  (g_iBackSoundAvail = FALSE);

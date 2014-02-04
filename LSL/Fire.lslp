@@ -22,8 +22,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//03. Feb. 2014
-//v2.2.1-0.95
+//04. Feb. 2014
+//v2.2.1-0.96
 //
 
 //Files:
@@ -50,7 +50,6 @@
 // B-Sound
 
 //FIXME: too much llSleep in stopSystem
-//FIXME: menu closes when fastToggle (all off, main menu)
 //FIXME: to many backround sound off messages after every option togggle (primfire)
 //FIXME: off messages when touch-off but extensions are allready off in options
 //FIXME: heap stack collision - make own module for particle fire
@@ -276,7 +275,7 @@ toggleFunktion(string sFunction)
 		}
 	} else if ("sound" == sFunction) {
 		if (g_iSoundOn) {
-			sendMessage(SOUND_CHANNEL, "0", "");
+			sendMessage(SOUND_CHANNEL, "", "0");
 			g_iSoundOn = FALSE;
 		} else {
 			sendMessage(SOUND_CHANNEL, g_sCurrentSound, (string)g_fSoundVolume);
@@ -329,16 +328,16 @@ updateSize(float size)
 		if (g_iChangeSmoke && g_iSmokeAvail) g_fPercentSmoke = size * 4.0; //works only here within range 0-100!!!
 			else g_fPercentSmoke = 100.0;
 		Debug("Smoke size: change= "+(string)g_iChangeSmoke+", size= "+(string)size +", percentage= "+(string)g_fPercentSmoke);
-		if (g_iChangeVolume) g_fSoundVolume = percentage(size * 4.0, g_fStartVolume);
+		if ((g_iSoundAvail || g_iBackSoundAvail) && g_iChangeVolume) g_fSoundVolume = percentage(size * 4.0, g_fStartVolume);
 	}
 
 	updateColor();
 	if (g_iPrimFireAvail && g_iPrimFireOn) sendMessage(ANIM_CHANNEL, (string)size, (string)g_iLowprim);
 	if (g_iSmokeAvail && g_iSmokeOn) sendMessage(SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
 	if (g_iSoundAvail || g_iBackSoundAvail) { //needs to be improved
-	if (0 <= size && 100 >= size) g_sCurrentSound = (string)size;
-	if (g_iSoundOn) sendMessage(SOUND_CHANNEL, g_sCurrentSound, (string)g_fSoundVolume); //used when changing fire size via menu
-		else sendMessage(SOUND_CHANNEL, g_sCurrentSound, "0");
+		if (0 <= size && 100 >= size) g_sCurrentSound = (string)size;
+		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, g_sCurrentSound, (string)g_fSoundVolume); //used when changing fire size via menu
+			else sendMessage(SOUND_CHANNEL, g_sCurrentSound, "0");
 	}
 	if (g_iParticleFireOn) updateParticles(vStart, vEnd, fMin, fMax, fRadius, vPush);
 		else llParticleSystem([]);
@@ -457,7 +456,7 @@ loadNotecard()
 		g_fStartVolume = percentage(g_iDefVolume, MAX_VOLUME);
 
 		reset(); // initial values for menu
-				if (g_iOn) startSystem();
+		if (g_iOn) startSystem();
 		if (g_iVerbose) infoLines();
 
 		if (g_iDebugMode) {
@@ -697,15 +696,10 @@ integer max (integer x, integer y)
 reset()
 {
 	g_iParticleFireOn = g_iDefParticleFire;
-	if (!g_iPrimFireAvail) g_iPrimFireOn = FALSE;
-		else g_iPrimFireOn = g_iDefPrimFire;
-	if (!g_iSmokeAvail) g_iSmokeOn = FALSE;
-		else g_iSmokeOn = g_iDefSmoke;
-	if (!g_iSoundAvail && !g_iBackSoundAvail) g_iSoundOn = g_iChangeVolume = FALSE;
-		else {
-			g_iSoundOn = g_iDefSound;
-			g_iChangeVolume = g_iDefChangeVolume;
-		}
+	g_iPrimFireOn = g_iDefPrimFire;
+	g_iSmokeOn = g_iDefSmoke;
+	g_iSoundOn = g_iDefSound;
+	g_iChangeVolume = g_iDefChangeVolume;
 	g_fPerSize = (float)g_iDefSize;
 	g_iPerVolume = g_iDefVolume;
 	g_iPerRedStart = (integer)g_vDefStartColor.x;
@@ -743,7 +737,7 @@ startSystem()
 		//if (g_iSoundOn) sendMessage(SOUND_CHANNEL, "-1", (string)g_fStartVolume); //background noise - do better not use, gets called to often
 	}
 	if (!g_iOn) {
-		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, "110", (string)g_fStartVolume); // special start sound
+		if (g_iSoundAvail && g_iSoundOn) sendMessage(SOUND_CHANNEL, "110", (string)g_fStartVolume); // special start sound
 		if (g_iVerbose) llWhisper(0, "(v) The fire gets lit");
 /*		//particles to start fire with
 		llParticleSystem ([
@@ -811,7 +805,7 @@ stopSystem()
 	llSetTimerEvent(0.0);
 	if (g_iSmokeOn) sendMessage(SMOKE_CHANNEL, "0", "");
 	llSetLinkPrimitiveParamsFast(g_iType, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
-	if (g_iSoundOn || g_iBackSoundAvail) sendMessage(SOUND_CHANNEL, "0", "0"); //volume off and size off
+	if (g_iSoundAvail || g_iBackSoundAvail) sendMessage(SOUND_CHANNEL, "0", "0"); //volume off and size off
 	if (g_iMenuOpen) {
 		llListenRemove(g_iMenuHandle);
 		llListenRemove(g_iStartColorHandle);
@@ -987,7 +981,7 @@ default
 			else if (msg == "-Fire") g_fPerSize = max((integer)g_fPerSize - 5, 5);
 			else if (msg == "+Fire") g_fPerSize = min((integer)g_fPerSize + 5, 100);
 			else if (msg == "-Volume") {
-				g_iPerVolume = max(g_iPerVolume - 5, 5);
+				g_iPerVolume = max(g_iPerVolume - 5, 0);
 				g_fStartVolume = percentage(g_iPerVolume, MAX_VOLUME);
 			} else if (msg == "+Volume") {
 				g_iPerVolume = min(g_iPerVolume + 5, 100);
@@ -1117,6 +1111,10 @@ default
 				if ("1" == sMsg) {
 					g_iPrimFireAvail = TRUE;
 					llWhisper(0, "PrimFire available");
+				if (g_iDefPrimFire && g_iOn) { //if only smoke scripts gets resetted - is normally in another prim!
+					g_iPrimFireOn = !g_iPrimFireOn; //important to get it toggled
+					toggleFunktion("primfire");
+				}
 				} else g_iPrimFireAvail = FALSE;
 			}
 			if (sScriptName == TEXTUREANIMSCRIPT) {
@@ -1132,7 +1130,7 @@ default
 				g_iSmokeAvail = TRUE;
 				llWhisper(0, "Smoke available");
 				if (g_iDefSmoke && g_iOn) { //if only smoke scripts gets resetted - is normally in another prim!
-					g_iSmokeOn = FALSE; //important to get it toggled
+					g_iSmokeOn = !g_iSmokeOn; //important to get it toggled
 					toggleFunktion("smoke");
 				}
 			} else {
@@ -1144,21 +1142,19 @@ default
 			if (sScriptName == SOUNDSCRIPT) {
 				if ("1" == sMsg) {
 					g_iSoundAvail = TRUE;
-					g_iChangeVolume = g_iDefChangeVolume;
 					llWhisper(0, "Noise available");
 					if (g_iDefSound && g_iOn) { //if only sound scripts gets resetted - one of them should be another prim!
-						g_iSoundOn = FALSE; //important to get it toggled
-						toggleFunktion("smoke");
+						g_iSoundOn = !g_iSoundOn; //important to get it toggled
+						toggleFunktion("sound");
 					}
 				} else g_iSoundAvail = FALSE;
 			} else if (sScriptName == BACKSOUNDSCRIPT) {
 				if ("1" == sMsg){
 					g_iBackSoundAvail = TRUE;
-					g_iChangeVolume = g_iDefChangeVolume;
 					llWhisper(0, "Ambience sound available");
 					if (g_iDefSound && g_iOn) { //if only sound scripts gets resetted
-						g_iSoundOn = FALSE; //important to get it toggled
-						toggleFunktion("smoke");
+						g_iSoundOn = !g_iSoundOn; //important to get it toggled
+						toggleFunktion("sound");
 					}
 				} else g_iBackSoundAvail = FALSE;
 			}
