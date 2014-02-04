@@ -36,8 +36,9 @@
 //
 //
 //Prequisites:
+// if primfire is used, the fire prims not only need the P-Anim_object (and texture animation) script, but also Remote_control - and Remote_receiver
 // Smoke.lsl in another prim than Fire.lsl
-// Soundfiles need to be in same prim as Sound.lsl
+// Soundfiles need to be in same prim as Sound scripts
 //
 //Notecard format: see config NC
 //basic help: User Manual

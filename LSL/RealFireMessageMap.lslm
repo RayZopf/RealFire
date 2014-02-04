@@ -31,7 +31,7 @@ $module ()
 string g_sScriptName;
 
 // Notecard variables
-integer g_iMsgNumber = 10957;             // number part of incoming link messages
+integer g_iMsgNumber = 10957;             // number part of incoming link messages: used for remot control receiver scripts
 string g_sMsgSwitch = "switch";           // string part of incoming link message: switch (on/off)
 string g_sMsgOn = "on";                   // string part of incoming link message: switch on
 string g_sMsgOff = "off";                 // string part of incoming link message: switch off

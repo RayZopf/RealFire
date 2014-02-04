@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Feb  4 22:15:20 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Feb  4 23:33:07 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -37,8 +37,9 @@
 //
 //
 //Prequisites:
+// if primfire is used, the fire prims not only need the P-Anim_object (and texture animation) script, but also Remote_control - and Remote_receiver
 // Smoke.lsl in another prim than Fire.lsl
-// Soundfiles need to be in same prim as Sound.lsl
+// Soundfiles need to be in same prim as Sound scripts
 //
 //Notecard format: see config NC
 //basic help: User Manual

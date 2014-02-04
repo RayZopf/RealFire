@@ -16,6 +16,7 @@
 // A switch can be bound to a fire by entering the same word in the description of both prims
 // Alternatively, you can use the network switch to control up to 9 fires
 //
+// ALSO TO BE USED IN FIRE PRIMS (for primfire objects, so that on/off/menu still works when main script prim is behind those fire prims)
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
