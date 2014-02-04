@@ -1,9 +1,9 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Tue Feb  4 02:39:54 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Tue Feb  4 05:38:49 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//03. Feb. 2014
+//04. Feb. 2014
 //v0.14
 //
 //
@@ -160,7 +160,7 @@ string GroupCheck(key kId){
 
 //###
 //ExtensionBasics.lslm
-//0.31 - 03Feb2014
+//0.32 - 04Feb2014
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);
@@ -248,21 +248,21 @@ string CheckForFiles(integer iNFiles,list lgivenFileList,integer iPermCheck,stri
 //PREDEFINED FUNCTIONS
 //===============================================
 
-selectStuff(float fMsg){
-    Debug(("selectStuff: " + ((string)fMsg)));
-    if ((fMsg <= SIZE_SMALL)) {
+selectStuff(float fVal){
+    Debug(("selectStuff: " + ((string)fVal)));
+    if ((fVal <= SIZE_SMALL)) {
         (g_sCurrentPrimFireFile = g_sPrimFireFileSmall);
         (g_vOffset = <g_vOffsetSmall.x,g_vOffsetSmall.y,(g_vOffsetSmall.z + g_fAltitude)>);
     }
-    else  if (((fMsg > SIZE_SMALL) && (fMsg < SIZE_MEDIUM))) {
+    else  if (((fVal > SIZE_SMALL) && (fVal < SIZE_MEDIUM))) {
         (g_sCurrentPrimFireFile = g_sPrimFireFileMedium1);
         (g_vOffset = <g_vOffsetMedium1.x,g_vOffsetMedium1.y,(g_vOffsetMedium1.z + g_fAltitude)>);
     }
-    else  if (((fMsg >= SIZE_MEDIUM) && (fMsg < SIZE_LARGE))) {
+    else  if (((fVal >= SIZE_MEDIUM) && (fVal < SIZE_LARGE))) {
         (g_sCurrentPrimFireFile = g_sPrimFireFileMedium1);
         (g_vOffset = <g_vOffsetMedium1.x,g_vOffsetMedium1.y,(g_vOffsetMedium1.z + g_fAltitude)>);
     }
-    else  if (((fMsg >= SIZE_LARGE) && (fMsg <= 100))) {
+    else  if (((fVal >= SIZE_LARGE) && (fVal <= 100))) {
         (g_sCurrentPrimFireFile = g_sPrimFireFileFull);
         (g_vOffset = <g_vOffsetFull.x,g_vOffsetFull.y,(g_vOffsetFull.z + g_fAltitude)>);
     }
@@ -270,7 +270,7 @@ selectStuff(float fMsg){
         (g_sSize = "0");
         return;
     }
-    (g_sSize = ((string)fMsg));
+    (g_sSize = ((string)fVal));
 }
 
 

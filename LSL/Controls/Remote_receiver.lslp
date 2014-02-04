@@ -16,7 +16,7 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//03. Feb. 2014
+//04. Feb. 2014
 //v1.1-0.21
 //
 

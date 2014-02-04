@@ -2,8 +2,8 @@
 //Module register with and react on master for RealFire Extensions
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//03. Feb. 2014
-//v0.31
+//04. Feb. 2014
+//v0.32
 
 //Files:
 // ExtensionBasics.lslm
@@ -31,7 +31,7 @@ $import PrintStatusInfo.lslm(m_iVerbose=m_iVerbose, m_iAvail=m_iAvail, m_sTitle=
 
 //###
 //ExtensionBasics.lslm
-//0.31 - 03Feb2014
+//0.32 - 04Feb2014
 
 RegisterExtension(integer link)
 {

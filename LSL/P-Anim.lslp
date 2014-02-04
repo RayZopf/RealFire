@@ -2,7 +2,7 @@
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//03. Feb. 2014
+//04. Feb. 2014
 //v0.14
 //
 //
@@ -109,19 +109,19 @@ $import CheckForFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptNam
 //PREDEFINED FUNCTIONS
 //===============================================
 
-selectStuff(float fMsg)
+selectStuff(float fVal)
 {
-	Debug("selectStuff: "+(string)fMsg);
-	if (fMsg <= SIZE_SMALL) {
+	Debug("selectStuff: "+(string)fVal);
+	if (fVal <= SIZE_SMALL) {
 		g_sCurrentPrimFireFile = g_sPrimFireFileSmall;
 		g_vOffset = <g_vOffsetSmall.x, g_vOffsetSmall.y, g_vOffsetSmall.z+g_fAltitude>;
-	} else if (fMsg > SIZE_SMALL && fMsg < SIZE_MEDIUM) {
+	} else if (fVal > SIZE_SMALL && fVal < SIZE_MEDIUM) {
 		g_sCurrentPrimFireFile = g_sPrimFireFileMedium1;
 		g_vOffset = <g_vOffsetMedium1.x, g_vOffsetMedium1.y, g_vOffsetMedium1.z+g_fAltitude>;
-	} else if (fMsg >= SIZE_MEDIUM && fMsg < SIZE_LARGE) {
+	} else if (fVal >= SIZE_MEDIUM && fVal < SIZE_LARGE) {
 		g_sCurrentPrimFireFile = g_sPrimFireFileMedium1;
 		g_vOffset = <g_vOffsetMedium1.x, g_vOffsetMedium1.y, g_vOffsetMedium1.z+g_fAltitude>;
-	} else if (fMsg >= SIZE_LARGE && fMsg <= 100) {
+	} else if (fVal >= SIZE_LARGE && fVal <= 100) {
 		g_sCurrentPrimFireFile = g_sPrimFireFileFull;
 		g_vOffset = <g_vOffsetFull.x, g_vOffsetFull.y, g_vOffsetFull.z+g_fAltitude>;
 	} else {
@@ -136,7 +136,7 @@ selectStuff(float fMsg)
 		g_sSize = "0";
 		return;
 	}
-	g_sSize = (string)fMsg;
+	g_sSize = (string)fVal;
 }
 
 

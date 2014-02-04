@@ -15,7 +15,7 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//03. Feb. 2014
+//04. Feb. 2014
 //v2.2.1-0.57
 //
 

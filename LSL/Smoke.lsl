@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Feb  4 02:39:54 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Feb  4 05:38:49 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Smoke
 //
@@ -16,7 +16,7 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//03. Feb. 2014
+//04. Feb. 2014
 //v2.2.1-0.57
 //
 
@@ -146,7 +146,7 @@ string GroupCheck(key kId){
 
 //###
 //ExtensionBasics.lslm
-//0.31 - 03Feb2014
+//0.32 - 04Feb2014
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);

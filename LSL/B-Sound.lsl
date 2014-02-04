@@ -1,9 +1,9 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Feb  4 02:39:54 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Feb  4 05:38:49 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//03. Feb. 2014
+//04. Feb. 2014
 //v0.48
 //
 //
@@ -143,7 +143,7 @@ string GroupCheck(key kId){
 
 //###
 //ExtensionBasics.lslm
-//0.31 - 03Feb2014
+//0.32 - 04Feb2014
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);
