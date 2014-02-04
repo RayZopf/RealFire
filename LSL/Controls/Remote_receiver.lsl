@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb  4 00:05:29 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb  4 01:21:31 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -98,19 +98,19 @@ Debug(string sMsg){
 
 //###
 //PrintStatusInfo.lslm
-//0.12 - 03Feb2014
+//0.13 - 04Feb2014
 
 InfoLines(integer bool){
-    if (g_iVerbose) {
-        if (bool) {
-            if (BOOL) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
-            else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
-        }
-        if ((!g_iRemote)) llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-        if ((g_iRemote && BOOL)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
-        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
-        llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+    if ((g_iVerbose && bool)) {
+        if (BOOL) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
+        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
     }
+    if (g_iRemote) {
+        if (BOOL) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+    }
+    else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+    if (g_iVerbose) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
 }
 
 
@@ -146,6 +146,7 @@ string getGroup(string sDefGroup){
 default {
 
 	state_entry() {
+        (g_sScriptName = llGetScriptName());
         llListen(REMOTE_CHANNEL,"","","");
         InfoLines(FALSE);
     }

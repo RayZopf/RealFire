@@ -102,6 +102,7 @@ default
 {
 	state_entry()
 	{
+		g_sScriptName = llGetScriptName();
 		llListen(REMOTE_CHANNEL, "", "", "");
 		InfoLines(FALSE);
 	}
