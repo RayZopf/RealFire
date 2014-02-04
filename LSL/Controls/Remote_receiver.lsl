@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb  4 01:21:31 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb  4 01:44:12 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -70,12 +70,15 @@ string g_sTitle = "RealFire Remote Receiver";
 string g_sVersion = "1.1-0.21";
 string g_sAuthors = "Rene10957, Zopf";
 string g_sScriptName;
+integer g_iType = LINK_SET;
 
 // Constants
 string SEPARATOR = ";;";
 integer BOOL = TRUE;
 integer g_iMsgNumber = 10957;
+integer COMMAND_CHANNEL = -15700;
 integer REMOTE_CHANNEL = -975102;
+integer FAKE_CHANNEL = -1001001;
 
 
 //###
@@ -130,6 +133,30 @@ string getGroup(string sDefGroup){
 }
 
 
+//###
+//ExtensionBasics.lslm
+//0.31 - 03Feb2014
+
+RegisterExtension(integer link){
+    string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);
+    if ((g_iRemote && BOOL)) llMessageLinked(link,FAKE_CHANNEL,"1",((key)sId));
+    else  llMessageLinked(link,FAKE_CHANNEL,"0",((key)sId));
+}
+
+
+MasterCommand(integer iChan,string sVal){
+    if ((iChan == COMMAND_CHANNEL)) {
+        if (("register" == sVal)) RegisterExtension(g_iType);
+        else  if (("verbose" == sVal)) {
+            (g_iVerbose = TRUE);
+            InfoLines(FALSE);
+        }
+        else  if (("nonverbose" == sVal)) (g_iVerbose = FALSE);
+        else  llSetTimerEvent(0.1);
+    }
+}
+
+
 //===============================================
 //PREDEFINED FUNCTIONS
 //===============================================
@@ -167,5 +194,13 @@ default {
         string command = llList2String(msgList,1);
         key user = ((key)llList2String(msgList,2));
         llMessageLinked(LINK_THIS,g_iMsgNumber,command,user);
+    }
+
+
+//listen for linked messages from Fire (main) script
+//-----------------------------------------------
+	link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
+        Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSoundSet) + "; kId ") + ((string)kId)));
+        MasterCommand(iChan,sSoundSet);
     }
 }

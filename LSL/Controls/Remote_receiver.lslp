@@ -82,6 +82,7 @@ integer BOOL = TRUE;
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=BOOL, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iRemote, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iEnabled=g_iRemote, m_iAvail=BOOL, m_iChannel=FAKE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
@@ -127,6 +128,14 @@ default
 		key user = (key)llList2String(msgList, 2);
 
 		llMessageLinked(LINK_THIS, g_iMsgNumber, command, user);
+	}
+
+//listen for linked messages from Fire (main) script
+//-----------------------------------------------
+	link_message(integer iSender, integer iChan, string sSoundSet, key kId)
+	{
+		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);
+		MasterCommand(iChan, sSoundSet);
 	}
 
 //-----------------------------------------------
