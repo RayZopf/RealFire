@@ -501,9 +501,11 @@ readNotecard (string ncLine)
 		par = llStringTrim(par, STRING_TRIM);
 		val = llStringTrim(val, STRING_TRIM);
 		string lcpar = llToLower(par);
-		if ("globaldebug" == lcpar && "D E B U G" == val) {
-			g_iDebugMode = TRUE;
-			sendMessage(COMMAND_CHANNEL, "globaldebug", "");
+		if ("globaldebug" == lcpar) {
+			if ("D E B U G" == val) {
+				g_iDebugMode = TRUE;
+				sendMessage(COMMAND_CHANNEL, "globaldebug", "");
+			}
 		} else if ("linksetid" == lcpar && "" != val) LINKSETID = val;
 		else if (lcpar == "verbose") g_iVerbose = checkYesNo("verbose", val);
 		else if (lcpar == "switchaccess") g_iSwitchAccess = checkInt("switchAccess", (integer)val, 0, 7);
