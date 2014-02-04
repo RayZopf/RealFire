@@ -901,9 +901,13 @@ sendMessage(integer iChan, string sVal, string sMsg )
 
 infoLines()
 {
-	llWhisper(0, "(v) Switch access:" + showAccess(g_iSwitchAccess));
-	llWhisper(0, "(v) Menu access:" + showAccess(g_iMenuAccess));
-	llWhisper(0, "\n\t -free memory: "+(string)llGetFreeMemory()+" -\n(v) "+g_sTitle+"/"+ g_sScriptName);
+	llWhisper(0, g_sTitle +" "+g_sVersion+" by "+g_sAuthors);
+	llWhisper(0, "Touch to start/stop fire\n *Long touch to show menu*");
+	if (g_iVerbose) {
+		llWhisper(0, "(v) Switch access:" + showAccess(g_iSwitchAccess));
+		llWhisper(0, "(v) Menu access:" + showAccess(g_iMenuAccess));
+		llWhisper(0, "\n\t -free memory: "+(string)llGetFreeMemory()+" -\n(v) "+g_sTitle+"/"+ g_sScriptName);
+	}
 }
 
 
@@ -924,9 +928,6 @@ default
 
 		stopSystem();
 		Debug("Particle count: " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
-		Debug((string)llGetFreeMemory() + " bytes free");
-		llWhisper(0, g_sTitle +" "+g_sVersion+" by "+g_sAuthors);
-		llWhisper(0, "Touch to start/stop fire\n *Long touch to show menu*");
 		sendMessage(COMMAND_CHANNEL, "register", "");
 		if (g_iVerbose) llWhisper(0, "(v) Loading notecard...");
 		loadNotecard();
@@ -1026,6 +1027,7 @@ default
 				} else {
 					sendMessage(COMMAND_CHANNEL, "verbose", "");
 					g_iVerbose= TRUE;
+					infoLines();
 				}
 				g_iVerboseButton = TRUE;
 			} else if ("FastToggle" == msg) {
