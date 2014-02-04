@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb  4 01:44:12 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb  4 02:39:54 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -152,6 +152,7 @@ MasterCommand(integer iChan,string sVal){
             InfoLines(FALSE);
         }
         else  if (("nonverbose" == sVal)) (g_iVerbose = FALSE);
+        else  if (("globaldebug" == sVal)) (g_iVerbose = TRUE);
         else  llSetTimerEvent(0.1);
     }
 }

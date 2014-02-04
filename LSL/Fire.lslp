@@ -504,9 +504,11 @@ readNotecard (string ncLine)
 		par = llStringTrim(par, STRING_TRIM);
 		val = llStringTrim(val, STRING_TRIM);
 		string lcpar = llToLower(par);
-		if ("linksetid" == lcpar) {
-			if ("" != val) LINKSETID = val;
-		} else if (lcpar == "verbose") g_iVerbose = checkYesNo("verbose", val);
+		if ("gobaldebug" == lcpar && "D E B U G" == val) {
+			g_iDebugMode = TRUE;
+			sendMessage(COMMAND_CHANNEL, "globaldebug", "");
+		} else if ("linksetid" == lcpar && "" != val) LINKSETID = val;
+		else if (lcpar == "verbose") g_iVerbose = checkYesNo("verbose", val);
 		else if (lcpar == "switchaccess") g_iSwitchAccess = checkInt("switchAccess", (integer)val, 0, 7);
 		else if (lcpar == "menuaccess") g_iMenuAccess = checkInt("menuAccess", (integer)val, 0, 7);
 		else if (lcpar == "msgnumber") g_iMsgNumber = (integer)val;
@@ -533,6 +535,7 @@ readNotecard (string ncLine)
 		else if (lcpar == "intensity") g_iDefIntensity = checkInt("intensity", (integer)val, 0, 100);
 		else if (lcpar == "radius") g_iDefRadius = checkInt("radius", (integer)val, 0, 100);
 		else if (lcpar == "falloff") g_iDefFalloff = checkInt("falloff", (integer)val, 0, 100);
+
 		else llWhisper(0, "Unknown parameter in notecard line " + (string)(g_iLine + 1) + ": " + par);
 	}
 

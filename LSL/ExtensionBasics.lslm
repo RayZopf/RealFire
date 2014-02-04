@@ -22,7 +22,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-$module (string m_sGroup, integer m_iEnabled, integer m_iAvail, integer m_iChannel, string m_sScriptName, integer m_iLinkType, integer m_iVerbose, string m_sTitle, string m_sScriptName, string m_sVersion, string m_sAuthors)
+$module (integer m_iDebug, string m_sGroup, integer m_iEnabled, integer m_iAvail, integer m_iChannel, string m_sScriptName, integer m_iLinkType, integer m_iVerbose, string m_sTitle, string m_sScriptName, string m_sVersion, string m_sAuthors)
 
 $import RealFireMessageMap.lslm();
 $import GroupHandling.lslm(m_sGroup=m_sGroup);
@@ -50,6 +50,7 @@ MasterCommand(integer iChan, string sVal)
 			InfoLines(FALSE);
 		}
 		else if ("nonverbose" == sVal) m_iVerbose = FALSE;
+		else if ("globaldebug" == sVal) m_iVerbose = TRUE;
 		else llSetTimerEvent(0.1);
 	}
 }

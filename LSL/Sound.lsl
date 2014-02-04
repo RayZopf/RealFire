@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Mon Feb  3 23:48:35 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Tue Feb  4 02:39:54 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -28,7 +28,7 @@
 // LSLForge Modules
 //
 
-//FIXME: ---
+//FIXME: sound on fire on does not work
 
 //TODO: make file check (lists) the other way round: check if every inventory file is member of RealFire file list?
 //TODO: decide if touch event should really block touch on child prim and how to preload sound
@@ -112,17 +112,19 @@ Debug(string sMsg){
 
 //###
 //PrintStatusInfo.lslm
-//0.12 - 03Feb2014
+//0.13 - 04Feb2014
 
 InfoLines(integer bool){
     if ((g_iVerbose && bool)) {
         if (g_iSoundAvail) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
         else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
-        if ((!g_iSound)) llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-        if ((g_iSound && g_iSoundAvail)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
-        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
-        llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
     }
+    if (g_iSound) {
+        if (g_iSoundAvail) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+    }
+    else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+    if (g_iVerbose) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
 }
 
 
@@ -171,6 +173,7 @@ MasterCommand(integer iChan,string sVal){
             InfoLines(FALSE);
         }
         else  if (("nonverbose" == sVal)) (g_iVerbose = FALSE);
+        else  if (("globaldebug" == sVal)) (g_iVerbose = TRUE);
         else  llSetTimerEvent(0.1);
     }
 }

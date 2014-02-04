@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Feb  4 01:26:44 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Feb  4 02:43:43 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -541,9 +541,11 @@ readNotecard(string ncLine){
         (par = llStringTrim(par,STRING_TRIM));
         (val = llStringTrim(val,STRING_TRIM));
         string lcpar = llToLower(par);
-        if (("linksetid" == lcpar)) {
-            if (("" != val)) (LINKSETID = val);
+        if ((("gobaldebug" == lcpar) && ("D E B U G" == val))) {
+            (g_iDebugMode = TRUE);
+            sendMessage(COMMAND_CHANNEL,"globaldebug","");
         }
+        else  if ((("linksetid" == lcpar) && ("" != val))) (LINKSETID = val);
         else  if ((lcpar == "verbose")) (g_iVerbose = checkYesNo("verbose",val));
         else  if ((lcpar == "switchaccess")) (g_iSwitchAccess = checkInt("switchAccess",((integer)val),0,7));
         else  if ((lcpar == "menuaccess")) (g_iMenuAccess = checkInt("menuAccess",((integer)val),0,7));
