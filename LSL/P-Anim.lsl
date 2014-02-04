@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Tue Feb  4 05:38:49 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Tue Feb  4 22:15:20 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -76,7 +76,7 @@ string LINKSETID = "RealFire";
 string g_sTitle = "RealPrimFire";
 string g_sVersion = "0.14";
 string g_sAuthors = "Zopf";
-string g_sScriptName;
+
 string g_sType = "anim";
 integer g_iType = LINK_SET;
 
@@ -88,6 +88,8 @@ integer g_iLowprim = FALSE;
 integer g_iPermCheck = TRUE;
 string g_sSize = "0";
 vector g_vOffset;
+string g_sScriptName;
+string SEPARATOR = ";;";
 float SIZE_SMALL = 25.0;
 float SIZE_MEDIUM = 50.0;
 float SIZE_LARGE = 80.0;
@@ -150,7 +152,7 @@ string getGroup(string sDefGroup){
 
 string GroupCheck(key kId){
     string str = getGroup(LINKSETID);
-    list lKeys = llParseString2List(((string)kId),[";"],[]);
+    list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
     string sGroup = llList2String(lKeys,0);
     string sScriptName = llList2String(lKeys,1);
     if ((((str == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == str))) return sScriptName;
@@ -163,7 +165,7 @@ string GroupCheck(key kId){
 //0.32 - 04Feb2014
 
 RegisterExtension(integer link){
-    string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);
+    string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
     if ((g_iPrimFire && g_iPrimFireAvail)) llMessageLinked(link,ANIM_CHANNEL,"1",((key)sId));
     else  llMessageLinked(link,ANIM_CHANNEL,"0",((key)sId));
 }
@@ -320,7 +322,7 @@ default {
         string sScriptName = GroupCheck(kId);
         if (("exit" == sScriptName)) return;
         if (((((iChan != ANIM_CHANNEL) || (!g_iPrimFire)) || (!g_iPrimFireAvail)) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
-        list lParams = llParseString2List(sSet,[","],[]);
+        list lParams = llParseString2List(sSet,[SEPARATOR],[]);
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);
         Debug("work on link_message");

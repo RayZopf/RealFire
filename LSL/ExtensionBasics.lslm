@@ -35,7 +35,7 @@ $import PrintStatusInfo.lslm(m_iVerbose=m_iVerbose, m_iAvail=m_iAvail, m_sTitle=
 
 RegisterExtension(integer link)
 {
-	string sId = getGroup(m_sGroup) + ";" + m_sScriptName;
+	string sId = getGroup(m_sGroup) + SEPARATOR + m_sScriptName;
 	if (m_iEnabled && m_iAvail) llMessageLinked(link, m_iChannel, "1", (key)sId);
 		else llMessageLinked(link, m_iChannel, "0", (key)sId);
 }

@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Feb  4 05:38:49 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Feb  4 22:15:20 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Smoke
 //
@@ -74,10 +74,11 @@ float g_fStartAlpha = 0.4;
 string g_sTitle = "RealSmoke";
 string g_sVersion = "2.2.1-0.57";
 string g_sAuthors = "Rene10957, Zopf";
-string g_sScriptName;
 integer g_iType = LINK_ALL_OTHERS;
 
 string g_sSize = "0";
+string g_sScriptName;
+string SEPARATOR = ";;";
 integer COMMAND_CHANNEL = -15700;
 integer SMOKE_CHANNEL = -15790;
 
@@ -136,7 +137,7 @@ string getGroup(string sDefGroup){
 
 string GroupCheck(key kId){
     string str = getGroup(LINKSETID);
-    list lKeys = llParseString2List(((string)kId),[";"],[]);
+    list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
     string sGroup = llList2String(lKeys,0);
     string sScriptName = llList2String(lKeys,1);
     if ((((str == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == str))) return sScriptName;
@@ -149,7 +150,7 @@ string GroupCheck(key kId){
 //0.32 - 04Feb2014
 
 RegisterExtension(integer link){
-    string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);
+    string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
     if ((g_iSmoke && g_iSmoke)) llMessageLinked(link,SMOKE_CHANNEL,"1",((key)sId));
     else  llMessageLinked(link,SMOKE_CHANNEL,"0",((key)sId));
 }

@@ -63,7 +63,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 string g_sTitle = "RealB-Sound";     // title
 string g_sVersion = "0.48";       // version
 string g_sAuthors = "Zopf";
-string g_sScriptName;
+
 string g_sType = "sound";
 integer g_iType = LINK_SET;
 
@@ -167,7 +167,7 @@ default
 		if ("exit" == sScriptName) return;
 		if (iChan != SOUND_CHANNEL || !g_iSound && !g_iSoundAvail || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; //scripts need to have that identifier in their name, so that we can discard those messages
 
-		list lParams = llParseString2List(sSoundSet, [","], []);
+		list lParams = llParseString2List(sSoundSet, [SEPARATOR], []);
 		string sVal = llList2String(lParams, 0);
 		string sMsg = llList2String(lParams, 1);
 		Debug("no changes? backround on/off? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);

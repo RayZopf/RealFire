@@ -24,6 +24,8 @@
 
 $module (string m_sGroup)
 
+$import RealFireMessageMap.lslm();
+
 
 //###
 //GroupHandling.lslm
@@ -46,7 +48,7 @@ string GroupCheck(key kId)
 {
 	string str = getGroup(m_sGroup);
 
-	list lKeys = llParseString2List((string)kId, [";"], []);
+	list lKeys = llParseString2List((string)kId, [SEPARATOR], []);
 	string sGroup = llList2String(lKeys, 0);
 	string sScriptName = llList2String(lKeys, 1);
 	if (str == sGroup || m_sGroup == sGroup || m_sGroup == str) return sScriptName;

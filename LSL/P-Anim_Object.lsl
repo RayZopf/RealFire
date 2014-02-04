@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Sun Feb  2 23:01:06 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Tue Feb  4 22:15:20 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire rezzed object script
 // by Zopf Resident - Ray Zopf (Raz)
@@ -51,10 +51,11 @@ integer g_iDebugMode = FALSE;
 //-----------------------------------------------
 //string g_sTitle = "RealPrimFire-Object";     // title
 //string g_sVersion = "0.2";       // version
-string g_sScriptName;
+
 integer g_iType = LINK_SET;
 
 integer g_iLowprim = FALSE;
+string g_sScriptName;
 key g_kOwner;
 integer PRIMCOMMAND_CHANNEL = -15771;
 

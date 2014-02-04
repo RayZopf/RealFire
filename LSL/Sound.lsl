@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Tue Feb  4 05:30:27 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Tue Feb  4 22:15:20 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -73,7 +73,7 @@ string LINKSETID = "RealFire";
 string g_sTitle = "RealSound";
 string g_sVersion = "0.86";
 string g_sAuthors = "Zopf";
-string g_sScriptName;
+
 string g_sType = "sound";
 integer g_iType = LINK_SET;
 
@@ -85,6 +85,8 @@ integer g_iSoundNFilesAvail;
 float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
+string g_sScriptName;
+string SEPARATOR = ";;";
 float SIZE_SMALL = 25.0;
 float SIZE_MEDIUM = 50.0;
 float SIZE_LARGE = 80.0;
@@ -146,7 +148,7 @@ string getGroup(string sDefGroup){
 
 string GroupCheck(key kId){
     string str = getGroup(LINKSETID);
-    list lKeys = llParseString2List(((string)kId),[";"],[]);
+    list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
     string sGroup = llList2String(lKeys,0);
     string sScriptName = llList2String(lKeys,1);
     if ((((str == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == str))) return sScriptName;
@@ -159,7 +161,7 @@ string GroupCheck(key kId){
 //0.32 - 04Feb2014
 
 RegisterExtension(integer link){
-    string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);
+    string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
     if ((g_iSound && g_iSoundAvail)) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
     else  llMessageLinked(link,SOUND_CHANNEL,"0",((key)sId));
 }
@@ -325,7 +327,7 @@ default {
         string sScriptName = GroupCheck(kId);
         if (("exit" == sScriptName)) return;
         if (((((iChan != SOUND_CHANNEL) || (!g_iSound)) || (!g_iSoundAvail)) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
-        list lParams = llParseString2List(sSoundSet,[","],[]);
+        list lParams = llParseString2List(sSoundSet,[SEPARATOR],[]);
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);
         Debug(((((((("no changes? background? " + sVal) + "-") + sMsg) + "...g_fSoundVolumeCur=") + ((string)g_fSoundVolumeCur)) + "-g_sSize=") + g_sSize));

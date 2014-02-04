@@ -75,7 +75,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 string g_sTitle = "RealPrimFire";     // title
 string g_sVersion = "0.14";       // version
 string g_sAuthors = "Zopf";
-string g_sScriptName;
+
 string g_sType = "anim";
 integer g_iType = LINK_SET;
 
@@ -191,7 +191,7 @@ default
 		if ("exit" == sScriptName) return;
 		if (iChan != ANIM_CHANNEL || !g_iPrimFire || !g_iPrimFireAvail || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; // scripts need to have that identifier in their name, so that we can discard those messages
 
-		list lParams = llParseString2List(sSet, [","], []);
+		list lParams = llParseString2List(sSet, [SEPARATOR], []);
 		string sVal = llList2String(lParams, 0);
 		string sMsg = llList2String(lParams, 1);
 		//Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);

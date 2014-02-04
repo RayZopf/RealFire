@@ -68,13 +68,13 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 string g_sTitle = "RealFire Remote Receiver";            // title
 string g_sVersion = "1.1-0.21";        // version
 string g_sAuthors = "Rene10957, Zopf";
-string g_sScriptName;
+
 string g_sType = "remote";
 integer g_iType = LINK_SET;
 
 // Constants
-string SEPARATOR = ";;";           // separator for region messages
 integer BOOL = TRUE;
+
 
 //===============================================
 //LSLForge MODULES
@@ -103,6 +103,7 @@ default
 {
 	state_entry()
 	{
+		//g_kOwner = llGetOwner();
 		g_sScriptName = llGetScriptName();
 		llListen(REMOTE_CHANNEL, "", "", "");
 		InfoLines(FALSE);
@@ -116,6 +117,8 @@ default
 	listen(integer channel, string name, key kId, string msg)
 	{
 		Debug("listen: "+msg);
+		// Security - check the object belongs to our owner, not using llListen - filter, as we have state_entry and on_rez events
+		//if (llGetOwnerKey(kId) != g_kOwner) return; // disabled as remote only workswithin range of llSay and we want to give away remotes (objects)
 
 		if (channel != REMOTE_CHANNEL) return;
 		list msgList = llParseString2List(msg, [SEPARATOR], []);

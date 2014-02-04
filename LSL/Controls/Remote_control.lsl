@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Mon Feb  3 20:06:36 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Tue Feb  4 22:17:38 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote control (secondary switch) for RealFire
 //
@@ -38,11 +38,9 @@ string LINKSETID = "RealFire";
 string g_sTitle = "RealFire Remote Control";
 string g_sVersion = "1.0-0.2";
 string g_sAuthors = "Rene10957, Zopf";
-
-// Constants
-string SEPARATOR = ";;";
 string g_sMsgSwitch = "switch";
 string g_sMsgMenu = "menu";
+string SEPARATOR = ";;";
 integer REMOTE_CHANNEL = -975102;
 
 

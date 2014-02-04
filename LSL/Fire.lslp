@@ -79,9 +79,7 @@
 //TODO: fire size = 0 - but sound on + volume --> at least background sound (glowing embers)
 //TODO: HUD?
 //TODO: play with llListen()
-//TODO: always check for llGetFreeMemory()
 //TODO: check if other particle scripts are in same prim
-//TODO: rethink system of verbose messages - use settings notecard!
 //TODO: create a module sizeSelect, put size class borders into variables and settings notecard
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -126,7 +124,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 string g_sTitle = "RealFire";            // title
 string g_sVersion = "2.2.1-0.96";        // version
 string g_sAuthors = "Rene10957, Zopf";
-string g_sScriptName;
+
 string g_sType = "fire";
 integer g_iType = LINK_SET;
 
@@ -175,7 +173,6 @@ integer g_iDefRadius;              // default light radius (percentage)
 integer g_iDefFalloff;             // default light falloff (percentage)
 
 // Variables
-key g_kOwner;                      // object owner
 key g_kUser;                       // key of last avatar to touch object
 key	g_kQuery = NULL_KEY;
 
@@ -886,12 +883,12 @@ updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadiu
 //===============================================================================
 sendMessage(integer iChan, string sVal, string sMsg )
 {
-	string sId = getGroup(LINKSETID) + ";" + g_sScriptName;
+	string sId = getGroup(LINKSETID) + SEPARATOR + g_sScriptName;
 	if (iChan == COMMAND_CHANNEL) llMessageLinked(LINK_SET, iChan, sVal, (key)sId);
 	else if (iChan == SMOKE_CHANNEL) {
 		llMessageLinked(LINK_ALL_OTHERS, iChan, sVal, (key)sId); //to all other prims (because of only one emitter per prim)
 	} else {
-		string sSet = sVal + "," + sMsg;
+		string sSet = sVal + SEPARATOR + sMsg;
 		llMessageLinked(LINK_SET, iChan, sSet, (key)sId);
 	}
 }

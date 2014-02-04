@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Feb  4 05:30:11 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Feb  4 22:15:20 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -80,9 +80,7 @@
 //TODO: fire size = 0 - but sound on + volume --> at least background sound (glowing embers)
 //TODO: HUD?
 //TODO: play with llListen()
-//TODO: always check for llGetFreeMemory()
 //TODO: check if other particle scripts are in same prim
-//TODO: rethink system of verbose messages - use settings notecard!
 //TODO: create a module sizeSelect, put size class borders into variables and settings notecard
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -125,7 +123,6 @@ vector g_vEndColor = <1,0,0>;
 string g_sTitle = "RealFire";
 string g_sVersion = "2.2.1-0.96";
 string g_sAuthors = "Rene10957, Zopf";
-string g_sScriptName;
 integer g_iType = LINK_SET;
 
 // Constants
@@ -173,7 +170,6 @@ integer g_iDefRadius;
 integer g_iDefFalloff;
 
 // Variables
-key g_kOwner;
 key g_kUser;
 key g_kQuery = NULL_KEY;
 
@@ -219,11 +215,14 @@ float g_fSoundVolume = 0.0;
 float g_fStartIntensity;
 float g_fStartRadius;
 float g_fStartVolume;
+string g_sScriptName;
 integer g_iMsgNumber = 10957;
 string g_sMsgSwitch = "switch";
 string g_sMsgOn = "on";
 string g_sMsgOff = "off";
 string g_sMsgMenu = "menu";
+key g_kOwner;
+string SEPARATOR = ";;";
 float SIZE_TINY = 5.0;
 float SIZE_EXTRASMALL = 15.0;
 float SIZE_SMALL = 25.0;
@@ -271,7 +270,7 @@ string getGroup(string sDefGroup){
 
 string GroupCheck(key kId){
     string str = getGroup(LINKSETID);
-    list lKeys = llParseString2List(((string)kId),[";"],[]);
+    list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
     string sGroup = llList2String(lKeys,0);
     string sScriptName = llList2String(lKeys,1);
     if ((((str == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == str))) return sScriptName;
@@ -785,13 +784,13 @@ updateParticles(vector vStart,vector vEnd,float fMin,float fMax,float fRadius,ve
 //=
 //===============================================================================
 sendMessage(integer iChan,string sVal,string sMsg){
-    string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);
+    string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
     if ((iChan == COMMAND_CHANNEL)) llMessageLinked(LINK_SET,iChan,sVal,((key)sId));
     else  if ((iChan == SMOKE_CHANNEL)) {
         llMessageLinked(LINK_ALL_OTHERS,iChan,sVal,((key)sId));
     }
     else  {
-        string sSet = ((sVal + ",") + sMsg);
+        string sSet = ((sVal + SEPARATOR) + sMsg);
         llMessageLinked(LINK_SET,iChan,sSet,((key)sId));
     }
 }

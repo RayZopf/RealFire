@@ -73,7 +73,7 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 string g_sTitle = "RealSmoke";     // title
 string g_sVersion = "2.2.1-0.57";       // version
 string g_sAuthors = "Rene10957, Zopf";
-string g_sScriptName;
+
 string g_sType = "smoke";
 integer g_iType = LINK_ALL_OTHERS;
 

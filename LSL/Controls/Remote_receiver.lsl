@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb  4 05:38:49 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb  4 22:17:29 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -69,13 +69,13 @@ string LINKSETID = "RealFire";
 string g_sTitle = "RealFire Remote Receiver";
 string g_sVersion = "1.1-0.21";
 string g_sAuthors = "Rene10957, Zopf";
-string g_sScriptName;
 integer g_iType = LINK_SET;
 
 // Constants
-string SEPARATOR = ";;";
 integer BOOL = TRUE;
+string g_sScriptName;
 integer g_iMsgNumber = 10957;
+string SEPARATOR = ";;";
 integer COMMAND_CHANNEL = -15700;
 integer REMOTE_CHANNEL = -975102;
 integer FAKE_CHANNEL = -1001001;
@@ -138,7 +138,7 @@ string getGroup(string sDefGroup){
 //0.32 - 04Feb2014
 
 RegisterExtension(integer link){
-    string sId = ((getGroup(LINKSETID) + ";") + g_sScriptName);
+    string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
     if ((g_iRemote && BOOL)) llMessageLinked(link,FAKE_CHANNEL,"1",((key)sId));
     else  llMessageLinked(link,FAKE_CHANNEL,"0",((key)sId));
 }

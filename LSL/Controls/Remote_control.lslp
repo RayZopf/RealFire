@@ -69,13 +69,10 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Control";            // title
 string g_sVersion = "1.0-0.2";        // version
-string g_sScriptName;
+
 string g_sType = "remote";
 integer g_iType = LINK_SET;
 string g_sAuthors = "Rene10957, Zopf";
-
-// Constants
-string SEPARATOR = ";;";           // separator for region messages
 
 
 //===============================================

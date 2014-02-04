@@ -50,11 +50,10 @@ integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 //-----------------------------------------------
 //string g_sTitle = "RealPrimFire-Object";     // title
 //string g_sVersion = "0.2";       // version
-string g_sScriptName;
+
 integer g_iType = LINK_SET;
 
 integer g_iLowprim = FALSE;
-key g_kOwner;                      // object owner
 
 //RealFire MESSAGE MAP
 //integer PRIMCOMMAND_CHANNEL = kill fire prims or make temp prims
