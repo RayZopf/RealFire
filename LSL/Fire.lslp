@@ -55,6 +55,7 @@
 //FIXME: off messages when touch-off but extensions are allready off in options
 //FIXME: heap stack collision - make own module for particle fire
 
+//TODO: remove long delay on initial run
 //TODO: make sound configurable via notecard - maybe own config file?
 //TODO: keep sound running for a short time after turning fire off
 //TODO: sound preload on touch
@@ -127,7 +128,7 @@ string g_sVersion = "2.2.1-0.96";        // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "fire";
-integer g_iType = LINK_SET;
+integer g_iType = LINK_SET;              // in this case it defines which prim emitts the light
 
 // Constants
 integer ACCESS_OWNER = 4;            // owner access bit

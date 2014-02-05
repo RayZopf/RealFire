@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Wed Feb  5 00:42:15 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Wed Feb  5 01:53:56 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -56,6 +56,7 @@
 //FIXME: off messages when touch-off but extensions are allready off in options
 //FIXME: heap stack collision - make own module for particle fire
 
+//TODO: remove long delay on initial run
 //TODO: make sound configurable via notecard - maybe own config file?
 //TODO: keep sound running for a short time after turning fire off
 //TODO: sound preload on touch
