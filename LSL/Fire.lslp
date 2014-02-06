@@ -302,10 +302,10 @@ updateSize(float size)
 		vStart = g_vStartScale / 100.0 * size;     // start scale
 		fRadius = g_fBurstRadius / 100.0 * size;   // burst radius
 		if (size >= SIZE_LARGE) llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
-			else if (size >= SIZE_MEDIUM) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
+			else if (size >= SIZE_MEDIUM) llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
 				else llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
 	} else {
-		if (size >= SIZE_EXTRASMALL) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
+		if (size >= SIZE_EXTRASMALL) llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
 			else llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
 		vStart = g_vStartScale / 4.0;              // start scale
 		fRadius = g_fBurstRadius / 4.0;            // burst radius
@@ -795,7 +795,7 @@ stopSystem()
 	llSleep(0.7);
 	llParticleSystem([]);
 	llSleep(1.9); // move texture animation to another script!!!
-	llSetLinkTextureAnim(LINK_SET, FALSE, ALL_SIDES,4,4,0,0,1);
+	llSetLinkTextureAnim(g_iType, FALSE, ALL_SIDES,4,4,0,0,1);
 }
 
 
