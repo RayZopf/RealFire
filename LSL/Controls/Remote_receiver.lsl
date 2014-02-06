@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Thu Feb  6 06:05:27 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Thu Feb  6 17:37:04 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -17,8 +17,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//04. Feb. 2014
-//v1.1-0.21
+//06. Feb. 2014
+//v1.1-0.3
 //
 
 //Files:
@@ -67,7 +67,7 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Receiver";
-string g_sVersion = "1.1-0.21";
+string g_sVersion = "1.1-0.3";
 string g_sAuthors = "Rene10957, Zopf";
 integer g_iType = LINK_SET;
 

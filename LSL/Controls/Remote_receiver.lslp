@@ -16,8 +16,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//04. Feb. 2014
-//v1.1-0.21
+//06. Feb. 2014
+//v1.1-0.3
 //
 
 //Files:
@@ -66,7 +66,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Receiver";            // title
-string g_sVersion = "1.1-0.21";        // version
+string g_sVersion = "1.1-0.3";        // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "remote";
