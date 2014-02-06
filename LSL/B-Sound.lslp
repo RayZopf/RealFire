@@ -163,7 +163,7 @@ default
 		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);
 		string sConfig = MasterCommand(iChan, sSoundSet, FALSE);
 		if ("" != sConfig) {
-			if (getConfigBSound(sConfig)) initExtension();
+//			if (getConfigBSound(sConfig)) initExtension();
 		}
 
 		string sScriptName = GroupCheck(kId);

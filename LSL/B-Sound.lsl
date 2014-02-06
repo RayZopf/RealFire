@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Thu Feb  6 04:55:25 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Thu Feb  6 19:29:35 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -105,8 +105,8 @@ Debug(string sMsg){
 
 InfoLines(integer bool){
     if ((g_iVerbose && bool)) {
-        if (g_iSoundAvail) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
-        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        if (g_iSoundAvail) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+        else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
     }
     if (g_iSound) {
         if (g_iSoundAvail) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
@@ -145,7 +145,7 @@ string GroupCheck(key kId){
 
 //###
 //ExtensionBasics.lslm
-//0.45 - 06Feb2014
+//0.451 - 06Feb2014
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
@@ -171,21 +171,6 @@ string MasterCommand(integer iChan,string sVal,integer conf){
         return "";
     }
     return "";
-}
-
-
-integer getConfigBSound(string sConfig){
-    list lConfigs = llParseString2List(sConfig,["=",SEPARATOR],[]);
-    integer n = llGetListLength(lConfigs);
-    integer count = 0;
-    if (((n > 1) && (0 == (n % 2)))) do  {
-        string par = llList2String(lConfigs,count);
-        string val = llList2String(lConfigs,(count + 1));
-        (count = (count + 2));
-    }
-    while ((count <= n));
-    else  return 0;
-    return 1;
 }
 
 
@@ -260,7 +245,6 @@ default {
         Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSoundSet) + "; kId ") + ((string)kId)));
         string sConfig = MasterCommand(iChan,sSoundSet,FALSE);
         if (("" != sConfig)) {
-            if (getConfigBSound(sConfig)) initExtension();
         }
         string sScriptName = GroupCheck(kId);
         if (("exit" == sScriptName)) return;

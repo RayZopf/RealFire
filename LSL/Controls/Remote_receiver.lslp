@@ -72,6 +72,8 @@ string g_sAuthors = "Rene10957, Zopf";
 string g_sType = "remote";
 integer g_iType = LINK_SET;
 
+integer g_iListenHandle = 0;
+
 // Constants
 integer BOOL = TRUE;
 
@@ -82,13 +84,22 @@ integer BOOL = TRUE;
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=BOOL, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iRemote, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
-$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iEnabled=g_iRemote, m_iAvail=BOOL, m_iChannel=FAKE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iEnabled=g_iRemote, m_iAvail=BOOL, m_iChannel=REMOTE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
 //===============================================
 //PREDEFINED FUNCTIONS
 //===============================================
+
+
+initExtension()
+{
+	llListenRemove(g_iListenHandle);
+	g_iListenHandle = llListen(REMOTE_CHANNEL, "", "", "");
+	InfoLines(FALSE);
+	if (g_iVerbose) llWhisper(0, "(v) "+g_sTitle + " uses channel: " + (string)g_iMsgNumber+" and listens on "+(string)REMOTE_CHANNEL +" for remote controler");
+}
 
 
 
@@ -105,9 +116,7 @@ default
 	{
 		//g_kOwner = llGetOwner();
 		g_sScriptName = llGetScriptName();
-		llListen(REMOTE_CHANNEL, "", "", "");
-		InfoLines(FALSE);
-		if (g_iVerbose) llWhisper(0, "(v) "+g_sTitle + " uses channel: " + (string)g_iMsgNumber+" and listens on "+(string)REMOTE_CHANNEL +" for remote controler");
+		initExtension();
 	}
 
 	on_rez(integer start_param)
@@ -141,7 +150,9 @@ default
 		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSet + "; kId " + (string)kId);
 		string sConfig = MasterCommand(iChan, sSet, FALSE);
 		if ("" != sConfig) {
-			if (getConfigRemote(sConfig) && g_iVerbose) llWhisper(0, "(v) "+g_sTitle + " uses channel: " + (string)g_iMsgNumber+" and listens on "+(string)REMOTE_CHANNEL +" for remote controler");
+			if (getConfigRemote(sConfig)) {
+				initExtension();
+			}
 		}
 	}
 

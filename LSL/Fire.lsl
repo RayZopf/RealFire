@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Feb  6 19:06:31 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Feb  6 19:28:49 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -191,11 +191,11 @@ string g_sMsgOn = "on";
 string g_sMsgOff = "off";
 string g_sMsgMenu = "menu";
 integer g_iChangeLight = TRUE;
-vector g_vDefStartColor;
-vector g_vDefEndColor;
-integer g_iDefIntensity;
-integer g_iDefRadius;
-integer g_iDefFalloff;
+vector g_vDefStartColor = <100,100,0>;
+vector g_vDefEndColor = <100,0,0>;
+integer g_iDefIntensity = 100;
+integer g_iDefRadius = 50;
+integer g_iDefFalloff = 40;
 key g_kOwner;
 integer g_iPerRedStart;
 integer g_iPerGreenStart;
@@ -211,6 +211,7 @@ integer COMMAND_CHANNEL = -15700;
 integer PARTICLE_CHANNEL = -15790;
 integer SOUND_CHANNEL = -15780;
 integer ANIM_CHANNEL = -15770;
+integer REMOTE_CHANNEL = -975102;
 
 
 //###
@@ -1107,6 +1108,12 @@ default {
                 else  (g_iBackSoundAvail = FALSE);
             }
             if (("1" != sMsg)) llWhisper(0,(("Unable to provide sound effects (" + sScriptName) + ")"));
+        }
+        else  if ((iChan == REMOTE_CHANNEL)) {
+            if (("1" == sMsg)) {
+                llWhisper(0,"Remote receiver activated");
+                sendMessage(COMMAND_CHANNEL,"config",g_sConfLine);
+            }
         }
         else  if ((iChan == g_iMsgNumber)) {
             if ((kId != "")) (g_kUser = kId);

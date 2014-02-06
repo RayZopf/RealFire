@@ -980,6 +980,12 @@ default
 			}
 			if ("1" != sMsg ) llWhisper(0, "Unable to provide sound effects ("+sScriptName+")");
 
+		} else if (iChan == REMOTE_CHANNEL) {
+				if ("1" == sMsg) {
+					llWhisper(0, "Remote receiver activated");
+					sendMessage(COMMAND_CHANNEL, "config", g_sConfLine);
+				}
+
 		} else if (iChan == g_iMsgNumber) {
 			if (kId != "") g_kUser = kId;
 				else {
