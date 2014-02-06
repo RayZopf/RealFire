@@ -128,7 +128,7 @@ string g_sVersion = "2.2.1-0.96";        // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "fire";
-integer g_iType = LINK_SET;              // in this case it defines which prim emitts the light
+integer g_iType = LINK_SET;              // in this case it defines which prim emitts the light and changes texture
 
 // Constants
 integer ACCESS_OWNER = 4;            // owner access bit
@@ -305,12 +305,12 @@ updateSize(float size)
 	if (size > SIZE_SMALL) {
 		vStart = g_vStartScale / 100.0 * size;     // start scale
 		fRadius = g_fBurstRadius / 100.0 * size;   // burst radius
-		if (size >= SIZE_LARGE) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
-			else if (size >= SIZE_MEDIUM) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
-				else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
+		if (size >= SIZE_LARGE) llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
+			else if (size >= SIZE_MEDIUM) llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
+				else llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
 	} else {
-		if (size >= SIZE_EXTRASMALL) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
-			else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
+		if (size >= SIZE_EXTRASMALL) llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
+			else llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
 		vStart = g_vStartScale / 4.0;              // start scale
 		fRadius = g_fBurstRadius / 4.0;            // burst radius
 		if (size < SIZE_TINY) {
@@ -819,7 +819,7 @@ stopSystem()
 	llSleep(0.7);
 	llParticleSystem([]);
 	llSleep(1.9); // move texture animation to another script!!!
-	llSetLinkTextureAnim(LINK_SET, FALSE, ALL_SIDES,4,4,0,0,1);
+	llSetLinkTextureAnim(g_iType, FALSE, ALL_SIDES,4,4,0,0,1);
 }
 
 
