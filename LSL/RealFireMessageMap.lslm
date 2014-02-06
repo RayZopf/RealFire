@@ -54,6 +54,8 @@ integer g_iPerRedEnd;              // percent red for endColor
 integer g_iPerGreenEnd;            // percent green for endColor
 integer g_iPerBlueEnd;             // percent blue for endColor
 
+integer g_iInTimer = FALSE;
+
 // Constants
 string SEPARATOR = ";;";                  // separator for commands and messages
 

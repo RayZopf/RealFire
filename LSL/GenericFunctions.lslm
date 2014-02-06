@@ -3,7 +3,7 @@
 //
 //by: Zopf Resident - Ray Zopf (Raz)
 //06. Feb. 2014
-//v0.11
+//v0.2
 
 //Files:
 // GenericFunctions.lslm
@@ -28,7 +28,7 @@ $module ()
 
 //###
 //GenericFunctions.lslm
-//0.11 - 06Feb2014
+//0.2 - 06Feb2014
 
 integer checkInt(string par, integer val, integer min, integer max)
 {
@@ -41,22 +41,9 @@ integer checkInt(string par, integer val, integer min, integer max)
 }
 
 
-vector checkVector(string par, vector val)
+float percentage (float per, float num)
 {
-	if (val == ZERO_VECTOR) {
-		val = <100,100,100>;
-		llWhisper(0, "[Notecard] " + par + " out of range, corrected to " + (string)val);
-	}
-	return val;
-}
-
-
-integer checkYesNo(string par, string val)
-{
-	if (llToLower(val) == "yes") return TRUE;
-	if (llToLower(val) == "no") return FALSE;
-	llWhisper(0, "[Notecard] " + par + " out of range, corrected to NO");
-	return FALSE;
+	return num / 100.0 * per;
 }
 
 
@@ -69,12 +56,6 @@ integer min (integer x, integer y)
 integer max (integer x, integer y)
 {
 	if (x > y) return x; else return y;
-}
-
-
-float percentage (float per, float num)
-{
-	return num / 100.0 * per;
 }
 
 
