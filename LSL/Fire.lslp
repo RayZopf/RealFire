@@ -128,7 +128,7 @@ string g_sVersion = "2.2.1-0.96";        // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "fire";
-integer g_iType = LINK_SET;              // in this case it defines which prim emitts the light
+integer g_iType = LINK_SET;              // in this case it defines which prim emitts the light and changes texture
 
 // Constants
 integer ACCESS_OWNER = 4;            // owner access bit
@@ -184,6 +184,7 @@ integer g_iBackSoundAvail = FALSE;
 integer g_iPrimFireAvail = FALSE;  // not needed for ParticleFire - as that is the standard, included in main script
 
 integer g_iLine;                   // notecard line
+string sNCLine;                    //config settings to give to extensions
 integer menuChannel;               // main menu channel
 integer g_iStartColorChannel;      // start color menu channel
 integer g_iEndColorChannel;        // end color menu channel
@@ -192,12 +193,6 @@ integer g_iMenuHandle;             // handle for main menu listener
 integer g_iStartColorHandle;       // handle for start color menu listener
 integer g_iEndColorHandle;         // handle for end color menu listener
 integer g_iOptionsHandle;
-integer g_iPerRedStart;            // percent red for startColor
-integer g_iPerGreenStart;          // percent green for startColor
-integer g_iPerBlueStart;           // percent blue for startColor
-integer g_iPerRedEnd;              // percent red for endColor
-integer g_iPerGreenEnd;            // percent green for endColor
-integer g_iPerBlueEnd;             // percent blue for endColor
 float g_fPerSize;                  // percent particle size
 integer g_iPerVolume;              // percent volume
 integer g_iOn = FALSE;             // fire on/off
@@ -228,6 +223,7 @@ float g_fStartVolume;              // start value of volume (before burning down
 //===============================================
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
+$import GenericFunctions.lslm();
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
@@ -305,12 +301,12 @@ updateSize(float size)
 	if (size > SIZE_SMALL) {
 		vStart = g_vStartScale / 100.0 * size;     // start scale
 		fRadius = g_fBurstRadius / 100.0 * size;   // burst radius
-		if (size >= SIZE_LARGE) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
+		if (size >= SIZE_LARGE) llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
 			else if (size >= SIZE_MEDIUM) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
-				else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
+				else llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
 	} else {
 		if (size >= SIZE_EXTRASMALL) llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
-			else llSetLinkTextureAnim(LINK_SET, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
+			else llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
 		vStart = g_vStartScale / 4.0;              // start scale
 		fRadius = g_fBurstRadius / 4.0;            // burst radius
 		if (size < SIZE_TINY) {
@@ -382,27 +378,6 @@ string showAccess(integer access)
 }
 
 
-integer checkInt(string par, integer val, integer min, integer max)
-{
-	if (val < min || val > max) {
-		if (val < min) val = min;
-		else if (val > max) val = max;
-		llWhisper(0, "[Notecard] " + par + " out of range, corrected to " + (string)val);
-	}
-	return val;
-}
-
-
-vector checkVector(string par, vector val)
-{
-	if (val == ZERO_VECTOR) {
-		val = <100,100,100>;
-		llWhisper(0, "[Notecard] " + par + " out of range, corrected to " + (string)val);
-	}
-	return val;
-}
-
-
 integer checkYesNo(string par, string val)
 {
 	if (llToLower(val) == "yes") return TRUE;
@@ -415,6 +390,7 @@ integer checkYesNo(string par, string val)
 loadNotecard()
 {
 	g_iLine = 0;
+	sNCLine = "";
 	if (llGetInventoryType(NOTECARD) == INVENTORY_NOTECARD) {
 		Debug("loadNotecard, NC avail");
 		g_kQuery = llGetNotecardLine(NOTECARD, g_iLine);
@@ -524,19 +500,31 @@ readNotecard (string ncLine)
 		else if (lcpar == "changesmoke") g_iChangeSmoke = checkYesNo("changeSmoke", val);
 		else if (lcpar == "changevolume") g_iDefChangeVolume = checkYesNo("changeVolume", val);
 		else if (lcpar == "size") g_iDefSize = checkInt("size", (integer)val, 0, 100);
-		else if (lcpar == "topcolor") g_vDefEndColor = checkVector("topColor", (vector)val);
-		else if (lcpar == "bottomcolor") g_vDefStartColor = checkVector("bottomColor", (vector)val);
-		else if (lcpar == "volume") g_iDefVolume = checkInt("volume", (integer)val, 0, 100);
+		// config for particle fire
+		else if (lcpar == "topcolor") {
+			g_vDefEndColor = checkVector("topColor", (vector)val);
+			sNCLine +=lcpar+"="(string)g_vDefEndColor;
+		} else if (lcpar == "bottomcolor") {
+			g_vDefStartColor = checkVector("bottomColor", (vector)val);
+			sNCLine +=lcpar+"="(string)g_vDefStartColor;
+		} else if (lcpar == "volume") g_iDefVolume = checkInt("volume", (integer)val, 0, 100);
 		else if ("particlefire" == lcpar)g_iDefParticleFire = checkYesNo("particlefire", val);
 		else if ("lowprim" == lcpar) g_iLowprim = checkYesNo("lowprim", val);
 		else if ("primfire" == lcpar) g_iDefPrimFire = checkYesNo("primfire", val);
 		else if (lcpar == "smoke") g_iDefSmoke = checkYesNo("smoke", val);
 		else if (lcpar == "sound") g_iDefSound = checkYesNo("sound", val);
-		else if (lcpar == "intensity") g_iDefIntensity = checkInt("intensity", (integer)val, 0, 100);
-		else if (lcpar == "radius") g_iDefRadius = checkInt("radius", (integer)val, 0, 100);
-		else if (lcpar == "falloff") g_iDefFalloff = checkInt("falloff", (integer)val, 0, 100);
+		// config for light
+		else if (lcpar == "intensity") {
+			g_iDefIntensity = checkInt("intensity", (integer)val, 0, 100);
+			sNCLine +=lcpar+"="(string)g_iDefIntensity;
+		} else if (lcpar == "radius") {
+			g_iDefRadius = checkInt("radius", (integer)val, 0, 100);
+			sNCLine +=lcpar+"="(string)g_iDefRadius;
+		} else if (lcpar == "falloff") {
+			g_iDefFalloff = checkInt("falloff", (integer)val, 0, 100);
+			sNCLine +=lcpar+"="(string)g_iDefFalloff;
 
-		else llWhisper(0, "Unknown parameter in notecard line " + (string)(g_iLine + 1) + ": " + par);
+		} else llWhisper(0, "Unknown parameter in notecard line " + (string)(g_iLine + 1) + ": " + par);
 	}
 
 	g_iLine++;
@@ -679,18 +667,6 @@ optionsDialog (key kId)
 float percentage (float per, float num)
 {
 	return num / 100.0 * per;
-}
-
-
-integer min (integer x, integer y)
-{
-	if (x < y) return x; else return y;
-}
-
-
-integer max (integer x, integer y)
-{
-	if (x > y) return x; else return y;
 }
 
 
@@ -888,8 +864,7 @@ updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadiu
 sendMessage(integer iChan, string sVal, string sMsg )
 {
 	string sId = getGroup(LINKSETID) + SEPARATOR + g_sScriptName;
-	if (iChan == COMMAND_CHANNEL) llMessageLinked(LINK_SET, iChan, sVal, (key)sId);
-	else if (iChan == SMOKE_CHANNEL) {
+	if (iChan == SMOKE_CHANNEL) {
 		llMessageLinked(LINK_ALL_OTHERS, iChan, sVal, (key)sId); //to all other prims (because of only one emitter per prim)
 	} else {
 		string sSet = sVal + SEPARATOR + sMsg;
@@ -1067,6 +1042,7 @@ default
 					g_iPerBlueEnd = g_iPerBlueStart;
 				}
 				if (msg != "Top color" && msg != "^Main menu") {
+					sendMessage(COMMAND_CHANNEL, "config", "startcolor="+msg);
 					updateSize(g_fPerSize);
 					startColorDialog(g_kUser);
 				} else if (msg == "Top color") endColorDialog(g_kUser);
@@ -1090,6 +1066,7 @@ default
 				}
 
 				if (msg != "Bottom color" && msg != "^Options") {
+					sendMessage(COMMAND_CHANNEL, "config", "endcolor="+msg);
 					updateSize(g_fPerSize);
 					endColorDialog(g_kUser);
 				} else if (msg == "Bottom color") startColorDialog(g_kUser);
@@ -1212,6 +1189,8 @@ default
 			g_fStartRadius = percentage(g_iDefRadius, MAX_RADIUS);
 			g_fLightFalloff = percentage(g_iDefFalloff, MAX_FALLOFF);
 			g_fStartVolume = percentage((float)g_iDefVolume, MAX_VOLUME);
+
+			sendMessage(COMMAND_CHANNEL, "config", sNCLine);
 
 			reset(); //initial values for menu
 

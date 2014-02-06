@@ -139,7 +139,7 @@ default
 	link_message(integer iSender, integer iChan, string sMsg, key kId)
 	{
 		Debug("link_message = channel " + (string)iChan + "; sMsg " + sMsg + "; kId " + (string)kId+" ...g_sSize "+g_sSize);
-		MasterCommand(iChan, sMsg);
+		MasterCommand(iChan, sMsg, FALSE);
 
 		if (iChan != SMOKE_CHANNEL || !g_iSmoke) return;
 		string sScriptName = GroupCheck(kId);

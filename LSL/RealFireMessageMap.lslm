@@ -2,8 +2,8 @@
 //Module that only holds the RealFire Message channel constants
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//04. Feb. 2014
-//v0.23
+//06. Feb. 2014
+//v0.3
 
 //Files:
 // RealFireMessageMap.lslm
@@ -40,6 +40,13 @@ string g_sMsgMenu = "menu";               // string part of incoming link messag
 // Variables
 key g_kOwner;                             // object owner
 
+integer g_iPerRedStart;            // percent red for startColor
+integer g_iPerGreenStart;          // percent green for startColor
+integer g_iPerBlueStart;           // percent blue for startColor
+integer g_iPerRedEnd;              // percent red for endColor
+integer g_iPerGreenEnd;            // percent green for endColor
+integer g_iPerBlueEnd;             // percent blue for endColor
+
 // Constants
 string SEPARATOR = ";;";                  // separator for commands and messages
 
@@ -64,8 +71,8 @@ integer FAKE_CHANNEL = -1001001;
 
 //###
 //RealFireMessageMap.lslm
-//0.23 - 04Feb2014
+//0.3 - 06Feb2014
 
 
-//END checkforFiles.lslm
+//END RealFireMessageMap.lslm
 //###

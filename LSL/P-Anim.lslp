@@ -185,7 +185,7 @@ default
 	link_message(integer iSender, integer iChan, string sSet, key kId)
 	{
 		Debug("link_message = channel " + (string)iChan + "; sSet " + sSet + "; kId " + (string)kId);
-		MasterCommand(iChan, sSet);
+		MasterCommand(iChan, sSet, FALSE);
 
 		string sScriptName = GroupCheck(kId);
 		if ("exit" == sScriptName) return;
