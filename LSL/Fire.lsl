@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Wed Feb  5 01:53:56 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Feb  6 03:49:12 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -158,8 +158,6 @@ integer g_iChangeLight = TRUE;
 integer g_iChangeSmoke = TRUE;
 integer g_iChangeVolume = TRUE;
 integer g_iDefSize;
-vector g_vDefStartColor;
-vector g_vDefEndColor;
 integer g_iDefVolume;
 integer g_iDefChangeVolume = TRUE;
 integer g_iDefSmoke = TRUE;
@@ -167,9 +165,6 @@ integer g_iDefSound = FALSE;
 integer g_iDefParticleFire = TRUE;
 integer g_iDefPrimFire = FALSE;
 string g_sCurrentSound = "55";
-integer g_iDefIntensity;
-integer g_iDefRadius;
-integer g_iDefFalloff;
 
 // Variables
 key g_kUser;
@@ -181,6 +176,7 @@ integer g_iBackSoundAvail = FALSE;
 integer g_iPrimFireAvail = FALSE;
 
 integer g_iLine;
+string g_sConfLine;
 integer menuChannel;
 integer g_iStartColorChannel;
 integer g_iEndColorChannel;
@@ -189,12 +185,6 @@ integer g_iMenuHandle;
 integer g_iStartColorHandle;
 integer g_iEndColorHandle;
 integer g_iOptionsHandle;
-integer g_iPerRedStart;
-integer g_iPerGreenStart;
-integer g_iPerBlueStart;
-integer g_iPerRedEnd;
-integer g_iPerGreenEnd;
-integer g_iPerBlueEnd;
 float g_fPerSize;
 integer g_iPerVolume;
 integer g_iOn = FALSE;
@@ -223,7 +213,18 @@ string g_sMsgSwitch = "switch";
 string g_sMsgOn = "on";
 string g_sMsgOff = "off";
 string g_sMsgMenu = "menu";
+vector g_vDefStartColor;
+vector g_vDefEndColor;
+integer g_iDefIntensity;
+integer g_iDefRadius;
+integer g_iDefFalloff;
 key g_kOwner;
+integer g_iPerRedStart;
+integer g_iPerGreenStart;
+integer g_iPerBlueStart;
+integer g_iPerRedEnd;
+integer g_iPerGreenEnd;
+integer g_iPerBlueEnd;
 string SEPARATOR = ";;";
 float SIZE_TINY = 5.0;
 float SIZE_EXTRASMALL = 15.0;
@@ -251,6 +252,41 @@ integer ANIM_CHANNEL = -15770;
 Debug(string sMsg){
     if ((!g_iDebugMode)) return;
     llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
+}
+
+
+//###
+//GenericFunctions.lslm
+//0.1 - 06Feb2014
+
+integer checkInt(string par,integer val,integer min,integer max){
+    if (((val < min) || (val > max))) {
+        if ((val < min)) (val = min);
+        else  if ((val > max)) (val = max);
+        llWhisper(0,((("[Notecard] " + par) + " out of range, corrected to ") + ((string)val)));
+    }
+    return val;
+}
+
+
+vector checkVector(string par,vector val){
+    if ((val == ZERO_VECTOR)) {
+        (val = <100,100,100>);
+        llWhisper(0,((("[Notecard] " + par) + " out of range, corrected to ") + ((string)val)));
+    }
+    return val;
+}
+
+
+integer min(integer x,integer y){
+    if ((x < y)) return x;
+    else  return y;
+}
+
+
+integer max(integer x,integer y){
+    if ((x > y)) return x;
+    else  return y;
 }
 
 
@@ -358,13 +394,13 @@ updateSize(float size){
     if ((size > SIZE_SMALL)) {
         (vStart = ((g_vStartScale / 100.0) * size));
         (fRadius = ((g_fBurstRadius / 100.0) * size));
-        if ((size >= SIZE_LARGE)) llSetLinkTextureAnim(LINK_SET,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,9);
-        else  if ((size >= SIZE_MEDIUM)) llSetLinkTextureAnim(LINK_SET,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,6);
-        else  llSetLinkTextureAnim(LINK_SET,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,4);
+        if ((size >= SIZE_LARGE)) llSetLinkTextureAnim(g_iType,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,9);
+        else  if ((size >= SIZE_MEDIUM)) llSetLinkTextureAnim(g_iType,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,6);
+        else  llSetLinkTextureAnim(g_iType,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,4);
     }
     else  {
-        if ((size >= SIZE_EXTRASMALL)) llSetLinkTextureAnim(LINK_SET,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,3);
-        else  llSetLinkTextureAnim(LINK_SET,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,1);
+        if ((size >= SIZE_EXTRASMALL)) llSetLinkTextureAnim(g_iType,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,3);
+        else  llSetLinkTextureAnim(g_iType,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,1);
         (vStart = (g_vStartScale / 4.0));
         (fRadius = (g_fBurstRadius / 4.0));
         if ((size < SIZE_TINY)) {
@@ -432,25 +468,6 @@ string showAccess(integer access){
 }
 
 
-integer checkInt(string par,integer val,integer min,integer max){
-    if (((val < min) || (val > max))) {
-        if ((val < min)) (val = min);
-        else  if ((val > max)) (val = max);
-        llWhisper(0,((("[Notecard] " + par) + " out of range, corrected to ") + ((string)val)));
-    }
-    return val;
-}
-
-
-vector checkVector(string par,vector val){
-    if ((val == ZERO_VECTOR)) {
-        (val = <100,100,100>);
-        llWhisper(0,((("[Notecard] " + par) + " out of range, corrected to ") + ((string)val)));
-    }
-    return val;
-}
-
-
 integer checkYesNo(string par,string val){
     if ((llToLower(val) == "yes")) return TRUE;
     if ((llToLower(val) == "no")) return FALSE;
@@ -461,6 +478,7 @@ integer checkYesNo(string par,string val){
 
 loadNotecard(){
     (g_iLine = 0);
+    (g_sConfLine = "");
     if ((llGetInventoryType(NOTECARD) == INVENTORY_NOTECARD)) {
         Debug("loadNotecard, NC avail");
         (g_kQuery = llGetNotecardLine(NOTECARD,g_iLine));
@@ -564,17 +582,32 @@ readNotecard(string ncLine){
         else  if ((lcpar == "changesmoke")) (g_iChangeSmoke = checkYesNo("changeSmoke",val));
         else  if ((lcpar == "changevolume")) (g_iDefChangeVolume = checkYesNo("changeVolume",val));
         else  if ((lcpar == "size")) (g_iDefSize = checkInt("size",((integer)val),0,100));
-        else  if ((lcpar == "topcolor")) (g_vDefEndColor = checkVector("topColor",((vector)val)));
-        else  if ((lcpar == "bottomcolor")) (g_vDefStartColor = checkVector("bottomColor",((vector)val)));
+        else  if ((lcpar == "topcolor")) {
+            (g_vDefEndColor = checkVector("topColor",((vector)val)));
+            (g_sConfLine += (((lcpar + "=") + ((string)g_vDefEndColor)) + SEPARATOR));
+        }
+        else  if ((lcpar == "bottomcolor")) {
+            (g_vDefStartColor = checkVector("bottomColor",((vector)val)));
+            (g_sConfLine += (((lcpar + "=") + ((string)g_vDefStartColor)) + SEPARATOR));
+        }
         else  if ((lcpar == "volume")) (g_iDefVolume = checkInt("volume",((integer)val),0,100));
         else  if (("particlefire" == lcpar)) (g_iDefParticleFire = checkYesNo("particlefire",val));
         else  if (("lowprim" == lcpar)) (g_iLowprim = checkYesNo("lowprim",val));
         else  if (("primfire" == lcpar)) (g_iDefPrimFire = checkYesNo("primfire",val));
         else  if ((lcpar == "smoke")) (g_iDefSmoke = checkYesNo("smoke",val));
         else  if ((lcpar == "sound")) (g_iDefSound = checkYesNo("sound",val));
-        else  if ((lcpar == "intensity")) (g_iDefIntensity = checkInt("intensity",((integer)val),0,100));
-        else  if ((lcpar == "radius")) (g_iDefRadius = checkInt("radius",((integer)val),0,100));
-        else  if ((lcpar == "falloff")) (g_iDefFalloff = checkInt("falloff",((integer)val),0,100));
+        else  if ((lcpar == "intensity")) {
+            (g_iDefIntensity = checkInt("intensity",((integer)val),0,100));
+            (g_sConfLine += (((lcpar + "=") + ((string)g_iDefIntensity)) + SEPARATOR));
+        }
+        else  if ((lcpar == "radius")) {
+            (g_iDefRadius = checkInt("radius",((integer)val),0,100));
+            (g_sConfLine += (((lcpar + "=") + ((string)g_iDefRadius)) + SEPARATOR));
+        }
+        else  if ((lcpar == "falloff")) {
+            (g_iDefFalloff = checkInt("falloff",((integer)val),0,100));
+            (g_sConfLine += (((lcpar + "=") + ((string)g_iDefFalloff)) + SEPARATOR));
+        }
         else  llWhisper(0,((("Unknown parameter in notecard line " + ((string)(g_iLine + 1))) + ": ") + par));
     }
     (g_iLine++);
@@ -685,18 +718,6 @@ float percentage(float per,float num){
 }
 
 
-integer min(integer x,integer y){
-    if ((x < y)) return x;
-    else  return y;
-}
-
-
-integer max(integer x,integer y){
-    if ((x > y)) return x;
-    else  return y;
-}
-
-
 reset(){
     (g_iParticleFireOn = g_iDefParticleFire);
     (g_iPrimFireOn = g_iDefPrimFire);
@@ -767,7 +788,7 @@ stopSystem(){
     llSleep(0.7);
     llParticleSystem([]);
     llSleep(1.9);
-    llSetLinkTextureAnim(LINK_SET,FALSE,ALL_SIDES,4,4,0,0,1);
+    llSetLinkTextureAnim(g_iType,FALSE,ALL_SIDES,4,4,0,0,1);
 }
 
 
@@ -789,8 +810,7 @@ updateParticles(vector vStart,vector vEnd,float fMin,float fMax,float fRadius,ve
 //===============================================================================
 sendMessage(integer iChan,string sVal,string sMsg){
     string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
-    if ((iChan == COMMAND_CHANNEL)) llMessageLinked(LINK_SET,iChan,sVal,((key)sId));
-    else  if ((iChan == SMOKE_CHANNEL)) {
+    if ((iChan == SMOKE_CHANNEL)) {
         llMessageLinked(LINK_ALL_OTHERS,iChan,sVal,((key)sId));
     }
     else  {
@@ -982,6 +1002,7 @@ default {
                 (g_iPerBlueEnd = g_iPerBlueStart);
             }
             if (((msg != "Top color") && (msg != "^Main menu"))) {
+                sendMessage(COMMAND_CHANNEL,"config",("startcolor=" + msg));
                 updateSize(g_fPerSize);
                 startColorDialog(g_kUser);
             }
@@ -1014,6 +1035,7 @@ default {
                 (g_iPerBlueStart = g_iPerBlueEnd);
             }
             if (((msg != "Bottom color") && (msg != "^Options"))) {
+                sendMessage(COMMAND_CHANNEL,"config",("endcolor=" + msg));
                 updateSize(g_fPerSize);
                 endColorDialog(g_kUser);
             }
@@ -1140,6 +1162,7 @@ default {
             (g_fStartRadius = percentage(g_iDefRadius,MAX_RADIUS));
             (g_fLightFalloff = percentage(g_iDefFalloff,MAX_FALLOFF));
             (g_fStartVolume = percentage(((float)g_iDefVolume),MAX_VOLUME));
+            sendMessage(COMMAND_CHANNEL,"config",g_sConfLine);
             reset();
             if (g_iOn) startSystem();
             if (g_iVerbose) infoLines();

@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Tue Feb  4 23:33:07 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Thu Feb  6 03:49:12 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -89,6 +89,17 @@ integer g_iPermCheck = TRUE;
 string g_sSize = "0";
 vector g_vOffset;
 string g_sScriptName;
+vector g_vDefStartColor;
+vector g_vDefEndColor;
+integer g_iDefIntensity;
+integer g_iDefRadius;
+integer g_iDefFalloff;
+integer g_iPerRedStart;
+integer g_iPerGreenStart;
+integer g_iPerBlueStart;
+integer g_iPerRedEnd;
+integer g_iPerGreenEnd;
+integer g_iPerBlueEnd;
 string SEPARATOR = ";;";
 float SIZE_SMALL = 25.0;
 float SIZE_MEDIUM = 50.0;
@@ -161,8 +172,43 @@ string GroupCheck(key kId){
 
 
 //###
+//GenericFunctions.lslm
+//0.1 - 06Feb2014
+
+integer checkInt(string par,integer val,integer min,integer max){
+    if (((val < min) || (val > max))) {
+        if ((val < min)) (val = min);
+        else  if ((val > max)) (val = max);
+        llWhisper(0,((("[Notecard] " + par) + " out of range, corrected to ") + ((string)val)));
+    }
+    return val;
+}
+
+
+vector checkVector(string par,vector val){
+    if ((val == ZERO_VECTOR)) {
+        (val = <100,100,100>);
+        llWhisper(0,((("[Notecard] " + par) + " out of range, corrected to ") + ((string)val)));
+    }
+    return val;
+}
+
+
+integer min(integer x,integer y){
+    if ((x < y)) return x;
+    else  return y;
+}
+
+
+integer max(integer x,integer y){
+    if ((x > y)) return x;
+    else  return y;
+}
+
+
+//###
 //ExtensionBasics.lslm
-//0.32 - 04Feb2014
+//0.4 - 04Feb2014
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
@@ -171,16 +217,94 @@ RegisterExtension(integer link){
 }
 
 
-MasterCommand(integer iChan,string sVal){
+MasterCommand(integer iChan,string sVal,integer conf){
     if ((iChan == COMMAND_CHANNEL)) {
-        if (("register" == sVal)) RegisterExtension(g_iType);
-        else  if (("verbose" == sVal)) {
+        list lValues = llParseString2List(sVal,[SEPARATOR],[]);
+        string sCommand = llList2String(lValues,0);
+        string sConfig = llList2String(lValues,1);
+        if (("register" == sCommand)) RegisterExtension(g_iType);
+        else  if (("verbose" == sCommand)) {
             (g_iVerbose = TRUE);
             InfoLines(FALSE);
         }
-        else  if (("nonverbose" == sVal)) (g_iVerbose = FALSE);
-        else  if (("globaldebug" == sVal)) (g_iVerbose = TRUE);
+        else  if (("nonverbose" == sCommand)) (g_iVerbose = FALSE);
+        else  if (("globaldebug" == sCommand)) (g_iVerbose = TRUE);
+        else  if ((conf && ("config" == sCommand))) getConfig(sConfig);
         else  llSetTimerEvent(0.1);
+    }
+}
+
+
+getConfig(string sConfig){
+    list lConfigs = llParseString2List(sConfig,["=",SEPARATOR],[]);
+    integer n = llGetListLength(lConfigs);
+    integer count = 0;
+    if (((n > 1) && (0 == (n % 2)))) do  {
+        string par = llList2String(lConfigs,count);
+        string val = llList2String(lConfigs,(count + 1));
+        if ((par == "topcolor")) (g_vDefEndColor = checkVector("topColor",((vector)val)));
+        else  if ((par == "bottomcolor")) (g_vDefStartColor = checkVector("bottomColor",((vector)val)));
+        else  if ((par == "intensity")) (g_iDefIntensity = checkInt("intensity",((integer)val),0,100));
+        else  if ((par == "radius")) (g_iDefRadius = checkInt("radius",((integer)val),0,100));
+        else  if ((par == "falloff")) (g_iDefFalloff = checkInt("falloff",((integer)val),0,100));
+        else  if (("startcolor" == par)) setColor(1,val);
+        else  if (("endcolor" == par)) setColor(0,val);
+        (count = (count + 2));
+    }
+    while ((count <= n));
+}
+
+
+setColor(integer pos,string msg){
+    if ((1 == pos)) {
+        if ((msg == "-Red")) (g_iPerRedStart = max((g_iPerRedStart - 10),0));
+        else  if ((msg == "-Green")) (g_iPerGreenStart = max((g_iPerGreenStart - 10),0));
+        else  if ((msg == "-Blue")) (g_iPerBlueStart = max((g_iPerBlueStart - 10),0));
+        else  if ((msg == "+Red")) (g_iPerRedStart = min((g_iPerRedStart + 10),100));
+        else  if ((msg == "+Green")) (g_iPerGreenStart = min((g_iPerGreenStart + 10),100));
+        else  if ((msg == "+Blue")) (g_iPerBlueStart = min((g_iPerBlueStart + 10),100));
+        else  if ((msg == "R min/max")) {
+            if (g_iPerRedStart) (g_iPerRedStart = 0);
+            else  (g_iPerRedStart = 100);
+        }
+        else  if ((msg == "G min/max")) {
+            if (g_iPerGreenStart) (g_iPerGreenStart = 0);
+            else  (g_iPerGreenStart = 100);
+        }
+        else  if ((msg == "B min/max")) {
+            if (g_iPerBlueStart) (g_iPerBlueStart = 0);
+            else  (g_iPerBlueStart = 100);
+        }
+        else  if ((msg == "One color")) {
+            (g_iPerRedEnd = g_iPerRedStart);
+            (g_iPerGreenEnd = g_iPerGreenStart);
+            (g_iPerBlueEnd = g_iPerBlueStart);
+        }
+    }
+    else  {
+        if ((msg == "-Red")) (g_iPerRedEnd = max((g_iPerRedEnd - 10),0));
+        else  if ((msg == "-Green")) (g_iPerGreenEnd = max((g_iPerGreenEnd - 10),0));
+        else  if ((msg == "-Blue")) (g_iPerBlueEnd = max((g_iPerBlueEnd - 10),0));
+        else  if ((msg == "+Red")) (g_iPerRedEnd = min((g_iPerRedEnd + 10),100));
+        else  if ((msg == "+Green")) (g_iPerGreenEnd = min((g_iPerGreenEnd + 10),100));
+        else  if ((msg == "+Blue")) (g_iPerBlueEnd = min((g_iPerBlueEnd + 10),100));
+        else  if ((msg == "R min/max")) {
+            if (g_iPerRedEnd) (g_iPerRedEnd = 0);
+            else  (g_iPerRedEnd = 100);
+        }
+        else  if ((msg == "G min/max")) {
+            if (g_iPerGreenEnd) (g_iPerGreenEnd = 0);
+            else  (g_iPerGreenEnd = 100);
+        }
+        else  if ((msg == "B min/max")) {
+            if (g_iPerBlueEnd) (g_iPerBlueEnd = 0);
+            else  (g_iPerBlueEnd = 100);
+        }
+        else  if ((msg == "One color")) {
+            (g_iPerRedStart = g_iPerRedEnd);
+            (g_iPerGreenStart = g_iPerGreenEnd);
+            (g_iPerBlueStart = g_iPerBlueEnd);
+        }
     }
 }
 
@@ -318,7 +442,7 @@ default {
 //-----------------------------------------------
 	link_message(integer iSender,integer iChan,string sSet,key kId) {
         Debug(((((("link_message = channel " + ((string)iChan)) + "; sSet ") + sSet) + "; kId ") + ((string)kId)));
-        MasterCommand(iChan,sSet);
+        MasterCommand(iChan,sSet,FALSE);
         string sScriptName = GroupCheck(kId);
         if (("exit" == sScriptName)) return;
         if (((((iChan != ANIM_CHANNEL) || (!g_iPrimFire)) || (!g_iPrimFireAvail)) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;

@@ -36,6 +36,11 @@ string g_sMsgSwitch = "switch";           // string part of incoming link messag
 string g_sMsgOn = "on";                   // string part of incoming link message: switch on
 string g_sMsgOff = "off";                 // string part of incoming link message: switch off
 string g_sMsgMenu = "menu";               // string part of incoming link message: show menu
+vector g_vDefStartColor;           // default start (bottom) color (percentage R,G,B)
+vector g_vDefEndColor;             // default end (top) color (percentage R,G,B)
+integer g_iDefIntensity;           // default light intensity (percentage)
+integer g_iDefRadius;              // default light radius (percentage)
+integer g_iDefFalloff;             // default light falloff (percentage)
 
 // Variables
 key g_kOwner;                             // object owner

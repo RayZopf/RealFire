@@ -161,8 +161,6 @@ integer g_iChangeLight = TRUE;     // change light with fire
 integer g_iChangeSmoke = TRUE;     // change smoke with fire
 integer g_iChangeVolume = TRUE;    // change volume with fire
 integer g_iDefSize;                // default fire size (percentage)
-vector g_vDefStartColor;           // default start (bottom) color (percentage R,G,B)
-vector g_vDefEndColor;             // default end (top) color (percentage R,G,B)
 integer g_iDefVolume;              // default volume for sound (percentage)
 integer g_iDefChangeVolume = TRUE;
 integer g_iDefSmoke = TRUE;         // default smoke on/off
@@ -170,9 +168,6 @@ integer g_iDefSound = FALSE;        // default sound on/off; keep off if SoundAv
 integer g_iDefParticleFire = TRUE;  // default fire particle effects on
 integer g_iDefPrimFire = FALSE;     // default rezzing fire prims off
 string g_sCurrentSound = "55";
-integer g_iDefIntensity;           // default light intensity (percentage)
-integer g_iDefRadius;              // default light radius (percentage)
-integer g_iDefFalloff;             // default light falloff (percentage)
 
 // Variables
 key g_kUser;                       // key of last avatar to touch object
@@ -184,7 +179,7 @@ integer g_iBackSoundAvail = FALSE;
 integer g_iPrimFireAvail = FALSE;  // not needed for ParticleFire - as that is the standard, included in main script
 
 integer g_iLine;                   // notecard line
-string sNCLine;                    //config settings to give to extensions
+string g_sConfLine;                //config settings to give to extensions
 integer menuChannel;               // main menu channel
 integer g_iStartColorChannel;      // start color menu channel
 integer g_iEndColorChannel;        // end color menu channel
@@ -390,7 +385,7 @@ integer checkYesNo(string par, string val)
 loadNotecard()
 {
 	g_iLine = 0;
-	sNCLine = "";
+	g_sConfLine = "";
 	if (llGetInventoryType(NOTECARD) == INVENTORY_NOTECARD) {
 		Debug("loadNotecard, NC avail");
 		g_kQuery = llGetNotecardLine(NOTECARD, g_iLine);
@@ -503,10 +498,10 @@ readNotecard (string ncLine)
 		// config for particle fire
 		else if (lcpar == "topcolor") {
 			g_vDefEndColor = checkVector("topColor", (vector)val);
-			sNCLine +=lcpar+"="(string)g_vDefEndColor;
+			g_sConfLine += lcpar+"="+(string)g_vDefEndColor+SEPARATOR;
 		} else if (lcpar == "bottomcolor") {
 			g_vDefStartColor = checkVector("bottomColor", (vector)val);
-			sNCLine +=lcpar+"="(string)g_vDefStartColor;
+			g_sConfLine += lcpar+"="+(string)g_vDefStartColor+SEPARATOR;
 		} else if (lcpar == "volume") g_iDefVolume = checkInt("volume", (integer)val, 0, 100);
 		else if ("particlefire" == lcpar)g_iDefParticleFire = checkYesNo("particlefire", val);
 		else if ("lowprim" == lcpar) g_iLowprim = checkYesNo("lowprim", val);
@@ -516,13 +511,13 @@ readNotecard (string ncLine)
 		// config for light
 		else if (lcpar == "intensity") {
 			g_iDefIntensity = checkInt("intensity", (integer)val, 0, 100);
-			sNCLine +=lcpar+"="(string)g_iDefIntensity;
+			g_sConfLine += lcpar+"="+(string)g_iDefIntensity+SEPARATOR;
 		} else if (lcpar == "radius") {
 			g_iDefRadius = checkInt("radius", (integer)val, 0, 100);
-			sNCLine +=lcpar+"="(string)g_iDefRadius;
+			g_sConfLine += lcpar+"="+(string)g_iDefRadius+SEPARATOR;
 		} else if (lcpar == "falloff") {
 			g_iDefFalloff = checkInt("falloff", (integer)val, 0, 100);
-			sNCLine +=lcpar+"="(string)g_iDefFalloff;
+			g_sConfLine += lcpar+"="+(string)g_iDefFalloff+SEPARATOR;
 
 		} else llWhisper(0, "Unknown parameter in notecard line " + (string)(g_iLine + 1) + ": " + par);
 	}
@@ -1190,7 +1185,7 @@ default
 			g_fLightFalloff = percentage(g_iDefFalloff, MAX_FALLOFF);
 			g_fStartVolume = percentage((float)g_iDefVolume, MAX_VOLUME);
 
-			sendMessage(COMMAND_CHANNEL, "config", sNCLine);
+			sendMessage(COMMAND_CHANNEL, "config", g_sConfLine);
 
 			reset(); //initial values for menu
 

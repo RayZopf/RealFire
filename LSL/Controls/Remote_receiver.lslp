@@ -138,7 +138,7 @@ default
 	link_message(integer iSender, integer iChan, string sSoundSet, key kId)
 	{
 		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);
-		MasterCommand(iChan, sSoundSet);
+		MasterCommand(iChan, sSoundSet, FALSE);
 	}
 
 //-----------------------------------------------

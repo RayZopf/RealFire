@@ -62,11 +62,11 @@ MasterCommand(integer iChan, string sVal, integer conf)
 }
 
 
-getConfig(string sConfig);
+getConfig(string sConfig)
 {
-	list lConfigs = llParseString2List(sConfig, ["="], []);
+	list lConfigs = llParseString2List(sConfig, ["=",SEPARATOR], []);
 	integer n = llGetListLength(lConfigs);
-	integer count=0;
+	integer count = 0;
 	if (n > 1 && 0 == n%2) do {
 		string par = llList2String(lConfigs, count);
 		string val = llList2String(lConfigs, count+1);
@@ -79,17 +79,17 @@ getConfig(string sConfig);
 		else if (par == "radius") g_iDefRadius = checkInt("radius", (integer)val, 0, 100);
 		else if (par == "falloff") g_iDefFalloff = checkInt("falloff", (integer)val, 0, 100);
 		// color config
-		else if ("startcolor" == par) setColor("1", val);
-		else if ("endcolor" == par) setColor("0", val);
+		else if ("startcolor" == par) setColor(1, val);
+		else if ("endcolor" == par) setColor(0, val);
 
 		count = count +2;
 	} while (count <= n);
 }
 
 
-setColor(integer pos, string val);
+setColor(integer pos, string msg)
 {
-	if ("1" == pos) {
+	if (1 == pos) {
 		if (msg == "-Red") g_iPerRedStart = max(g_iPerRedStart - 10, 0);
 		else if (msg == "-Green") g_iPerGreenStart = max(g_iPerGreenStart - 10, 0);
 		else if (msg == "-Blue") g_iPerBlueStart = max(g_iPerBlueStart - 10, 0);
@@ -104,8 +104,8 @@ setColor(integer pos, string val);
 			g_iPerGreenEnd = g_iPerGreenStart;
 			g_iPerBlueEnd = g_iPerBlueStart;
 		}
-		updateSize(g_fPerSize);
-	} else
+		//updateSize(g_fPerSize);
+	} else {
 		if (msg == "-Red") g_iPerRedEnd = max(g_iPerRedEnd - 10, 0);
 		else if (msg == "-Green") g_iPerGreenEnd = max(g_iPerGreenEnd - 10, 0);
 		else if (msg == "-Blue") g_iPerBlueEnd = max(g_iPerBlueEnd - 10, 0);
@@ -120,7 +120,7 @@ setColor(integer pos, string val);
 			g_iPerGreenStart = g_iPerGreenEnd;
 			g_iPerBlueStart = g_iPerBlueEnd;
 		}
-		updateSize(g_fPerSize);
+		//updateSize(g_fPerSize);
 	}
 }
 
