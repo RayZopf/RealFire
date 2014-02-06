@@ -57,7 +57,7 @@ string MasterCommand(integer iChan, string sVal, integer conf)
 		else if ("globaldebug" == sCommand) m_iVerbose = TRUE;
 		else if (conf && "config" == sCommand) return sConfig;
 
-		else llSetTimerEvent(0.1);
+		else if (m_iEnabled) llSetTimerEvent(0.1);
 
 		return "";
 	} return "";
