@@ -137,23 +137,27 @@ default
 
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-	link_message(integer iSender, integer iChan, string sMsg, key kId)
+	link_message(integer iSender, integer iChan, string sSet, key kId)
 	{
-		Debug("link_message = channel " + (string)iChan + "; sMsg " + sMsg + "; kId " + (string)kId+" ...g_sSize "+g_sSize);
-		MasterCommand(iChan, sMsg, FALSE);
+		Debug("link_message = channel " + (string)iChan + "; sSet " + sSet + "; kId " + (string)kId+" ...g_sSize "+g_sSize);
+		MasterCommand(iChan, sSet, FALSE);
 
 		if (iChan != PARTICLE_CHANNEL || !g_iSmoke) return;
 		string sScriptName = GroupCheck(kId);
 		if ("exit" ==  GroupCheck(kId)) return;
 
-		if (sMsg == g_sSize && "0" != sMsg) {
+		list lParams = llParseString2List(sSet, [SEPARATOR], []);
+		string sVal = llList2String(lParams, 0);
+		string sMsg = llList2String(lParams, 1);
+
+		if (sVal == g_sSize && "0" != sVal) {
 			llSetTimerEvent(0.0);
 			return;
 		}
 
-		if ((integer)sMsg > 0 && (integer)sMsg <= 100) {
+		if ((integer)sVal > 0 && (integer)sVal <= 100 && "smoke" == sMsg) {
 			llSetTimerEvent(0.0);
-			float fAlpha = g_fStartAlpha / 100.0 * (float)sMsg;
+			float fAlpha = g_fStartAlpha / 100.0 * (float)sVal;
 			Debug("fAlpha " + (string)fAlpha);
 			llParticleSystem ([
 			//System Behavior
@@ -202,8 +206,8 @@ default
 				PSYS_SRC_BURST_SPEED_MAX, 0.1
 			]);
 			if (g_iVerbose && "0"!= g_sSize) llWhisper(0, "(v) Smoke changes it's appearance");
-			g_sSize = sMsg;
-		} else {
+			g_sSize = sVal;
+		} else if ("smoke" == sMsg || "" == sMsg) {
 			llWhisper(0, "Fumes are fading");
 			llSetTimerEvent(11.0);
 		}

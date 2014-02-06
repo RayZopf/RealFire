@@ -33,6 +33,7 @@ $import GenericFunctions.lslm();
 
 setColor(integer pos, string msg)
 {
+	llOwnerSay("colorchanger "+(string)pos+" msg"+msg);
 	if (1 == pos) {
 		if (msg == "-Red") g_iPerRedStart = max(g_iPerRedStart - 10, 0);
 		else if (msg == "-Green") g_iPerGreenStart = max(g_iPerGreenStart - 10, 0);

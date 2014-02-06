@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Thu Feb  6 17:52:11 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Fri Feb  7 00:02:38 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Smoke
 //
@@ -160,7 +160,6 @@ string MasterCommand(integer iChan,string sVal,integer conf){
     if ((iChan == COMMAND_CHANNEL)) {
         list lValues = llParseString2List(sVal,[SEPARATOR],[]);
         string sCommand = llList2String(lValues,0);
-        string sConfig = llList2String(lValues,1);
         if (("register" == sCommand)) RegisterExtension(g_iType);
         else  if (("verbose" == sCommand)) {
             (g_iVerbose = TRUE);
@@ -168,8 +167,8 @@ string MasterCommand(integer iChan,string sVal,integer conf){
         }
         else  if (("nonverbose" == sCommand)) (g_iVerbose = FALSE);
         else  if (("globaldebug" == sCommand)) (g_iVerbose = TRUE);
-        else  if ((conf && ("config" == sCommand))) return sConfig;
-        else  llSetTimerEvent(0.1);
+        else  if ((conf && ("config" == sCommand))) return sVal;
+        else  if (g_iSmoke) llSetTimerEvent(0.1);
         return "";
     }
     return "";
@@ -218,25 +217,28 @@ default {
 
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-	link_message(integer iSender,integer iChan,string sMsg,key kId) {
-        Debug(((((((("link_message = channel " + ((string)iChan)) + "; sMsg ") + sMsg) + "; kId ") + ((string)kId)) + " ...g_sSize ") + g_sSize));
-        MasterCommand(iChan,sMsg,FALSE);
+	link_message(integer iSender,integer iChan,string sSet,key kId) {
+        Debug(((((((("link_message = channel " + ((string)iChan)) + "; sSet ") + sSet) + "; kId ") + ((string)kId)) + " ...g_sSize ") + g_sSize));
+        MasterCommand(iChan,sSet,FALSE);
         if (((iChan != PARTICLE_CHANNEL) || (!g_iSmoke))) return;
         string sScriptName = GroupCheck(kId);
         if (("exit" == GroupCheck(kId))) return;
-        if (((sMsg == g_sSize) && ("0" != sMsg))) {
+        list lParams = llParseString2List(sSet,[SEPARATOR],[]);
+        string sVal = llList2String(lParams,0);
+        string sMsg = llList2String(lParams,1);
+        if (((sVal == g_sSize) && ("0" != sVal))) {
             llSetTimerEvent(0.0);
             return;
         }
-        if (((((integer)sMsg) > 0) && (((integer)sMsg) <= 100))) {
+        if ((((((integer)sVal) > 0) && (((integer)sVal) <= 100)) && ("smoke" == sMsg))) {
             llSetTimerEvent(0.0);
-            float fAlpha = ((g_fStartAlpha / 100.0) * ((float)sMsg));
+            float fAlpha = ((g_fStartAlpha / 100.0) * ((float)sVal));
             Debug(("fAlpha " + ((string)fAlpha)));
             llParticleSystem([PSYS_PART_FLAGS,((0 | PSYS_PART_INTERP_COLOR_MASK) | PSYS_PART_INTERP_SCALE_MASK),PSYS_SRC_PATTERN,PSYS_SRC_PATTERN_EXPLODE,PSYS_SRC_BURST_RADIUS,0.1,PSYS_PART_START_COLOR,<0.5,0.5,0.5>,PSYS_PART_END_COLOR,<0.5,0.5,0.5>,PSYS_PART_START_ALPHA,fAlpha,PSYS_PART_END_ALPHA,0.0,PSYS_PART_START_SCALE,<0.1,0.1,0.0>,PSYS_PART_END_SCALE,<3.0,3.0,0.0>,PSYS_PART_MAX_AGE,g_fAge,PSYS_SRC_BURST_RATE,g_fRate,PSYS_SRC_BURST_PART_COUNT,g_iCount,PSYS_SRC_ACCEL,<0.0,0.0,0.2>,PSYS_SRC_BURST_SPEED_MIN,0.0,PSYS_SRC_BURST_SPEED_MAX,0.1]);
             if ((g_iVerbose && ("0" != g_sSize))) llWhisper(0,"(v) Smoke changes it's appearance");
-            (g_sSize = sMsg);
+            (g_sSize = sVal);
         }
-        else  {
+        else  if ((("smoke" == sMsg) || ("" == sMsg))) {
             llWhisper(0,"Fumes are fading");
             llSetTimerEvent(11.0);
         }

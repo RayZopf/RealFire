@@ -25,7 +25,7 @@
 //Changelog
 //
 
-//FIXME: ---
+//FIXME: on/off via menu sometimes "not working"
 
 //TODO: create a module sizeSelect, put size class borders into variables and settings notecard
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,8 +98,9 @@ float g_fStartRadius;              // start value of lightRadius (before burning
 //===============================================
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
+$import GenericFunctions.lslm();
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iParticleFire, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iParticleFire, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
-$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iEnabled=g_iParticleFire, m_iAvail=g_iParticleFire, m_iChannel=ANIM_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iEnabled=g_iParticleFire, m_iAvail=g_iParticleFire, m_iChannel=PARTICLE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
@@ -107,7 +108,7 @@ $import GroupHandling.lslm(m_sGroup=LINKSETID);
 //PREDEFINED FUNCTIONS
 //===============================================
 
-initExtension()
+initExtension(integer bool)
 {
 	if (g_iParticleFire) {
 		llParticleSystem([]);
@@ -126,8 +127,8 @@ initExtension()
 	g_fLightFalloff = percentage(g_iDefFalloff, MAX_FALLOFF);
 
 	llSleep(1);
-	RegisterExtension(g_iType);
-	InfoLines(TRUE);
+	if (bool) RegisterExtension(g_iType);
+	InfoLines(FALSE);
 }
 
 
@@ -246,7 +247,6 @@ updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadiu
 
 specialFire()
 {
-	llSleep(0.5); // let fire slowly begin (not counting on lag when rezzing)
 	//particles to start fire with
 	llParticleSystem ([
 	//System Behavior
@@ -312,7 +312,7 @@ default
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
 		Debug("Particle count: " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
-		initExtension();
+		initExtension(TRUE);
 	}
 
 	on_rez(integer start_param)
@@ -324,7 +324,7 @@ default
 	{
 		if (change & CHANGED_INVENTORY) {
 			llWhisper(0, "Inventory changed, checking objects...");
-			initExtension();
+			initExtension(TRUE);
 		}
 	}
 
@@ -334,16 +334,16 @@ default
 	link_message(integer iSender, integer iChan, string sSet, key kId)
 	{
 		Debug("link_message = channel " + (string)iChan + "; sSet " + sSet + "; kId " + (string)kId);
-		string sConfig = MasterCommand(iChan, sSet, FALSE);
+		string sConfig = MasterCommand(iChan, sSet, TRUE);
 		if ("" != sConfig) {
-			if (getConfigParticleFire(sConfig)) {
-			initExtension();
-			}
+			integer rc = getConfigParticleFire(sConfig);
+			if (1 == rc) initExtension(FALSE); // no recursion - registerExtension+get config lines
+				else if (1 <= rc) updateSize((float)g_sSize);
 		}
 
 		string sScriptName = GroupCheck(kId);
 		if ("exit" == sScriptName) return;
-		if (iChan != ANIM_CHANNEL || !g_iParticleFire || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; // scripts need to have that identifier in their name, so that we can discard those messages
+		if (iChan != PARTICLE_CHANNEL || !g_iParticleFire || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; // scripts need to have that identifier in their name, so that we can discard those messages
 
 		list lParams = llParseString2List(sSet, [SEPARATOR], []);
 		string sVal = llList2String(lParams, 0);
@@ -351,24 +351,31 @@ default
 		//Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
 		Debug("work on link_message");
 
-		if (sVal == g_sSize) return;
-		else if ((integer)sVal > 0 && 100 >= (integer)sVal) {
-			llSetTimerEvent(0.0);
+		if  ("0" == sVal && g_iInTimer) return;
+
+		llSetTimerEvent(0.0);
+		g_iInTimer = FALSE;
+		if (sVal == g_sSize) {
+			return;
+		} else if ((integer)sVal > 0 && 100 >= (integer)sVal && "fire" == sMsg) {
 			string g_sSizeTemp = g_sSize;
 
 			if ("0" == g_sSizeTemp) { // similar to startSystem() in Fire.lsl
+				llSleep(0.6); // let fire slowly begin (not counting on lag when rezzing)
 				specialFire();
 				g_fLightIntensity = g_fStartIntensity;
 				g_fLightRadius = g_fStartRadius;
-				llSleep(1.2);
+				llSleep(1.8);
 				updateSize((float)sVal);
 			} else {
 				updateSize((float)sVal);
 			}
 			g_sSize = sVal;
-		} else {
-			llSetTimerEvent(1.0);
+		} else if ("fire" == sMsg || "" == sMsg) {
 			specialFire();
+			g_iInTimer = TRUE;
+			llSleep(1.2);
+			llSetTimerEvent(2.0);
 		}
 	}
 
@@ -382,6 +389,7 @@ default
 		llSetLinkTextureAnim(g_iType, FALSE, ALL_SIDES,4,4,0,0,1);
 		if (g_iVerbose) llWhisper(0, "(v) Particle fire effects ended");
 		g_sSize = "0";
+		g_iInTimer = FALSE;
 		llSetTimerEvent(0.0);
 	}
 

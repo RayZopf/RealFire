@@ -72,7 +72,6 @@ float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
 float g_fFactor;
-integer g_iInTimer = FALSE;
 
 //RealFire MESSAGE MAP
 //integer COMMAND_CHANNEL =

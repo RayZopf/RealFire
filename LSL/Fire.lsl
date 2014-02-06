@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Feb  6 19:28:49 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Fri Feb  7 00:02:38 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -159,7 +159,7 @@ integer g_iParticleFireAvail = FALSE;
 integer g_iPrimFireAvail = FALSE;
 
 integer g_iLine;
-string g_sConfLine;
+string g_sConfLine = "";
 integer menuChannel;
 integer g_iStartColorChannel;
 integer g_iEndColorChannel;
@@ -234,7 +234,7 @@ Debug(string sMsg){
 
 //###
 //GenericFunctions.lslm
-//0.11 - 06Feb2014
+//0.2 - 06Feb2014
 
 integer checkInt(string par,integer val,integer min,integer max){
     if (((val < min) || (val > max))) {
@@ -246,20 +246,8 @@ integer checkInt(string par,integer val,integer min,integer max){
 }
 
 
-vector checkVector(string par,vector val){
-    if ((val == ZERO_VECTOR)) {
-        (val = <100,100,100>);
-        llWhisper(0,((("[Notecard] " + par) + " out of range, corrected to ") + ((string)val)));
-    }
-    return val;
-}
-
-
-integer checkYesNo(string par,string val){
-    if ((llToLower(val) == "yes")) return TRUE;
-    if ((llToLower(val) == "no")) return FALSE;
-    llWhisper(0,(("[Notecard] " + par) + " out of range, corrected to NO"));
-    return FALSE;
+float percentage(float per,float num){
+    return ((num / 100.0) * per);
 }
 
 
@@ -275,16 +263,12 @@ integer max(integer x,integer y){
 }
 
 
-float percentage(float per,float num){
-    return ((num / 100.0) * per);
-}
-
-
 //###
 //ColorChanger.lslm
 //0.1 - 06Feb2014
 
 setColor(integer pos,string msg){
+    llOwnerSay(((("colorchanger " + ((string)pos)) + " msg") + msg));
     if ((1 == pos)) {
         if ((msg == "-Red")) (g_iPerRedStart = max((g_iPerRedStart - 10),0));
         else  if ((msg == "-Green")) (g_iPerGreenStart = max((g_iPerGreenStart - 10),0));
@@ -384,11 +368,11 @@ toggleFunktion(string sFunction){
     }
     else  if (("particlefire" == sFunction)) {
         if (g_iParticleFireOn) {
-            sendMessage(PARTICLE_CHANNEL,"0","");
+            sendMessage(PARTICLE_CHANNEL,"0","fire");
             (g_iParticleFireOn = FALSE);
         }
         else  {
-            sendMessage(PARTICLE_CHANNEL,((string)g_fPerSize),"");
+            sendMessage(PARTICLE_CHANNEL,((string)g_fPerSize),"fire");
             (g_iParticleFireOn = TRUE);
         }
     }
@@ -404,11 +388,11 @@ toggleFunktion(string sFunction){
     }
     else  if (("smoke" == sFunction)) {
         if (g_iSmokeOn) {
-            sendMessage(PARTICLE_CHANNEL,"0","");
+            sendMessage(PARTICLE_CHANNEL,"0","smoke");
             (g_iSmokeOn = FALSE);
         }
         else  {
-            sendMessage(PARTICLE_CHANNEL,((string)llRound(g_fPercentSmoke)),"");
+            sendMessage(PARTICLE_CHANNEL,((string)llRound(g_fPercentSmoke)),"smoke");
             (g_iSmokeOn = TRUE);
         }
     }
@@ -436,13 +420,13 @@ updateSize(float size){
         if (((g_iSoundAvail || g_iBackSoundAvail) && g_iChangeVolume)) (g_fSoundVolume = percentage((size * 4.0),g_fStartVolume));
     }
     if ((g_iPrimFireAvail && g_iPrimFireOn)) sendMessage(ANIM_CHANNEL,((string)size),((string)g_iLowprim));
-    if ((g_iSmokeAvail && g_iSmokeOn)) sendMessage(PARTICLE_CHANNEL,((string)llRound(g_fPercentSmoke)),"");
+    if ((g_iSmokeAvail && g_iSmokeOn)) sendMessage(PARTICLE_CHANNEL,((string)llRound(g_fPercentSmoke)),"smoke");
     if ((g_iSoundAvail || g_iBackSoundAvail)) {
         if (((0 <= size) && (100 >= size))) (g_sCurrentSound = ((string)size));
         if (g_iSoundOn) sendMessage(SOUND_CHANNEL,g_sCurrentSound,((string)g_fSoundVolume));
         else  sendMessage(SOUND_CHANNEL,g_sCurrentSound,"0");
     }
-    if ((g_iParticleFireAvail && g_iParticleFireOn)) sendMessage(PARTICLE_CHANNEL,((string)size),"");
+    if ((g_iParticleFireAvail && g_iParticleFireOn)) sendMessage(PARTICLE_CHANNEL,((string)size),"fire");
 }
 
 
@@ -465,6 +449,23 @@ string showAccess(integer access){
         (strAccess = " None");
     }
     return strAccess;
+}
+
+
+vector checkVector(string par,vector val){
+    if ((val == ZERO_VECTOR)) {
+        (val = <100,100,100>);
+        llWhisper(0,((("[Notecard] " + par) + " out of range, corrected to ") + ((string)val)));
+    }
+    return val;
+}
+
+
+integer checkYesNo(string par,string val){
+    if ((llToLower(val) == "yes")) return TRUE;
+    if ((llToLower(val) == "no")) return FALSE;
+    llWhisper(0,(("[Notecard] " + par) + " out of range, corrected to NO"));
+    return FALSE;
 }
 
 
@@ -726,7 +727,6 @@ reset(){
     (g_iPerBlueEnd = ((integer)g_vDefEndColor.z));
     sendMessage(COMMAND_CHANNEL,"config","reset");
     sendMessage(COMMAND_CHANNEL,"off","");
-    llStopSound();
     if (g_iVerbose) llWhisper(0,"(v) The fire gets taken care off");
 }
 
@@ -743,7 +743,6 @@ startSystem(){
     }
     (g_fPercent = 100.0);
     (g_fPercentSmoke = 100.0);
-    if ((g_iSmokeAvail && g_iSmokeOn)) sendMessage(PARTICLE_CHANNEL,((string)llRound(g_fPercentSmoke)),"");
     if ((g_iSoundAvail || g_iBackSoundAvail)) {
         (g_fStartVolume = percentage(((float)g_iPerVolume),MAX_VOLUME));
     }
@@ -842,13 +841,8 @@ updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadiu
 //===============================================================================
 sendMessage(integer iChan,string sVal,string sMsg){
     string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
-    if ((iChan == PARTICLE_CHANNEL)) {
-        llMessageLinked(LINK_SET,iChan,sVal,((key)sId));
-    }
-    else  {
-        string sSet = ((sVal + SEPARATOR) + sMsg);
-        llMessageLinked(LINK_SET,iChan,sSet,((key)sId));
-    }
+    string sSet = ((sVal + SEPARATOR) + sMsg);
+    llMessageLinked(LINK_SET,iChan,sSet,((key)sId));
 }
 
 infoLines(){
@@ -995,8 +989,10 @@ default {
                     if (((!g_iSoundOn) && (g_iSoundAvail || g_iBackSoundAvail))) toggleFunktion("sound");
                 }
             }
-            else  if ((msg == "RESET")) reset();
-            startSystem();
+            else  if ((msg == "RESET")) {
+                reset();
+                startSystem();
+            }
             if (((("Color" != msg) && (msg != "^Main menu")) && ("Close" != msg))) {
                 optionsDialog(g_kUser);
             }
@@ -1008,22 +1004,24 @@ default {
             }
         }
         else  if ((channel == g_iStartColorChannel)) {
+            Debug("startcolor");
             llListenRemove(g_iStartColorHandle);
             setColor(1,msg);
             if (((msg != "Top color") && (msg != "^Main menu"))) {
+                Debug("do it (start)");
                 sendMessage(COMMAND_CHANNEL,"config",("startcolor=" + msg));
-                updateSize(g_fPerSize);
                 startColorDialog(g_kUser);
             }
             else  if ((msg == "Top color")) endColorDialog(g_kUser);
             else  if ((msg == "^Main menu")) menuDialog(g_kUser);
         }
         else  if ((channel == g_iEndColorChannel)) {
+            Debug("endcolor");
             llListenRemove(g_iEndColorHandle);
             setColor(0,msg);
             if (((msg != "Bottom color") && (msg != "^Options"))) {
+                Debug("do it (start)");
                 sendMessage(COMMAND_CHANNEL,"config",("endcolor=" + msg));
-                updateSize(g_fPerSize);
                 endColorDialog(g_kUser);
             }
             else  if ((msg == "Bottom color")) startColorDialog(g_kUser);
@@ -1062,7 +1060,7 @@ default {
             if ((sScriptName == PARTICLEFIREANIMSCRIPT)) {
                 if (("1" == sMsg)) {
                     (g_iParticleFireAvail = TRUE);
-                    sendMessage(COMMAND_CHANNEL,"config",g_sConfLine);
+                    if (("" != g_sConfLine)) sendMessage(COMMAND_CHANNEL,"config",g_sConfLine);
                     llWhisper(0,"ParticleFire available");
                     if ((g_iDefParticleFire && g_iOn)) {
                         (g_iParticleFireOn = (!g_iParticleFireOn));
@@ -1112,7 +1110,7 @@ default {
         else  if ((iChan == REMOTE_CHANNEL)) {
             if (("1" == sMsg)) {
                 llWhisper(0,"Remote receiver activated");
-                sendMessage(COMMAND_CHANNEL,"config",g_sConfLine);
+                if (("" != g_sConfLine)) sendMessage(COMMAND_CHANNEL,"config",g_sConfLine);
             }
         }
         else  if ((iChan == g_iMsgNumber)) {
@@ -1164,7 +1162,7 @@ default {
             (g_vDefEndColor.y = checkInt("ColorOff (GREEN)",((integer)g_vDefEndColor.y),0,100));
             (g_vDefEndColor.z = checkInt("ColorOff (BLUE)",((integer)g_vDefEndColor.z),0,100));
             (g_fStartVolume = percentage(((float)g_iDefVolume),MAX_VOLUME));
-            sendMessage(COMMAND_CHANNEL,"config",g_sConfLine);
+            if (("" != g_sConfLine)) sendMessage(COMMAND_CHANNEL,"config",g_sConfLine);
             reset();
             if (g_iOn) startSystem();
             if (g_iVerbose) infoLines();

@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Thu Feb  6 19:47:23 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Fri Feb  7 00:12:09 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -26,7 +26,7 @@
 //Changelog
 //
 
-//FIXME: ---
+//FIXME: on/off via menu sometimes "not working"
 
 //TODO: create a module sizeSelect, put size class borders into variables and settings notecard
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,6 +105,7 @@ integer g_iPerBlueStart;
 integer g_iPerRedEnd;
 integer g_iPerGreenEnd;
 integer g_iPerBlueEnd;
+integer g_iInTimer = FALSE;
 string SEPARATOR = ";;";
 float SIZE_TINY = 5.0;
 float SIZE_EXTRASMALL = 15.0;
@@ -112,7 +113,7 @@ float SIZE_SMALL = 25.0;
 float SIZE_MEDIUM = 50.0;
 float SIZE_LARGE = 80.0;
 integer COMMAND_CHANNEL = -15700;
-integer ANIM_CHANNEL = -15770;
+integer PARTICLE_CHANNEL = -15790;
 
 
 //###
@@ -130,6 +131,37 @@ integer ANIM_CHANNEL = -15770;
 Debug(string sMsg){
     if ((!g_iDebugMode)) return;
     llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
+}
+
+
+//###
+//GenericFunctions.lslm
+//0.2 - 06Feb2014
+
+integer checkInt(string par,integer val,integer min,integer max){
+    if (((val < min) || (val > max))) {
+        if ((val < min)) (val = min);
+        else  if ((val > max)) (val = max);
+        llWhisper(0,((("[Notecard] " + par) + " out of range, corrected to ") + ((string)val)));
+    }
+    return val;
+}
+
+
+float percentage(float per,float num){
+    return ((num / 100.0) * per);
+}
+
+
+integer min(integer x,integer y){
+    if ((x < y)) return x;
+    else  return y;
+}
+
+
+integer max(integer x,integer y){
+    if ((x > y)) return x;
+    else  return y;
 }
 
 
@@ -178,58 +210,11 @@ string GroupCheck(key kId){
 
 
 //###
-//GenericFunctions.lslm
-//0.11 - 06Feb2014
-
-integer checkInt(string par,integer val,integer min,integer max){
-    if (((val < min) || (val > max))) {
-        if ((val < min)) (val = min);
-        else  if ((val > max)) (val = max);
-        llWhisper(0,((("[Notecard] " + par) + " out of range, corrected to ") + ((string)val)));
-    }
-    return val;
-}
-
-
-vector checkVector(string par,vector val){
-    if ((val == ZERO_VECTOR)) {
-        (val = <100,100,100>);
-        llWhisper(0,((("[Notecard] " + par) + " out of range, corrected to ") + ((string)val)));
-    }
-    return val;
-}
-
-
-integer checkYesNo(string par,string val){
-    if ((llToLower(val) == "yes")) return TRUE;
-    if ((llToLower(val) == "no")) return FALSE;
-    llWhisper(0,(("[Notecard] " + par) + " out of range, corrected to NO"));
-    return FALSE;
-}
-
-
-integer min(integer x,integer y){
-    if ((x < y)) return x;
-    else  return y;
-}
-
-
-integer max(integer x,integer y){
-    if ((x > y)) return x;
-    else  return y;
-}
-
-
-float percentage(float per,float num){
-    return ((num / 100.0) * per);
-}
-
-
-//###
 //ColorChanger.lslm
 //0.1 - 06Feb2014
 
 setColor(integer pos,string msg){
+    llOwnerSay(((("colorchanger " + ((string)pos)) + " msg") + msg));
     if ((1 == pos)) {
         if ((msg == "-Red")) (g_iPerRedStart = max((g_iPerRedStart - 10),0));
         else  if ((msg == "-Green")) (g_iPerGreenStart = max((g_iPerGreenStart - 10),0));
@@ -289,8 +274,8 @@ setColor(integer pos,string msg){
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
-    if ((g_iParticleFire && g_iParticleFire)) llMessageLinked(link,ANIM_CHANNEL,"1",((key)sId));
-    else  llMessageLinked(link,ANIM_CHANNEL,"0",((key)sId));
+    if ((g_iParticleFire && g_iParticleFire)) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
+    else  llMessageLinked(link,PARTICLE_CHANNEL,"0",((key)sId));
 }
 
 
@@ -298,7 +283,6 @@ string MasterCommand(integer iChan,string sVal,integer conf){
     if ((iChan == COMMAND_CHANNEL)) {
         list lValues = llParseString2List(sVal,[SEPARATOR],[]);
         string sCommand = llList2String(lValues,0);
-        string sConfig = llList2String(lValues,1);
         if (("register" == sCommand)) RegisterExtension(g_iType);
         else  if (("verbose" == sCommand)) {
             (g_iVerbose = TRUE);
@@ -306,30 +290,37 @@ string MasterCommand(integer iChan,string sVal,integer conf){
         }
         else  if (("nonverbose" == sCommand)) (g_iVerbose = FALSE);
         else  if (("globaldebug" == sCommand)) (g_iVerbose = TRUE);
-        else  if ((conf && ("config" == sCommand))) return sConfig;
-        else  llSetTimerEvent(0.1);
+        else  if ((conf && ("config" == sCommand))) return sVal;
+        else  if (g_iParticleFire) llSetTimerEvent(0.1);
         return "";
     }
     return "";
 }
 
 
- integer getConfigParticleFire(string sConfig){
-    list lConfigs = llParseString2List(sConfig,["=",SEPARATOR],[]);
+ integer getConfigParticleFire(string sVal){
+    list lConfigs = llParseString2List(sVal,["config","=",SEPARATOR],[]);
     integer n = llGetListLength(lConfigs);
     integer count = 0;
     string par;
+    Debug(((("getConfig Particlefire " + ((string)lConfigs)) + " n ") + ((string)n)));
     if (((n > 1) && (0 == (n % 2)))) do  {
         (par = llList2String(lConfigs,count));
         string val = llList2String(lConfigs,(count + 1));
-        if ((par == "changelight")) (g_iChangeLight = checkYesNo("changeLight",val));
-        else  if ((par == "topcolor")) (g_vDefEndColor = checkVector("topColor",((vector)val)));
-        else  if ((par == "bottomcolor")) (g_vDefStartColor = checkVector("bottomColor",((vector)val)));
-        else  if ((par == "intensity")) (g_iDefIntensity = checkInt("intensity",((integer)val),0,100));
-        else  if ((par == "radius")) (g_iDefRadius = checkInt("radius",((integer)val),0,100));
-        else  if ((par == "falloff")) (g_iDefFalloff = checkInt("falloff",((integer)val),0,100));
-        else  if (("startcolor" == par)) setColor(1,val);
-        else  if (("endcolor" == par)) setColor(0,val);
+        if ((par == "changelight")) (g_iChangeLight = ((integer)val));
+        else  if ((par == "topcolor")) (g_vDefEndColor = ((vector)val));
+        else  if ((par == "bottomcolor")) (g_vDefStartColor = ((vector)val));
+        else  if ((par == "intensity")) (g_iDefIntensity = ((integer)val));
+        else  if ((par == "radius")) (g_iDefRadius = ((integer)val));
+        else  if ((par == "falloff")) (g_iDefFalloff = ((integer)val));
+        else  if (("startcolor" == par)) {
+            setColor(1,val);
+            if ((2 == n)) return 2;
+        }
+        else  if (("endcolor" == par)) {
+            setColor(0,val);
+            if ((2 == n)) return 2;
+        }
         (count = (count + 2));
     }
     while ((count <= n));
@@ -354,7 +345,7 @@ string MasterCommand(integer iChan,string sVal,integer conf){
 //PREDEFINED FUNCTIONS
 //===============================================
 
-initExtension(){
+initExtension(integer bool){
     if (g_iParticleFire) {
         llParticleSystem([]);
         llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,FALSE,ZERO_VECTOR,0,0,0]);
@@ -370,8 +361,8 @@ initExtension(){
     (g_fStartRadius = percentage(g_iDefRadius,MAX_RADIUS));
     (g_fLightFalloff = percentage(g_iDefFalloff,MAX_FALLOFF));
     llSleep(1);
-    RegisterExtension(g_iType);
-    InfoLines(TRUE);
+    if (bool) RegisterExtension(g_iType);
+    InfoLines(FALSE);
 }
 
 
@@ -437,7 +428,6 @@ updateParticles(vector vStart,vector vEnd,float fMin,float fMax,float fRadius,ve
 
 
 specialFire(){
-    llSleep(0.5);
     llParticleSystem([PSYS_PART_FLAGS,(((0 | PSYS_PART_EMISSIVE_MASK) | PSYS_PART_INTERP_COLOR_MASK) | PSYS_PART_INTERP_SCALE_MASK),PSYS_SRC_PATTERN,PSYS_SRC_PATTERN_EXPLODE,PSYS_SRC_BURST_RADIUS,0.148438,PSYS_PART_START_COLOR,<0.74902,0.6,0.14902>,PSYS_PART_END_COLOR,<1,0.2,0>,PSYS_PART_START_ALPHA,0.101961,PSYS_PART_END_ALPHA,7.05882e-2,PSYS_PART_START_SCALE,<0.59375,0.59375,0>,PSYS_PART_END_SCALE,<9.375e-2,9.375e-2,0>,PSYS_SRC_TEXTURE,((key)"23d133ad-c669-18a8-02a3-a75baa9b214a"),PSYS_SRC_MAX_AGE,2.8,PSYS_PART_MAX_AGE,3.0,PSYS_SRC_BURST_RATE,1.0e-2,PSYS_SRC_BURST_PART_COUNT,1,PSYS_SRC_ACCEL,<0,0,0.203125>,PSYS_SRC_BURST_SPEED_MIN,1.95313e-2,PSYS_SRC_BURST_SPEED_MAX,2.73438e-2]);
 }
 
@@ -456,7 +446,7 @@ default {
         (g_sScriptName = llGetScriptName());
         Debug("state_entry");
         Debug(("Particle count: " + ((string)llRound(((((float)g_iCount) * g_fAge) / g_fRate)))));
-        initExtension();
+        initExtension(TRUE);
     }
 
 
@@ -468,7 +458,7 @@ default {
 	changed(integer change) {
         if ((change & CHANGED_INVENTORY)) {
             llWhisper(0,"Inventory changed, checking objects...");
-            initExtension();
+            initExtension(TRUE);
         }
     }
 
@@ -478,28 +468,33 @@ default {
 //-----------------------------------------------
 	link_message(integer iSender,integer iChan,string sSet,key kId) {
         Debug(((((("link_message = channel " + ((string)iChan)) + "; sSet ") + sSet) + "; kId ") + ((string)kId)));
-        string sConfig = MasterCommand(iChan,sSet,FALSE);
+        string sConfig = MasterCommand(iChan,sSet,TRUE);
         if (("" != sConfig)) {
-            if (getConfigParticleFire(sConfig)) {
-                initExtension();
-            }
+            integer rc = getConfigParticleFire(sConfig);
+            if ((1 == rc)) initExtension(FALSE);
+            else  if ((1 <= rc)) updateSize(((float)g_sSize));
         }
         string sScriptName = GroupCheck(kId);
         if (("exit" == sScriptName)) return;
-        if ((((iChan != ANIM_CHANNEL) || (!g_iParticleFire)) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
+        if ((((iChan != PARTICLE_CHANNEL) || (!g_iParticleFire)) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
         list lParams = llParseString2List(sSet,[SEPARATOR],[]);
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);
         Debug("work on link_message");
-        if ((sVal == g_sSize)) return;
-        else  if (((((integer)sVal) > 0) && (100 >= ((integer)sVal)))) {
-            llSetTimerEvent(0.0);
+        if ((("0" == sVal) && g_iInTimer)) return;
+        llSetTimerEvent(0.0);
+        (g_iInTimer = FALSE);
+        if ((sVal == g_sSize)) {
+            return;
+        }
+        else  if ((((((integer)sVal) > 0) && (100 >= ((integer)sVal))) && ("fire" == sMsg))) {
             string g_sSizeTemp = g_sSize;
             if (("0" == g_sSizeTemp)) {
+                llSleep(0.6);
                 specialFire();
                 (g_fLightIntensity = g_fStartIntensity);
                 (g_fLightRadius = g_fStartRadius);
-                llSleep(1.2);
+                llSleep(1.8);
                 updateSize(((float)sVal));
             }
             else  {
@@ -507,9 +502,11 @@ default {
             }
             (g_sSize = sVal);
         }
-        else  {
-            llSetTimerEvent(1.0);
+        else  if ((("fire" == sMsg) || ("" == sMsg))) {
             specialFire();
+            (g_iInTimer = TRUE);
+            llSleep(1.2);
+            llSetTimerEvent(2.0);
         }
     }
 
@@ -523,6 +520,7 @@ default {
         llSetLinkTextureAnim(g_iType,FALSE,ALL_SIDES,4,4,0,0,1);
         if (g_iVerbose) llWhisper(0,"(v) Particle fire effects ended");
         (g_sSize = "0");
+        (g_iInTimer = FALSE);
         llSetTimerEvent(0.0);
     }
 }
