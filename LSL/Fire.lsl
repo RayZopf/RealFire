@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Feb  6 06:14:41 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Fri Feb  7 00:16:10 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -945,8 +945,10 @@ default {
                     if (((!g_iSoundOn) && (g_iSoundAvail || g_iBackSoundAvail))) toggleFunktion("sound");
                 }
             }
-            else  if ((msg == "RESET")) reset();
-            startSystem();
+            else  if ((msg == "RESET")) {
+                reset();
+                startSystem();
+            }
             if (((("Color" != msg) && (msg != "^Main menu")) && ("Close" != msg))) {
                 optionsDialog(g_kUser);
             }

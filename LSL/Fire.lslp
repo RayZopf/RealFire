@@ -1040,7 +1040,7 @@ default
 						if (!g_iSmokeOn && g_iSmokeAvail) toggleFunktion("smoke");
 						if (!g_iSoundOn && (g_iSoundAvail || g_iBackSoundAvail)) toggleFunktion("sound");
 					}
-				} else if (msg == "RESET") reset(); startSystem();
+				} else if (msg == "RESET") { reset(); startSystem(); }
 
 			if ("Color" != msg && msg != "^Main menu" && "Close" != msg) {
 				optionsDialog(g_kUser);
