@@ -63,5 +63,11 @@ integer max (integer x, integer y)
 }
 
 
+float percentage (float per, float num)
+{
+	return num / 100.0 * per;
+}
+
+
 //END GenericFunctions.lslm
 //###

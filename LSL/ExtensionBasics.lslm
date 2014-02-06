@@ -64,13 +64,15 @@ string MasterCommand(integer iChan, string sVal, integer conf)
 }
 
 
- integer getConfigFire(string sConfig)
+ integer getConfigParticleFire(string sConfig)
 {
 	list lConfigs = llParseString2List(sConfig, ["=",SEPARATOR], []);
 	integer n = llGetListLength(lConfigs);
 	integer count = 0;
+	string par;
+
 	if (n > 1 && 0 == n%2) do {
-		string par = llList2String(lConfigs, count);
+		par = llList2String(lConfigs, count);
 		string val = llList2String(lConfigs, count+1);
 
 		// config for particle fire
@@ -86,7 +88,18 @@ string MasterCommand(integer iChan, string sVal, integer conf)
 
 		count = count +2;
 	} while (count <= n);
-	else return 0;
+	else if (1 == n) {
+		par = llList2String(lConfigs, count);
+		if ("reset" == par) {
+			g_iPerRedStart = (integer)g_vDefStartColor.x;
+			g_iPerGreenStart = (integer)g_vDefStartColor.y;
+			g_iPerBlueStart = (integer)g_vDefStartColor.z;
+			g_iPerRedEnd = (integer)g_vDefEndColor.x;
+			g_iPerGreenEnd = (integer)g_vDefEndColor.y;
+			g_iPerBlueEnd = (integer)g_vDefEndColor.z;
+		}
+		return 0;
+	} else return 0;
 	return 1;
 }
 

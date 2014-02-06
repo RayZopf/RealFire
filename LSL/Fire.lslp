@@ -104,22 +104,9 @@ string SMOKESCRIPT = "Smoke.lsl";            // script for smoke particles from 
 string SPARKSSCRIPT = "Sparks.lsl";          // script for particles from a third prim
 string TEXTUREANIMSCRIPT = "Animation.lsl";  // script that handles texture animations (for each single prim)
 string PRIMFIREANIMSCRIPT = "P-Anim.lsl";    // script to create temporary flexi prim (Fire)
+string PARTICLEFIREANIMSCRIPT = "F-Anim.lsl";
 
 string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
-
-// Particle parameters
-float g_fAge = 1.0;                // particle lifetime
-float g_fRate = 0.1;               // particle burst rate
-integer g_iCount = 10;             // particle count
-vector g_vStartScale = <0.4, 2, 0>;// particle start size (100%)
-vector g_vEndScale = <0.4, 2, 0>;  // particle end size (100%)
-float g_fMinSpeed = 0.0;           // particle min. burst speed (100%)
-float g_fMaxSpeed = 0.04;          // particle max. burst speed (100%)
-float g_fBurstRadius = 0.4;        // particle burst radius (100%)
-vector g_vPartAccel = <0, 0, 10>;  // particle accelleration (100%)
-vector g_vStartColor = <1, 1, 0>;  // particle start color
-vector g_vEndColor = <1, 0, 0>;    // particle end color
-
 
 //internal variables
 //-----------------------------------------------
@@ -134,15 +121,11 @@ integer g_iType = LINK_SET;              // in this case it defines which prim e
 integer ACCESS_OWNER = 4;            // owner access bit
 integer ACCESS_GROUP = 2;            // group access bit
 integer ACCESS_WORLD = 1;            // world access bit
-float MAX_COLOR = 1.0;             // max. red, green, blue
-float MAX_INTENSITY = 1.0;       // max. light intensity
-float MAX_RADIUS = 20.0;         // max. light radius
-float MAX_FALLOFF = 2.0;         // max. light falloff
 float MAX_VOLUME = 1.0;          // max. volume for sound
 
 // RealFire MESSAGE MAP
 //integer COMMAND_CHANNEL =
-//integer SMOKE_CHANNEL =       smoke channel
+//integer PARTICLE_CHANNEL =       smoke channel
 //integer SOUND_CHANNEL =       sound channel
 //integer ANIM_CHANNEL =        primfire/textureanim channel
 //integer PRIMCOMMAND_CHANNEL = kill fire prims or make temp prims
@@ -157,7 +140,6 @@ integer g_iBurnDown = FALSE;       // burn down or burn continuously
 float g_fBurnTime;                 // time to burn in seconds before starting to die
 float g_fDieTime;                  // time it takes to die in seconds
 integer g_iLoop = FALSE;           // restart after burning down
-integer g_iChangeLight = TRUE;     // change light with fire
 integer g_iChangeSmoke = TRUE;     // change smoke with fire
 integer g_iChangeVolume = TRUE;    // change volume with fire
 integer g_iDefSize;                // default fire size (percentage)
@@ -202,14 +184,8 @@ float g_fTime;                     // timer interval in seconds
 float g_fPercent;                  // percentage of particle size
 float g_fPercentSmoke;             // percentage of smoke
 float g_fDecPercent;               // how much to burn down (%) every timer interval
-vector g_vLightColor;              // light color
-float g_fLightIntensity;           // light intensity (changed by burning down)
-float g_fLightRadius;              // light radius (changed by burning down)
-float g_fLightFalloff;             // light falloff
 float g_fSoundVolume = 0.0;        // sound volume (changed by burning down)
 float g_fSoundVolumeTmp;
-float g_fStartIntensity;           // start value of lightIntensity (before burning down)
-float g_fStartRadius;              // start value of lightRadius (before burning down)
 float g_fStartVolume;              // start value of volume (before burning down)
 
 
@@ -258,10 +234,10 @@ toggleFunktion(string sFunction)
 		}
 	} else if ("smoke" == sFunction) {
 			if (g_iSmokeOn) {
-			sendMessage(SMOKE_CHANNEL, "0", "");
+			sendMessage(PARTICLE_CHANNEL, "0", "");
 			g_iSmokeOn = FALSE;
 		} else {
-			sendMessage(SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
+			sendMessage(PARTICLE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
 			g_iSmokeOn = TRUE;
 		}
 	} else if ("sound" == sFunction) {
@@ -280,7 +256,7 @@ toggleFunktion(string sFunction)
 //-----------------------------------------------
 updateSize(float size)
 {
-	vector vStart;
+/*	vector vStart;
 	vector vEnd;
 	float fMin;
 	float fMax;
@@ -291,17 +267,18 @@ updateSize(float size)
 	fMin = g_fMinSpeed / 100.0 * size;             // min. burst speed
 	fMax = g_fMaxSpeed / 100.0 * size;             // max. burst speed
 	vPush = g_vPartAccel / 100.0 * size;           // accelleration
-
+*/
 	g_fSoundVolume = g_fStartVolume;
 
 	if (size > SIZE_SMALL) {
-		vStart = g_vStartScale / 100.0 * size;     // start scale
+		;
+/*		vStart = g_vStartScale / 100.0 * size;     // start scale
 		fRadius = g_fBurstRadius / 100.0 * size;   // burst radius
 		if (size >= SIZE_LARGE) llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
 			else if (size >= SIZE_MEDIUM) llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
-				else llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
+				else llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);*/
 	} else {
-		if (size >= SIZE_EXTRASMALL) llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
+/*		if (size >= SIZE_EXTRASMALL) llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
 			else llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
 		vStart = g_vStartScale / 4.0;              // start scale
 		fRadius = g_fBurstRadius / 4.0;            // burst radius
@@ -315,28 +292,29 @@ updateSize(float size)
 		} else {
 			g_fLightIntensity = g_fStartIntensity;
 			g_fLightRadius = g_fStartRadius;
-		}
+		} */
 		if (g_iChangeSmoke && g_iSmokeAvail) g_fPercentSmoke = size * 4.0; //works only here within range 0-100!!!
 			else g_fPercentSmoke = 100.0;
 		Debug("Smoke size: change= "+(string)g_iChangeSmoke+", size= "+(string)size +", percentage= "+(string)g_fPercentSmoke);
 		if ((g_iSoundAvail || g_iBackSoundAvail) && g_iChangeVolume) g_fSoundVolume = percentage(size * 4.0, g_fStartVolume);
 	}
 
-	updateColor();
+	//updateColor();
 	if (g_iPrimFireAvail && g_iPrimFireOn) sendMessage(ANIM_CHANNEL, (string)size, (string)g_iLowprim);
-	if (g_iSmokeAvail && g_iSmokeOn) sendMessage(SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
+	if (g_iSmokeAvail && g_iSmokeOn) sendMessage(PARTICLE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
 	if (g_iSoundAvail || g_iBackSoundAvail) { //needs to be improved
 		if (0 <= size && 100 >= size) g_sCurrentSound = (string)size;
 		if (g_iSoundOn) sendMessage(SOUND_CHANNEL, g_sCurrentSound, (string)g_fSoundVolume); //used when changing fire size via menu
 			else sendMessage(SOUND_CHANNEL, g_sCurrentSound, "0");
 	}
-	if (g_iParticleFireOn) updateParticles(vStart, vEnd, fMin, fMax, fRadius, vPush);
+/*	if (g_iParticleFireOn) updateParticles(vStart, vEnd, fMin, fMax, fRadius, vPush);
 		else llParticleSystem([]);
-	llSetLinkPrimitiveParamsFast(g_iType ,[PRIM_POINT_LIGHT, TRUE, g_vLightColor, g_fLightIntensity, g_fLightRadius, g_fLightFalloff]);
-	Debug((string)llRound(size) + "% " + (string)vStart + " " + (string)vEnd);
+	llSetLinkPrimitiveParamsFast(g_iType ,[PRIM_POINT_LIGHT, TRUE, g_vLightColor, g_fLightIntensity, g_fLightRadius, g_fLightFalloff]);*/
+	if (g_iParticleFireOn) sendMessage(PARTICLE_CHANNEL, (string)size, "");
+	//Debug((string)llRound(size) + "% " + (string)vStart + " " + (string)vEnd);
 }
 
-
+/*
 updateColor()
 {
 	g_vStartColor.x = percentage((float)g_iPerRedStart, MAX_COLOR);
@@ -349,7 +327,7 @@ updateColor()
 
 	g_vLightColor = (g_vStartColor + g_vEndColor) / 2.0; //light color = average of start & end color
 }
-
+*/
 
 integer accessGranted(key kUser, integer iAccess)
 {
@@ -421,9 +399,6 @@ loadNotecard()
 		if (g_fTime < 1.0) g_fTime = 1.0;            // but never smaller than one second
 		g_fDecPercent = 100.0 / (g_fDieTime / g_fTime); // and burn down decPercent% every time
 
-		g_fStartIntensity = percentage(g_iDefIntensity, MAX_INTENSITY);
-		g_fStartRadius = percentage(g_iDefRadius, MAX_RADIUS);
-		g_fLightFalloff = percentage(g_iDefFalloff, MAX_FALLOFF);
 		g_fStartVolume = percentage(g_iDefVolume, MAX_VOLUME);
 
 		reset(); // initial values for menu
@@ -660,12 +635,6 @@ optionsDialog (key kId)
 }
 
 
-float percentage (float per, float num)
-{
-	return num / 100.0 * per;
-}
-
-
 reset()
 {
 	g_iParticleFireOn = g_iDefParticleFire;
@@ -681,6 +650,8 @@ reset()
 	g_iPerRedEnd = (integer)g_vDefEndColor.x;
 	g_iPerGreenEnd = (integer)g_vDefEndColor.y;
 	g_iPerBlueEnd = (integer)g_vDefEndColor.z;
+
+	sendMessage(COMMAND_CHANNEL, "config", "reset");
 
 	//just send, don't check
 	sendMessage(COMMAND_CHANNEL, "off", "");
@@ -702,9 +673,7 @@ startSystem()
 	}
 	g_fPercent = 100.0;
 	g_fPercentSmoke = 100.0;
-	if (g_iSmokeAvail && g_iSmokeOn) sendMessage(SMOKE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
-	g_fLightIntensity = g_fStartIntensity;
-	g_fLightRadius = g_fStartRadius;
+	if (g_iSmokeAvail && g_iSmokeOn) sendMessage(PARTICLE_CHANNEL, (string)llRound(g_fPercentSmoke), "");
 	if (g_iSoundAvail || g_iBackSoundAvail) { //needs some more rework, move all calculation inside
 		g_fStartVolume = percentage((float)g_iPerVolume, MAX_VOLUME);
 		//if (g_iSoundOn) sendMessage(SOUND_CHANNEL, "-1", (string)g_fStartVolume); //background noise - do better not use, gets called to often
@@ -776,7 +745,7 @@ stopSystem()
 	g_fPercent = 0.0;
 	g_fPercentSmoke = 0.0;
 	llSetTimerEvent(0.0);
-	if (g_iSmokeOn) sendMessage(SMOKE_CHANNEL, "0", "");
+	if (g_iSmokeOn) sendMessage(PARTICLE_CHANNEL, "0", "");
 	llSetLinkPrimitiveParamsFast(g_iType, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
 	if (g_iSoundAvail || g_iBackSoundAvail) sendMessage(SOUND_CHANNEL, "0", "0"); //volume off and size off
 	if (g_iMenuOpen) {
@@ -794,7 +763,7 @@ stopSystem()
 	llSetLinkTextureAnim(g_iType, FALSE, ALL_SIDES,4,4,0,0,1);
 }
 
-
+/*
 updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadius, vector vPush)
 {
 	llSleep(0.8); // give other effects some time to start - also delays updating colour
@@ -845,7 +814,7 @@ updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadiu
 		PSYS_SRC_BURST_SPEED_MAX, fMax
 	]);
 }
-
+*/
 
 //===============================================================================
 //= parameters   :    integer  iChan        determines the script (function) to talk to
@@ -860,8 +829,8 @@ updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadiu
 sendMessage(integer iChan, string sVal, string sMsg )
 {
 	string sId = getGroup(LINKSETID) + SEPARATOR + g_sScriptName;
-	if (iChan == SMOKE_CHANNEL) {
-		llMessageLinked(LINK_ALL_OTHERS, iChan, sVal, (key)sId); //to all other prims (because of only one emitter per prim)
+	if (iChan == PARTICLE_CHANNEL) {
+		llMessageLinked(LINK_SET, iChan, sVal, (key)sId);
 	} else {
 		string sSet = sVal + SEPARATOR + sMsg;
 		llMessageLinked(LINK_SET, iChan, sSet, (key)sId);
@@ -897,7 +866,6 @@ default
 		g_sScriptName = llGetScriptName();
 
 		stopSystem();
-		Debug("Particle count: " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
 		sendMessage(COMMAND_CHANNEL, "register", "");
 		if (g_iVerbose) llWhisper(0, "(v) Loading notecard...");
 		loadNotecard();
@@ -1073,7 +1041,7 @@ default
 			}
 			if ("1" != sMsg ) llWhisper(0, "Unable to provide animations ("+sScriptName+")");
 
-		} else if (iChan == SMOKE_CHANNEL) {
+		} else if (iChan == PARTICLE_CHANNEL) {
 			if ("1" == sMsg) {
 				g_iSmokeAvail = TRUE;
 				llWhisper(0, "Smoke available");
@@ -1155,9 +1123,7 @@ default
 			g_vDefEndColor.x = checkInt("ColorOff (RED)", (integer)g_vDefEndColor.x, 0, 100);
 			g_vDefEndColor.y = checkInt("ColorOff (GREEN)", (integer)g_vDefEndColor.y, 0, 100);
 			g_vDefEndColor.z = checkInt("ColorOff (BLUE)", (integer)g_vDefEndColor.z, 0, 100);
-			g_fStartIntensity = percentage(g_iDefIntensity, MAX_INTENSITY);
-			g_fStartRadius = percentage(g_iDefRadius, MAX_RADIUS);
-			g_fLightFalloff = percentage(g_iDefFalloff, MAX_FALLOFF);
+
 			g_fStartVolume = percentage((float)g_iDefVolume, MAX_VOLUME);
 
 			sendMessage(COMMAND_CHANNEL, "config", g_sConfLine);
