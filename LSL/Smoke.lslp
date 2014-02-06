@@ -128,6 +128,7 @@ default
 	changed(integer change)
 	{
 		if (change & CHANGED_INVENTORY) {
+			if (g_iSmoke) llParticleSystem([]);
 			llSleep(1);
 			RegisterExtension(g_iType);
 			InfoLines(FALSE);

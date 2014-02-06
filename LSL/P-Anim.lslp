@@ -170,8 +170,7 @@ default
 	{
 		if (change & CHANGED_INVENTORY) {
 			llWhisper(0, "Inventory changed, checking objects...");
-			//llStopSound();
-			//llMessage - "die"
+			llSay(PRIMCOMMAND_CHANNEL, "die");
 			g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_iPermCheck, g_sCurrentPrimFireFile);
 			llSleep(1);
 			RegisterExtension(g_iType);

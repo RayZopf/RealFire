@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Feb  4 23:33:07 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Thu Feb  6 04:57:44 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Smoke
 //
@@ -202,6 +202,7 @@ default {
 
 	changed(integer change) {
         if ((change & CHANGED_INVENTORY)) {
+            if (g_iSmoke) llParticleSystem([]);
             llSleep(1);
             RegisterExtension(g_iType);
             InfoLines(FALSE);
