@@ -93,6 +93,16 @@ $import GroupHandling.lslm(m_sGroup=LINKSETID);
 //PREDEFINED FUNCTIONS
 //===============================================
 
+initExtension()
+{
+	if (g_iSound) llStopSound();
+	checkSoundFiles();
+	llSleep(1);
+	RegisterExtension(g_iType);
+	if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
+	InfoLines(TRUE);
+}
+
 checkSoundFiles()
 {
 	integer iSoundNumber = llGetInventoryNumber(INVENTORY_SOUND);
@@ -123,12 +133,7 @@ default
 		Debug("state_entry");
 		g_fFactor = 7.0 / 8.0;
 		llPassTouches(TRUE); //this need review!
-		if (g_iSound) llStopSound();
-		checkSoundFiles();
-		llSleep(1);
-		RegisterExtension(g_iType);
-		if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
-		InfoLines(TRUE);
+		initExtension();
 	}
 
 	on_rez(integer start_param)
@@ -146,12 +151,7 @@ default
 	{
 		if (change & CHANGED_INVENTORY) {
 			llWhisper(0, "Inventory changed, checking sound samples...");
-			if (g_iSound) llStopSound();
-			checkSoundFiles();
-			llSleep(1);
-			RegisterExtension(g_iType);
-			if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
-			InfoLines(TRUE);
+		initExtension();
 		}
 	}
 
@@ -161,7 +161,10 @@ default
 	link_message(integer iSender, integer iChan, string sSoundSet, key kId)
 	{
 		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);
-		MasterCommand(iChan, sSoundSet, FALSE);
+		string sConfig = MasterCommand(iChan, sSoundSet, FALSE);
+		if ("" != sConfig) {
+			if (getConfigBSound(sConfig)) initExtension();
+		}
 
 		string sScriptName = GroupCheck(kId);
 		if ("exit" == sScriptName) return;

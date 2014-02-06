@@ -170,8 +170,7 @@ default
 	{
 		if (change & CHANGED_INVENTORY) {
 			llWhisper(0, "Inventory changed, checking objects...");
-			//llStopSound();
-			//llMessage - "die"
+			llSay(PRIMCOMMAND_CHANNEL, "die");
 			g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_iPermCheck, g_sCurrentPrimFireFile);
 			llSleep(1);
 			RegisterExtension(g_iType);
@@ -185,7 +184,7 @@ default
 	link_message(integer iSender, integer iChan, string sSet, key kId)
 	{
 		Debug("link_message = channel " + (string)iChan + "; sSet " + sSet + "; kId " + (string)kId);
-		MasterCommand(iChan, sSet, FALSE);
+		string sConfig = MasterCommand(iChan, sSet, FALSE);
 
 		string sScriptName = GroupCheck(kId);
 		if ("exit" == sScriptName) return;

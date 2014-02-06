@@ -3,12 +3,12 @@
 //
 //by: Zopf Resident - Ray Zopf (Raz)
 //06. Feb. 2014
-//v0.4
+//v0.45
 //Files:
 // ExtensionBasics.lslm
 //
 //
-//Prequisites: GroupHandling.lslm
+//Prequisites: ----
 //
 //
 //Changelog
@@ -26,12 +26,12 @@ $module (integer m_iDebug, string m_sGroup, integer m_iEnabled, integer m_iAvail
 $import RealFireMessageMap.lslm();
 $import GroupHandling.lslm(m_sGroup=m_sGroup);
 $import PrintStatusInfo.lslm(m_iVerbose=m_iVerbose, m_iAvail=m_iAvail, m_sTitle=m_sTitle, m_sScriptName=m_sScriptName, m_iOn=m_iEnabled, m_sVersion=m_sVersion, m_sAuthors=m_sAuthors);
-$import GenericFunctions.lslm();
+$import ColorChanger.lslm();
 
 
 //###
 //ExtensionBasics.lslm
-//0.4 - 04Feb2014
+//0.45 - 06Feb2014
 
 RegisterExtension(integer link)
 {
@@ -41,7 +41,7 @@ RegisterExtension(integer link)
 }
 
 
-MasterCommand(integer iChan, string sVal, integer conf)
+string MasterCommand(integer iChan, string sVal, integer conf)
 {
 	if (iChan == COMMAND_CHANNEL) {
 		list lValues = llParseString2List(sVal, [SEPARATOR], []);
@@ -55,14 +55,16 @@ MasterCommand(integer iChan, string sVal, integer conf)
 		}
 		else if ("nonverbose" == sCommand) m_iVerbose = FALSE;
 		else if ("globaldebug" == sCommand) m_iVerbose = TRUE;
-		else if (conf && "config" == sCommand) getConfig(sConfig);
+		else if (conf && "config" == sCommand) return sConfig;
 
 		else llSetTimerEvent(0.1);
-	}
+
+		return "";
+	} return "";
 }
 
 
-getConfig(string sConfig)
+ integer getConfigFire(string sConfig)
 {
 	list lConfigs = llParseString2List(sConfig, ["=",SEPARATOR], []);
 	integer n = llGetListLength(lConfigs);
@@ -84,44 +86,85 @@ getConfig(string sConfig)
 
 		count = count +2;
 	} while (count <= n);
+	else return 0;
+	return 1;
 }
 
 
-setColor(integer pos, string msg)
+getConfigSound(string sConfig)
 {
-	if (1 == pos) {
-		if (msg == "-Red") g_iPerRedStart = max(g_iPerRedStart - 10, 0);
-		else if (msg == "-Green") g_iPerGreenStart = max(g_iPerGreenStart - 10, 0);
-		else if (msg == "-Blue") g_iPerBlueStart = max(g_iPerBlueStart - 10, 0);
-		else if (msg == "+Red") g_iPerRedStart = min(g_iPerRedStart + 10, 100);
-		else if (msg == "+Green") g_iPerGreenStart = min(g_iPerGreenStart + 10, 100);
-		else if (msg == "+Blue") g_iPerBlueStart = min(g_iPerBlueStart + 10, 100);
-		else if (msg == "R min/max") { if (g_iPerRedStart) g_iPerRedStart = 0; else g_iPerRedStart = 100; }
-		else if (msg == "G min/max") { if (g_iPerGreenStart) g_iPerGreenStart = 0; else g_iPerGreenStart = 100; }
-		else if (msg == "B min/max") { if (g_iPerBlueStart) g_iPerBlueStart = 0; else g_iPerBlueStart = 100; }
-		else if (msg == "One color") {
-			g_iPerRedEnd = g_iPerRedStart;
-			g_iPerGreenEnd = g_iPerGreenStart;
-			g_iPerBlueEnd = g_iPerBlueStart;
-		}
-		//updateSize(g_fPerSize);
-	} else {
-		if (msg == "-Red") g_iPerRedEnd = max(g_iPerRedEnd - 10, 0);
-		else if (msg == "-Green") g_iPerGreenEnd = max(g_iPerGreenEnd - 10, 0);
-		else if (msg == "-Blue") g_iPerBlueEnd = max(g_iPerBlueEnd - 10, 0);
-		else if (msg == "+Red") g_iPerRedEnd = min(g_iPerRedEnd + 10, 100);
-		else if (msg == "+Green") g_iPerGreenEnd = min(g_iPerGreenEnd + 10, 100);
-		else if (msg == "+Blue") g_iPerBlueEnd = min(g_iPerBlueEnd + 10, 100);
-		else if (msg == "R min/max") { if (g_iPerRedEnd) g_iPerRedEnd = 0; else g_iPerRedEnd = 100; }
-		else if (msg == "G min/max") { if (g_iPerGreenEnd) g_iPerGreenEnd = 0; else g_iPerGreenEnd = 100; }
-		else if (msg == "B min/max") { if (g_iPerBlueEnd) g_iPerBlueEnd = 0; else g_iPerBlueEnd = 100; }
-		else if (msg == "One color") {
-			g_iPerRedStart = g_iPerRedEnd;
-			g_iPerGreenStart = g_iPerGreenEnd;
-			g_iPerBlueStart = g_iPerBlueEnd;
-		}
-		//updateSize(g_fPerSize);
-	}
+	list lConfigs = llParseString2List(sConfig, ["=",SEPARATOR], []);
+	integer n = llGetListLength(lConfigs);
+	integer count = 0;
+	if (n > 1 && 0 == n%2) do {
+		string par = llList2String(lConfigs, count);
+		string val = llList2String(lConfigs, count+1);
+/*
+		// config for particle fire
+		if (par == "topcolor") g_vDefEndColor = checkVector("topColor", (vector)val);
+		else if (par == "bottomcolor") g_vDefStartColor = checkVector("bottomColor", (vector)val);
+		// config for light
+		else if (par == "intensity") g_iDefIntensity = checkInt("intensity", (integer)val, 0, 100);
+		else if (par == "radius") g_iDefRadius = checkInt("radius", (integer)val, 0, 100);
+		else if (par == "falloff") g_iDefFalloff = checkInt("falloff", (integer)val, 0, 100);
+		// color config
+		else if ("startcolor" == par) setColor(1, val);
+		else if ("endcolor" == par) setColor(0, val);
+*/
+		count = count +2;
+	} while (count <= n);
+}
+
+
+integer getConfigBSound(string sConfig)
+{
+	list lConfigs = llParseString2List(sConfig, ["=",SEPARATOR], []);
+	integer n = llGetListLength(lConfigs);
+	integer count = 0;
+	if (n > 1 && 0 == n%2) do {
+		string par = llList2String(lConfigs, count);
+		string val = llList2String(lConfigs, count+1);
+/*
+		// config for particle fire
+		if (par == "topcolor") g_vDefEndColor = checkVector("topColor", (vector)val);
+		else if (par == "bottomcolor") g_vDefStartColor = checkVector("bottomColor", (vector)val);
+		// config for light
+		else if (par == "intensity") g_iDefIntensity = checkInt("intensity", (integer)val, 0, 100);
+		else if (par == "radius") g_iDefRadius = checkInt("radius", (integer)val, 0, 100);
+		else if (par == "falloff") g_iDefFalloff = checkInt("falloff", (integer)val, 0, 100);
+		// color config
+		else if ("startcolor" == par) setColor(1, val);
+		else if ("endcolor" == par) setColor(0, val);
+*/
+		count = count +2;
+	} while (count <= n);
+	else return 0;
+	return 1;
+}
+
+
+getConfigRemote(string sConfig)
+{
+	list lConfigs = llParseString2List(sConfig, ["=",SEPARATOR], []);
+	integer n = llGetListLength(lConfigs);
+	integer count = 0;
+	if (n > 1 && 0 == n%2) do {
+		string par = llList2String(lConfigs, count);
+		string val = llList2String(lConfigs, count+1);
+/*
+		// config for particle fire
+		if (par == "topcolor") g_vDefEndColor = checkVector("topColor", (vector)val);
+		else if (par == "bottomcolor") g_vDefStartColor = checkVector("bottomColor", (vector)val);
+		// config for light
+		else if (par == "intensity") g_iDefIntensity = checkInt("intensity", (integer)val, 0, 100);
+		else if (par == "radius") g_iDefRadius = checkInt("radius", (integer)val, 0, 100);
+		else if (par == "falloff") g_iDefFalloff = checkInt("falloff", (integer)val, 0, 100);
+		// color config
+		else if ("startcolor" == par) setColor(1, val);
+		else if ("endcolor" == par) setColor(0, val);
+*/
+		count = count +2;
+	} while (count <= n);
 }
 
 //END ExtensionBasics.lslm

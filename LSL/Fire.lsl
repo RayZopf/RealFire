@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Feb  6 03:49:12 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Feb  6 04:55:31 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -287,6 +287,64 @@ integer min(integer x,integer y){
 integer max(integer x,integer y){
     if ((x > y)) return x;
     else  return y;
+}
+
+
+//###
+//ColorChanger.lslm
+//0.1 - 06Feb2014
+
+setColor(integer pos,string msg){
+    if ((1 == pos)) {
+        if ((msg == "-Red")) (g_iPerRedStart = max((g_iPerRedStart - 10),0));
+        else  if ((msg == "-Green")) (g_iPerGreenStart = max((g_iPerGreenStart - 10),0));
+        else  if ((msg == "-Blue")) (g_iPerBlueStart = max((g_iPerBlueStart - 10),0));
+        else  if ((msg == "+Red")) (g_iPerRedStart = min((g_iPerRedStart + 10),100));
+        else  if ((msg == "+Green")) (g_iPerGreenStart = min((g_iPerGreenStart + 10),100));
+        else  if ((msg == "+Blue")) (g_iPerBlueStart = min((g_iPerBlueStart + 10),100));
+        else  if ((msg == "R min/max")) {
+            if (g_iPerRedStart) (g_iPerRedStart = 0);
+            else  (g_iPerRedStart = 100);
+        }
+        else  if ((msg == "G min/max")) {
+            if (g_iPerGreenStart) (g_iPerGreenStart = 0);
+            else  (g_iPerGreenStart = 100);
+        }
+        else  if ((msg == "B min/max")) {
+            if (g_iPerBlueStart) (g_iPerBlueStart = 0);
+            else  (g_iPerBlueStart = 100);
+        }
+        else  if ((msg == "One color")) {
+            (g_iPerRedEnd = g_iPerRedStart);
+            (g_iPerGreenEnd = g_iPerGreenStart);
+            (g_iPerBlueEnd = g_iPerBlueStart);
+        }
+    }
+    else  {
+        if ((msg == "-Red")) (g_iPerRedEnd = max((g_iPerRedEnd - 10),0));
+        else  if ((msg == "-Green")) (g_iPerGreenEnd = max((g_iPerGreenEnd - 10),0));
+        else  if ((msg == "-Blue")) (g_iPerBlueEnd = max((g_iPerBlueEnd - 10),0));
+        else  if ((msg == "+Red")) (g_iPerRedEnd = min((g_iPerRedEnd + 10),100));
+        else  if ((msg == "+Green")) (g_iPerGreenEnd = min((g_iPerGreenEnd + 10),100));
+        else  if ((msg == "+Blue")) (g_iPerBlueEnd = min((g_iPerBlueEnd + 10),100));
+        else  if ((msg == "R min/max")) {
+            if (g_iPerRedEnd) (g_iPerRedEnd = 0);
+            else  (g_iPerRedEnd = 100);
+        }
+        else  if ((msg == "G min/max")) {
+            if (g_iPerGreenEnd) (g_iPerGreenEnd = 0);
+            else  (g_iPerGreenEnd = 100);
+        }
+        else  if ((msg == "B min/max")) {
+            if (g_iPerBlueEnd) (g_iPerBlueEnd = 0);
+            else  (g_iPerBlueEnd = 100);
+        }
+        else  if ((msg == "One color")) {
+            (g_iPerRedStart = g_iPerRedEnd);
+            (g_iPerGreenStart = g_iPerGreenEnd);
+            (g_iPerBlueStart = g_iPerBlueEnd);
+        }
+    }
 }
 
 
@@ -978,29 +1036,7 @@ default {
         }
         else  if ((channel == g_iStartColorChannel)) {
             llListenRemove(g_iStartColorHandle);
-            if ((msg == "-Red")) (g_iPerRedStart = max((g_iPerRedStart - 10),0));
-            else  if ((msg == "-Green")) (g_iPerGreenStart = max((g_iPerGreenStart - 10),0));
-            else  if ((msg == "-Blue")) (g_iPerBlueStart = max((g_iPerBlueStart - 10),0));
-            else  if ((msg == "+Red")) (g_iPerRedStart = min((g_iPerRedStart + 10),100));
-            else  if ((msg == "+Green")) (g_iPerGreenStart = min((g_iPerGreenStart + 10),100));
-            else  if ((msg == "+Blue")) (g_iPerBlueStart = min((g_iPerBlueStart + 10),100));
-            else  if ((msg == "R min/max")) {
-                if (g_iPerRedStart) (g_iPerRedStart = 0);
-                else  (g_iPerRedStart = 100);
-            }
-            else  if ((msg == "G min/max")) {
-                if (g_iPerGreenStart) (g_iPerGreenStart = 0);
-                else  (g_iPerGreenStart = 100);
-            }
-            else  if ((msg == "B min/max")) {
-                if (g_iPerBlueStart) (g_iPerBlueStart = 0);
-                else  (g_iPerBlueStart = 100);
-            }
-            else  if ((msg == "One color")) {
-                (g_iPerRedEnd = g_iPerRedStart);
-                (g_iPerGreenEnd = g_iPerGreenStart);
-                (g_iPerBlueEnd = g_iPerBlueStart);
-            }
+            setColor(1,msg);
             if (((msg != "Top color") && (msg != "^Main menu"))) {
                 sendMessage(COMMAND_CHANNEL,"config",("startcolor=" + msg));
                 updateSize(g_fPerSize);
@@ -1011,29 +1047,7 @@ default {
         }
         else  if ((channel == g_iEndColorChannel)) {
             llListenRemove(g_iEndColorHandle);
-            if ((msg == "-Red")) (g_iPerRedEnd = max((g_iPerRedEnd - 10),0));
-            else  if ((msg == "-Green")) (g_iPerGreenEnd = max((g_iPerGreenEnd - 10),0));
-            else  if ((msg == "-Blue")) (g_iPerBlueEnd = max((g_iPerBlueEnd - 10),0));
-            else  if ((msg == "+Red")) (g_iPerRedEnd = min((g_iPerRedEnd + 10),100));
-            else  if ((msg == "+Green")) (g_iPerGreenEnd = min((g_iPerGreenEnd + 10),100));
-            else  if ((msg == "+Blue")) (g_iPerBlueEnd = min((g_iPerBlueEnd + 10),100));
-            else  if ((msg == "R min/max")) {
-                if (g_iPerRedEnd) (g_iPerRedEnd = 0);
-                else  (g_iPerRedEnd = 100);
-            }
-            else  if ((msg == "G min/max")) {
-                if (g_iPerGreenEnd) (g_iPerGreenEnd = 0);
-                else  (g_iPerGreenEnd = 100);
-            }
-            else  if ((msg == "B min/max")) {
-                if (g_iPerBlueEnd) (g_iPerBlueEnd = 0);
-                else  (g_iPerBlueEnd = 100);
-            }
-            else  if ((msg == "One color")) {
-                (g_iPerRedStart = g_iPerRedEnd);
-                (g_iPerGreenStart = g_iPerGreenEnd);
-                (g_iPerBlueStart = g_iPerBlueEnd);
-            }
+            setColor(0,msg);
             if (((msg != "Bottom color") && (msg != "^Options"))) {
                 sendMessage(COMMAND_CHANNEL,"config",("endcolor=" + msg));
                 updateSize(g_fPerSize);
