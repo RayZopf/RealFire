@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Thu Feb  6 05:35:55 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Thu Feb  6 06:14:41 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -105,8 +105,8 @@ Debug(string sMsg){
 
 InfoLines(integer bool){
     if ((g_iVerbose && bool)) {
-        if (BOOL) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
-        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        if (BOOL) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+        else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
     }
     if (g_iRemote) {
         if (BOOL) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
@@ -177,6 +177,7 @@ default {
         (g_sScriptName = llGetScriptName());
         llListen(REMOTE_CHANNEL,"","","");
         InfoLines(FALSE);
+        if (g_iVerbose) llWhisper(0,(((((("(v) " + g_sTitle) + " uses channel: ") + ((string)g_iMsgNumber)) + " and listens on ") + ((string)REMOTE_CHANNEL)) + " for remote controler"));
     }
 
 

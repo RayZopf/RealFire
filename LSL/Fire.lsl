@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Wed Feb  5 01:53:56 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Feb  6 06:14:41 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -358,13 +358,13 @@ updateSize(float size){
     if ((size > SIZE_SMALL)) {
         (vStart = ((g_vStartScale / 100.0) * size));
         (fRadius = ((g_fBurstRadius / 100.0) * size));
-        if ((size >= SIZE_LARGE)) llSetLinkTextureAnim(LINK_SET,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,9);
-        else  if ((size >= SIZE_MEDIUM)) llSetLinkTextureAnim(LINK_SET,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,6);
-        else  llSetLinkTextureAnim(LINK_SET,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,4);
+        if ((size >= SIZE_LARGE)) llSetLinkTextureAnim(g_iType,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,9);
+        else  if ((size >= SIZE_MEDIUM)) llSetLinkTextureAnim(g_iType,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,6);
+        else  llSetLinkTextureAnim(g_iType,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,4);
     }
     else  {
-        if ((size >= SIZE_EXTRASMALL)) llSetLinkTextureAnim(LINK_SET,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,3);
-        else  llSetLinkTextureAnim(LINK_SET,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,1);
+        if ((size >= SIZE_EXTRASMALL)) llSetLinkTextureAnim(g_iType,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,3);
+        else  llSetLinkTextureAnim(g_iType,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,1);
         (vStart = (g_vStartScale / 4.0));
         (fRadius = (g_fBurstRadius / 4.0));
         if ((size < SIZE_TINY)) {
@@ -767,7 +767,7 @@ stopSystem(){
     llSleep(0.7);
     llParticleSystem([]);
     llSleep(1.9);
-    llSetLinkTextureAnim(LINK_SET,FALSE,ALL_SIDES,4,4,0,0,1);
+    llSetLinkTextureAnim(g_iType,FALSE,ALL_SIDES,4,4,0,0,1);
 }
 
 
@@ -805,6 +805,7 @@ infoLines(){
     if (g_iVerbose) {
         llWhisper(0,("(v) Switch access:" + showAccess(g_iSwitchAccess)));
         llWhisper(0,("(v) Menu access:" + showAccess(g_iMenuAccess)));
+        llWhisper(0,("(v) Channel for remote control: " + ((string)g_iMsgNumber)));
         llWhisper(0,((((("\n\t -free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
     }
 }
