@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Thu Feb  6 19:07:19 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Thu Feb  6 19:28:58 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -94,11 +94,11 @@ float g_fStartIntensity;
 float g_fStartRadius;
 string g_sScriptName;
 integer g_iChangeLight = TRUE;
-vector g_vDefStartColor;
-vector g_vDefEndColor;
-integer g_iDefIntensity;
-integer g_iDefRadius;
-integer g_iDefFalloff;
+vector g_vDefStartColor = <100,100,0>;
+vector g_vDefEndColor = <100,0,0>;
+integer g_iDefIntensity = 100;
+integer g_iDefRadius = 50;
+integer g_iDefFalloff = 40;
 integer g_iPerRedStart;
 integer g_iPerGreenStart;
 integer g_iPerBlueStart;
@@ -360,6 +360,15 @@ initExtension(){
         llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,FALSE,ZERO_VECTOR,0,0,0]);
         llSetLinkTextureAnim(g_iType,FALSE,ALL_SIDES,4,4,0,0,1);
     }
+    (g_vDefStartColor.x = checkInt("ColorOn (RED)",((integer)g_vDefStartColor.x),0,100));
+    (g_vDefStartColor.y = checkInt("ColorOn (GREEN)",((integer)g_vDefStartColor.y),0,100));
+    (g_vDefStartColor.z = checkInt("ColorOn (BLUE)",((integer)g_vDefStartColor.z),0,100));
+    (g_vDefEndColor.x = checkInt("ColorOff (RED)",((integer)g_vDefEndColor.x),0,100));
+    (g_vDefEndColor.y = checkInt("ColorOff (GREEN)",((integer)g_vDefEndColor.y),0,100));
+    (g_vDefEndColor.z = checkInt("ColorOff (BLUE)",((integer)g_vDefEndColor.z),0,100));
+    (g_fStartIntensity = percentage(g_iDefIntensity,MAX_INTENSITY));
+    (g_fStartRadius = percentage(g_iDefRadius,MAX_RADIUS));
+    (g_fLightFalloff = percentage(g_iDefFalloff,MAX_FALLOFF));
     llSleep(1);
     RegisterExtension(g_iType);
     InfoLines(TRUE);
@@ -473,15 +482,6 @@ default {
         string sConfig = MasterCommand(iChan,sSet,FALSE);
         if (("" != sConfig)) {
             if (getConfigParticleFire(sConfig)) {
-                (g_vDefStartColor.x = checkInt("ColorOn (RED)",((integer)g_vDefStartColor.x),0,100));
-                (g_vDefStartColor.y = checkInt("ColorOn (GREEN)",((integer)g_vDefStartColor.y),0,100));
-                (g_vDefStartColor.z = checkInt("ColorOn (BLUE)",((integer)g_vDefStartColor.z),0,100));
-                (g_vDefEndColor.x = checkInt("ColorOff (RED)",((integer)g_vDefEndColor.x),0,100));
-                (g_vDefEndColor.y = checkInt("ColorOff (GREEN)",((integer)g_vDefEndColor.y),0,100));
-                (g_vDefEndColor.z = checkInt("ColorOff (BLUE)",((integer)g_vDefEndColor.z),0,100));
-                (g_fStartIntensity = percentage(g_iDefIntensity,MAX_INTENSITY));
-                (g_fStartRadius = percentage(g_iDefRadius,MAX_RADIUS));
-                (g_fLightFalloff = percentage(g_iDefFalloff,MAX_FALLOFF));
                 initExtension();
             }
         }

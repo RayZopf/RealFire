@@ -114,6 +114,17 @@ initExtension()
 		llSetLinkPrimitiveParamsFast(g_iType, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
 		llSetLinkTextureAnim(g_iType, FALSE, ALL_SIDES,4,4,0,0,1);
 	}
+	g_vDefStartColor.x = checkInt("ColorOn (RED)", (integer)g_vDefStartColor.x, 0, 100);
+	g_vDefStartColor.y = checkInt("ColorOn (GREEN)", (integer)g_vDefStartColor.y, 0, 100);
+	g_vDefStartColor.z = checkInt("ColorOn (BLUE)", (integer)g_vDefStartColor.z, 0, 100);
+	g_vDefEndColor.x = checkInt("ColorOff (RED)", (integer)g_vDefEndColor.x, 0, 100);
+	g_vDefEndColor.y = checkInt("ColorOff (GREEN)", (integer)g_vDefEndColor.y, 0, 100);
+	g_vDefEndColor.z = checkInt("ColorOff (BLUE)", (integer)g_vDefEndColor.z, 0, 100);
+
+	g_fStartIntensity = percentage(g_iDefIntensity, MAX_INTENSITY);
+	g_fStartRadius = percentage(g_iDefRadius, MAX_RADIUS);
+	g_fLightFalloff = percentage(g_iDefFalloff, MAX_FALLOFF);
+
 	llSleep(1);
 	RegisterExtension(g_iType);
 	InfoLines(TRUE);
@@ -327,19 +338,7 @@ default
 		string sConfig = MasterCommand(iChan, sSet, FALSE);
 		if ("" != sConfig) {
 			if (getConfigParticleFire(sConfig)) {
-
-				g_vDefStartColor.x = checkInt("ColorOn (RED)", (integer)g_vDefStartColor.x, 0, 100);
-				g_vDefStartColor.y = checkInt("ColorOn (GREEN)", (integer)g_vDefStartColor.y, 0, 100);
-				g_vDefStartColor.z = checkInt("ColorOn (BLUE)", (integer)g_vDefStartColor.z, 0, 100);
-				g_vDefEndColor.x = checkInt("ColorOff (RED)", (integer)g_vDefEndColor.x, 0, 100);
-				g_vDefEndColor.y = checkInt("ColorOff (GREEN)", (integer)g_vDefEndColor.y, 0, 100);
-				g_vDefEndColor.z = checkInt("ColorOff (BLUE)", (integer)g_vDefEndColor.z, 0, 100);
-
-				g_fStartIntensity = percentage(g_iDefIntensity, MAX_INTENSITY);
-				g_fStartRadius = percentage(g_iDefRadius, MAX_RADIUS);
-				g_fLightFalloff = percentage(g_iDefFalloff, MAX_FALLOFF);
-
-				initExtension();
+			initExtension();
 			}
 		}
 
