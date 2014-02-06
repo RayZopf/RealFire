@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Thu Feb  6 19:28:58 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Thu Feb  6 19:47:23 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -414,8 +414,7 @@ updateSize(float size){
         }
     }
     updateColor();
-    if (g_iParticleFire) updateParticles(vStart,vEnd,fMin,fMax,fRadius,vPush);
-    else  llParticleSystem([]);
+    updateParticles(vStart,vEnd,fMin,fMax,fRadius,vPush);
     llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,TRUE,g_vLightColor,g_fLightIntensity,g_fLightRadius,g_fLightFalloff]);
     Debug(((((((string)llRound(size)) + "% ") + ((string)vStart)) + " ") + ((string)vEnd)));
 }
@@ -518,8 +517,9 @@ default {
 
 	timer() {
         llParticleSystem([]);
+        llSleep(1.3);
         llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,FALSE,ZERO_VECTOR,0,0,0]);
-        llSleep(0.7);
+        llSleep(3.7);
         llSetLinkTextureAnim(g_iType,FALSE,ALL_SIDES,4,4,0,0,1);
         if (g_iVerbose) llWhisper(0,"(v) Particle fire effects ended");
         (g_sSize = "0");
