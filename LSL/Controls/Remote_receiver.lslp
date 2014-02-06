@@ -107,6 +107,7 @@ default
 		g_sScriptName = llGetScriptName();
 		llListen(REMOTE_CHANNEL, "", "", "");
 		InfoLines(FALSE);
+		if (g_iVerbose) llWhisper(0, "(v) "+g_sTitle + " uses channel: " + (string)g_iMsgNumber+" and listens on "+(string)REMOTE_CHANNEL +" for remote controler");
 	}
 
 	on_rez(integer start_param)
@@ -139,6 +140,9 @@ default
 	{
 		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSet + "; kId " + (string)kId);
 		string sConfig = MasterCommand(iChan, sSet, FALSE);
+		if ("" != sConfig) {
+			if (getConfigRemote(sConfig) && g_iVerbose) llWhisper(0, "(v) "+g_sTitle + " uses channel: " + (string)g_iMsgNumber+" and listens on "+(string)REMOTE_CHANNEL +" for remote controler");
+		}
 	}
 
 //-----------------------------------------------

@@ -875,6 +875,7 @@ infoLines()
 	if (g_iVerbose) {
 		llWhisper(0, "(v) Switch access:" + showAccess(g_iSwitchAccess));
 		llWhisper(0, "(v) Menu access:" + showAccess(g_iMenuAccess));
+		llWhisper(0, "(v) Channel for remote control: "+ (string)g_iMsgNumber);
 		llWhisper(0, "\n\t -free memory: "+(string)llGetFreeMemory()+" -\n(v) "+g_sTitle+"/"+ g_sScriptName);
 	}
 }

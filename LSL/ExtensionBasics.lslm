@@ -3,7 +3,7 @@
 //
 //by: Zopf Resident - Ray Zopf (Raz)
 //06. Feb. 2014
-//v0.45
+//v0.451
 //Files:
 // ExtensionBasics.lslm
 //
@@ -31,7 +31,7 @@ $import ColorChanger.lslm();
 
 //###
 //ExtensionBasics.lslm
-//0.45 - 06Feb2014
+//0.451 - 06Feb2014
 
 RegisterExtension(integer link)
 {
@@ -143,28 +143,25 @@ integer getConfigBSound(string sConfig)
 }
 
 
-getConfigRemote(string sConfig)
+integer getConfigRemote(string sConfig)
 {
 	list lConfigs = llParseString2List(sConfig, ["=",SEPARATOR], []);
 	integer n = llGetListLength(lConfigs);
 	integer count = 0;
+	integer set = 0;
 	if (n > 1 && 0 == n%2) do {
 		string par = llList2String(lConfigs, count);
 		string val = llList2String(lConfigs, count+1);
-/*
-		// config for particle fire
-		if (par == "topcolor") g_vDefEndColor = checkVector("topColor", (vector)val);
-		else if (par == "bottomcolor") g_vDefStartColor = checkVector("bottomColor", (vector)val);
-		// config for light
-		else if (par == "intensity") g_iDefIntensity = checkInt("intensity", (integer)val, 0, 100);
-		else if (par == "radius") g_iDefRadius = checkInt("radius", (integer)val, 0, 100);
-		else if (par == "falloff") g_iDefFalloff = checkInt("falloff", (integer)val, 0, 100);
-		// color config
-		else if ("startcolor" == par) setColor(1, val);
-		else if ("endcolor" == par) setColor(0, val);
-*/
+
+		if (par == "msgnumber") {
+			g_iMsgNumber = (integer)val;
+			set++;
+		}
 		count = count +2;
 	} while (count <= n);
+	else return 0;
+	if (0 < set) return 1;
+		else return 0;
 }
 
 //END ExtensionBasics.lslm

@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Feb  6 04:55:31 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Thu Feb  6 06:07:15 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -883,6 +883,7 @@ infoLines(){
     if (g_iVerbose) {
         llWhisper(0,("(v) Switch access:" + showAccess(g_iSwitchAccess)));
         llWhisper(0,("(v) Menu access:" + showAccess(g_iMenuAccess)));
+        llWhisper(0,("(v) Channel for remote control: " + ((string)g_iMsgNumber)));
         llWhisper(0,((((("\n\t -free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
     }
 }

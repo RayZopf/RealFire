@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Thu Feb  6 04:55:25 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Thu Feb  6 06:05:27 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -105,8 +105,8 @@ Debug(string sMsg){
 
 InfoLines(integer bool){
     if ((g_iVerbose && bool)) {
-        if (BOOL) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
-        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        if (BOOL) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+        else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
     }
     if (g_iRemote) {
         if (BOOL) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
@@ -135,7 +135,7 @@ string getGroup(string sDefGroup){
 
 //###
 //ExtensionBasics.lslm
-//0.45 - 06Feb2014
+//0.451 - 06Feb2014
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
@@ -164,6 +164,27 @@ string MasterCommand(integer iChan,string sVal,integer conf){
 }
 
 
+integer getConfigRemote(string sConfig){
+    list lConfigs = llParseString2List(sConfig,["=",SEPARATOR],[]);
+    integer n = llGetListLength(lConfigs);
+    integer count = 0;
+    integer set = 0;
+    if (((n > 1) && (0 == (n % 2)))) do  {
+        string par = llList2String(lConfigs,count);
+        string val = llList2String(lConfigs,(count + 1));
+        if ((par == "msgnumber")) {
+            (g_iMsgNumber = ((integer)val));
+            (set++);
+        }
+        (count = (count + 2));
+    }
+    while ((count <= n));
+    else  return 0;
+    if ((0 < set)) return 1;
+    else  return 0;
+}
+
+
 //===============================================
 //PREDEFINED FUNCTIONS
 //===============================================
@@ -183,6 +204,7 @@ default {
         (g_sScriptName = llGetScriptName());
         llListen(REMOTE_CHANNEL,"","","");
         InfoLines(FALSE);
+        if (g_iVerbose) llWhisper(0,(((((("(v) " + g_sTitle) + " uses channel: ") + ((string)g_iMsgNumber)) + " and listens on ") + ((string)REMOTE_CHANNEL)) + " for remote controler"));
     }
 
 
@@ -209,5 +231,8 @@ default {
 	link_message(integer iSender,integer iChan,string sSet,key kId) {
         Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSet) + "; kId ") + ((string)kId)));
         string sConfig = MasterCommand(iChan,sSet,FALSE);
+        if (("" != sConfig)) {
+            if ((getConfigRemote(sConfig) && g_iVerbose)) llWhisper(0,(((((("(v) " + g_sTitle) + " uses channel: ") + ((string)g_iMsgNumber)) + " and listens on ") + ((string)REMOTE_CHANNEL)) + " for remote controler"));
+        }
     }
 }

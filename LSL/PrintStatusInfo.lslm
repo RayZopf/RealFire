@@ -32,8 +32,8 @@ $module (integer m_iVerbose, integer m_iAvail, string m_sTitle, string m_sScript
 InfoLines(integer bool)
 {
 	if (m_iVerbose && bool) {
-		if (m_iAvail) llWhisper(0, m_sTitle+" - File(s) found in inventory: Yes");
-			else llWhisper(0, m_sTitle+"/"+ m_sScriptName +" - Needed files(s) found in inventory: NO");
+		if (m_iAvail) llWhisper(0, "(v) "+m_sTitle+" - File(s) found in inventory: Yes");
+			else llWhisper(0, "(v) "+m_sTitle+"/"+ m_sScriptName +" - Needed files(s) found in inventory: NO");
 	}
 	if (m_iOn) {
 		if (m_iAvail) llWhisper(0, m_sTitle + " " + m_sVersion +" by "+m_sAuthors + "\t ready");
