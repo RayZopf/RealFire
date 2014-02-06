@@ -109,7 +109,11 @@ $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 initExtension()
 {
-	if (g_iParticleFire) llParticleSystem([]);
+	if (g_iParticleFire) {
+		llParticleSystem([]);
+		llSetLinkPrimitiveParamsFast(g_iType, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
+		llSetLinkTextureAnim(g_iType, FALSE, ALL_SIDES,4,4,0,0,1);
+	}
 	llSleep(1);
 	RegisterExtension(g_iType);
 	InfoLines(TRUE);
@@ -374,6 +378,9 @@ default
 	timer()
 	{
 		llParticleSystem([]);
+		llSetLinkPrimitiveParamsFast(g_iType, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
+		llSleep(0.7);
+		llSetLinkTextureAnim(g_iType, FALSE, ALL_SIDES,4,4,0,0,1);
 		if (g_iVerbose) llWhisper(0, "(v) Particle fire effects ended");
 		g_sSize = "0";
 		llSetTimerEvent(0.0);

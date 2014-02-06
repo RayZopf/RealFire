@@ -3,7 +3,7 @@
 //
 //by: Zopf Resident - Ray Zopf (Raz)
 //06. Feb. 2014
-//v0.1
+//v0.11
 
 //Files:
 // GenericFunctions.lslm
@@ -28,7 +28,7 @@ $module ()
 
 //###
 //GenericFunctions.lslm
-//0.1 - 06Feb2014
+//0.11 - 06Feb2014
 
 integer checkInt(string par, integer val, integer min, integer max)
 {
@@ -48,6 +48,15 @@ vector checkVector(string par, vector val)
 		llWhisper(0, "[Notecard] " + par + " out of range, corrected to " + (string)val);
 	}
 	return val;
+}
+
+
+integer checkYesNo(string par, string val)
+{
+	if (llToLower(val) == "yes") return TRUE;
+	if (llToLower(val) == "no") return FALSE;
+	llWhisper(0, "[Notecard] " + par + " out of range, corrected to NO");
+	return FALSE;
 }
 
 

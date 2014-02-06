@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Thu Feb  6 17:39:22 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Thu Feb  6 19:07:19 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -179,7 +179,7 @@ string GroupCheck(key kId){
 
 //###
 //GenericFunctions.lslm
-//0.1 - 06Feb2014
+//0.11 - 06Feb2014
 
 integer checkInt(string par,integer val,integer min,integer max){
     if (((val < min) || (val > max))) {
@@ -197,6 +197,14 @@ vector checkVector(string par,vector val){
         llWhisper(0,((("[Notecard] " + par) + " out of range, corrected to ") + ((string)val)));
     }
     return val;
+}
+
+
+integer checkYesNo(string par,string val){
+    if ((llToLower(val) == "yes")) return TRUE;
+    if ((llToLower(val) == "no")) return FALSE;
+    llWhisper(0,(("[Notecard] " + par) + " out of range, corrected to NO"));
+    return FALSE;
 }
 
 
@@ -314,7 +322,8 @@ string MasterCommand(integer iChan,string sVal,integer conf){
     if (((n > 1) && (0 == (n % 2)))) do  {
         (par = llList2String(lConfigs,count));
         string val = llList2String(lConfigs,(count + 1));
-        if ((par == "topcolor")) (g_vDefEndColor = checkVector("topColor",((vector)val)));
+        if ((par == "changelight")) (g_iChangeLight = checkYesNo("changeLight",val));
+        else  if ((par == "topcolor")) (g_vDefEndColor = checkVector("topColor",((vector)val)));
         else  if ((par == "bottomcolor")) (g_vDefStartColor = checkVector("bottomColor",((vector)val)));
         else  if ((par == "intensity")) (g_iDefIntensity = checkInt("intensity",((integer)val),0,100));
         else  if ((par == "radius")) (g_iDefRadius = checkInt("radius",((integer)val),0,100));
@@ -346,7 +355,11 @@ string MasterCommand(integer iChan,string sVal,integer conf){
 //===============================================
 
 initExtension(){
-    if (g_iParticleFire) llParticleSystem([]);
+    if (g_iParticleFire) {
+        llParticleSystem([]);
+        llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,FALSE,ZERO_VECTOR,0,0,0]);
+        llSetLinkTextureAnim(g_iType,FALSE,ALL_SIDES,4,4,0,0,1);
+    }
     llSleep(1);
     RegisterExtension(g_iType);
     InfoLines(TRUE);
@@ -505,6 +518,9 @@ default {
 
 	timer() {
         llParticleSystem([]);
+        llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,FALSE,ZERO_VECTOR,0,0,0]);
+        llSleep(0.7);
+        llSetLinkTextureAnim(g_iType,FALSE,ALL_SIDES,4,4,0,0,1);
         if (g_iVerbose) llWhisper(0,"(v) Particle fire effects ended");
         (g_sSize = "0");
         llSetTimerEvent(0.0);

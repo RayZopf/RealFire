@@ -75,13 +75,15 @@ string MasterCommand(integer iChan, string sVal, integer conf)
 		par = llList2String(lConfigs, count);
 		string val = llList2String(lConfigs, count+1);
 
+		if (par == "changelight") g_iChangeLight = checkYesNo("changeLight", val);
 		// config for particle fire
-		if (par == "topcolor") g_vDefEndColor = checkVector("topColor", (vector)val);
+		else if (par == "topcolor") g_vDefEndColor = checkVector("topColor", (vector)val);
 		else if (par == "bottomcolor") g_vDefStartColor = checkVector("bottomColor", (vector)val);
 		// config for light
 		else if (par == "intensity") g_iDefIntensity = checkInt("intensity", (integer)val, 0, 100);
 		else if (par == "radius") g_iDefRadius = checkInt("radius", (integer)val, 0, 100);
 		else if (par == "falloff") g_iDefFalloff = checkInt("falloff", (integer)val, 0, 100);
+
 		// color config
 		else if ("startcolor" == par) setColor(1, val);
 		else if ("endcolor" == par) setColor(0, val);
