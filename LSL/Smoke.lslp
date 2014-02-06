@@ -90,7 +90,7 @@ string g_sSize = "0";
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSmoke, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSmoke, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
-$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iEnabled=g_iSmoke, m_iAvail=g_iSmoke, m_iChannel=SMOKE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iEnabled=g_iSmoke, m_iAvail=g_iSmoke, m_iChannel=PARTICLE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
@@ -142,7 +142,7 @@ default
 		Debug("link_message = channel " + (string)iChan + "; sMsg " + sMsg + "; kId " + (string)kId+" ...g_sSize "+g_sSize);
 		MasterCommand(iChan, sMsg, FALSE);
 
-		if (iChan != SMOKE_CHANNEL || !g_iSmoke) return;
+		if (iChan != PARTICLE_CHANNEL || !g_iSmoke) return;
 		string sScriptName = GroupCheck(kId);
 		if ("exit" ==  GroupCheck(kId)) return;
 

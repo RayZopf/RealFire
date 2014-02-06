@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Thu Feb  6 04:55:25 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Thu Feb  6 17:52:11 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Smoke
 //
@@ -80,7 +80,7 @@ string g_sSize = "0";
 string g_sScriptName;
 string SEPARATOR = ";;";
 integer COMMAND_CHANNEL = -15700;
-integer SMOKE_CHANNEL = -15790;
+integer PARTICLE_CHANNEL = -15790;
 
 
 //###
@@ -107,8 +107,8 @@ Debug(string sMsg){
 
 InfoLines(integer bool){
     if ((g_iVerbose && bool)) {
-        if (g_iSmoke) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
-        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        if (g_iSmoke) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+        else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
     }
     if (g_iSmoke) {
         if (g_iSmoke) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
@@ -147,12 +147,12 @@ string GroupCheck(key kId){
 
 //###
 //ExtensionBasics.lslm
-//0.45 - 06Feb2014
+//0.451 - 06Feb2014
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
-    if ((g_iSmoke && g_iSmoke)) llMessageLinked(link,SMOKE_CHANNEL,"1",((key)sId));
-    else  llMessageLinked(link,SMOKE_CHANNEL,"0",((key)sId));
+    if ((g_iSmoke && g_iSmoke)) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
+    else  llMessageLinked(link,PARTICLE_CHANNEL,"0",((key)sId));
 }
 
 
@@ -221,7 +221,7 @@ default {
 	link_message(integer iSender,integer iChan,string sMsg,key kId) {
         Debug(((((((("link_message = channel " + ((string)iChan)) + "; sMsg ") + sMsg) + "; kId ") + ((string)kId)) + " ...g_sSize ") + g_sSize));
         MasterCommand(iChan,sMsg,FALSE);
-        if (((iChan != SMOKE_CHANNEL) || (!g_iSmoke))) return;
+        if (((iChan != PARTICLE_CHANNEL) || (!g_iSmoke))) return;
         string sScriptName = GroupCheck(kId);
         if (("exit" == GroupCheck(kId))) return;
         if (((sMsg == g_sSize) && ("0" != sMsg))) {
