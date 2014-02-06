@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb  4 23:33:07 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Thu Feb  6 05:35:55 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -200,8 +200,8 @@ default {
 
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
-	link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
-        Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSoundSet) + "; kId ") + ((string)kId)));
-        MasterCommand(iChan,sSoundSet);
+	link_message(integer iSender,integer iChan,string sSet,key kId) {
+        Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSet) + "; kId ") + ((string)kId)));
+        MasterCommand(iChan,sSet);
     }
 }
