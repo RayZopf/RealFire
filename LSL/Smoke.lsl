@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Fri Feb  7 00:02:38 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Fri Feb  7 01:00:29 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Smoke
 //
@@ -43,6 +43,7 @@
 //TODO: better use cone instead of explode (radius) + cone (placement)
 //TODO: smoke reflecting fire light
 //TODO: check if other sound scripts are in same prim
+//TODO: more/different smoke (e.g. full perm prim fire)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 

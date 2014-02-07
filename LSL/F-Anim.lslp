@@ -247,6 +247,7 @@ updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadiu
 
 specialFire()
 {
+	Debug("specialFire");
 	//particles to start fire with
 	llParticleSystem ([
 	//System Behavior
@@ -284,7 +285,7 @@ specialFire()
 		//PSYS_PART_END_GLOW, float,
 	//Particle Blending
 	//Particle Flow
-		PSYS_SRC_MAX_AGE, 2.8,
+//		PSYS_SRC_MAX_AGE, 2.8, // do not use - is buggy and does not work well when fire is switched off
 		PSYS_PART_MAX_AGE, 3.0,
 		PSYS_SRC_BURST_RATE, 0.01,
 		PSYS_SRC_BURST_PART_COUNT, 1,
@@ -361,31 +362,34 @@ default
 			string g_sSizeTemp = g_sSize;
 
 			if ("0" == g_sSizeTemp) { // similar to startSystem() in Fire.lsl
-				llSleep(0.6); // let fire slowly begin (not counting on lag when rezzing)
+				llSleep(0.7); // let fire slowly begin (not counting on lag when rezzing)
 				specialFire();
 				g_fLightIntensity = g_fStartIntensity;
 				g_fLightRadius = g_fStartRadius;
-				llSleep(1.8);
+				llSleep(2.4);
 				updateSize((float)sVal);
 			} else {
 				updateSize((float)sVal);
 			}
 			g_sSize = sVal;
 		} else if ("fire" == sMsg || "" == sMsg) {
-			specialFire();
 			g_iInTimer = TRUE;
-			llSleep(1.2);
-			llSetTimerEvent(2.0);
+			llSetTimerEvent(1.0);
+			llSleep(1.3);
+			specialFire();
+			llSleep(2.9);
 		}
 	}
 
 
 	timer()
 	{
-		llParticleSystem([]);
-		llSleep(1.3);
+		Debug("timer");
 		llSetLinkPrimitiveParamsFast(g_iType, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
-		llSleep(3.7);
+		llSleep(1.3);
+		llParticleSystem([]);
+		Debug("light + particle off");
+		llSleep(3.9);
 		llSetLinkTextureAnim(g_iType, FALSE, ALL_SIDES,4,4,0,0,1);
 		if (g_iVerbose) llWhisper(0, "(v) Particle fire effects ended");
 		g_sSize = "0";

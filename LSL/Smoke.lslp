@@ -42,6 +42,7 @@
 //TODO: better use cone instead of explode (radius) + cone (placement)
 //TODO: smoke reflecting fire light
 //TODO: check if other sound scripts are in same prim
+//TODO: more/different smoke (e.g. full perm prim fire)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 

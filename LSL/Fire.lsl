@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Fri Feb  7 00:02:38 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Fri Feb  7 00:59:13 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -51,7 +51,6 @@
 // structure for multiple scripts
 // B-Sound
 
-//FIXME: too much llSleep in stopSystem
 //FIXME: to many backround sound off messages after every option togggle (primfire)
 //FIXME: off messages when touch-off but extensions are allready off in options
 //FIXME: heap stack collision - make own module for particle fire
@@ -764,6 +763,7 @@ stopSystem(){
     (g_fPercent = 0.0);
     (g_fPercentSmoke = 0.0);
     llSetTimerEvent(0.0);
+    if (g_iPrimFireOn) sendMessage(ANIM_CHANNEL,"0","");
     if ((g_iSmokeOn || g_iParticleFireOn)) sendMessage(PARTICLE_CHANNEL,"0","");
     if ((g_iSoundAvail || g_iBackSoundAvail)) sendMessage(SOUND_CHANNEL,"0","0");
     if (g_iMenuOpen) {
@@ -773,61 +773,8 @@ stopSystem(){
         llListenRemove(g_iOptionsHandle);
         (g_iMenuOpen = FALSE);
     }
-    if (g_iPrimFireOn) sendMessage(ANIM_CHANNEL,"0","");
 }
 
-/*
-updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadius, vector vPush)
-{
-	llSleep(0.8); // give other effects some time to start - also delays updating colour
-	llParticleSystem ([
-	//System Behavior
-		PSYS_PART_FLAGS,
-			0 |
-			//PSYS_PART_BOUNCE_MASK |
-			PSYS_PART_EMISSIVE_MASK |
-			//PSYS_PART_FOLLOW_SRC_MASK |
-			//PSYS_PART_FOLLOW_VELOCITY_MASK |
-			PSYS_PART_INTERP_COLOR_MASK |
-			PSYS_PART_INTERP_SCALE_MASK, // |
-			//PSYS_PART_RIBBON_MASK |
-			//PSYS_PART_TARGET_LINEAR_MASK |
-			//PSYS_PART_TARGET_POS_MASK |
-			////PSYS_PART_WIND_MASK,
-	//System Presentation
-		PSYS_SRC_PATTERN,
-			PSYS_SRC_PATTERN_EXPLODE, //|
-			//PSYS_SRC_PATTERN_ANGLE_CONE |
-			//PSYS_SRC_PATTERN_ANGLE |
-			////PSYS_SRC_PATTERN_DROP,
-		PSYS_SRC_BURST_RADIUS, fRadius,
-		//PSYS_SRC_ANGLE_BEGIN, float,
-		//PSYS_SRC_ANGLE_END, float,
-		//PSYS_SRC_TARGET_KEY, key,
-	//Particle Appearance
-		PSYS_PART_START_COLOR, g_vStartColor,
-		PSYS_PART_END_COLOR, g_vEndColor,
-		PSYS_PART_START_ALPHA, 1.0,
-		PSYS_PART_END_ALPHA, 0.0,
-		PSYS_PART_START_SCALE, vStart,
-		PSYS_PART_END_SCALE, vEnd,
-		//PSYS_SRC_TEXTURE, string,
-		//PSYS_PART_START_GLOW, float,
-		//PSYS_PART_END_GLOW, float,
-	//Particle Blending
-	//Particle Flow
-		//PSYS_SRC_MAX_AGE, float,
-		PSYS_PART_MAX_AGE, g_fAge,
-		PSYS_SRC_BURST_RATE, g_fRate,
-		PSYS_SRC_BURST_PART_COUNT, g_iCount,
-	//Particle Motion
-		PSYS_SRC_ACCEL, vPush,
-		//PSYS_SRC_OMEGA, vector,
-		PSYS_SRC_BURST_SPEED_MIN, fMin,
-		PSYS_SRC_BURST_SPEED_MAX, fMax
-	]);
-}
-*/
 
 //===============================================================================
 //= parameters   :    integer  iChan        determines the script (function) to talk to

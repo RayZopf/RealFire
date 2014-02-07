@@ -50,7 +50,6 @@
 // structure for multiple scripts
 // B-Sound
 
-//FIXME: too much llSleep in stopSystem
 //FIXME: to many backround sound off messages after every option togggle (primfire)
 //FIXME: off messages when touch-off but extensions are allready off in options
 //FIXME: heap stack collision - make own module for particle fire
@@ -621,7 +620,6 @@ reset()
 
 	//just send, don't check
 	sendMessage(COMMAND_CHANNEL, "off", "");
-	//llStopSound(); //keep, just in case there wents something wrong and this prim has sound too
 	if (g_iVerbose) llWhisper(0, "(v) The fire gets taken care off");
 }
 
@@ -639,10 +637,8 @@ startSystem()
 	}
 	g_fPercent = 100.0;
 	g_fPercentSmoke = 100.0;
-	//if (g_iSmokeAvail && g_iSmokeOn) sendMessage(PARTICLE_CHANNEL, (string)llRound(g_fPercentSmoke), "smoke");
 	if (g_iSoundAvail || g_iBackSoundAvail) { //needs some more rework, move all calculation inside
 		g_fStartVolume = percentage((float)g_iPerVolume, MAX_VOLUME);
-		//if (g_iSoundOn) sendMessage(SOUND_CHANNEL, "-1", (string)g_fStartVolume); //background noise - do better not use, gets called to often
 	}
 	if (!g_iOn) {
 		if (g_iSoundAvail && g_iSoundOn) sendMessage(SOUND_CHANNEL, "110", (string)g_fStartVolume); // special start sound
@@ -663,6 +659,7 @@ stopSystem()
 	g_fPercent = 0.0;
 	g_fPercentSmoke = 0.0;
 	llSetTimerEvent(0.0);
+	if (g_iPrimFireOn) sendMessage(ANIM_CHANNEL, "0", "");
 	if (g_iSmokeOn || g_iParticleFireOn) sendMessage(PARTICLE_CHANNEL, "0", "");
 	if (g_iSoundAvail || g_iBackSoundAvail) sendMessage(SOUND_CHANNEL, "0", "0"); //volume off and size off
 	if (g_iMenuOpen) {
@@ -672,62 +669,8 @@ stopSystem()
 		llListenRemove(g_iOptionsHandle);
 		g_iMenuOpen = FALSE;
 	}
-	if (g_iPrimFireOn) sendMessage(ANIM_CHANNEL, "0", "");
-	//llStopSound(); //keep, just in case there wents something wrong and this prim has sound too -kills B_Sound!!! - same with llParticleSystem
 }
 
-/*
-updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadius, vector vPush)
-{
-	llSleep(0.8); // give other effects some time to start - also delays updating colour
-	llParticleSystem ([
-	//System Behavior
-		PSYS_PART_FLAGS,
-			0 |
-			//PSYS_PART_BOUNCE_MASK |
-			PSYS_PART_EMISSIVE_MASK |
-			//PSYS_PART_FOLLOW_SRC_MASK |
-			//PSYS_PART_FOLLOW_VELOCITY_MASK |
-			PSYS_PART_INTERP_COLOR_MASK |
-			PSYS_PART_INTERP_SCALE_MASK, // |
-			//PSYS_PART_RIBBON_MASK |
-			//PSYS_PART_TARGET_LINEAR_MASK |
-			//PSYS_PART_TARGET_POS_MASK |
-			////PSYS_PART_WIND_MASK,
-	//System Presentation
-		PSYS_SRC_PATTERN,
-			PSYS_SRC_PATTERN_EXPLODE, //|
-			//PSYS_SRC_PATTERN_ANGLE_CONE |
-			//PSYS_SRC_PATTERN_ANGLE |
-			////PSYS_SRC_PATTERN_DROP,
-		PSYS_SRC_BURST_RADIUS, fRadius,
-		//PSYS_SRC_ANGLE_BEGIN, float,
-		//PSYS_SRC_ANGLE_END, float,
-		//PSYS_SRC_TARGET_KEY, key,
-	//Particle Appearance
-		PSYS_PART_START_COLOR, g_vStartColor,
-		PSYS_PART_END_COLOR, g_vEndColor,
-		PSYS_PART_START_ALPHA, 1.0,
-		PSYS_PART_END_ALPHA, 0.0,
-		PSYS_PART_START_SCALE, vStart,
-		PSYS_PART_END_SCALE, vEnd,
-		//PSYS_SRC_TEXTURE, string,
-		//PSYS_PART_START_GLOW, float,
-		//PSYS_PART_END_GLOW, float,
-	//Particle Blending
-	//Particle Flow
-		//PSYS_SRC_MAX_AGE, float,
-		PSYS_PART_MAX_AGE, g_fAge,
-		PSYS_SRC_BURST_RATE, g_fRate,
-		PSYS_SRC_BURST_PART_COUNT, g_iCount,
-	//Particle Motion
-		PSYS_SRC_ACCEL, vPush,
-		//PSYS_SRC_OMEGA, vector,
-		PSYS_SRC_BURST_SPEED_MIN, fMin,
-		PSYS_SRC_BURST_SPEED_MAX, fMax
-	]);
-}
-*/
 
 //===============================================================================
 //= parameters   :    integer  iChan        determines the script (function) to talk to

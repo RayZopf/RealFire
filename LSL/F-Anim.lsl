@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Fri Feb  7 00:12:09 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Fri Feb  7 00:54:48 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -428,7 +428,8 @@ updateParticles(vector vStart,vector vEnd,float fMin,float fMax,float fRadius,ve
 
 
 specialFire(){
-    llParticleSystem([PSYS_PART_FLAGS,(((0 | PSYS_PART_EMISSIVE_MASK) | PSYS_PART_INTERP_COLOR_MASK) | PSYS_PART_INTERP_SCALE_MASK),PSYS_SRC_PATTERN,PSYS_SRC_PATTERN_EXPLODE,PSYS_SRC_BURST_RADIUS,0.148438,PSYS_PART_START_COLOR,<0.74902,0.6,0.14902>,PSYS_PART_END_COLOR,<1,0.2,0>,PSYS_PART_START_ALPHA,0.101961,PSYS_PART_END_ALPHA,7.05882e-2,PSYS_PART_START_SCALE,<0.59375,0.59375,0>,PSYS_PART_END_SCALE,<9.375e-2,9.375e-2,0>,PSYS_SRC_TEXTURE,((key)"23d133ad-c669-18a8-02a3-a75baa9b214a"),PSYS_SRC_MAX_AGE,2.8,PSYS_PART_MAX_AGE,3.0,PSYS_SRC_BURST_RATE,1.0e-2,PSYS_SRC_BURST_PART_COUNT,1,PSYS_SRC_ACCEL,<0,0,0.203125>,PSYS_SRC_BURST_SPEED_MIN,1.95313e-2,PSYS_SRC_BURST_SPEED_MAX,2.73438e-2]);
+    Debug("specialFire");
+    llParticleSystem([PSYS_PART_FLAGS,(((0 | PSYS_PART_EMISSIVE_MASK) | PSYS_PART_INTERP_COLOR_MASK) | PSYS_PART_INTERP_SCALE_MASK),PSYS_SRC_PATTERN,PSYS_SRC_PATTERN_EXPLODE,PSYS_SRC_BURST_RADIUS,0.148438,PSYS_PART_START_COLOR,<0.74902,0.6,0.14902>,PSYS_PART_END_COLOR,<1,0.2,0>,PSYS_PART_START_ALPHA,0.101961,PSYS_PART_END_ALPHA,7.05882e-2,PSYS_PART_START_SCALE,<0.59375,0.59375,0>,PSYS_PART_END_SCALE,<9.375e-2,9.375e-2,0>,PSYS_SRC_TEXTURE,((key)"23d133ad-c669-18a8-02a3-a75baa9b214a"),PSYS_PART_MAX_AGE,3.0,PSYS_SRC_BURST_RATE,1.0e-2,PSYS_SRC_BURST_PART_COUNT,1,PSYS_SRC_ACCEL,<0,0,0.203125>,PSYS_SRC_BURST_SPEED_MIN,1.95313e-2,PSYS_SRC_BURST_SPEED_MAX,2.73438e-2]);
 }
 
 
@@ -490,11 +491,11 @@ default {
         else  if ((((((integer)sVal) > 0) && (100 >= ((integer)sVal))) && ("fire" == sMsg))) {
             string g_sSizeTemp = g_sSize;
             if (("0" == g_sSizeTemp)) {
-                llSleep(0.6);
+                llSleep(0.7);
                 specialFire();
                 (g_fLightIntensity = g_fStartIntensity);
                 (g_fLightRadius = g_fStartRadius);
-                llSleep(1.8);
+                llSleep(2.4);
                 updateSize(((float)sVal));
             }
             else  {
@@ -503,20 +504,23 @@ default {
             (g_sSize = sVal);
         }
         else  if ((("fire" == sMsg) || ("" == sMsg))) {
-            specialFire();
             (g_iInTimer = TRUE);
-            llSleep(1.2);
-            llSetTimerEvent(2.0);
+            llSetTimerEvent(1.0);
+            llSleep(1.3);
+            specialFire();
+            llSleep(2.9);
         }
     }
 
 
 
 	timer() {
-        llParticleSystem([]);
-        llSleep(1.3);
+        Debug("timer");
         llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,FALSE,ZERO_VECTOR,0,0,0]);
-        llSleep(3.7);
+        llSleep(1.3);
+        llParticleSystem([]);
+        Debug("light + particle off");
+        llSleep(3.9);
         llSetLinkTextureAnim(g_iType,FALSE,ALL_SIDES,4,4,0,0,1);
         if (g_iVerbose) llWhisper(0,"(v) Particle fire effects ended");
         (g_sSize = "0");
