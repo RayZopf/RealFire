@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Feb  4 23:33:07 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Fri Feb  7 21:06:26 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -73,8 +73,8 @@ float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
 float g_fFactor;
-integer g_iInTimer = FALSE;
 string g_sScriptName;
+integer g_iInTimer = FALSE;
 string SEPARATOR = ";;";
 float SIZE_EXTRASMALL = 15.0;
 integer COMMAND_CHANNEL = -15700;
@@ -105,8 +105,8 @@ Debug(string sMsg){
 
 InfoLines(integer bool){
     if ((g_iVerbose && bool)) {
-        if (g_iSoundAvail) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
-        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        if (g_iSoundAvail) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+        else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
     }
     if (g_iSound) {
         if (g_iSoundAvail) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
@@ -145,7 +145,7 @@ string GroupCheck(key kId){
 
 //###
 //ExtensionBasics.lslm
-//0.32 - 04Feb2014
+//0.452 - 06Feb2014
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
@@ -154,23 +154,37 @@ RegisterExtension(integer link){
 }
 
 
-MasterCommand(integer iChan,string sVal){
+string MasterCommand(integer iChan,string sVal,integer conf){
     if ((iChan == COMMAND_CHANNEL)) {
-        if (("register" == sVal)) RegisterExtension(g_iType);
-        else  if (("verbose" == sVal)) {
+        list lValues = llParseString2List(sVal,[SEPARATOR],[]);
+        string sCommand = llList2String(lValues,0);
+        if (("register" == sCommand)) RegisterExtension(g_iType);
+        else  if (("verbose" == sCommand)) {
             (g_iVerbose = TRUE);
             InfoLines(FALSE);
         }
-        else  if (("nonverbose" == sVal)) (g_iVerbose = FALSE);
-        else  if (("globaldebug" == sVal)) (g_iVerbose = TRUE);
-        else  llSetTimerEvent(0.1);
+        else  if (("nonverbose" == sCommand)) (g_iVerbose = FALSE);
+        else  if (("globaldebug" == sCommand)) (g_iVerbose = TRUE);
+        else  if ((conf && ("config" == sCommand))) return sVal;
+        else  if (g_iSound) llSetTimerEvent(0.1);
+        return "";
     }
+    return "";
 }
 
 
 //===============================================
 //PREDEFINED FUNCTIONS
 //===============================================
+
+initExtension(){
+    if (g_iSound) llStopSound();
+    checkSoundFiles();
+    llSleep(1);
+    RegisterExtension(g_iType);
+    if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
+    InfoLines(TRUE);
+}
 
 checkSoundFiles(){
     integer iSoundNumber = llGetInventoryNumber(INVENTORY_SOUND);
@@ -201,12 +215,7 @@ default {
         Debug("state_entry");
         (g_fFactor = (7.0 / 8.0));
         llPassTouches(TRUE);
-        if (g_iSound) llStopSound();
-        checkSoundFiles();
-        llSleep(1);
-        RegisterExtension(g_iType);
-        if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
-        InfoLines(TRUE);
+        initExtension();
     }
 
 
@@ -223,12 +232,7 @@ default {
 	changed(integer change) {
         if ((change & CHANGED_INVENTORY)) {
             llWhisper(0,"Inventory changed, checking sound samples...");
-            if (g_iSound) llStopSound();
-            checkSoundFiles();
-            llSleep(1);
-            RegisterExtension(g_iType);
-            if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
-            InfoLines(TRUE);
+            initExtension();
         }
     }
 
@@ -238,7 +242,9 @@ default {
 //-----------------------------------------------
 	link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
         Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSoundSet) + "; kId ") + ((string)kId)));
-        MasterCommand(iChan,sSoundSet);
+        string sConfig = MasterCommand(iChan,sSoundSet,FALSE);
+        if (("" != sConfig)) {
+        }
         string sScriptName = GroupCheck(kId);
         if (("exit" == sScriptName)) return;
         if ((((iChan != SOUND_CHANNEL) || ((!g_iSound) && (!g_iSoundAvail))) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;

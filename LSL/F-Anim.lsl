@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Fri Feb  7 06:40:02 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Fri Feb  7 21:06:26 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -269,7 +269,7 @@ setColor(integer pos,string msg){
 
 //###
 //ExtensionBasics.lslm
-//0.451 - 06Feb2014
+//0.452 - 06Feb2014
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
@@ -303,39 +303,43 @@ string MasterCommand(integer iChan,string sVal,integer conf){
     integer count = 0;
     string par;
     Debug(((("getConfig Particlefire " + ((string)lConfigs)) + " n ") + ((string)n)));
-    if (((n > 1) && (0 == (n % 2)))) do  {
-        (par = llList2String(lConfigs,count));
-        string val = llList2String(lConfigs,(count + 1));
-        if ((par == "changelight")) (g_iChangeLight = ((integer)val));
-        else  if ((par == "topcolor")) (g_vDefEndColor = ((vector)val));
-        else  if ((par == "bottomcolor")) (g_vDefStartColor = ((vector)val));
-        else  if ((par == "intensity")) (g_iDefIntensity = ((integer)val));
-        else  if ((par == "radius")) (g_iDefRadius = ((integer)val));
-        else  if ((par == "falloff")) (g_iDefFalloff = ((integer)val));
-        else  if (("startcolor" == par)) {
-            setColor(1,val);
-            if ((2 == n)) return 2;
+    if (((n > 1) && (0 == (n % 2)))) {
+        string val;
+        do  {
+            (par = llList2String(lConfigs,count));
+            (val = llList2String(lConfigs,(count + 1)));
+            if ((par == "changelight")) (g_iChangeLight = ((integer)val));
+            else  if ((par == "topcolor")) (g_vDefEndColor = ((vector)val));
+            else  if ((par == "bottomcolor")) (g_vDefStartColor = ((vector)val));
+            else  if ((par == "intensity")) (g_iDefIntensity = ((integer)val));
+            else  if ((par == "radius")) (g_iDefRadius = ((integer)val));
+            else  if ((par == "falloff")) (g_iDefFalloff = ((integer)val));
+            else  if (("startcolor" == par)) {
+                setColor(1,val);
+                if ((2 == n)) return 2;
+            }
+            else  if (("endcolor" == par)) {
+                setColor(0,val);
+                if ((2 == n)) return 2;
+            }
+            (count = (count + 2));
         }
-        else  if (("endcolor" == par)) {
-            setColor(0,val);
-            if ((2 == n)) return 2;
-        }
-        (count = (count + 2));
+        while ((count <= n));
     }
-    while ((count <= n));
-    else  if ((1 == n)) {
-        (par = llList2String(lConfigs,count));
-        if (("reset" == par)) {
-            (g_iPerRedStart = ((integer)g_vDefStartColor.x));
-            (g_iPerGreenStart = ((integer)g_vDefStartColor.y));
-            (g_iPerBlueStart = ((integer)g_vDefStartColor.z));
-            (g_iPerRedEnd = ((integer)g_vDefEndColor.x));
-            (g_iPerGreenEnd = ((integer)g_vDefEndColor.y));
-            (g_iPerBlueEnd = ((integer)g_vDefEndColor.z));
+    else  {
+        if ((1 == n)) {
+            (par = llList2String(lConfigs,count));
+            if (("reset" == par)) {
+                (g_iPerRedStart = ((integer)g_vDefStartColor.x));
+                (g_iPerGreenStart = ((integer)g_vDefStartColor.y));
+                (g_iPerBlueStart = ((integer)g_vDefStartColor.z));
+                (g_iPerRedEnd = ((integer)g_vDefEndColor.x));
+                (g_iPerGreenEnd = ((integer)g_vDefEndColor.y));
+                (g_iPerBlueEnd = ((integer)g_vDefEndColor.z));
+            }
         }
         return 0;
     }
-    else  return 0;
     return 1;
 }
 
