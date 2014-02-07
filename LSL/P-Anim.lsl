@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Thu Feb  6 04:55:25 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Fri Feb  7 01:07:11 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -122,8 +122,8 @@ Debug(string sMsg){
 
 InfoLines(integer bool){
     if ((g_iVerbose && bool)) {
-        if (g_iPrimFireAvail) llWhisper(0,(g_sTitle + " - File(s) found in inventory: Yes"));
-        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        if (g_iPrimFireAvail) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+        else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
     }
     if (g_iPrimFire) {
         if (g_iPrimFireAvail) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
@@ -162,7 +162,7 @@ string GroupCheck(key kId){
 
 //###
 //ExtensionBasics.lslm
-//0.45 - 06Feb2014
+//0.451 - 06Feb2014
 
 RegisterExtension(integer link){
     string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
@@ -175,7 +175,6 @@ string MasterCommand(integer iChan,string sVal,integer conf){
     if ((iChan == COMMAND_CHANNEL)) {
         list lValues = llParseString2List(sVal,[SEPARATOR],[]);
         string sCommand = llList2String(lValues,0);
-        string sConfig = llList2String(lValues,1);
         if (("register" == sCommand)) RegisterExtension(g_iType);
         else  if (("verbose" == sCommand)) {
             (g_iVerbose = TRUE);
@@ -183,8 +182,8 @@ string MasterCommand(integer iChan,string sVal,integer conf){
         }
         else  if (("nonverbose" == sCommand)) (g_iVerbose = FALSE);
         else  if (("globaldebug" == sCommand)) (g_iVerbose = TRUE);
-        else  if ((conf && ("config" == sCommand))) return sConfig;
-        else  llSetTimerEvent(0.1);
+        else  if ((conf && ("config" == sCommand))) return sVal;
+        else  if (g_iPrimFire) llSetTimerEvent(0.1);
         return "";
     }
     return "";

@@ -2,8 +2,8 @@
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//06. Feb. 2014
-//v0.1
+//07. Feb. 2014
+//v0.3
 //
 //
 // (Realfire by Rene)
@@ -64,7 +64,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealParticleFire";     // title
-string g_sVersion = "0.1";       // version
+string g_sVersion = "0.3";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";

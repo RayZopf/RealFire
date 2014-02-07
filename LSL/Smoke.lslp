@@ -15,8 +15,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//04. Feb. 2014
-//v2.2.1-0.57
+//07. Feb. 2014
+//v2.2.1-0.58
 //
 
 //Files:
@@ -72,7 +72,7 @@ float g_fStartAlpha = 0.4;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.2.1-0.57";       // version
+string g_sVersion = "2.2.1-0.58";       // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "smoke";

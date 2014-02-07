@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Fri Feb  7 00:59:13 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Fri Feb  7 01:07:11 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -23,8 +23,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//04. Feb. 2014
-//v2.2.1-0.96
+//07. Feb. 2014
+//v2.2.1-1.0
 //
 
 //Files:
@@ -110,7 +110,7 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";
-string g_sVersion = "2.2.1-0.96";
+string g_sVersion = "2.2.1-1.0";
 string g_sAuthors = "Rene10957, Zopf";
 
 // Constants
@@ -264,10 +264,9 @@ integer max(integer x,integer y){
 
 //###
 //ColorChanger.lslm
-//0.1 - 06Feb2014
+//0.11 - 07Feb2014
 
 setColor(integer pos,string msg){
-    llOwnerSay(((("colorchanger " + ((string)pos)) + " msg") + msg));
     if ((1 == pos)) {
         if ((msg == "-Red")) (g_iPerRedStart = max((g_iPerRedStart - 10),0));
         else  if ((msg == "-Green")) (g_iPerGreenStart = max((g_iPerGreenStart - 10),0));

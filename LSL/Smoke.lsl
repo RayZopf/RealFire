@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Fri Feb  7 01:00:29 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Fri Feb  7 01:07:11 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Smoke
 //
@@ -16,8 +16,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//04. Feb. 2014
-//v2.2.1-0.57
+//07. Feb. 2014
+//v2.2.1-0.58
 //
 
 //Files:
@@ -73,7 +73,7 @@ float g_fStartAlpha = 0.4;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";
-string g_sVersion = "2.2.1-0.57";
+string g_sVersion = "2.2.1-0.58";
 string g_sAuthors = "Rene10957, Zopf";
 integer g_iType = LINK_ALL_OTHERS;
 

@@ -2,8 +2,8 @@
 //Module to handle changes of particle fire color
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//06. Feb. 2014
-//v0.1
+//07. Feb. 2014
+//v0.11
 //Files:
 // ColorChanger.lslm
 //
@@ -29,11 +29,10 @@ $import GenericFunctions.lslm();
 
 //###
 //ColorChanger.lslm
-//0.1 - 06Feb2014
+//0.11 - 07Feb2014
 
 setColor(integer pos, string msg)
 {
-	llOwnerSay("colorchanger "+(string)pos+" msg"+msg);
 	if (1 == pos) {
 		if (msg == "-Red") g_iPerRedStart = max(g_iPerRedStart - 10, 0);
 		else if (msg == "-Green") g_iPerGreenStart = max(g_iPerGreenStart - 10, 0);
@@ -49,7 +48,6 @@ setColor(integer pos, string msg)
 			g_iPerGreenEnd = g_iPerGreenStart;
 			g_iPerBlueEnd = g_iPerBlueStart;
 		}
-		//updateSize(g_fPerSize);
 	} else {
 		if (msg == "-Red") g_iPerRedEnd = max(g_iPerRedEnd - 10, 0);
 		else if (msg == "-Green") g_iPerGreenEnd = max(g_iPerGreenEnd - 10, 0);
@@ -65,7 +63,6 @@ setColor(integer pos, string msg)
 			g_iPerGreenStart = g_iPerGreenEnd;
 			g_iPerBlueStart = g_iPerBlueEnd;
 		}
-		//updateSize(g_fPerSize);
 	}
 }
 

@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Fri Feb  7 00:54:48 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Fri Feb  7 01:07:11 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//06. Feb. 2014
-//v0.1
+//07. Feb. 2014
+//v0.3
 //
 //
 // (Realfire by Rene)
@@ -65,7 +65,7 @@ vector g_vEndColor = <1,0,0>;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealParticleFire";
-string g_sVersion = "0.1";
+string g_sVersion = "0.3";
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";
@@ -211,10 +211,9 @@ string GroupCheck(key kId){
 
 //###
 //ColorChanger.lslm
-//0.1 - 06Feb2014
+//0.11 - 07Feb2014
 
 setColor(integer pos,string msg){
-    llOwnerSay(((("colorchanger " + ((string)pos)) + " msg") + msg));
     if ((1 == pos)) {
         if ((msg == "-Red")) (g_iPerRedStart = max((g_iPerRedStart - 10),0));
         else  if ((msg == "-Green")) (g_iPerGreenStart = max((g_iPerGreenStart - 10),0));

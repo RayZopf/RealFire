@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Thu Feb  6 19:28:49 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Fri Feb  7 01:07:11 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -149,7 +149,6 @@ string MasterCommand(integer iChan,string sVal,integer conf){
     if ((iChan == COMMAND_CHANNEL)) {
         list lValues = llParseString2List(sVal,[SEPARATOR],[]);
         string sCommand = llList2String(lValues,0);
-        string sConfig = llList2String(lValues,1);
         if (("register" == sCommand)) RegisterExtension(g_iType);
         else  if (("verbose" == sCommand)) {
             (g_iVerbose = TRUE);
@@ -157,8 +156,8 @@ string MasterCommand(integer iChan,string sVal,integer conf){
         }
         else  if (("nonverbose" == sCommand)) (g_iVerbose = FALSE);
         else  if (("globaldebug" == sCommand)) (g_iVerbose = TRUE);
-        else  if ((conf && ("config" == sCommand))) return sConfig;
-        else  llSetTimerEvent(0.1);
+        else  if ((conf && ("config" == sCommand))) return sVal;
+        else  if (g_iRemote) llSetTimerEvent(0.1);
         return "";
     }
     return "";

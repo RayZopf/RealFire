@@ -22,8 +22,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//04. Feb. 2014
-//v2.2.1-0.96
+//07. Feb. 2014
+//v2.2.1-1.0
 //
 
 //Files:
@@ -110,7 +110,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";            // title
-string g_sVersion = "2.2.1-0.96";        // version
+string g_sVersion = "2.2.1-1.0";        // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "fire";
