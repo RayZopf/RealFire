@@ -16,8 +16,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//06. Feb. 2014
-//v1.1-0.3
+//07. Feb. 2014
+//v1.1-0.4
 //
 
 //Files:
@@ -66,7 +66,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Receiver";            // title
-string g_sVersion = "1.1-0.3";        // version
+string g_sVersion = "1.1-0.4";        // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "remote";
@@ -130,7 +130,7 @@ default
 		// Security - check the object belongs to our owner, not using llListen - filter, as we have state_entry and on_rez events
 		//if (llGetOwnerKey(kId) != g_kOwner) return; // disabled as remote only workswithin range of llSay and we want to give away remotes (objects)
 
-		if (channel != REMOTE_CHANNEL) return;
+		//if (channel != REMOTE_CHANNEL) return; not needed, as we listen only on REMOTE_CHANNEL
 		list msgList = llParseString2List(msg, [SEPARATOR], []);
 		string group = llList2String(msgList, 0);
 
@@ -148,7 +148,7 @@ default
 	link_message(integer iSender, integer iChan, string sSet, key kId)
 	{
 		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSet + "; kId " + (string)kId);
-		string sConfig = MasterCommand(iChan, sSet, FALSE);
+		string sConfig = MasterCommand(iChan, sSet, TRUE);
 		if ("" != sConfig) {
 			if (getConfigRemote(sConfig)) {
 				initExtension();
