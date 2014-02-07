@@ -29,3 +29,4 @@ Feb .2014
  - reworked some modules
  - bugfixes
  - code re-formatting
+ - particle fire in own module
