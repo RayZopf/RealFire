@@ -1,0 +1,63 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//Module that provides some simple functions
+//
+//by: Zopf Resident - Ray Zopf (Raz)
+//06. Feb. 2014
+//v0.2
+
+//Files:
+// GenericFunctions.lslm
+//
+//
+//Prequisites: ----
+//
+//
+//Changelog
+// added fire size variables
+// added remote control variables
+
+//FIXME: ----
+
+//TODO: ----
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+$module ()
+
+
+//###
+//GenericFunctions.lslm
+//0.2 - 06Feb2014
+
+integer checkInt(string par, integer val, integer min, integer max)
+{
+	if (val < min || val > max) {
+		if (val < min) val = min;
+		else if (val > max) val = max;
+		llWhisper(0, "[Notecard] " + par + " out of range, corrected to " + (string)val);
+	}
+	return val;
+}
+
+
+float percentage (float per, float num)
+{
+	return num / 100.0 * per;
+}
+
+
+integer min (integer x, integer y)
+{
+	if (x < y) return x; else return y;
+}
+
+
+integer max (integer x, integer y)
+{
+	if (x > y) return x; else return y;
+}
+
+
+//END GenericFunctions.lslm
+//###

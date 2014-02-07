@@ -1,7 +1,7 @@
 # Configuration notecard for RealFire
 #
-# Date: 31-05-2013 - 04.Feb.2014
-# Version: 2.2-0.22
+# Date: 31-05-2013 - 06.Feb.2014
+# Version: 2.2-0.3
 
 GlobalDEBUG = ""                # global debugging (empty or "D E B U G") - clear value and reset all scripts to disable after use
 LINKSETID = RealFire            # group where script is in (1: first word of prim desc is identical, or 2: LINKSETID values are identical, or 3: all values are empty, or 4: LINKSETID is identical to prim desc of other prim)
@@ -33,6 +33,37 @@ sound = YES                     # sound or no sound
 intensity = 80                 # light intensity percentage
 radius = 50                     # light radius percentage
 falloff = 40                    # light falloff percentage
+
+# Sound files (files need to be in same prim as the sound script)
+
+#string BACKSOUNDFILE = "17742__krisboruff__fire-crackles-no-room";                   // backroundsound for small fire
+#string g_sSoundFileStart = "75145__willc2-45220__struck-match-8b-22k-1-65s";     // starting fire (somehow special sound!)
+#string g_sSoundFileSmall = "17742__krisboruff__fire-crackles-no-room";           // sound for small fire
+#string g_sSoundFileMedium1 = "104958__glaneur-de-sons__petit-feu-little-fire-2"; // first sound for medium fire (yes, file fire-2)
+#string g_sSoundFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1"; // second sound for medium fire
+#string g_sSoundFileFull = "4211__dobroide__fire-crackling";                      // standard sound, sound for big fire
+
+#integer g_iSoundNFiles = 5;
+#//starting sound has to be first in list
+#list g_lSoundFileList = [g_sSoundFileStart, g_sSoundFileSmall, g_sSoundFileMedium1, g_sSoundFileMedium2, g_sSoundFileFull];
+#string g_sCurrentSoundFile = g_sSoundFileMedium2; // standard sound - must not be sound for starting fire!
+
+# Fire objects (files need to be in same prim as the prim-fire script)
+#//string g_sPrimFireFileStart = "75145__willc2-45220__struck-match-8b-22k-1-65s";   // starting fire (somehow special sound!)
+#string g_sPrimFireFileSmall = "Fire_small";            // for small fire
+#vector g_vOffsetSmall = <0.0, 0.0, 0.0>;
+#string g_sPrimFireFileMedium1 = "Fire_medium";    // for medium fire
+#vector g_vOffsetMedium1 = <0.0, 0.0, 0.0>;
+#//string g_sPrimFireFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1";    // second sound for medium fire
+#string g_sPrimFireFileFull = "Fire_full";                   // for big fire
+#vector g_vOffsetFull = <0.0, 0.0, 0.0>;
+
+#integer g_iPrimFireNFiles = 3;
+#//starting sound has to be first in list
+#list g_lPrimFireFileList = [g_sPrimFireFileSmall, g_sPrimFireFileMedium1, g_sPrimFireFileFull];
+#string g_sCurrentPrimFireFile = g_sPrimFireFileMedium1; // standard
+
+#float g_fAltitude = 1.0; // height for rezzed prim
 
 # Link messages
 # Don't forget to change the values in control scripts too!

@@ -2,8 +2,8 @@
 //Module that only holds the RealFire Message channel constants
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//04. Feb. 2014
-//v0.23
+//06. Feb. 2014
+//v0.31
 
 //Files:
 // RealFireMessageMap.lslm
@@ -29,6 +29,7 @@ $module ()
 //internal variables
 //-----------------------------------------------
 string g_sScriptName;
+//integer g_sSize = 0;
 
 // Notecard variables
 integer g_iMsgNumber = 10957;             // number part of incoming link messages: used for remot control receiver scripts
@@ -36,9 +37,24 @@ string g_sMsgSwitch = "switch";           // string part of incoming link messag
 string g_sMsgOn = "on";                   // string part of incoming link message: switch on
 string g_sMsgOff = "off";                 // string part of incoming link message: switch off
 string g_sMsgMenu = "menu";               // string part of incoming link message: show menu
+integer g_iChangeLight = TRUE;     // change light with fire
+vector g_vDefStartColor = <100,100,0>;           // default start (bottom) color (percentage R,G,B)
+vector g_vDefEndColor = <100,0,0>;             // default end (top) color (percentage R,G,B)
+integer g_iDefIntensity = 100;           // default light intensity (percentage)
+integer g_iDefRadius = 50;              // default light radius (percentage)
+integer g_iDefFalloff = 40;             // default light falloff (percentage)
 
 // Variables
 key g_kOwner;                             // object owner
+
+integer g_iPerRedStart;            // percent red for startColor
+integer g_iPerGreenStart;          // percent green for startColor
+integer g_iPerBlueStart;           // percent blue for startColor
+integer g_iPerRedEnd;              // percent red for endColor
+integer g_iPerGreenEnd;            // percent green for endColor
+integer g_iPerBlueEnd;             // percent blue for endColor
+
+integer g_iInTimer = FALSE;
 
 // Constants
 string SEPARATOR = ";;";                  // separator for commands and messages
@@ -52,19 +68,18 @@ float SIZE_LARGE = 80.0;
 
 //RealFire MESSAGE MAP
 integer COMMAND_CHANNEL = -15700;
-integer SMOKE_CHANNEL = -15790;           // smoke channel
+integer PARTICLE_CHANNEL = -15790;           // smoke channel
 integer SOUND_CHANNEL = -15780;           // sound channel
 integer ANIM_CHANNEL = -15770;            // primfire/textureanim channel
 integer PRIMCOMMAND_CHANNEL = -15771;     // kill fire prims or make temp prims
 
-integer REMOTE_CHANNEL = -975102;         // remote channel
-integer FAKE_CHANNEL = -1001001;
+integer REMOTE_CHANNEL = -975102;         // remote channel - for listen and link_messages (register extension)
 
 
 
 //###
 //RealFireMessageMap.lslm
-//0.23 - 04Feb2014
+//0.31 - 06Feb2014
 
 
 //END RealFireMessageMap.lslm
