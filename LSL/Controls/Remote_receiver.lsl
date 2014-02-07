@@ -1,7 +1,7 @@
 // Remote receiver for RealFire
 //
 // Author: Rene10957 Resident
-// Date: 12-01-2014
+// Date: 02-02-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -13,12 +13,13 @@
 // Note: only useful if you are also using the remote control script
 
 string title = "Remote Receiver";   // title
-string version = "1.1";             // version
+string version = "1.2";             // version
+integer silent = FALSE;             // silent startup
 
 // Constants
 
 integer remoteChannel = -975102;    // remote channel
-integer msgNumber = 10957;          // number part of link message
+integer msgNumber = 10959;          // number part of link message
 string separator = ";;";            // separator for region messages
 
 // Functions
@@ -35,7 +36,7 @@ default
     state_entry()
     {
         llListen(remoteChannel, "", "", "");
-        llWhisper(0, title + " " + version + " ready");
+        if (!silent) llWhisper(0, title + " " + version + " ready");
     }
 
     on_rez(integer start_param)

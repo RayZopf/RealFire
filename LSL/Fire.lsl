@@ -1,7 +1,7 @@
 // Realfire by Rene - Fire
 //
 // Author: Rene10957 Resident
-// Date: 12-01-2014
+// Date: 02-02-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -14,14 +14,16 @@
 // - Fire with smoke, light and sound
 // - Burns down at any desired speed
 // - Change fire size/color and sound volume
+// - Plugin support
 // - Access control: owner, group, world
 // - Touch to start or stop fire
 // - Long touch to show menu
 
 string title = "RealFire";      // title
-string version = "2.2.1";       // version
+string version = "2.3";         // version
 string notecard = "config";     // notecard name
 integer debug = FALSE;          // show debug messages
+integer silent = FALSE;         // silent startup
 
 // Constants
 
@@ -47,6 +49,7 @@ string msgSwitch;               // string part of incoming link message: switch 
 string msgOn;                   // string part of incoming link message: switch on
 string msgOff;                  // string part of incoming link message: switch off
 string msgMenu;                 // string part of incoming link message: show menu
+integer extNumber;              // number part of outgoing link messages
 integer burnDown = FALSE;       // burn down or burn continuously
 float burnTime;                 // time to burn in seconds before starting to die
 float dieTime;                  // time it takes to die in seconds
@@ -54,6 +57,7 @@ integer loop = FALSE;           // restart after burning down
 integer changeLight = TRUE;     // change light with fire
 integer changeSmoke = TRUE;     // change smoke with fire
 integer changeVolume = TRUE;    // change volume with fire
+integer singleFire = TRUE;      // single fire or multiple fires
 integer defSize;                // default fire size (percentage)
 vector defStartColor;           // default start (bottom) color (percentage R,G,B)
 vector defEndColor;             // default end (top) color (percentage R,G,B)
@@ -81,7 +85,6 @@ vector endColor = <1, 0, 0>;    // particle end color
 // Variables
 
 key owner;                      // object owner
-key user;                       // key of last avatar to touch object
 integer line;                   // notecard line
 integer menuChannel;            // main menu channel
 integer startColorChannel;      // start color menu channel
@@ -117,6 +120,13 @@ float startRadius;              // start value of lightRadius (before burning do
 float startVolume;              // start value of volume (before burning down)
 
 // Functions
+
+string getName(integer link)
+{
+    list name = llGetLinkPrimitiveParams(link, [PRIM_NAME]);
+    string str = llStringTrim(llList2String(name, 0), STRING_TRIM);
+    return str;
+}
 
 string getGroup()
 {
@@ -195,7 +205,6 @@ updateSize(float size)
 
     updateColor();
     updateParticles(start, end, min, max, radius, push);
-    llSetPrimitiveParams([PRIM_POINT_LIGHT, TRUE, lightColor, lightIntensity, lightRadius, lightFalloff]);
     if (smokeOn) sendMessage(llRound(percentSmoke));
     if (sound) if (soundOn) llAdjustSoundVolume(soundVolume);
     if (debug && burnDown) llOwnerSay((string)llRound(size) + "% " + (string)start + " " + (string)end);
@@ -268,11 +277,12 @@ loadNotecard()
     verbose = TRUE;
     switchAccess = _WORLD_;
     menuAccess = _WORLD_;
-    msgNumber = 10957;
+    msgNumber = 10959;
     msgSwitch = "switch";
     msgOn = "on";
     msgOff = "off";
     msgMenu = "menu";
+    extNumber = 10960;
     burnDown = FALSE;
     burnTime = 300.0;
     dieTime = 300.0;
@@ -280,6 +290,7 @@ loadNotecard()
     changeLight = TRUE;
     changeSmoke = TRUE;
     changeVolume = TRUE;
+    singleFire = TRUE;
     defSize = 25;
     defStartColor = <100,100,0>;
     defEndColor = <100,0,0>;
@@ -305,14 +316,20 @@ loadNotecard()
         llGetNotecardLine(notecard, line);
     }
     else {
-        llWhisper(0, "Notecard \"" + notecard + "\" not found or empty, using defaults");
+        if (!silent) llWhisper(0, "Notecard \"" + notecard + "\" not found or empty, using defaults");
         reset(); // initial values for menu
         if (on) startSystem();
-        if (verbose) {
-            if (sound) llWhisper(0, "Sound in object inventory: Yes");
-            else llWhisper(0, "Sound in object inventory: No");
+        if (!silent) {
+            if (verbose) {
+                llWhisper(0, "Touch to start/stop fire");
+                llWhisper(0, "Long touch to show menu");
+                llWhisper(0, "Switch access:" + showAccess(switchAccess));
+                llWhisper(0, "Menu access:" + showAccess(menuAccess));
+                if (sound) llWhisper(0, "Sound in object inventory: Yes");
+                else llWhisper(0, "Sound in object inventory: No");
+            }
+            llWhisper(0, title + " " + version + " ready");
         }
-        llWhisper(0, title + " " + version + " ready");
         if (debug) {
             llOwnerSay("verbose = " + (string)verbose);
             llOwnerSay("switchAccess = " + (string)switchAccess);
@@ -322,6 +339,7 @@ loadNotecard()
             llOwnerSay("msgOn = " + msgOn);
             llOwnerSay("msgOff = " + msgOff);
             llOwnerSay("msgMenu = " + msgMenu);
+            llOwnerSay("extNumber = " + (string)extNumber);
             llOwnerSay("burnDown = " + (string)burnDown);
             llOwnerSay("burnTime = " + (string)burnTime);
             llOwnerSay("dieTime = " + (string)dieTime);
@@ -329,6 +347,7 @@ loadNotecard()
             llOwnerSay("changeLight = " + (string)changeLight);
             llOwnerSay("changeSmoke = " + (string)changeSmoke);
             llOwnerSay("changeVolume = " + (string)changeVolume);
+            llOwnerSay("singleFire = " + (string)singleFire);
             llOwnerSay("defSize = " + (string)defSize);
             llOwnerSay("defStartColor = " + (string)defStartColor);
             llOwnerSay("defEndColor = " + (string)defEndColor);
@@ -363,6 +382,7 @@ readNotecard (string ncLine)
         else if (lcpar == "msgon") msgOn = val;
         else if (lcpar == "msgoff") msgOff = val;
         else if (lcpar == "msgmenu") msgMenu = val;
+        else if (lcpar == "extnumber") extNumber = (integer)val;
         else if (lcpar == "burndown") burnDown = checkYesNo("burndown", val);
         else if (lcpar == "burntime") burnTime = (float)checkInt("burnTime", (integer)val, 1, 315360000); // 10 years
         else if (lcpar == "dietime") dieTime = (float)checkInt("dieTime", (integer)val, 1, 315360000); // 10 years
@@ -370,6 +390,7 @@ readNotecard (string ncLine)
         else if (lcpar == "changelight") changeLight = checkYesNo("changeLight", val);
         else if (lcpar == "changesmoke") changeSmoke = checkYesNo("changeSmoke", val);
         else if (lcpar == "changevolume") changeVolume = checkYesNo("changeVolume", val);
+        else if (lcpar == "singlefire") singleFire = checkYesNo("singleFire", val);
         else if (lcpar == "size") defSize = checkInt("size", (integer)val, 0, 100);
         else if (lcpar == "topcolor") defEndColor = checkVector("topColor", (vector)val);
         else if (lcpar == "bottomcolor") defStartColor = checkVector("bottomColor", (vector)val);
@@ -475,6 +496,7 @@ reset()
 
 startSystem()
 {
+    if (!on) llMessageLinked(LINK_SET, extNumber, (string)TRUE, getGroup());
     on = TRUE;
     burning = TRUE;
     percent = 100.0;
@@ -500,13 +522,13 @@ startSystem()
 
 stopSystem()
 {
+    if (on) llMessageLinked(LINK_SET, extNumber, (string)FALSE, getGroup());
     on = FALSE;
     burning = FALSE;
     percent = 0.0;
     percentSmoke = 0.0;
     llSetTimerEvent(0);
-    llParticleSystem([]);
-    llSetPrimitiveParams([PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
+    updateParticles(ZERO_VECTOR, ZERO_VECTOR, 0, 0, 0, ZERO_VECTOR);
     llStopSound();
     sendMessage(0);
     if (menuOpen) {
@@ -519,7 +541,7 @@ stopSystem()
 
 updateParticles(vector start, vector end, float min, float max, float radius, vector push)
 {
-    llParticleSystem ([
+    list particles = [
         PSYS_SRC_PATTERN, PSYS_SRC_PATTERN_EXPLODE,
         PSYS_PART_START_COLOR, startColor,
         PSYS_PART_END_COLOR, endColor,
@@ -539,7 +561,38 @@ updateParticles(vector start, vector end, float min, float max, float radius, ve
         PSYS_PART_EMISSIVE_MASK |
         PSYS_PART_FOLLOW_VELOCITY_MASK |
         PSYS_PART_INTERP_COLOR_MASK |
-        PSYS_PART_INTERP_SCALE_MASK ]);
+        PSYS_PART_INTERP_SCALE_MASK ];
+
+    if (singleFire) {
+        if (on) {
+            llParticleSystem(particles);
+            llSetPrimitiveParams([PRIM_POINT_LIGHT, TRUE, lightColor, lightIntensity, lightRadius, lightFalloff]);
+        }
+        else {
+            llParticleSystem([]);
+            llSetPrimitiveParams([PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
+        }
+        return;
+    }
+
+    integer i;
+    integer number = llGetNumberOfPrims();
+
+    for (i = number; i >= 0; --i) {
+        if (llToLower(llGetObjectName()) == llToLower(getName(i))) {
+            if (i == llGetLinkNumber() || llToLower(getName(i)) != "object") {
+                if (on) {
+                    llLinkParticleSystem(i, particles);
+                    llSetLinkPrimitiveParamsFast(i, [
+                        PRIM_POINT_LIGHT, TRUE, lightColor, lightIntensity, lightRadius, lightFalloff]);
+                }
+                else {
+                    llLinkParticleSystem(i, []);
+                    llSetLinkPrimitiveParamsFast(i, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
+                }
+            }
+        }
+    }
 }
 
 sendMessage(integer alpha)
@@ -559,8 +612,10 @@ default
             llOwnerSay("Particle count: " + (string)llRound((float)count * age / rate));
             llOwnerSay((string)llGetFreeMemory() + " bytes free");
         }
-        llWhisper(0, "RealFire by Rene10957");
-        llWhisper(0, "Loading notecard...");
+        if (!silent) {
+            llWhisper(0, "RealFire by Rene10957");
+            llWhisper(0, "Loading notecard...");
+        }
         loadNotecard();
     }
 
@@ -576,7 +631,7 @@ default
 
     touch_end(integer total_number)
     {
-        user = llDetectedKey(0);
+        key user = llDetectedKey(0);
 
         if (llGetTime() > 1.0) {
             if (accessGranted(user, menuAccess)) {
@@ -612,7 +667,7 @@ default
             }
             else if (msg == "Smoke") toggleSmoke();
             else if (msg == "Sound") toggleSound();
-            else if (msg == "Color") endColorDialog(user);
+            else if (msg == "Color") endColorDialog(id);
             else if (msg == "Reset") { reset(); startSystem(); }
             else if (msg == "Close") {
                 llSetTimerEvent(0); // stop dialog timer
@@ -621,7 +676,7 @@ default
             }
             if (msg != "Color" && msg != "Close") {
                 if (msg != "Smoke" && msg != "Sound" && msg != "Reset") updateSize((float)perSize);
-                menuDialog(user);
+                menuDialog(id);
             }
         }
         else if (channel == startColorChannel) {
@@ -635,8 +690,8 @@ default
             else if (msg == "R min/max") { if (perRedStart) perRedStart = 0; else perRedStart = 100; }
             else if (msg == "G min/max") { if (perGreenStart) perGreenStart = 0; else perGreenStart = 100; }
             else if (msg == "B min/max") { if (perBlueStart) perBlueStart = 0; else perBlueStart = 100; }
-            else if (msg == "Top color") endColorDialog(user);
-            else if (msg == "Main menu") menuDialog(user);
+            else if (msg == "Top color") endColorDialog(id);
+            else if (msg == "Main menu") menuDialog(id);
             else if (msg == "One color") {
                 perRedEnd = perRedStart;
                 perGreenEnd = perGreenStart;
@@ -644,7 +699,7 @@ default
             }
             if (msg != "Top color" && msg != "Main menu") {
                 updateSize((float)perSize);
-                startColorDialog(user);
+                startColorDialog(id);
             }
         }
         else if (channel == endColorChannel) {
@@ -658,8 +713,8 @@ default
             else if (msg == "R min/max") { if (perRedEnd) perRedEnd = 0; else perRedEnd = 100; }
             else if (msg == "G min/max") { if (perGreenEnd) perGreenEnd = 0; else perGreenEnd = 100; }
             else if (msg == "B min/max") { if (perBlueEnd) perBlueEnd = 0; else perBlueEnd = 100; }
-            else if (msg == "Bottom color") startColorDialog(user);
-            else if (msg == "Main menu") menuDialog(user);
+            else if (msg == "Bottom color") startColorDialog(id);
+            else if (msg == "Main menu") menuDialog(id);
             else if (msg == "One color") {
                 perRedStart = perRedEnd;
                 perGreenStart = perGreenEnd;
@@ -667,7 +722,7 @@ default
             }
             if (msg != "Bottom color" && msg != "Main menu") {
                 updateSize((float)perSize);
-                endColorDialog(user);
+                endColorDialog(id);
             }
         }
     }
@@ -677,30 +732,29 @@ default
         if (debug) llOwnerSay("[Fire] LINK_MESSAGE event: " + (string)number + "; " + msg + "; " + (string)id);
         if (number != msgNumber) return;
 
-        if (id) user = id;
-        else {
-            llWhisper(0, "A valid avatar key must be provided in the link message.");
+        if (id) {} else {
+            llWhisper(0, "A valid avatar key must be provided in the link message");
             return;
         }
 
         if (msg == msgSwitch) {
-            if (accessGranted(user, switchAccess)) toggleFire();
-            else llInstantMessage(user, "[Switch] Access denied");
+            if (accessGranted(id, switchAccess)) toggleFire();
+            else llInstantMessage(id, "[Switch] Access denied");
         }
         else if (msg == msgOn) {
-            if (accessGranted(user, switchAccess)) startSystem();
-            else llInstantMessage(user, "[Switch] Access denied");
+            if (accessGranted(id, switchAccess)) startSystem();
+            else llInstantMessage(id, "[Switch] Access denied");
         }
         else if (msg == msgOff) {
-            if (accessGranted(user, switchAccess)) stopSystem();
-            else llInstantMessage(user, "[Switch] Access denied");
+            if (accessGranted(id, switchAccess)) stopSystem();
+            else llInstantMessage(id, "[Switch] Access denied");
         }
         else if (msg == msgMenu) {
-            if (accessGranted(user, menuAccess)) {
+            if (accessGranted(id, menuAccess)) {
                 startSystem();
-                menuDialog(user);
+                menuDialog(id);
             }
-            else llInstantMessage(user, "[Menu] Access denied");
+            else llInstantMessage(id, "[Menu] Access denied");
         }
     }
 
@@ -727,15 +781,17 @@ default
             reset(); // initial values for menu
             if (on) startSystem();
 
-            if (verbose) {
-                llWhisper(0, "Touch to start/stop fire");
-                llWhisper(0, "Long touch to show menu");
-                llWhisper(0, "Switch access:" + showAccess(switchAccess));
-                llWhisper(0, "Menu access:" + showAccess(menuAccess));
-                if (sound) llWhisper(0, "Sound in object inventory: Yes");
-                else llWhisper(0, "Sound in object inventory: No");
+            if (!silent) {
+                if (verbose) {
+                    llWhisper(0, "Touch to start/stop fire");
+                    llWhisper(0, "Long touch to show menu");
+                    llWhisper(0, "Switch access:" + showAccess(switchAccess));
+                    llWhisper(0, "Menu access:" + showAccess(menuAccess));
+                    if (sound) llWhisper(0, "Sound in object inventory: Yes");
+                    else llWhisper(0, "Sound in object inventory: No");
+                }
+                llWhisper(0, title + " " + version + " ready");
             }
-            llWhisper(0, title + " " + version + " ready");
 
             if (debug) {
                 llOwnerSay((string)line + " lines in notecard");
@@ -747,6 +803,7 @@ default
                 llOwnerSay("msgOn = " + msgOn);
                 llOwnerSay("msgOff = " + msgOff);
                 llOwnerSay("msgMenu = " + msgMenu);
+                llOwnerSay("extNumber = " + (string)extNumber);
                 llOwnerSay("burnDown = " + (string)burnDown);
                 llOwnerSay("burnTime = " + (string)burnTime);
                 llOwnerSay("dieTime = " + (string)dieTime);
@@ -754,6 +811,7 @@ default
                 llOwnerSay("changeLight = " + (string)changeLight);
                 llOwnerSay("changeSmoke = " + (string)changeSmoke);
                 llOwnerSay("changeVolume = " + (string)changeVolume);
+                llOwnerSay("singleFire = " + (string)singleFire);
                 llOwnerSay("defSize = " + (string)defSize);
                 llOwnerSay("defStartColor = " + (string)defStartColor);
                 llOwnerSay("defEndColor = " + (string)defEndColor);
@@ -775,7 +833,7 @@ default
     changed(integer change)
     {
         if (change & CHANGED_INVENTORY) {
-            llWhisper(0, "Inventory changed, reloading notecard...");
+            if (!silent) llWhisper(0, "Inventory changed, reloading notecard...");
             sound = llGetInventoryName(INVENTORY_SOUND, 0); // get first sound from inventory
             if (sound) llPreloadSound(sound);
             loadNotecard();
