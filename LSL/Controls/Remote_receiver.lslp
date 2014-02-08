@@ -2,7 +2,7 @@
 //Remote receiver for RealFire
 //
 // Author: Rene10957 Resident
-// Date: 12-01-2014
+// Date: 02-02-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -16,8 +16,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//07. Feb. 2014
-//v1.1-0.4
+//08. Feb. 2014
+//v1.2-0.4
 //
 
 //Files:
@@ -66,7 +66,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Receiver";            // title
-string g_sVersion = "1.1-0.4";        // version
+string g_sVersion = "1.2-0.4";        // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "remote";

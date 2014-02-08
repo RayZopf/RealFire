@@ -2,7 +2,7 @@
 //Remote control (secondary switch) for RealFire
 //
 // Author: Rene10957 Resident
-// Date: 31-05-2013
+// Date: 02-02-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -20,8 +20,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//03. Feb. 2014
-//v1.0-0.2
+//08. Feb. 2014
+//v1.1-0.2
 //
 
 //Files:
@@ -69,7 +69,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Control";            // title
-string g_sVersion = "1.0-0.2";        // version
+string g_sVersion = "1.1-0.2";        // version
 
 string g_sType = "remote";
 integer g_iType = LINK_SET;
