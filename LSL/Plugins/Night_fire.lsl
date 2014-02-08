@@ -8,7 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 key owner;                // object owner
-integer number = 10957;   // number part of link message
+integer number = 10959;   // number part of link message
 
 default
 {

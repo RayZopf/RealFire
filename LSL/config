@@ -1,7 +1,7 @@
 # Configuration notecard for RealFire
 #
-# Date: 31-05-2013 - 06.Feb.2014
-# Version: 2.2-0.3
+# Date: 02-02-2014 - 06.Feb.2014
+# Version: 2.3-0.3
 
 GlobalDEBUG = ""                # global debugging (empty or "D E B U G") - clear value and reset all scripts to disable after use
 LINKSETID = RealFire            # group where script is in (1: first word of prim desc is identical, or 2: LINKSETID values are identical, or 3: all values are empty, or 4: LINKSETID is identical to prim desc of other prim)
@@ -15,13 +15,14 @@ dieTime = 300                   # time it takes to die, in seconds
 changeLight = YES               # YES = change light with fire, NO = remain at current intensity/radius
 changeSmoke = YES               # YES = change smoke with fire, NO = remain at 100%
 changeVolume = YES              # YES = change volume with fire, NO = remain at current volume
+singleFire = YES                # YES = single fire, NO = multiple fires
 
 # Menu defaults
 
-size = 35                       # fire size percentage
+size = 25                       # fire size percentage
 topColor = < 100, 0, 0 >        # top color percentage (red, green, blue)
 bottomColor = < 100, 100, 0 >   # bottom color percentage (red, green, blue)
-volume = 90                     # sound volume percentage
+volume = 100                    # sound volume percentage
 ParticleFire = YES              # (additionally) use particles for fire effect (induces viewer side lag)
 PrimFire = NO                   # (additionally) use prims for fire effect (may induce higher prim count)
 lowprim = NO                    # rez PrimFire as temp-prim only (not to set via Menu!)
@@ -30,7 +31,7 @@ sound = YES                     # sound or no sound
 
 # Light properties
 
-intensity = 80                 # light intensity percentage
+intensity = 100                 # light intensity percentage
 radius = 50                     # light radius percentage
 falloff = 40                    # light falloff percentage
 
@@ -69,8 +70,9 @@ falloff = 40                    # light falloff percentage
 # Don't forget to change the values in control scripts too!
 # this is esp. true for prim fire objects (remote scripts)
 
-msgNumber = 10957               # number part of incoming link messages
+msgNumber = 10959               # number part of incoming link messages
 msgSwitch = switch              # string part of incoming link message: switch (on/off)
 msgOn = on                      # string part of incoming link message: switch on
 msgOff = off                    # string part of incoming link message: switch off
 msgMenu = menu                  # string part of incoming link message: show menu
+extNumber = 10960               # number part of outgoing link messages

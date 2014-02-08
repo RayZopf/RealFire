@@ -1,7 +1,9 @@
 USER MANUAL FOR REALFIRE
 
-Date: 12-01-2014
-Version: 2.2.1
+Date: 02-02-2014
+Version: 2.3
+
+A downloadable PDF version is available on the Marketplace.
 
 QUICK START
 
@@ -10,6 +12,14 @@ Rez the example object (small campfire). Touch to start or stop fire, touch and 
 TWO SCRIPTS: FIRE AND SMOKE
 
 Every prim can only have one particle emitter, so the fire and smoke scripts cannot be in the same prim. You could, for example, put the fire script in the root prim and the smoke script in a child prim. It is assumed that you have some sort of object (linkset) with at least two prims.
+
+MULTIPLE FIRES USING ONE SCRIPT
+
+By default, the fire script will only act on the prim that contains it, but it can set fire to other prims as well. To activate this feature, set singleFire to NO in the notecard. Give the fire prim a name (other than "Object") and create more fire prims by simply giving them the same name.
+
+Warning: multiple fires in close proximity will generate a lot of particles! Both fire and smoke have a particle count of 100, so if you intend to use a lot of them it may be a wise decision to use an animated texture instead.
+
+Limitation: linkset only.
 
 SMOKE CONTROL (SMOKE WITHOUT FIRE)
 
@@ -45,13 +55,19 @@ BURNING DOWN
 
 The fire burns continuously by default. You can make it burn down by setting the notecard option burnDown to YES. The burnTime and dieTime options control how long the fire will burn and how long it takes to die. Light, smoke and sound will start to diminish when the fire reaches 25% (or can remain unchanged, see notecard options). If you set loop to YES, the fire will restart and repeat the whole process.
 
-LINK MESSAGES FROM OTHER SCRIPTS
+COMMUNICATION WITH OTHER SCRIPTS
 
-Sometimes third-party scripts will allow you to create your own submenu, and will ask you to enter a number and a string in a notecard so the script will know what to send. The fire script also has a notecard, in which you can configure what to listen for. Another use for link messages is creating your own plugins. Two examples are included: nightfire and proximity.
+The fire script can both send and receive link messages.
+
+Sending: whenever the fire is started or stopped, it will send the number 10960 and either 1 (TRUE) or 0 (FALSE) in a link message. The message can be caught by another script within the same linkset.
+
+Receiving: other scripts can control the fire and menu by sending the number 10959 and a command. See "CONFIGURATION NOTECARD" for all possible commands. Useful for plugins, of which two examples are included: nightfire and proximity.
 
 CONFIGURATION NOTECARD
 
-The fire script uses a notecard (default name "config"). Here you can configure verbosity, access control, if and how the fire burns down, menu defaults, light properties and communication with other scripts. The notecard is optional. If not present, default values will be used as indicated below.
+The fire script uses a notecard (default name "config"). Here you can configure verbosity, access control, if and how the fire burns down, number of fires, menu defaults, light properties and communication with other scripts. The notecard is optional. If not present, default values will be used as indicated below.
+
+For faster loading, remove whatever lines you don't need.
 
 verbose = YES                   # show more/less info during startup
 switchAccess = 1                # access level for switch (1 = world, 2 = group, 4 = owner, 6 = group + owner)
@@ -63,6 +79,7 @@ dieTime = 300                   # time it takes to die, in seconds
 changeLight = YES               # YES = change light with fire, NO = remain at current intensity/radius
 changeSmoke = YES               # YES = change smoke with fire, NO = remain at 100%
 changeVolume = YES              # YES = change volume with fire, NO = remain at current volume
+singleFire = YES                # YES = single fire, NO = multiple fires
 
 # Menu defaults
 
@@ -81,11 +98,12 @@ falloff = 40                    # light falloff percentage
 
 # Link messages
 
-msgNumber = 10957               # number part of incoming link messages
+msgNumber = 10959               # number part of incoming link messages
 msgSwitch = switch              # string part of incoming link message: switch (on/off)
 msgOn = on                      # string part of incoming link message: switch on
 msgOff = off                    # string part of incoming link message: switch off
 msgMenu = menu                  # string part of incoming link message: show menu
+extNumber = 10960               # number part of outgoing link messages
 
 ACCESS CONTROL
 
@@ -98,13 +116,16 @@ Access levels:
 4 = owner: object owner
 6 = group + owner
 
-DEBUG MESSAGES
+DEBUG MESSAGES AND SILENT STARTUP
 
-Near the top of every script you will see the following line:
+Near the top of (almost) every script you will see the following two lines:
 
-integer debug = FALSE;   // show/hide debug messages
+integer debug = FALSE;    // show/hide debug messages
+integer silent = FALSE;   // silent startup
 
-If you modified the script and run into trouble, set debug to TRUE. It might give some insight while trying to locate the problem.
+Debug: If you modified the script and run into trouble, set debug to TRUE. It might give some insight while trying to locate the problem.
+
+Silent: Even with verbose set to NO you will still see some whispers during startup. For a completely silent startup, set silent to TRUE.
 
 CHANGE HISTORY
 
@@ -163,3 +184,9 @@ Other:
 
 - bugfix: potential channel conflict with Lighting System
 - reintroduced smoke-only feature (dropped in 2.0)
+
+2.3, 02-02-2014
+
+- multiple fires using one script
+- outgoing link messages
+- bugfix: potential channel conflict with Lighting System

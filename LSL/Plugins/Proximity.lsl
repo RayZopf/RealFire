@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 key owner;                // object owner
-integer number = 10957;   // number part of link message
+integer number = 10959;   // number part of link message
 float range = 10.0;       // scan range in meters
 float rate = 10.0;        // scan rate in seconds
 
