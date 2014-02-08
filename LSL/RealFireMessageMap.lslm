@@ -2,8 +2,8 @@
 //Module that only holds the RealFire Message channel constants
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//06. Feb. 2014
-//v0.31
+//08. Feb. 2014
+//v0.4
 
 //Files:
 // RealFireMessageMap.lslm
@@ -32,7 +32,7 @@ string g_sScriptName;
 //integer g_sSize = 0;
 
 // Notecard variables
-integer g_iMsgNumber = 10957;             // number part of incoming link messages: used for remot control receiver scripts
+integer g_iMsgNumber = 10959;             // number part of incoming link messages: used for remot control receiver scripts
 string g_sMsgSwitch = "switch";           // string part of incoming link message: switch (on/off)
 string g_sMsgOn = "on";                   // string part of incoming link message: switch on
 string g_sMsgOff = "off";                 // string part of incoming link message: switch off
@@ -79,7 +79,7 @@ integer REMOTE_CHANNEL = -975102;         // remote channel - for listen and lin
 
 //###
 //RealFireMessageMap.lslm
-//0.31 - 06Feb2014
+//0.4 - 08Feb2014
 
 
 //END RealFireMessageMap.lslm
