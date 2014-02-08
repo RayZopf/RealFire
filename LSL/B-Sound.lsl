@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Fri Feb  7 21:06:26 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Sat Feb  8 02:19:14 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -54,7 +54,7 @@ integer g_iDebugMode = FALSE;
 integer g_iSound = TRUE;
 integer g_iVerbose = TRUE;
 
-string BACKSOUNDFILE = "17742__krisboruff__fire-crackles-no-room";
+string BACKSOUNDFILE = "17742__krisboruff__fire-crackles-no-room_loud";
 
 string LINKSETID = "RealFire";
 
@@ -76,7 +76,7 @@ float g_fFactor;
 string g_sScriptName;
 integer g_iInTimer = FALSE;
 string SEPARATOR = ";;";
-float SIZE_EXTRASMALL = 15.0;
+float SIZE_SMALL = 25.0;
 integer COMMAND_CHANNEL = -15700;
 integer SOUND_CHANNEL = -15780;
 
@@ -262,11 +262,11 @@ default {
             Debug(("Factor start " + ((string)g_fFactor)));
             if (("-1" == sVal)) (g_fFactor = 1.0);
             else  if (((0 < ((integer)sVal)) && (100 >= ((integer)sVal)))) {
-                if ((((integer)sVal) <= SIZE_EXTRASMALL)) (g_fFactor = (5.0 / 6.0));
-                else  (g_fFactor = (7.0 / 8.0));
+                if ((((integer)sVal) <= SIZE_SMALL)) (g_fFactor = (4.0 / 5.0));
+                else  (g_fFactor = (6.0 / 7.0));
             }
-            else  if ((("" != sVal) && (((integer)g_sSize) <= SIZE_EXTRASMALL))) (g_fFactor = (5.0 / 6.0));
-            else  if (((("" != sVal) && (((integer)g_sSize) > SIZE_EXTRASMALL)) && (100 <= ((integer)g_sSize)))) (g_fFactor = (5.0 / 6.0));
+            else  if ((("" != sVal) && (((integer)g_sSize) <= SIZE_SMALL))) (g_fFactor = (5.0 / 6.0));
+            else  if (((("" != sVal) && (((integer)g_sSize) > SIZE_SMALL)) && (100 <= ((integer)g_sSize)))) (g_fFactor = (5.0 / 6.0));
             Debug(("Factor calculated " + ((string)g_fFactor)));
             float fSoundVolumeF = (g_fSoundVolumeNew * g_fFactor);
             if ((g_fSoundVolumeCur > 0)) {

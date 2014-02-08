@@ -53,7 +53,7 @@ integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 integer g_iSound = TRUE;			// Sound on/off in this prim
 integer g_iVerbose = TRUE;
 
-string BACKSOUNDFILE = "17742__krisboruff__fire-crackles-no-room";                   // backroundsound for small fire
+string BACKSOUNDFILE = "17742__krisboruff__fire-crackles-no-room_loud";                   // backroundsound for small fire
 
 string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
 
@@ -186,10 +186,10 @@ default
 			//simple adjustment to different fire sizes (full, at start, when special B_Sound message with sVal = -1)
 			if ("-1" == sVal) g_fFactor = 1.0;
 				else if ( 0 < (integer)sVal && 100 >= (integer)sVal) {
-					if ((integer)sVal <= SIZE_EXTRASMALL ) g_fFactor = 5.0 / 6.0;
-						else g_fFactor = 7.0 / 8.0;
-				} else if ("" != sVal && (integer)g_sSize <= SIZE_EXTRASMALL ) g_fFactor = 5.0 / 6.0; //fallback - is this still needed?
-					else if ("" != sVal && (integer)g_sSize > SIZE_EXTRASMALL && 100 <= (integer)g_sSize) g_fFactor = 5.0 / 6.0;
+					if ((integer)sVal <= SIZE_SMALL ) g_fFactor = 4.0 / 5.0;
+						else g_fFactor = 6.0 / 7.0;
+				} else if ("" != sVal && (integer)g_sSize <= SIZE_SMALL ) g_fFactor = 5.0 / 6.0; //fallback - is this still needed?
+					else if ("" != sVal && (integer)g_sSize > SIZE_SMALL && 100 <= (integer)g_sSize) g_fFactor = 5.0 / 6.0;
 			Debug("Factor calculated "+(string)g_fFactor);
 			float fSoundVolumeF = g_fSoundVolumeNew*g_fFactor;
 
