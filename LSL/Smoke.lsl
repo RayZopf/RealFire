@@ -1,9 +1,9 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Fri Feb  7 21:06:26 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Sat Feb  8 05:25:34 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Smoke
 //
 // Author: Rene10957 Resident
-// Date: 12-01-2014
+// Date: 02-02-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -17,7 +17,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
 //07. Feb. 2014
-//v2.2.1-0.58
+//v2.1.3-0.58
 //
 
 //Files:
@@ -73,7 +73,7 @@ float g_fStartAlpha = 0.4;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";
-string g_sVersion = "2.2.1-0.58";
+string g_sVersion = "2.1.3-0.58";
 string g_sAuthors = "Rene10957, Zopf";
 integer g_iType = LINK_ALL_OTHERS;
 
@@ -99,6 +99,11 @@ integer PARTICLE_CHANNEL = -15790;
 Debug(string sMsg){
     if ((!g_iDebugMode)) return;
     llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
+}
+
+
+float percentage(float per,float num){
+    return ((num / 100.0) * per);
 }
 
 
@@ -180,6 +185,19 @@ string MasterCommand(integer iChan,string sVal,integer conf){
 //PREDEFINED FUNCTIONS
 //===============================================
 
+initExtension(){
+    if (g_iSmoke) llParticleSystem([]);
+    llSleep(1);
+    RegisterExtension(g_iType);
+    InfoLines(FALSE);
+}
+
+
+updateParticles(float fAlpha){
+    Debug(("fAlpha " + ((string)fAlpha)));
+    llParticleSystem([PSYS_PART_FLAGS,((0 | PSYS_PART_INTERP_COLOR_MASK) | PSYS_PART_INTERP_SCALE_MASK),PSYS_SRC_PATTERN,PSYS_SRC_PATTERN_EXPLODE,PSYS_SRC_BURST_RADIUS,0.1,PSYS_PART_START_COLOR,<0.5,0.5,0.5>,PSYS_PART_END_COLOR,<0.5,0.5,0.5>,PSYS_PART_START_ALPHA,fAlpha,PSYS_PART_END_ALPHA,0.0,PSYS_PART_START_SCALE,<0.1,0.1,0.0>,PSYS_PART_END_SCALE,<3.0,3.0,0.0>,PSYS_PART_MAX_AGE,g_fAge,PSYS_SRC_BURST_RATE,g_fRate,PSYS_SRC_BURST_PART_COUNT,g_iCount,PSYS_SRC_ACCEL,<0.0,0.0,0.2>,PSYS_SRC_BURST_SPEED_MIN,0.0,PSYS_SRC_BURST_SPEED_MAX,0.1]);
+}
+
 
 
 //===============================================
@@ -194,10 +212,7 @@ default {
 	state_entry() {
         (g_sScriptName = llGetScriptName());
         Debug(("state_entry, Particle count = " + ((string)llRound(((((float)g_iCount) * g_fAge) / g_fRate)))));
-        if (g_iSmoke) llParticleSystem([]);
-        llSleep(1);
-        RegisterExtension(g_iType);
-        InfoLines(FALSE);
+        initExtension();
     }
 
 
@@ -205,16 +220,14 @@ default {
         llResetScript();
     }
 
-
-	changed(integer change) {
-        if ((change & CHANGED_INVENTORY)) {
-            if (g_iSmoke) llParticleSystem([]);
-            llSleep(1);
-            RegisterExtension(g_iType);
-            InfoLines(FALSE);
-        }
-    }
-
+/* not needed, as there currently are no dependencies on files or config
+	changed(integer change)
+	{
+		if (change & CHANGED_INVENTORY) {
+		initExtension();
+		}
+	}
+*/
 
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
@@ -233,9 +246,7 @@ default {
         }
         if ((((((integer)sVal) > 0) && (((integer)sVal) <= 100)) && ("smoke" == sMsg))) {
             llSetTimerEvent(0.0);
-            float fAlpha = ((g_fStartAlpha / 100.0) * ((float)sVal));
-            Debug(("fAlpha " + ((string)fAlpha)));
-            llParticleSystem([PSYS_PART_FLAGS,((0 | PSYS_PART_INTERP_COLOR_MASK) | PSYS_PART_INTERP_SCALE_MASK),PSYS_SRC_PATTERN,PSYS_SRC_PATTERN_EXPLODE,PSYS_SRC_BURST_RADIUS,0.1,PSYS_PART_START_COLOR,<0.5,0.5,0.5>,PSYS_PART_END_COLOR,<0.5,0.5,0.5>,PSYS_PART_START_ALPHA,fAlpha,PSYS_PART_END_ALPHA,0.0,PSYS_PART_START_SCALE,<0.1,0.1,0.0>,PSYS_PART_END_SCALE,<3.0,3.0,0.0>,PSYS_PART_MAX_AGE,g_fAge,PSYS_SRC_BURST_RATE,g_fRate,PSYS_SRC_BURST_PART_COUNT,g_iCount,PSYS_SRC_ACCEL,<0.0,0.0,0.2>,PSYS_SRC_BURST_SPEED_MIN,0.0,PSYS_SRC_BURST_SPEED_MAX,0.1]);
+            updateParticles(percentage(((float)sVal),g_fStartAlpha));
             if ((g_iVerbose && ("0" != g_sSize))) llWhisper(0,"(v) Smoke changes it's appearance");
             (g_sSize = sVal);
         }
