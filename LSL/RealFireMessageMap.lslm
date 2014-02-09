@@ -3,7 +3,7 @@
 //
 //by: Zopf Resident - Ray Zopf (Raz)
 //08. Feb. 2014
-//v0.4
+//v0.5
 
 //Files:
 // RealFireMessageMap.lslm
@@ -28,8 +28,10 @@ $module ()
 
 //internal variables
 //-----------------------------------------------
+string g_sMainScript = "Fire.lsl";
 string g_sScriptName;
 //integer g_sSize = 0;
+integer silent = FALSE;         // silent startup
 
 // Notecard variables
 integer g_iMsgNumber = 10959;             // number part of incoming link messages: used for remot control receiver scripts
@@ -37,7 +39,11 @@ string g_sMsgSwitch = "switch";           // string part of incoming link messag
 string g_sMsgOn = "on";                   // string part of incoming link message: switch on
 string g_sMsgOff = "off";                 // string part of incoming link message: switch off
 string g_sMsgMenu = "menu";               // string part of incoming link message: show menu
+integer g_iExtNumber = 10960;              // number part of outgoing link messages
 integer g_iChangeLight = TRUE;     // change light with fire
+integer g_iSingleFire = TRUE;      // single fire or multiple fires
+integer g_iSingleSmoke = FALSE;
+integer g_iSingleSound = FALSE;
 vector g_vDefStartColor = <100,100,0>;           // default start (bottom) color (percentage R,G,B)
 vector g_vDefEndColor = <100,0,0>;             // default end (top) color (percentage R,G,B)
 integer g_iDefIntensity = 100;           // default light intensity (percentage)
@@ -79,7 +85,7 @@ integer REMOTE_CHANNEL = -975102;         // remote channel - for listen and lin
 
 //###
 //RealFireMessageMap.lslm
-//0.4 - 08Feb2014
+//0.5 - 08Feb2014
 
 
 //END RealFireMessageMap.lslm

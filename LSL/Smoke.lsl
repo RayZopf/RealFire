@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Sat Feb  8 05:25:34 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Sun Feb  9 00:58:57 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Smoke
 //
@@ -16,8 +16,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//07. Feb. 2014
-//v2.1.3-0.58
+//08. Feb. 2014
+//v2.1.3-0.581
 //
 
 //Files:
@@ -73,12 +73,15 @@ float g_fStartAlpha = 0.4;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";
-string g_sVersion = "2.1.3-0.58";
+string g_sVersion = "2.1.3-0.581";
 string g_sAuthors = "Rene10957, Zopf";
 integer g_iType = LINK_ALL_OTHERS;
 
 string g_sSize = "0";
+string g_sMainScript = "Fire.lsl";
 string g_sScriptName;
+integer silent = FALSE;
+integer g_iSingleSmoke = FALSE;
 string SEPARATOR = ";;";
 integer COMMAND_CHANNEL = -15700;
 integer PARTICLE_CHANNEL = -15790;
@@ -109,19 +112,23 @@ float percentage(float per,float num){
 
 //###
 //PrintStatusInfo.lslm
-//0.13 - 04Feb2014
+//0.2 - 08Feb2014
 
 InfoLines(integer bool){
     if ((g_iVerbose && bool)) {
-        if (g_iSmoke) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+        if (g_iSmoke) {
+            if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+        }
         else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
     }
     if (g_iSmoke) {
-        if (g_iSmoke) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+        if (g_iSmoke) {
+            if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+        }
         else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
     }
     else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-    if (g_iVerbose) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+    if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
 }
 
 
@@ -153,12 +160,18 @@ string GroupCheck(key kId){
 
 //###
 //ExtensionBasics.lslm
-//0.452 - 06Feb2014
+//0.462 - 08Feb2014
 
 RegisterExtension(integer link){
-    string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
-    if ((g_iSmoke && g_iSmoke)) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
-    else  llMessageLinked(link,PARTICLE_CHANNEL,"0",((key)sId));
+    if (g_iSmoke) {
+        if ((g_iSingleSmoke && (INVENTORY_NONE == llGetInventoryType(g_sMainScript)))) {
+            (g_iSmoke = FALSE);
+            return;
+        }
+        string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
+        if (g_iSmoke) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
+        else  if (g_iSingleSmoke) llMessageLinked(link,PARTICLE_CHANNEL,"0",((key)sId));
+    }
 }
 
 
@@ -166,7 +179,9 @@ string MasterCommand(integer iChan,string sVal,integer conf){
     if ((iChan == COMMAND_CHANNEL)) {
         list lValues = llParseString2List(sVal,[SEPARATOR],[]);
         string sCommand = llList2String(lValues,0);
-        if (("register" == sCommand)) RegisterExtension(g_iType);
+        if (("register" == sCommand)) {
+            RegisterExtension(g_iType);
+        }
         else  if (("verbose" == sCommand)) {
             (g_iVerbose = TRUE);
             InfoLines(FALSE);

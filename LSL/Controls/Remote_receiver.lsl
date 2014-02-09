@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Sat Feb  8 04:57:13 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Sun Feb  9 00:58:57 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -18,7 +18,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
 //08. Feb. 2014
-//v1.2-0.4
+//v1.2-0.421
 //
 
 //Files:
@@ -67,7 +67,7 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Receiver";
-string g_sVersion = "1.2-0.4";
+string g_sVersion = "1.2-0.421";
 string g_sAuthors = "Rene10957, Zopf";
 integer g_iType = LINK_SET;
 
@@ -75,7 +75,9 @@ integer g_iListenHandle = 0;
 
 // Constants
 integer BOOL = TRUE;
+string g_sMainScript = "Fire.lsl";
 string g_sScriptName;
+integer silent = FALSE;
 integer g_iMsgNumber = 10959;
 string SEPARATOR = ";;";
 integer COMMAND_CHANNEL = -15700;
@@ -102,19 +104,23 @@ Debug(string sMsg){
 
 //###
 //PrintStatusInfo.lslm
-//0.13 - 04Feb2014
+//0.2 - 08Feb2014
 
 InfoLines(integer bool){
     if ((g_iVerbose && bool)) {
-        if (BOOL) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+        if (BOOL) {
+            if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+        }
         else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
     }
     if (g_iRemote) {
-        if (BOOL) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+        if (BOOL) {
+            if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+        }
         else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
     }
     else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-    if (g_iVerbose) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+    if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
 }
 
 
@@ -136,12 +142,18 @@ string getGroup(string sDefGroup){
 
 //###
 //ExtensionBasics.lslm
-//0.452 - 06Feb2014
+//0.462 - 08Feb2014
 
 RegisterExtension(integer link){
-    string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
-    if ((g_iRemote && BOOL)) llMessageLinked(link,REMOTE_CHANNEL,"1",((key)sId));
-    else  llMessageLinked(link,REMOTE_CHANNEL,"0",((key)sId));
+    if (g_iRemote) {
+        if ((BOOL && (INVENTORY_NONE == llGetInventoryType(g_sMainScript)))) {
+            (BOOL = FALSE);
+            return;
+        }
+        string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
+        if (BOOL) llMessageLinked(link,REMOTE_CHANNEL,"1",((key)sId));
+        else  if (BOOL) llMessageLinked(link,REMOTE_CHANNEL,"0",((key)sId));
+    }
 }
 
 
@@ -149,7 +161,9 @@ string MasterCommand(integer iChan,string sVal,integer conf){
     if ((iChan == COMMAND_CHANNEL)) {
         list lValues = llParseString2List(sVal,[SEPARATOR],[]);
         string sCommand = llList2String(lValues,0);
-        if (("register" == sCommand)) RegisterExtension(g_iType);
+        if (("register" == sCommand)) {
+            RegisterExtension(g_iType);
+        }
         else  if (("verbose" == sCommand)) {
             (g_iVerbose = TRUE);
             InfoLines(FALSE);
@@ -248,6 +262,7 @@ initExtension(){
     llListenRemove(g_iListenHandle);
     (g_iListenHandle = llListen(REMOTE_CHANNEL,"","",""));
     InfoLines(FALSE);
+    if ((INVENTORY_NONE == llGetInventoryType(g_sMainScript))) llWhisper(0,(((g_sTitle + " is not in same prim as ") + g_sMainScript) + "! Remote control will not work!"));
     if (g_iVerbose) llWhisper(0,(((((("(v) " + g_sTitle) + " uses channel: ") + ((string)g_iMsgNumber)) + " and listens on ") + ((string)REMOTE_CHANNEL)) + " for remote controler"));
 }
 

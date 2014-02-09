@@ -17,7 +17,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
 //08. Feb. 2014
-//v1.2-0.4
+//v1.2-0.421
 //
 
 //Files:
@@ -66,7 +66,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Receiver";            // title
-string g_sVersion = "1.2-0.4";        // version
+string g_sVersion = "1.2-0.421";        // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "remote";
@@ -83,8 +83,8 @@ integer BOOL = TRUE;
 //===============================================
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
-$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=BOOL, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iRemote, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
-$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iEnabled=g_iRemote, m_iAvail=BOOL, m_iChannel=REMOTE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=BOOL, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iRemote, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iSingle=BOOL, m_iEnabled=g_iRemote, m_iAvail=BOOL, m_iChannel=REMOTE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
@@ -98,6 +98,7 @@ initExtension()
 	llListenRemove(g_iListenHandle);
 	g_iListenHandle = llListen(REMOTE_CHANNEL, "", "", "");
 	InfoLines(FALSE);
+	if (INVENTORY_NONE == llGetInventoryType(g_sMainScript)) llWhisper(0, g_sTitle + " is not in same prim as " + g_sMainScript+"! Remote control will not work!");
 	if (g_iVerbose) llWhisper(0, "(v) "+g_sTitle + " uses channel: " + (string)g_iMsgNumber+" and listens on "+(string)REMOTE_CHANNEL +" for remote controler");
 }
 

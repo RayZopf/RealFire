@@ -1,9 +1,9 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Fri Feb  7 21:06:26 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Sun Feb  9 00:58:57 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//04. Feb. 2014
+//08. Feb. 2014
 //v0.86
 //
 //
@@ -85,7 +85,10 @@ integer g_iSoundNFilesAvail;
 float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
+string g_sMainScript = "Fire.lsl";
 string g_sScriptName;
+integer silent = FALSE;
+integer g_iSingleSound = FALSE;
 string SEPARATOR = ";;";
 float SIZE_SMALL = 25.0;
 float SIZE_MEDIUM = 50.0;
@@ -114,19 +117,23 @@ Debug(string sMsg){
 
 //###
 //PrintStatusInfo.lslm
-//0.13 - 04Feb2014
+//0.2 - 08Feb2014
 
 InfoLines(integer bool){
     if ((g_iVerbose && bool)) {
-        if (g_iSoundAvail) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+        if (g_iSoundAvail) {
+            if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+        }
         else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
     }
     if (g_iSound) {
-        if (g_iSoundAvail) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+        if (g_iSoundAvail) {
+            if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+        }
         else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
     }
     else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-    if (g_iVerbose) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+    if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
 }
 
 
@@ -158,12 +165,18 @@ string GroupCheck(key kId){
 
 //###
 //ExtensionBasics.lslm
-//0.452 - 06Feb2014
+//0.462 - 08Feb2014
 
 RegisterExtension(integer link){
-    string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
-    if ((g_iSound && g_iSoundAvail)) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
-    else  llMessageLinked(link,SOUND_CHANNEL,"0",((key)sId));
+    if (g_iSound) {
+        if ((g_iSingleSound && (INVENTORY_NONE == llGetInventoryType(g_sMainScript)))) {
+            (g_iSoundAvail = FALSE);
+            return;
+        }
+        string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
+        if (g_iSoundAvail) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
+        else  if (g_iSingleSound) llMessageLinked(link,SOUND_CHANNEL,"0",((key)sId));
+    }
 }
 
 
@@ -171,7 +184,9 @@ string MasterCommand(integer iChan,string sVal,integer conf){
     if ((iChan == COMMAND_CHANNEL)) {
         list lValues = llParseString2List(sVal,[SEPARATOR],[]);
         string sCommand = llList2String(lValues,0);
-        if (("register" == sCommand)) RegisterExtension(g_iType);
+        if (("register" == sCommand)) {
+            RegisterExtension(g_iType);
+        }
         else  if (("verbose" == sCommand)) {
             (g_iVerbose = TRUE);
             InfoLines(FALSE);

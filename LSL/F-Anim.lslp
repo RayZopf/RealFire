@@ -21,6 +21,12 @@
 //Prequisites: Fireobjects need to be in same prim as P-Anim.lsl
 //Notecard format: see config NC
 //basic help: User Manual
+// to use "integer g_iSingleFire = FALSE;      // single fire or multiple fires"
+// - put F-Anim.lsl scripts in those prims
+// then you may want to play with "integer g_iTextureAnim = TRUE;" and "integer g_iLight = TRUE;"
+// and modify "integer g_iTypeXXX = LINK_SET;              // in this case it defines which prim(s) emitts the light and changes texture;"
+// values: LINK_THIS (only this prim, if you have more than one particle fire source/script), LINK_SET (all); LINK_ALL_OTHERS, LINK_ROOT LINK_ALL_CHILDREN
+// if you want to use a single fire script that is not in the same prim as main Fire.lsl, set singleFire to false in config notecard!
 
 //Changelog
 //
@@ -43,7 +49,13 @@ integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
 
 //user changeable variables
 //-----------------------------------------------
-integer g_iParticleFire = TRUE; // Sound on/off in this prim
+integer g_iParticleFire = TRUE; // script on/off
+integer g_iType = LINK_SET;              // in this case it defines which prim(s) emitts the light and changes texture; values: LINK_THIS (only this prim, if you have more than one particle fire source/script), LINK_SET (all); LINK_ALL_OTHERS, LINK_ROOT LINK_ALL_CHILDREN
+integer g_iTextureAnim = TRUE;
+integer g_iTypeTexture = LINK_SET;
+integer g_iLight = TRUE;
+integer g_iTypeLight = LINK_SET;
+// get singlefire from notecard, think about what to do - define linktype for all three anim things?!
 integer g_iVerbose = TRUE;
 
 string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
@@ -68,9 +80,9 @@ string g_sVersion = "0.3";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";
-integer g_iType = LINK_SET;
 
-//integer g_iPrimFireFileStartAvail = TRUE;
+integer g_iParticleFireAvail = TRUE;
+
 string g_sSize = "0";
 
 // Constants
@@ -99,8 +111,8 @@ float g_fStartRadius;              // start value of lightRadius (before burning
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import GenericFunctions.lslm();
-$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iParticleFire, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iParticleFire, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
-$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iEnabled=g_iParticleFire, m_iAvail=g_iParticleFire, m_iChannel=PARTICLE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iParticleFireAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iParticleFire, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iSingle=g_iSingleFire, m_iEnabled=g_iParticleFire, m_iAvail=g_iParticleFireAvail, m_iChannel=PARTICLE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
@@ -112,8 +124,8 @@ initExtension(integer bool)
 {
 	if (g_iParticleFire) {
 		llParticleSystem([]);
-		llSetLinkPrimitiveParamsFast(g_iType, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
-		llSetLinkTextureAnim(g_iType, FALSE, ALL_SIDES,4,4,0,0,1);
+		if (g_iTextureAnim) llSetLinkTextureAnim(g_iTypeTexture, FALSE, ALL_SIDES,4,4,0,0,1);
+		if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
 	}
 	g_vDefStartColor.x = checkInt("ColorOn (RED)", (integer)g_vDefStartColor.x, 0, 100);
 	g_vDefStartColor.y = checkInt("ColorOn (GREEN)", (integer)g_vDefStartColor.y, 0, 100);
@@ -151,31 +163,37 @@ updateSize(float size)
 	if (size > SIZE_SMALL) {
 		vStart = g_vStartScale / 100.0 * size;     // start scale
 		fRadius = g_fBurstRadius / 100.0 * size;   // burst radius
-		if (size >= SIZE_LARGE) llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
-			else if (size >= SIZE_MEDIUM) llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
-				else llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
+		if (g_iTextureAnim) {
+			if (size >= SIZE_LARGE) llSetLinkTextureAnim(g_iTypeTexture, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,9);
+				else if (size >= SIZE_MEDIUM) llSetLinkTextureAnim(g_iTypeTexture, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,6);
+					else llSetLinkTextureAnim(g_iTypeTexture, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,4);
+		}
 	} else {
-		if (size >= SIZE_EXTRASMALL) llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
-			else llSetLinkTextureAnim(g_iType, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
+		if (g_iTextureAnim) {
+			if (size >= SIZE_EXTRASMALL) llSetLinkTextureAnim(g_iTypeTexture, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,3);
+				else llSetLinkTextureAnim(g_iTypeTexture, ANIM_ON | LOOP, ALL_SIDES,4,4,0,0,1);
+		}
 		vStart = g_vStartScale / 4.0;              // start scale
 		fRadius = g_fBurstRadius / 4.0;            // burst radius
 		if (size < SIZE_TINY) {
 			vStart.y = g_vStartScale.y / 100.0 * size * 5.0;
 			if (vStart.y < 0.25) vStart.y = 0.25;
 		}
-		if (g_iChangeLight) {
-			g_fLightIntensity = percentage(size * 4.0, g_fStartIntensity);
-			g_fLightRadius = percentage(size * 4.0, g_fStartRadius);
-		} else {
-			g_fLightIntensity = g_fStartIntensity;
-			g_fLightRadius = g_fStartRadius;
+		if (g_iLight) {
+			if (g_iChangeLight) {
+				g_fLightIntensity = percentage(size * 4.0, g_fStartIntensity);
+				g_fLightRadius = percentage(size * 4.0, g_fStartRadius);
+			} else {
+				g_fLightIntensity = g_fStartIntensity;
+				g_fLightRadius = g_fStartRadius;
+			}
 		}
 	}
 
 	updateColor();
 
 	updateParticles(vStart, vEnd, fMin, fMax, fRadius, vPush);
-	llSetLinkPrimitiveParamsFast(g_iType ,[PRIM_POINT_LIGHT, TRUE, g_vLightColor, g_fLightIntensity, g_fLightRadius, g_fLightFalloff]);
+	if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight, [PRIM_POINT_LIGHT, TRUE, g_vLightColor, g_fLightIntensity, g_fLightRadius, g_fLightFalloff]);
 	Debug((string)llRound(size) + "% " + (string)vStart + " " + (string)vEnd);
 }
 
@@ -344,7 +362,7 @@ default
 
 		string sScriptName = GroupCheck(kId);
 		if ("exit" == sScriptName) return;
-		if (iChan != PARTICLE_CHANNEL || !g_iParticleFire || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; // scripts need to have that identifier in their name, so that we can discard those messages
+		if (iChan != PARTICLE_CHANNEL || !g_iParticleFire || !g_iParticleFireAvail || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; // scripts need to have that identifier in their name, so that we can discard those messages
 
 		list lParams = llParseString2List(sSet, [SEPARATOR], []);
 		string sVal = llList2String(lParams, 0);
@@ -385,12 +403,12 @@ default
 	timer()
 	{
 		Debug("timer");
-		llSetLinkPrimitiveParamsFast(g_iType, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
+		if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
 		llSleep(1.3);
 		llParticleSystem([]);
 		Debug("light + particle off");
 		llSleep(3.9);
-		llSetLinkTextureAnim(g_iType, FALSE, ALL_SIDES,4,4,0,0,1);
+		if (g_iTextureAnim) llSetLinkTextureAnim(g_iTypeTexture, FALSE, ALL_SIDES,4,4,0,0,1);
 		if (g_iVerbose) llWhisper(0, "(v) Particle fire effects ended");
 		g_sSize = "0";
 		g_iInTimer = FALSE;

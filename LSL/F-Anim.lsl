@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Fri Feb  7 21:06:26 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Sun Feb  9 00:58:57 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -22,6 +22,12 @@
 //Prequisites: Fireobjects need to be in same prim as P-Anim.lsl
 //Notecard format: see config NC
 //basic help: User Manual
+// to use "integer g_iSingleFire = FALSE;      // single fire or multiple fires"
+// - put F-Anim.lsl scripts in those prims
+// then you may want to play with "integer g_iTextureAnim = TRUE;" and "integer g_iLight = TRUE;"
+// and modify "integer g_iTypeXXX = LINK_SET;              // in this case it defines which prim(s) emitts the light and changes texture;"
+// values: LINK_THIS (only this prim, if you have more than one particle fire source/script), LINK_SET (all); LINK_ALL_OTHERS, LINK_ROOT LINK_ALL_CHILDREN
+// if you want to use a single fire script that is not in the same prim as main Fire.lsl, set singleFire to false in config notecard!
 
 //Changelog
 //
@@ -45,6 +51,12 @@ integer g_iDebugMode = FALSE;
 //user changeable variables
 //-----------------------------------------------
 integer g_iParticleFire = TRUE;
+integer g_iType = LINK_SET;
+integer g_iTextureAnim = TRUE;
+integer g_iTypeTexture = LINK_SET;
+integer g_iLight = TRUE;
+integer g_iTypeLight = LINK_SET;
+// get singlefire from notecard, think about what to do - define linktype for all three anim things?!
 integer g_iVerbose = TRUE;
 
 string LINKSETID = "RealFire";
@@ -69,9 +81,9 @@ string g_sVersion = "0.3";
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";
-integer g_iType = LINK_SET;
 
-//integer g_iPrimFireFileStartAvail = TRUE;
+integer g_iParticleFireAvail = TRUE;
+
 string g_sSize = "0";
 
 // Constants
@@ -92,8 +104,11 @@ float g_fLightRadius;
 float g_fLightFalloff;
 float g_fStartIntensity;
 float g_fStartRadius;
+string g_sMainScript = "Fire.lsl";
 string g_sScriptName;
+integer silent = FALSE;
 integer g_iChangeLight = TRUE;
+integer g_iSingleFire = TRUE;
 vector g_vDefStartColor = <100,100,0>;
 vector g_vDefEndColor = <100,0,0>;
 integer g_iDefIntensity = 100;
@@ -167,19 +182,23 @@ integer max(integer x,integer y){
 
 //###
 //PrintStatusInfo.lslm
-//0.13 - 04Feb2014
+//0.2 - 08Feb2014
 
 InfoLines(integer bool){
     if ((g_iVerbose && bool)) {
-        if (g_iParticleFire) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+        if (g_iParticleFireAvail) {
+            if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+        }
         else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
     }
     if (g_iParticleFire) {
-        if (g_iParticleFire) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+        if (g_iParticleFireAvail) {
+            if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+        }
         else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
     }
     else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-    if (g_iVerbose) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+    if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
 }
 
 
@@ -269,12 +288,18 @@ setColor(integer pos,string msg){
 
 //###
 //ExtensionBasics.lslm
-//0.452 - 06Feb2014
+//0.462 - 08Feb2014
 
 RegisterExtension(integer link){
-    string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
-    if ((g_iParticleFire && g_iParticleFire)) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
-    else  llMessageLinked(link,PARTICLE_CHANNEL,"0",((key)sId));
+    if (g_iParticleFire) {
+        if ((g_iSingleFire && (INVENTORY_NONE == llGetInventoryType(g_sMainScript)))) {
+            (g_iParticleFireAvail = FALSE);
+            return;
+        }
+        string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
+        if (g_iParticleFireAvail) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
+        else  if (g_iSingleFire) llMessageLinked(link,PARTICLE_CHANNEL,"0",((key)sId));
+    }
 }
 
 
@@ -282,7 +307,9 @@ string MasterCommand(integer iChan,string sVal,integer conf){
     if ((iChan == COMMAND_CHANNEL)) {
         list lValues = llParseString2List(sVal,[SEPARATOR],[]);
         string sCommand = llList2String(lValues,0);
-        if (("register" == sCommand)) RegisterExtension(g_iType);
+        if (("register" == sCommand)) {
+            RegisterExtension(g_iType);
+        }
         else  if (("verbose" == sCommand)) {
             (g_iVerbose = TRUE);
             InfoLines(FALSE);
@@ -309,6 +336,7 @@ string MasterCommand(integer iChan,string sVal,integer conf){
             (par = llList2String(lConfigs,count));
             (val = llList2String(lConfigs,(count + 1)));
             if ((par == "changelight")) (g_iChangeLight = ((integer)val));
+            else  if (("singlefire" == par)) (g_iSingleFire = ((integer)val));
             else  if ((par == "topcolor")) (g_vDefEndColor = ((vector)val));
             else  if ((par == "bottomcolor")) (g_vDefStartColor = ((vector)val));
             else  if ((par == "intensity")) (g_iDefIntensity = ((integer)val));
@@ -351,8 +379,8 @@ string MasterCommand(integer iChan,string sVal,integer conf){
 initExtension(integer bool){
     if (g_iParticleFire) {
         llParticleSystem([]);
-        llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,FALSE,ZERO_VECTOR,0,0,0]);
-        llSetLinkTextureAnim(g_iType,FALSE,ALL_SIDES,4,4,0,0,1);
+        if (g_iTextureAnim) llSetLinkTextureAnim(g_iTypeTexture,FALSE,ALL_SIDES,4,4,0,0,1);
+        if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight,[PRIM_POINT_LIGHT,FALSE,ZERO_VECTOR,0,0,0]);
     }
     (g_vDefStartColor.x = checkInt("ColorOn (RED)",((integer)g_vDefStartColor.x),0,100));
     (g_vDefStartColor.y = checkInt("ColorOn (GREEN)",((integer)g_vDefStartColor.y),0,100));
@@ -385,31 +413,37 @@ updateSize(float size){
     if ((size > SIZE_SMALL)) {
         (vStart = ((g_vStartScale / 100.0) * size));
         (fRadius = ((g_fBurstRadius / 100.0) * size));
-        if ((size >= SIZE_LARGE)) llSetLinkTextureAnim(g_iType,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,9);
-        else  if ((size >= SIZE_MEDIUM)) llSetLinkTextureAnim(g_iType,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,6);
-        else  llSetLinkTextureAnim(g_iType,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,4);
+        if (g_iTextureAnim) {
+            if ((size >= SIZE_LARGE)) llSetLinkTextureAnim(g_iTypeTexture,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,9);
+            else  if ((size >= SIZE_MEDIUM)) llSetLinkTextureAnim(g_iTypeTexture,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,6);
+            else  llSetLinkTextureAnim(g_iTypeTexture,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,4);
+        }
     }
     else  {
-        if ((size >= SIZE_EXTRASMALL)) llSetLinkTextureAnim(g_iType,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,3);
-        else  llSetLinkTextureAnim(g_iType,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,1);
+        if (g_iTextureAnim) {
+            if ((size >= SIZE_EXTRASMALL)) llSetLinkTextureAnim(g_iTypeTexture,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,3);
+            else  llSetLinkTextureAnim(g_iTypeTexture,(ANIM_ON | LOOP),ALL_SIDES,4,4,0,0,1);
+        }
         (vStart = (g_vStartScale / 4.0));
         (fRadius = (g_fBurstRadius / 4.0));
         if ((size < SIZE_TINY)) {
             (vStart.y = (((g_vStartScale.y / 100.0) * size) * 5.0));
             if ((vStart.y < 0.25)) (vStart.y = 0.25);
         }
-        if (g_iChangeLight) {
-            (g_fLightIntensity = percentage((size * 4.0),g_fStartIntensity));
-            (g_fLightRadius = percentage((size * 4.0),g_fStartRadius));
-        }
-        else  {
-            (g_fLightIntensity = g_fStartIntensity);
-            (g_fLightRadius = g_fStartRadius);
+        if (g_iLight) {
+            if (g_iChangeLight) {
+                (g_fLightIntensity = percentage((size * 4.0),g_fStartIntensity));
+                (g_fLightRadius = percentage((size * 4.0),g_fStartRadius));
+            }
+            else  {
+                (g_fLightIntensity = g_fStartIntensity);
+                (g_fLightRadius = g_fStartRadius);
+            }
         }
     }
     updateColor();
     updateParticles(vStart,vEnd,fMin,fMax,fRadius,vPush);
-    llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,TRUE,g_vLightColor,g_fLightIntensity,g_fLightRadius,g_fLightFalloff]);
+    if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight,[PRIM_POINT_LIGHT,TRUE,g_vLightColor,g_fLightIntensity,g_fLightRadius,g_fLightFalloff]);
     Debug(((((((string)llRound(size)) + "% ") + ((string)vStart)) + " ") + ((string)vEnd)));
 }
 
@@ -480,7 +514,7 @@ default {
         }
         string sScriptName = GroupCheck(kId);
         if (("exit" == sScriptName)) return;
-        if ((((iChan != PARTICLE_CHANNEL) || (!g_iParticleFire)) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
+        if (((((iChan != PARTICLE_CHANNEL) || (!g_iParticleFire)) || (!g_iParticleFireAvail)) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
         list lParams = llParseString2List(sSet,[SEPARATOR],[]);
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);
@@ -519,12 +553,12 @@ default {
 
 	timer() {
         Debug("timer");
-        llSetLinkPrimitiveParamsFast(g_iType,[PRIM_POINT_LIGHT,FALSE,ZERO_VECTOR,0,0,0]);
+        if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight,[PRIM_POINT_LIGHT,FALSE,ZERO_VECTOR,0,0,0]);
         llSleep(1.3);
         llParticleSystem([]);
         Debug("light + particle off");
         llSleep(3.9);
-        llSetLinkTextureAnim(g_iType,FALSE,ALL_SIDES,4,4,0,0,1);
+        if (g_iTextureAnim) llSetLinkTextureAnim(g_iTypeTexture,FALSE,ALL_SIDES,4,4,0,0,1);
         if (g_iVerbose) llWhisper(0,"(v) Particle fire effects ended");
         (g_sSize = "0");
         (g_iInTimer = FALSE);

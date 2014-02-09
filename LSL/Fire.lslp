@@ -2,7 +2,7 @@
 //Realfire by Rene - Fire
 //
 // Author: Rene10957 Resident
-// Date: 12-01-2014
+// Date: 02-02-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -15,6 +15,7 @@
 // - Fire with smoke, light and sound
 // - Burns down at any desired speed
 // - Change fire size/color and sound volume
+// - Plugin support
 // - Access control: owner, group, world
 // - Touch to start or stop fire
 // - Long touch to show menu
@@ -22,8 +23,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//07. Feb. 2014
-//v2.2.1-1.0
+//08. Feb. 2014
+//v2.3-1.0
 //
 
 //Files:
@@ -42,6 +43,7 @@
 //
 //Notecard format: see config NC
 //basic help: User Manual
+// to use multipe fires, see F-Anim.lsl header
 //
 //Changelog
 // Formatting
@@ -110,11 +112,11 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";            // title
-string g_sVersion = "2.2.1-1.0";        // version
+string g_sVersion = "2.3-1.0";           // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "fire";
-integer g_iType = LINK_SET;              // in this case it defines which prim emitts the light and changes texture
+//integer g_iType = LINK_SET;
 
 // Constants
 integer ACCESS_OWNER = 4;            // owner access bit
@@ -368,6 +370,7 @@ loadNotecard()
 			llOwnerSay("msgOn = " + g_sMsgOn);
 			llOwnerSay("msgOff = " + g_sMsgOff);
 			llOwnerSay("msgMenu = " + g_sMsgMenu);
+			llOwnerSay("extNumber = " + (string)g_iExtNumber);
 			llOwnerSay("burnDown = " + (string)g_iBurnDown);
 			llOwnerSay("burnTime = " + (string)g_fBurnTime);
 			llOwnerSay("dieTime = " + (string)g_fDieTime);
@@ -375,6 +378,7 @@ loadNotecard()
 			llOwnerSay("changeLight = " + (string)g_iChangeLight);
 			llOwnerSay("changeSmoke = " + (string)g_iChangeSmoke);
 			llOwnerSay("changeVolume = " + (string)g_iChangeVolume);
+			llOwnerSay("singleFire = " + (string)g_iSingleFire);
 			llOwnerSay("defSize = " + (string)g_iDefSize);
 			llOwnerSay("defStartColor = " + (string)g_vDefStartColor);
 			llOwnerSay("defEndColor = " + (string)g_vDefEndColor);
@@ -420,6 +424,7 @@ readNotecard (string ncLine)
 		else if (lcpar == "msgon") g_sMsgOn = val;
 		else if (lcpar == "msgoff") g_sMsgOff = val;
 		else if (lcpar == "msgmenu") g_sMsgMenu = val;
+		else if (lcpar == "extnumber") g_iExtNumber = (integer)val;
 		else if (lcpar == "burndown") g_iBurnDown = checkYesNo("burndown", val);
 		else if (lcpar == "burntime") g_fBurnTime = (float)checkInt("burnTime", (integer)val, 1, 315360000); // 10 years
 		else if (lcpar == "dietime") g_fDieTime = (float)checkInt("dieTime", (integer)val, 1, 315360000); // 10 years
@@ -429,7 +434,10 @@ readNotecard (string ncLine)
 			g_sConfLine += lcpar+"="+(string)g_iChangeLight+SEPARATOR;
 		} else if (lcpar == "changesmoke") g_iChangeSmoke = checkYesNo("changeSmoke", val);
 		else if (lcpar == "changevolume") g_iDefChangeVolume = checkYesNo("changeVolume", val);
-		else if (lcpar == "size") g_iDefSize = checkInt("size", (integer)val, 0, 100);
+		else if (lcpar == "singlefire") {
+			g_iSingleFire = checkYesNo("singleFire", val);
+			g_sConfLine += lcpar+"="+(string)g_iSingleFire+SEPARATOR;
+		} else if (lcpar == "size") g_iDefSize = checkInt("size", (integer)val, 0, 100);
 		// config for particle fire
 		else if (lcpar == "topcolor") {
 			g_vDefEndColor = checkVector("topColor", (vector)val);
@@ -535,8 +543,8 @@ endColorDialog (key id)
 	g_iEndColorChannel = (integer)(llFrand(-1000000000.0) - 1000000000.0);
 	llListenRemove(g_iEndColorHandle);
 	g_iEndColorHandle = llListen(g_iEndColorChannel, "", "", "");
-	llSetTimerEvent(0.);
-	llSetTimerEvent(120.);
+	llSetTimerEvent(0.0);
+	llSetTimerEvent(120.0);
 	llDialog(id, "Top color" +
 			"\n\nRed: " + (string)g_iPerRedEnd + "%" +
 			"\nGreen: " + (string)g_iPerGreenEnd + "%" +
@@ -620,13 +628,14 @@ reset()
 
 	//just send, don't check
 	sendMessage(COMMAND_CHANNEL, "off", "");
-	if (g_iVerbose) llWhisper(0, "(v) The fire gets taken care off");
+	if (!silent && g_iVerbose) llWhisper(0, "(v) The fire gets taken care off");
 }
 
 
 startSystem()
 {
 	Debug("startSystem");
+	if (!g_iOn) sendMessage(g_iExtNumber, (string)TRUE, ""); //don't see what that is for - came in with RealFire 2.3
 	llSetTimerEvent(0.0);
 	if (g_iMenuOpen) {
 		llListenRemove(g_iMenuHandle);
@@ -642,7 +651,7 @@ startSystem()
 	}
 	if (!g_iOn) {
 		if (g_iSoundAvail && g_iSoundOn) sendMessage(SOUND_CHANNEL, "110", (string)g_fStartVolume); // special start sound
-		if (g_iVerbose) llWhisper(0, "(v) The fire gets lit");
+		if (!silent && g_iVerbose) llWhisper(0, "(v) The fire gets lit");
 	}
 	updateSize(g_fPerSize);
 	llSetTimerEvent(g_fBurnTime);
@@ -653,7 +662,8 @@ startSystem()
 
 stopSystem()
 {
-	if (g_iVerbose && g_iOn) llWhisper(0, " (v) The fire is dying down");
+	if (!silent && g_iVerbose && g_iOn) llWhisper(0, " (v) The fire is dying down");
+	if (g_iOn) sendMessage(g_iExtNumber, (string)FALSE, ""); //don't see what that is for - came in with RealFire 2.3
 	g_iOn = FALSE;
 	g_iBurning = FALSE;
 	g_fPercent = 0.0;
@@ -686,14 +696,22 @@ sendMessage(integer iChan, string sVal, string sMsg )
 {
 	string sId = getGroup(LINKSETID) + SEPARATOR + g_sScriptName;
 	string sSet = sVal + SEPARATOR + sMsg;
+
+	if (g_iSingleFire && ("fire" == sMsg || ANIM_CHANNEL == iChan)) jump thisprim;
+	else if (g_iSingleSmoke && "smoke" == sMsg) jump thisprim;
+	else if (g_iSingleSound && SOUND_CHANNEL ==iChan) jump thisprim;
+
 	llMessageLinked(LINK_SET, iChan, sSet, (key)sId);
+	return;
+@thisprim;
+	llMessageLinked(LINK_THIS, iChan, sSet, (key)sId); //check for single fire - then only this prim for fire command;
 }
 
 infoLines()
 {
 	llWhisper(0, g_sTitle +" "+g_sVersion+" by "+g_sAuthors);
-	llWhisper(0, "Touch to start/stop fire\n *Long touch to show menu*");
-	if (g_iVerbose) {
+	if (!silent) llWhisper(0, "Touch to start/stop fire\n *Long touch to show menu*");
+	if (!silent && g_iVerbose) {
 		llWhisper(0, "(v) Switch access:" + showAccess(g_iSwitchAccess));
 		llWhisper(0, "(v) Menu access:" + showAccess(g_iMenuAccess));
 		llWhisper(0, "(v) Channel for remote control: "+ (string)g_iMsgNumber);
@@ -719,7 +737,7 @@ default
 
 		stopSystem();
 		sendMessage(COMMAND_CHANNEL, "register", "");
-		if (g_iVerbose) llWhisper(0, "(v) Loading notecard...");
+		if (!silent && g_iVerbose) llWhisper(0, "(v) Loading notecard...");
 		loadNotecard();
 	}
 
@@ -736,7 +754,7 @@ default
 			g_iSmokeAvail = g_iSmokeOn = FALSE;
 			g_iSoundAvail = g_iBackSoundAvail = g_iDefSound = g_iSoundOn = FALSE;
 			sendMessage(COMMAND_CHANNEL, "register", "");
-			llWhisper(0, "Inventory changed, reloading notecard...");
+			if (!silent) llWhisper(0, "Inventory changed, reloading notecard...");
 			loadNotecard();
 		}
 	}
@@ -744,7 +762,7 @@ default
 	touch_start(integer total_number)
 	{
 		g_kUser = llDetectedKey(0);
-		llRegionSayTo(g_kUser, 0, "*Long touch to show menu*");
+		if (!silent) llRegionSayTo(g_kUser, 0, "*Long touch to show menu*");
 		llResetTime();
 	}
 
@@ -763,7 +781,7 @@ default
 		}
 	}
 
-	listen(integer channel, string name, key id, string msg)
+	listen(integer channel, string name, key kId, string msg)
 	{
 		Debug("LISTEN event: " + (string)channel + "; " + msg);
 
@@ -794,8 +812,8 @@ default
 
 			if (msg != "Close" && "Options" != msg) {
 				if ("FastToggle" != msg) updateSize(g_fPerSize);
-				menuDialog(g_kUser);
-			} else if (msg == "Options") optionsDialog(g_kUser);
+				menuDialog(kId);
+			} else if (msg == "Options") optionsDialog(kId);
 			else if (msg == "Close") {
 				llSetTimerEvent(0.0); // stop dialog timer
 				llSetTimerEvent(g_fBurnTime); // restart burn timer
@@ -809,7 +827,7 @@ default
 			else if ("PrimFire" == msg && g_iPrimFireAvail) toggleFunktion("primfire");
 			else if (msg == "Smoke" && g_iSmokeAvail) toggleFunktion("smoke");
 			else if (msg == "Sound" && (g_iSoundAvail || g_iBackSoundAvail)) toggleFunktion("sound");
-			else if (msg == "Color") endColorDialog(g_kUser);
+			else if (msg == "Color") endColorDialog(kId);
 			else if ("Verbose" == msg) {
 				if (g_iVerbose && g_iVerboseButton) {
 					sendMessage(COMMAND_CHANNEL, "nonverbose", "");
@@ -833,8 +851,8 @@ default
 				} else if (msg == "RESET") { reset(); startSystem(); }
 
 			if ("Color" != msg && msg != "^Main menu" && "Close" != msg) {
-				optionsDialog(g_kUser);
-			} else if (msg == "^Main menu") menuDialog(g_kUser);
+				optionsDialog(kId);
+			} else if (msg == "^Main menu") menuDialog(kId);
 				else if (msg == "Close") {
 					llSetTimerEvent(0.0); //stop dialog timer
 					llSetTimerEvent(g_fBurnTime); //restart burn timer
@@ -849,9 +867,9 @@ default
 					Debug("do it (start)");
 					sendMessage(COMMAND_CHANNEL, "config", "startcolor="+msg);
 					//updateSize(g_fPerSize);
-					startColorDialog(g_kUser);
-				} else if (msg == "Top color") endColorDialog(g_kUser);
-				else if (msg == "^Main menu") menuDialog(g_kUser);
+					startColorDialog(kId);
+				} else if (msg == "Top color") endColorDialog(kId);
+				else if (msg == "^Main menu") menuDialog(kId);
 
 			} else if (channel == g_iEndColorChannel) {
 				Debug("endcolor");
@@ -861,9 +879,9 @@ default
 					Debug("do it (start)");
 					sendMessage(COMMAND_CHANNEL, "config", "endcolor="+msg);
 					//updateSize(g_fPerSize);
-					endColorDialog(g_kUser);
-				} else if (msg == "Bottom color") startColorDialog(g_kUser);
-				else if (msg == "^Options") optionsDialog(g_kUser);
+					endColorDialog(kId);
+				} else if (msg == "Bottom color") startColorDialog(kId);
+				else if (msg == "^Options") optionsDialog(kId);
 			}
 		}
 
@@ -881,7 +899,7 @@ default
 			if (sScriptName == PRIMFIREANIMSCRIPT) {
 				if ("1" == sMsg) {
 					g_iPrimFireAvail = TRUE;
-					llWhisper(0, "PrimFire available");
+					if (!silent) llWhisper(0, "PrimFire available");
 					if (g_iDefPrimFire && g_iOn) { //if only smoke scripts gets resetted - is normally in another prim!
 						g_iPrimFireOn = !g_iPrimFireOn; //important to get it toggled
 						toggleFunktion("primfire");
@@ -891,7 +909,7 @@ default
 			if (sScriptName == TEXTUREANIMSCRIPT) {
 				if ("1" == sMsg){
 					//g_iBackSoundAvail = TRUE;
-					llWhisper(0, "Texture animations available");
+					if (!silent) llWhisper(0, "Texture animations available");
 				} else ;//g_iBackSoundAvail = FALSE;
 			}
 			if ("1" != sMsg ) llWhisper(0, "Unable to provide animations ("+sScriptName+")");
@@ -901,7 +919,7 @@ default
 				if ("1" == sMsg) {
 					g_iParticleFireAvail = TRUE;
 					if ("" != g_sConfLine) sendMessage(COMMAND_CHANNEL, "config", g_sConfLine);
-					llWhisper(0, "ParticleFire available");
+					if (!silent) llWhisper(0, "ParticleFire available");
 					if (g_iDefParticleFire && g_iOn) { //if only smoke scripts gets resetted - is normally in another prim!
 						g_iParticleFireOn = !g_iParticleFireOn; //important to get it toggled
 						toggleFunktion("particlefire");
@@ -911,7 +929,7 @@ default
 			if (sScriptName == SMOKESCRIPT) {
 				if ("1" == sMsg) {
 					g_iSmokeAvail = TRUE;
-					llWhisper(0, "Smoke available");
+					if (!silent) llWhisper(0, "Smoke available");
 					if (g_iDefSmoke && g_iOn) { //if only smoke scripts gets resetted - is normally in another prim!
 						g_iSmokeOn = !g_iSmokeOn; //important to get it toggled
 						toggleFunktion("smoke");
@@ -924,7 +942,7 @@ default
 			if (sScriptName == SOUNDSCRIPT) {
 				if ("1" == sMsg) {
 					g_iSoundAvail = TRUE;
-					llWhisper(0, "Noise available");
+					if (!silent) llWhisper(0, "Noise available");
 					if (g_iDefSound && g_iOn) { //if only sound scripts gets resetted - one of them should be another prim!
 						g_iSoundOn = !g_iSoundOn; //important to get it toggled
 						toggleFunktion("sound");
@@ -933,7 +951,7 @@ default
 			} else if (sScriptName == BACKSOUNDSCRIPT) {
 				if ("1" == sMsg){
 					g_iBackSoundAvail = TRUE;
-					llWhisper(0, "Ambience sound available");
+					if (!silent) llWhisper(0, "Ambience sound available");
 					if (g_iDefSound && g_iOn) { //if only sound scripts gets resetted
 						g_iSoundOn = !g_iSoundOn; //important to get it toggled
 						toggleFunktion("sound");
@@ -944,32 +962,32 @@ default
 
 		} else if (iChan == REMOTE_CHANNEL) {
 				if ("1" == sMsg) {
-					llWhisper(0, "Remote receiver activated");
+					if (!silent) llWhisper(0, "Remote receiver activated");
 					if ("" != g_sConfLine) sendMessage(COMMAND_CHANNEL, "config", g_sConfLine);
 				}
 
 		} else if (iChan == g_iMsgNumber) {
-			if (kId != "") g_kUser = kId;
+			if (kId) { }
 				else {
 					llWhisper(0, "A valid avatar key must be provided in the link message.");
 					return;
 				}
 
 			if (sMsg == g_sMsgSwitch) {
-				if (accessGranted(g_kUser, g_iSwitchAccess)) toggleFunktion("fire");
-					else llInstantMessage(g_kUser, "[Switch] Access denied");
+				if (accessGranted(kId, g_iSwitchAccess)) toggleFunktion("fire");
+					else llInstantMessage(kId, "[Switch] Access denied");
 			} else if (sMsg == g_sMsgOn) {
-				if (accessGranted(g_kUser, g_iSwitchAccess)) startSystem();
-					else llInstantMessage(g_kUser, "[Switch] Access denied");
+				if (accessGranted(kId, g_iSwitchAccess)) startSystem();
+					else llInstantMessage(kId, "[Switch] Access denied");
 				}
 			else if (sMsg == g_sMsgOff) {
-				if (accessGranted(g_kUser, g_iSwitchAccess)) stopSystem();
-				else llInstantMessage(g_kUser, "[Switch] Access denied");
+				if (accessGranted(kId, g_iSwitchAccess)) stopSystem();
+				else llInstantMessage(kId, "[Switch] Access denied");
 			} else if (sMsg == g_sMsgMenu) {
-				if (accessGranted(g_kUser, g_iMenuAccess)) {
+				if (accessGranted(kId, g_iMenuAccess)) {
 					startSystem();
-					menuDialog(g_kUser);
-				} else llInstantMessage(g_kUser, "[Menu] Access denied");
+					menuDialog(kId);
+				} else llInstantMessage(kId, "[Menu] Access denied");
 			}
 		}
 	}
@@ -1015,6 +1033,7 @@ default
 				llOwnerSay("msgOn = " + g_sMsgOn);
 				llOwnerSay("msgOff = " + g_sMsgOff);
 				llOwnerSay("msgMenu = " + g_sMsgMenu);
+				llOwnerSay("extNumber = " + (string)g_iExtNumber);
 				llOwnerSay("burnDown = " + (string)g_iBurnDown);
 				llOwnerSay("burnTime = " + (string)g_fBurnTime);
 				llOwnerSay("dieTime = " + (string)g_fDieTime);
@@ -1022,6 +1041,7 @@ default
 				llOwnerSay("changeLight = " + (string)g_iChangeLight);
 				llOwnerSay("changeSmoke = " + (string)g_iChangeSmoke);
 				llOwnerSay("changeVolume = " + (string)g_iChangeVolume);
+				llOwnerSay("singleFire = " + (string)g_iSingleFire);
 				llOwnerSay("defSize = " + (string)g_iDefSize);
 				llOwnerSay("defStartColor = " + (string)g_vDefStartColor);
 				llOwnerSay("defEndColor = " + (string)g_vDefEndColor);
