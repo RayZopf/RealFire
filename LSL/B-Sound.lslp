@@ -2,7 +2,7 @@
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//04. Feb. 2014
+//08. Feb. 2014
 //v0.48
 //
 //
@@ -83,8 +83,8 @@ float g_fFactor;
 //===============================================
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
-$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iOn=g_iSound, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
-$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iSound, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iSingle=g_iSingleSound, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
@@ -167,7 +167,7 @@ default
 
 		string sScriptName = GroupCheck(kId);
 		if ("exit" == sScriptName) return;
-		if (iChan != SOUND_CHANNEL || !g_iSound && !g_iSoundAvail || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; //scripts need to have that identifier in their name, so that we can discard those messages
+		if (iChan != SOUND_CHANNEL || !g_iSound || !g_iSoundAvail || (llSubStringIndex(llToLower(sScriptName), g_sType) >= 0)) return; //scripts need to have that identifier in their name, so that we can discard those messages
 
 		list lParams = llParseString2List(sSoundSet, [SEPARATOR], []);
 		string sVal = llList2String(lParams, 0);
