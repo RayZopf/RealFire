@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Sun Feb  9 00:58:57 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Sun Feb  9 01:53:35 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -142,7 +142,7 @@ string getGroup(string sDefGroup){
 
 //###
 //ExtensionBasics.lslm
-//0.462 - 08Feb2014
+//0.463 - 08Feb2014
 
 RegisterExtension(integer link){
     if (g_iRemote) {
@@ -250,6 +250,7 @@ integer getConfigRemote(string sVal){
         while ((count <= n));
     }
     else  return 0;
+    return 0;
 }
 
 

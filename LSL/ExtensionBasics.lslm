@@ -3,7 +3,7 @@
 //
 //by: Zopf Resident - Ray Zopf (Raz)
 //08. Feb. 2014
-//v0.462
+//v0.463
 //Files:
 // ExtensionBasics.lslm
 //
@@ -32,7 +32,7 @@ $import ColorChanger.lslm();
 
 //###
 //ExtensionBasics.lslm
-//0.462 - 08Feb2014
+//0.463 - 08Feb2014
 
 RegisterExtension(integer link)
 {
@@ -198,6 +198,7 @@ integer getConfigRemote(string sVal)
 			count = count +2;
 		} while (count <= n);
 	} else return 0;
+	return 0;
 }
 
 //END ExtensionBasics.lslm
