@@ -12,6 +12,10 @@ rework some internal functions like
  - size of fire
  - change of fire/sound
  - settings notecard and verbosity
+make it work in opensim (SoaS)
+ - LSLForge uses extraneous parentheses
+	- see [0005422: (i = 1); fails to compile] (http://opensimulator.org/mantis/view.php?id=5422)
+	- and [0005006: LSL implementation does not allow parenthesis assignments] (http://opensimulator.org/mantis/view.php?id=5006)
 
 
 
@@ -55,4 +59,6 @@ Licensing
 ========
  - for original RealFire see file *License* in directory *LSL*
  - for used Sound samples see *Attribution.txt* in *Objects\Sounds*
- - for used Objects see *License-Logs_Embers-SL.txt* in directory *Objects*
+ - for used Objects see
+ 	- *License-Logs_Embers-SL.txt* in directory *Objects*
+ 	- and *Fire Perms INFO* in directory *Objects\Sculpted Fire Full Perm*
