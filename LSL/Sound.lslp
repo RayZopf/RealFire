@@ -2,8 +2,8 @@
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//08. Feb. 2014
-//v0.86
+//10. Feb. 2014
+//v0.862
 //
 //
 // (Realfire by Rene)
@@ -43,23 +43,17 @@
 //GLOBAL VARIABLES
 //===============================================
 
-//debug variables
-//-----------------------------------------------
-integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
-
-
 //user changeable variables
 //-----------------------------------------------
-integer g_iSound = TRUE;         // Sound on/off in this prim
-integer g_iVerbose = TRUE;
+integer g_iSound;         // Sound on/off in this prim
 
 string g_sSoundFileStart = "75145__willc2-45220__struck-match-8b-22k-1-65s";     // starting fire (somehow special sound!)
-string g_sSoundFileSmall = "17742__krisboruff__fire-crackles-no-room";           // sound for small fire
-string g_sSoundFileMedium1 = "104958__glaneur-de-sons__petit-feu-little-fire-2"; // first sound for medium fire (yes, file fire-2)
-string g_sSoundFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1"; // second sound for medium fire
-string g_sSoundFileFull = "4211__dobroide__fire-crackling";                      // standard sound, sound for big fire
+string g_sSoundFileSmall = "17742__krisboruff__fire-crackles-no-room_med";           // sound for small fire
+string g_sSoundFileMedium1 = "104958__glaneur-de-sons__petit-feu-little-fire-2_loud"; // first sound for medium fire (yes, file fire-2)
+string g_sSoundFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1_loud"; // second sound for medium fire
+string g_sSoundFileFull = "4211__dobroide__fire-crackling_loud";                      // standard sound, sound for big fire
 
-integer g_iSoundNFiles = 5;
+integer g_iSoundNFiles;
 //starting sound has to be first in list
 list g_lSoundFileList = [g_sSoundFileStart, g_sSoundFileSmall, g_sSoundFileMedium1, g_sSoundFileMedium2, g_sSoundFileFull];
 string g_sCurrentSoundFile = g_sSoundFileMedium2; // standard sound - must not be sound for starting fire!
@@ -70,7 +64,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";     // title
-string g_sVersion = "0.86";       // version
+string g_sVersion = "0.862";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "sound";
@@ -84,10 +78,6 @@ integer g_iSoundNFilesAvail; // cut some stuff if only one file found
 float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
-
-//RealFire MESSAGE MAP
-//integer COMMAND_CHANNEL =
-//integer SOUND_CHANNEL = sound channel
 
 
 //===============================================
@@ -104,6 +94,17 @@ $import CheckForFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptNam
 //===============================================
 //PREDEFINED FUNCTIONS
 //===============================================
+
+// pragma inline
+initExtension()
+{
+	llStopSound();
+	g_sCurrentSoundFile = CheckForFiles(g_iSoundNFiles, g_lSoundFileList, g_iPermCheck, g_sCurrentSoundFile);
+	llSleep(1);
+	RegisterExtension(g_iType);
+	InfoLines(TRUE);
+}
+
 
 selectStuff(float fVal)
 {
@@ -145,13 +146,14 @@ default
 {
 	state_entry()
 	{
+		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		MESSAGE_MAP();
+		g_iSound = TRUE;
+		g_iSoundNFiles = 5;
+
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
-		llStopSound();
-		g_sCurrentSoundFile = CheckForFiles(g_iSoundNFiles, g_lSoundFileList, g_iPermCheck, g_sCurrentSoundFile);
-		llSleep(1);
-		RegisterExtension(g_iType);
-		InfoLines(TRUE);
+		initExtension();
 	}
 
 	on_rez(integer start_param)
@@ -168,12 +170,8 @@ default
 	changed(integer change)
 	{
 		if (change & CHANGED_INVENTORY) {
-			llWhisper(0, "Inventory changed, checking sound samples...");
-			llStopSound();
-			g_sCurrentSoundFile = CheckForFiles(g_iSoundNFiles, g_lSoundFileList, g_iPermCheck, g_sCurrentSoundFile);
-			llSleep(1);
-			RegisterExtension(g_iType);
-			InfoLines(TRUE);
+			if (!silent) llWhisper(0, "Inventory changed, checking sound samples...");
+			initExtension();
 		}
 	}
 
@@ -209,12 +207,12 @@ default
 			if ("" == sVal || sVal == g_sSize) {
 				if (g_fSoundVolumeCur > 0.0) {
 					llAdjustSoundVolume(g_fSoundVolumeNew);
-					if (g_iVerbose) llWhisper(0, "(v) Sound range for fire has changed");
+					if (!silent && g_iVerbose) llWhisper(0, "(v) Sound range for fire has changed");
 				} else {
 					llPreloadSound(g_sCurrentSoundFile); // give fire some time to start before making noise
 					llStopSound(); // just to be save
 					llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
-					if (g_iVerbose) llWhisper(0, "(v) The fire starts to make noise again");
+					if (!silent && g_iVerbose) llWhisper(0, "(v) The fire starts to make noise again");
 				}
 			} else {
 
@@ -225,11 +223,11 @@ default
 
 				if (g_sCurrentSoundFile == sCurrentSoundFileTemp && "0" != sSizeTemp) {
 					llAdjustSoundVolume(g_fSoundVolumeNew); // fire size changed - but still same soundsample
-					if (g_iVerbose) llWhisper(0, "(v) Sound range for fire has changed");
+					if (!silent && g_iVerbose) llWhisper(0, "(v) Sound range for fire has changed");
 				} else {
 					if (g_iVerbose) {
-						if (g_fSoundVolumeCur > 0.0) llWhisper(0, "(v) The fire changes it's sound");
-							else llWhisper(0, "(v) The fire starts to make noise");
+						if (!silent && g_iVerbose &&g_fSoundVolumeCur > 0.0) llWhisper(0, "(v) The fire changes it's sound");
+							else if (!silent) llWhisper(0, "(v) The fire starts to make noise");
 					}
 					Debug("play sound: "+g_sCurrentSoundFile);
 					llPreloadSound(g_sCurrentSoundFile);
@@ -246,7 +244,7 @@ default
 	timer()
 	{
 		llStopSound();
-		if (g_iVerbose) llWhisper(0, "(v) Noise from fire ended");
+		if (!silent && g_iVerbose) llWhisper(0, "(v) Noise from fire ended");
 		g_fSoundVolumeNew =g_fSoundVolumeCur = 0.0;
 		g_sSize = "0";
 		llSetTimerEvent(0.0);

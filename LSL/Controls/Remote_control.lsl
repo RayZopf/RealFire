@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Sun Feb  9 00:58:57 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Mon Feb 10 02:45:20 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote control (secondary switch) for RealFire
 //
@@ -21,13 +21,40 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//08. Feb. 2014
-//v1.1-0.2
+//09. Feb. 2014
+//v1.1-0.21
 //
 
+//Files:
+// Fire.lsl
+// Remote_receiver.lsl
+//
+// Smoke.lsl
+// Sound.lsl
+// config
+// User Manual
+//
+//
+//Prequisites:
+// Remote_receiver.lsl in same prim as Fire.lsl
+//
+//Notecard format: see config NC
+//basic help: User Manual and in header
+//
+//Changelog
+// Formatting
+// LSLFore modules
 
-integer g_iVerbose = FALSE;
+//FIXME: ----
 
+//TODO: ----
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//===============================================
+//GLOBAL VARIABLES
+//===============================================
 
 //user changeable variables
 //-----------------------------------------------
@@ -37,27 +64,27 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Control";
-string g_sVersion = "1.1-0.2";
+string g_sVersion = "1.1-0.21";
 string g_sAuthors = "Rene10957, Zopf";
+integer g_iVerbose = 1;
 string g_sMsgSwitch = "switch";
 string g_sMsgMenu = "menu";
 string SEPARATOR = ";;";
-integer REMOTE_CHANNEL = -975102;
+integer COMMAND_CHANNEL;
+integer PARTICLE_CHANNEL;
+integer SOUND_CHANNEL;
+integer ANIM_CHANNEL;
+integer PRIMCOMMAND_CHANNEL;
+integer REMOTE_CHANNEL;
 
 
-//###
-//GroupHandling.lslm
-//0.5 - 31Jan2014
-
-string getGroup(string sDefGroup){
-    if (("" == sDefGroup)) (sDefGroup = "Default");
-    string str = llStringTrim(llGetObjectDesc(),STRING_TRIM);
-    if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
-    else  {
-        list lGroup = llParseString2List(str,[" "],[]);
-        (str = llList2String(lGroup,0));
-    }
-    return str;
+MESSAGE_MAP(){
+    (COMMAND_CHANNEL = 15700);
+    (PARTICLE_CHANNEL = -15790);
+    (SOUND_CHANNEL = -15780);
+    (ANIM_CHANNEL = -15770);
+    (PRIMCOMMAND_CHANNEL = -15771);
+    (REMOTE_CHANNEL = -975102);
 }
 
 
@@ -77,6 +104,7 @@ string getGroup(string sDefGroup){
 default {
 
 	state_entry() {
+        MESSAGE_MAP();
         if (g_iVerbose) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + " ready"));
     }
 
@@ -96,7 +124,15 @@ default {
         string command;
         if ((llGetTime() > 1.0)) (command = g_sMsgMenu);
         else  (command = g_sMsgSwitch);
-        list msgList = [getGroup(LINKSETID),command,kUser];
+        string sDefGroup = LINKSETID;
+        if (("" == sDefGroup)) (sDefGroup = "Default");
+        string str = llStringTrim(llGetObjectDesc(),3);
+        if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
+        else  {
+            list lGroup = llParseString2List(str,[" "],[]);
+            (str = llList2String(lGroup,0));
+        }
+        list msgList = [str,command,kUser];
         string msgData = llDumpList2String(msgList,SEPARATOR);
         llRegionSay(REMOTE_CHANNEL,msgData);
     }

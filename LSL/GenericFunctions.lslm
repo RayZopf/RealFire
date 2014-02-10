@@ -2,8 +2,8 @@
 //Module that provides some simple functions
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//06. Feb. 2014
-//v0.2
+//09. Feb. 2014
+//v0.22
 
 //Files:
 // GenericFunctions.lslm
@@ -28,36 +28,39 @@ $module ()
 
 //###
 //GenericFunctions.lslm
-//0.2 - 06Feb2014
+//0.22 - 09Feb2014
 
+// pragma noinlining
 integer checkInt(string par, integer val, integer min, integer max)
 {
 	if (val < min || val > max) {
 		if (val < min) val = min;
 		else if (val > max) val = max;
-		llWhisper(0, "[Notecard] " + par + " out of range, corrected to " + (string)val);
+		llWhisper(0, par + " out of range, corrected to " + (string)val);
 	}
 	return val;
 }
 
 
+// pragma inline
 float percentage (float per, float num)
 {
 	return num / 100.0 * per;
 }
 
 
+// pragma noinlining
 integer min (integer x, integer y)
 {
 	if (x < y) return x; else return y;
 }
 
 
+// pragma noinlining
 integer max (integer x, integer y)
 {
 	if (x > y) return x; else return y;
 }
-
 
 //END GenericFunctions.lslm
 //###

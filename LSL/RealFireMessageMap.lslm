@@ -2,8 +2,8 @@
 //Module that only holds the RealFire Message channel constants
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//08. Feb. 2014
-//v0.5
+//09. Feb. 2014
+//v0.6
 
 //Files:
 // RealFireMessageMap.lslm
@@ -24,6 +24,16 @@
 
 
 $module ()
+
+
+//debug variables
+//-----------------------------------------------
+integer g_iDebugMode = FALSE;
+
+
+//user changeable variables
+//-----------------------------------------------
+integer g_iVerbose = TRUE;
 
 
 //internal variables
@@ -73,20 +83,38 @@ float SIZE_MEDIUM = 50.0;
 float SIZE_LARGE = 80.0;
 
 //RealFire MESSAGE MAP
-integer COMMAND_CHANNEL = -15700;
-integer PARTICLE_CHANNEL = -15790;           // smoke channel
-integer SOUND_CHANNEL = -15780;           // sound channel
-integer ANIM_CHANNEL = -15770;            // primfire/textureanim channel
-integer PRIMCOMMAND_CHANNEL = -15771;     // kill fire prims or make temp prims
+integer COMMAND_CHANNEL;
+integer PARTICLE_CHANNEL;           // smoke channel
+integer SOUND_CHANNEL;           // sound channel
+integer ANIM_CHANNEL;            // primfire/textureanim channel
+integer PRIMCOMMAND_CHANNEL;     // kill fire prims or make temp prims
 
-integer REMOTE_CHANNEL = -975102;         // remote channel - for listen and link_messages (register extension)
+integer REMOTE_CHANNEL;         // remote channel - for listen and link_messages (register extension)
 
 
 
 //###
 //RealFireMessageMap.lslm
-//0.5 - 08Feb2014
+//0.6 - 09Feb2014
 
+// pragma inline
+LSLFORGE_OPTIMIZER_MODUL()
+{
+	g_iVerbose = g_iVerbose;
+	silent = silent;
+}
+
+
+MESSAGE_MAP()
+{
+	COMMAND_CHANNEL = 15700;
+	PARTICLE_CHANNEL = -15790;           // smoke channel
+	SOUND_CHANNEL = -15780;           // sound channel
+	ANIM_CHANNEL = -15770;            // primfire/textureanim channel
+	PRIMCOMMAND_CHANNEL = -15771;     // kill fire prims or make temp prims
+
+	REMOTE_CHANNEL = -975102;         // remote channel - for listen and link_messages (register extension)
+}
 
 //END RealFireMessageMap.lslm
 //###

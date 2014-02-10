@@ -2,8 +2,8 @@
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//08. Feb. 2014
-//v0.48
+//09. Feb. 2014
+//v0.49
 //
 //
 // (Realfire by Rene)
@@ -43,15 +43,9 @@
 //GLOBAL VARIABLES
 //===============================================
 
-//debug variables
-//-----------------------------------------------
-integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
-
-
 //user changeable variables
 //-----------------------------------------------
-integer g_iSound = TRUE;			// Sound on/off in this prim
-integer g_iVerbose = TRUE;
+integer g_iSound;			// Sound on/off in this prim
 
 string BACKSOUNDFILE = "17742__krisboruff__fire-crackles-no-room_loud";                   // backroundsound for small fire
 
@@ -61,7 +55,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";     // title
-string g_sVersion = "0.48";       // version
+string g_sVersion = "0.49";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "sound";
@@ -72,10 +66,6 @@ float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
 float g_fFactor;
-
-//RealFire MESSAGE MAP
-//integer COMMAND_CHANNEL =
-//integer SOUND_CHANNEL = sound channel
 
 
 //===============================================
@@ -92,6 +82,7 @@ $import GroupHandling.lslm(m_sGroup=LINKSETID);
 //PREDEFINED FUNCTIONS
 //===============================================
 
+// pragma inline
 initExtension()
 {
 	if (g_iSound) llStopSound();
@@ -101,6 +92,7 @@ initExtension()
 	if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
 	InfoLines(TRUE);
 }
+
 
 checkSoundFiles()
 {
@@ -128,6 +120,10 @@ default
 {
 	state_entry()
 	{
+		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		MESSAGE_MAP();
+		g_iSound=TRUE;
+
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
 		g_fFactor = 7.0 / 8.0;
@@ -149,8 +145,8 @@ default
 	changed(integer change)
 	{
 		if (change & CHANGED_INVENTORY) {
-			llWhisper(0, "Inventory changed, checking sound samples...");
-		initExtension();
+			if (!silent) llWhisper(0, "Inventory changed, checking sound samples...");
+			initExtension();
 		}
 	}
 
@@ -201,12 +197,12 @@ default
 				llPreloadSound(BACKSOUNDFILE);
 				llStopSound(); // just in case...
 				llLoopSound(BACKSOUNDFILE, fSoundVolumeF);
-				if (g_iVerbose) llWhisper(0, "(v) Fire emits a crackling background sound");
+				if (!silent && g_iVerbose) llWhisper(0, "(v) Fire emits a crackling background sound");
 			}
 			g_fSoundVolumeCur = g_fSoundVolumeNew;
 			if ("" != sVal) g_sSize = sVal;
 		} else {
-			llWhisper(0, "Background fire noises getting quieter and quieter...");
+			if (!silent) llWhisper(0, "Background fire noises getting quieter and quieter...");
 			g_iInTimer = TRUE;
 			llSetTimerEvent(12.0); //wait ... better would be to fade out
 		}
@@ -216,7 +212,7 @@ default
 	timer()
 	{
 		llStopSound();
-		if (g_iVerbose) llWhisper(0, "(v) Background noise off");
+		if (!silent && g_iVerbose) llWhisper(0, "(v) Background noise off");
 		g_fSoundVolumeNew = g_fSoundVolumeCur = 0.0;
 		g_sSize = "0";
 		g_iInTimer = FALSE;

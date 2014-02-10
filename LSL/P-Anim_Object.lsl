@@ -1,80 +1,31 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Sun Feb  9 00:58:57 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Mon Feb 10 02:45:20 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire rezzed object script
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//01. Feb. 2014
-//v0.2
+//10. Feb. 2014
+//v0.21
 //
 
-//Files:
-// P-Anim_Object.lsl
-//
-// Fire.lsl
-// P-Anim.lsl
-// config
-// User Manual
-//
-//
-//Prequisites: Fireobjects need to be in same prim as P-Anim.lsl
-//Notecard format: see config NC
-//basic help: User Manual
-//
-//Changelog
-//
-
-//FIXME: ---
-
-//TODO: additional script to animate/change fire prim textures
-//TODO: fire objects need to be phantom... maybe make them flexiprim too
-//TODO: sound + message on touch_start (sound, danger message), touch (hot message) and touch_end (menu + burns message)
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//===============================================
-//GLOBAL VARIABLES
-//===============================================
-
-//debug variables
-//-----------------------------------------------
-integer g_iDebugMode = FALSE;
-
-
-//user changeable variables
-//-----------------------------------------------
-//integer g_iVerbose = TRUE;
-
-//string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
-
-
-//internal variables
-//-----------------------------------------------
-//string g_sTitle = "RealPrimFire-Object";     // title
-//string g_sVersion = "0.2";       // version
-
-integer g_iType = LINK_SET;
-
-integer g_iLowprim = FALSE;
-string g_sScriptName;
+integer g_iLowprim = 0;
 key g_kOwner;
-integer PRIMCOMMAND_CHANNEL = -15771;
+integer COMMAND_CHANNEL;
+integer PARTICLE_CHANNEL;
+integer SOUND_CHANNEL;
+integer ANIM_CHANNEL;
+integer PRIMCOMMAND_CHANNEL;
+integer REMOTE_CHANNEL;
 
 
-//###
-//Debug.lslm
-//0.1 - 28Jan2014
-
-//===============================================================================
-//= parameters   :    string    sMsg    message string received
-//=
-//= return        :    none
-//=
-//= description  :    output debug messages
-//=
-//===============================================================================
-Debug(string sMsg){
-    if ((!g_iDebugMode)) return;
-    llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
+MESSAGE_MAP(){
+    (COMMAND_CHANNEL = 15700);
+    (PARTICLE_CHANNEL = -15790);
+    (SOUND_CHANNEL = -15780);
+    (ANIM_CHANNEL = -15770);
+    (PRIMCOMMAND_CHANNEL = -15771);
+    (REMOTE_CHANNEL = -975102);
 }
 
 
@@ -119,14 +70,15 @@ Debug(string sMsg){
 default {
 
 	state_entry() {
+        MESSAGE_MAP();
         (g_kOwner = llGetOwner());
-        Debug("state_entry");
-        llSetPrimitiveParams([PRIM_TEMP_ON_REZ,FALSE,PRIM_PHANTOM,TRUE]);
+        
+        llSetPrimitiveParams([4,0,5,1]);
         llListen(PRIMCOMMAND_CHANNEL,"",NULL_KEY,"");
         llOwnerSay("Wait, if you want to make object temp - else react within next 10 seconds");
         llSleep(10.0);
-        llSetPrimitiveParams([PRIM_TEMP_ON_REZ,TRUE]);
-        (g_iLowprim = TRUE);
+        llSetPrimitiveParams([4,1]);
+        (g_iLowprim = 1);
         llOwnerSay("Now, object is temp and will vanish shortly");
     }
 
@@ -139,10 +91,10 @@ default {
 	}*/
 
 	on_rez(integer start_param) {
-        Debug(("on_rez: " + ((string)start_param)));
+        
         if ((0 == start_param)) {
-            llSetLinkPrimitiveParamsFast(g_iType,[PRIM_TEMP_ON_REZ,FALSE]);
-            integer g_iLowprim = TRUE;
+            llSetLinkPrimitiveParamsFast(-1,[4,0]);
+            integer _g_iLowprim1 = 1;
         }
         (g_kOwner = llGetOwner());
     }
@@ -151,13 +103,14 @@ default {
 //listen for messages from PrimFire script
 //-----------------------------------------------
 	listen(integer iChan,string name,key kId,string sSet) {
-        Debug(("listen: " + sSet));
+        
         if ((llGetOwnerKey(kId) != g_kOwner)) return;
         if (("toggle" == sSet)) {
             (g_iLowprim = (!g_iLowprim));
-            Debug(("listen - toggle:" + ((string)g_iLowprim)));
-            if (g_iLowprim) llSetLinkPrimitiveParamsFast(g_iType,[PRIM_TEMP_ON_REZ,TRUE]);
-            else  llSetLinkPrimitiveParamsFast(g_iType,[PRIM_TEMP_ON_REZ,FALSE]);
+            string sMsg = ("listen - toggle:" + ((string)g_iLowprim));
+            
+            if (g_iLowprim) llSetLinkPrimitiveParamsFast(-1,[4,1]);
+            else  llSetLinkPrimitiveParamsFast(-1,[4,0]);
         }
         else  if (("die" == sSet)) llDie();
     }

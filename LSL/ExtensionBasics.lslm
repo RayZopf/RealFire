@@ -2,8 +2,8 @@
 //Module register with and react on master for RealFire Extensions
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//08. Feb. 2014
-//v0.463
+//09. Feb. 2014
+//v0.464
 //Files:
 // ExtensionBasics.lslm
 //
@@ -32,8 +32,9 @@ $import ColorChanger.lslm();
 
 //###
 //ExtensionBasics.lslm
-//0.463 - 08Feb2014
+//0.464 - 09Feb2014
 
+// pragma inline
 RegisterExtension(integer link)
 {
 	if (m_iEnabled) {
@@ -48,6 +49,7 @@ RegisterExtension(integer link)
 }
 
 
+// pragma inline
 string MasterCommand(integer iChan, string sVal, integer conf)
 {
 	if (iChan == COMMAND_CHANNEL) {
@@ -62,7 +64,6 @@ string MasterCommand(integer iChan, string sVal, integer conf)
 			InfoLines(FALSE);
 		}
 		else if ("nonverbose" == sCommand) m_iVerbose = FALSE;
-		else if ("globaldebug" == sCommand) m_iVerbose = TRUE;
 		else if (conf && "config" == sCommand) return sVal;
 		else if (m_iEnabled) llSetTimerEvent(0.1);
 

@@ -15,8 +15,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//08. Feb. 2014
-//v2.1.3-0.581
+//10. Feb. 2014
+//v2.1.3-0.582
 //
 
 //Files:
@@ -50,39 +50,29 @@
 //GLOBAL VARIABLES
 //===============================================
 
-//debug variables
-//-----------------------------------------------
-integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
-
-
 //user changeable variables
 //-----------------------------------------------
-integer g_iSmoke = TRUE;      // Smoke on/off in this prim
-integer g_iVerbose = TRUE;
+integer g_iSmoke;      // Smoke on/off in this prim
 
 string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
 
 // Particle parameters
-float g_fAge = 10.0;               // life of each particle
-float g_fRate = 0.5;               // how fast (rate) to emit particles
-integer g_iCount = 5;              // how many particles to emit per BURST
-float g_fStartAlpha = 0.4;         // start alpha (transparency) value
+float g_fAge;               // life of each particle
+float g_fRate;               // how fast (rate) to emit particles
+integer g_iCount;              // how many particles to emit per BURST
+float g_fStartAlpha;         // start alpha (transparency) value
 
 
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.1.3-0.581";       // version
+string g_sVersion = "2.1.3-0.582";       // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "smoke";
 integer g_iType = LINK_ALL_OTHERS;
 
 string g_sSize = "0";
-
-//RealFire MESSAGE MAP
-//integer COMMAND_CHANNEL =
-//integer SMOKE_CHANNEL =  smoke channel
 
 
 //===============================================
@@ -100,6 +90,7 @@ $import GroupHandling.lslm(m_sGroup=LINKSETID);
 //PREDEFINED FUNCTIONS
 //===============================================
 
+// pragma inline
 initExtension()
 { // not that usefull, as long as there only is one place calling this function
 	if (g_iSmoke) llParticleSystem([]);
@@ -110,6 +101,7 @@ initExtension()
 }
 
 
+// pragma inline
 updateParticles(float fAlpha)
 {
 	Debug("fAlpha " + (string)fAlpha);
@@ -174,8 +166,18 @@ default
 {
 	state_entry()
 	{
+		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		MESSAGE_MAP();
+		g_iSmoke = TRUE;
+		// Particle parameters
+		g_fAge = 10.0;               // life of each particle
+		g_fRate = 0.5;               // how fast (rate) to emit particles
+		g_iCount = 5;              // how many particles to emit per BURST
+		g_fStartAlpha = 0.4;         // start alpha (transparency) value
+
 		g_sScriptName = llGetScriptName();
-		Debug("state_entry, Particle count = " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
+		Debug("state_entry");
+		//Debug("Particle count: " + (string)llRound((float)g_iCount * g_fAge / g_fRate)); // LSLForge Optimizer fails on this one (but same lines as in other script!)
 		initExtension();
 	}
 
@@ -215,10 +217,10 @@ default
 		if ((integer)sVal > 0 && (integer)sVal <= 100 && "smoke" == sMsg) {
 			llSetTimerEvent(0.0);
 			updateParticles(percentage((float)sVal, g_fStartAlpha));
-			if (g_iVerbose && "0"!= g_sSize) llWhisper(0, "(v) Smoke changes it's appearance");
+			if (!silent && g_iVerbose && "0"!= g_sSize) llWhisper(0, "(v) Smoke changes it's appearance");
 			g_sSize = sVal;
 		} else if ("smoke" == sMsg || "" == sMsg) {
-			llWhisper(0, "Fumes are fading");
+			if (!silent) llWhisper(0, "Fumes are fading");
 			llSetTimerEvent(11.0);
 		}
 	}
@@ -227,7 +229,7 @@ default
 	timer()
 	{
 		llParticleSystem([]);
-		if (g_iVerbose) llWhisper(0, "(v) Smoke vanished");
+		if (!silent && g_iVerbose) llWhisper(0, "(v) Smoke vanished");
 		Debug("smoke particles off");
 		g_sSize = "0";
 		llSetTimerEvent(0.0);

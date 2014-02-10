@@ -16,8 +16,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//08. Feb. 2014
-//v1.2-0.421
+//09. Feb. 2014
+//v1.2-0.43
 //
 
 //Files:
@@ -51,22 +51,16 @@
 //GLOBAL VARIABLES
 //===============================================
 
-//debug variables
-//-----------------------------------------------
-integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
-
-
 //user changeable variables
 //-----------------------------------------------
-integer g_iVerbose = TRUE;
-integer g_iRemote = TRUE;         // Remote on/off
+integer g_iRemote;         // Remote on/off
 string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
 
 
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Receiver";            // title
-string g_sVersion = "1.2-0.421";        // version
+string g_sVersion = "1.2-0.43";        // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "remote";
@@ -93,6 +87,7 @@ $import GroupHandling.lslm(m_sGroup=LINKSETID);
 //===============================================
 
 
+// pragma inline
 initExtension()
 {
 	llListenRemove(g_iListenHandle);
@@ -115,6 +110,10 @@ default
 {
 	state_entry()
 	{
+		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		MESSAGE_MAP();
+		g_iRemote = TRUE;
+
 		//g_kOwner = llGetOwner();
 		g_sScriptName = llGetScriptName();
 		initExtension();

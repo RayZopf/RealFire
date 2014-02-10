@@ -2,8 +2,8 @@
 //Module to handle changes of particle fire color
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//07. Feb. 2014
-//v0.11
+//09. Feb. 2014
+//v0.12
 //Files:
 // ColorChanger.lslm
 //
@@ -29,8 +29,10 @@ $import GenericFunctions.lslm();
 
 //###
 //ColorChanger.lslm
-//0.11 - 07Feb2014
+//0.12 - 09Feb2014
 
+// pragma inline
+// pragma noinlining
 setColor(integer pos, string msg)
 {
 	if (1 == pos) {

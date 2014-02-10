@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Sun Feb  9 00:58:57 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Mon Feb 10 02:45:20 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//08. Feb. 2014
-//v0.141
+//10. Feb. 2014
+//v0.15
 //
 //
 // (Realfire by Rene)
@@ -42,31 +42,25 @@
 //GLOBAL VARIABLES
 //===============================================
 
-//debug variables
-//-----------------------------------------------
-integer g_iDebugMode = FALSE;
-
-
 //user changeable variables
 //-----------------------------------------------
-integer g_iPrimFire = TRUE;
-integer g_iVerbose = TRUE;
+integer g_iPrimFire;
 
 //string g_sPrimFireFileStart = "75145__willc2-45220__struck-match-8b-22k-1-65s";   // starting fire (somehow special sound!)
 string g_sPrimFireFileSmall = "Fire_small";
-vector g_vOffsetSmall = <0.0,0.0,0.0>;
+vector g_vOffsetSmall;
 string g_sPrimFireFileMedium1 = "Fire_medium";
-vector g_vOffsetMedium1 = <0.0,0.0,0.0>;
+vector g_vOffsetMedium1;
 //string g_sPrimFireFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1";    // second sound for medium fire
 string g_sPrimFireFileFull = "Fire_full";
-vector g_vOffsetFull = <0.0,0.0,0.0>;
+vector g_vOffsetFull;
 
-integer g_iPrimFireNFiles = 3;
+integer g_iPrimFireNFiles;
 //starting sound has to be first in list
 list g_lPrimFireFileList = [g_sPrimFireFileSmall,g_sPrimFireFileMedium1,g_sPrimFireFileFull];
 string g_sCurrentPrimFireFile = g_sPrimFireFileMedium1;
 
-float g_fAltitude = 1.0;
+float g_fAltitude;
 
 string LINKSETID = "RealFire";
 
@@ -74,134 +68,38 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealPrimFire";
-string g_sVersion = "0.141";
+string g_sVersion = "0.15";
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";
-integer g_iType = LINK_SET;
 
-integer g_iPrimFireAvail = FALSE;
-integer g_iInvType = INVENTORY_OBJECT;
+integer g_iPrimFireAvail = 0;
 //integer g_iPrimFireFileStartAvail = TRUE;
 integer g_iPrimFireNFilesAvail;
-integer g_iLowprim = FALSE;
-integer g_iPermCheck = TRUE;
+integer g_iLowprim = 0;
 string g_sSize = "0";
 vector g_vOffset;
+integer g_iVerbose = 1;
 string g_sMainScript = "Fire.lsl";
 string g_sScriptName;
-integer silent = FALSE;
-integer g_iSingleFire = TRUE;
+integer silent = 0;
+integer g_iSingleFire = 1;
 string SEPARATOR = ";;";
-float SIZE_SMALL = 25.0;
-float SIZE_MEDIUM = 50.0;
-float SIZE_LARGE = 80.0;
-integer COMMAND_CHANNEL = -15700;
-integer ANIM_CHANNEL = -15770;
-integer PRIMCOMMAND_CHANNEL = -15771;
+integer COMMAND_CHANNEL;
+integer PARTICLE_CHANNEL;
+integer SOUND_CHANNEL;
+integer ANIM_CHANNEL;
+integer PRIMCOMMAND_CHANNEL;
+integer REMOTE_CHANNEL;
 
 
-//###
-//Debug.lslm
-//0.1 - 28Jan2014
-
-//===============================================================================
-//= parameters   :    string    sMsg    message string received
-//=
-//= return        :    none
-//=
-//= description  :    output debug messages
-//=
-//===============================================================================
-Debug(string sMsg){
-    if ((!g_iDebugMode)) return;
-    llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
-}
-
-
-//###
-//PrintStatusInfo.lslm
-//0.2 - 08Feb2014
-
-InfoLines(integer bool){
-    if ((g_iVerbose && bool)) {
-        if (g_iPrimFireAvail) {
-            if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
-        }
-        else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
-    }
-    if (g_iPrimFire) {
-        if (g_iPrimFireAvail) {
-            if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
-        }
-        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
-    }
-    else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-    if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
-}
-
-
-//###
-//GroupHandling.lslm
-//0.5 - 31Jan2014
-
-string getGroup(string sDefGroup){
-    if (("" == sDefGroup)) (sDefGroup = "Default");
-    string str = llStringTrim(llGetObjectDesc(),STRING_TRIM);
-    if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
-    else  {
-        list lGroup = llParseString2List(str,[" "],[]);
-        (str = llList2String(lGroup,0));
-    }
-    return str;
-}
-
-
-string GroupCheck(key kId){
-    string str = getGroup(LINKSETID);
-    list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
-    string sGroup = llList2String(lKeys,0);
-    string sScriptName = llList2String(lKeys,1);
-    if ((((str == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == str))) return sScriptName;
-    return "exit";
-}
-
-
-//###
-//ExtensionBasics.lslm
-//0.462 - 08Feb2014
-
-RegisterExtension(integer link){
-    if (g_iPrimFire) {
-        if ((g_iSingleFire && (INVENTORY_NONE == llGetInventoryType(g_sMainScript)))) {
-            (g_iPrimFireAvail = FALSE);
-            return;
-        }
-        string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
-        if (g_iPrimFireAvail) llMessageLinked(link,ANIM_CHANNEL,"1",((key)sId));
-        else  if (g_iSingleFire) llMessageLinked(link,ANIM_CHANNEL,"0",((key)sId));
-    }
-}
-
-
-string MasterCommand(integer iChan,string sVal,integer conf){
-    if ((iChan == COMMAND_CHANNEL)) {
-        list lValues = llParseString2List(sVal,[SEPARATOR],[]);
-        string sCommand = llList2String(lValues,0);
-        if (("register" == sCommand)) {
-            RegisterExtension(g_iType);
-        }
-        else  if (("verbose" == sCommand)) {
-            (g_iVerbose = TRUE);
-            InfoLines(FALSE);
-        }
-        else  if (("nonverbose" == sCommand)) (g_iVerbose = FALSE);
-        else  if (("globaldebug" == sCommand)) (g_iVerbose = TRUE);
-        else  if ((conf && ("config" == sCommand))) return sVal;
-        else  if (g_iPrimFire) llSetTimerEvent(0.1);
-        return "";
-    }
-    return "";
+MESSAGE_MAP(){
+    (COMMAND_CHANNEL = 15700);
+    (PARTICLE_CHANNEL = -15790);
+    (SOUND_CHANNEL = -15780);
+    (ANIM_CHANNEL = -15770);
+    (PRIMCOMMAND_CHANNEL = -15771);
+    (REMOTE_CHANNEL = -975102);
 }
 
 
@@ -210,27 +108,27 @@ string MasterCommand(integer iChan,string sVal,integer conf){
 //0.2 - 02Feb2014
 
 string CheckForFiles(integer iNFiles,list lgivenFileList,integer iPermCheck,string sCurrentFile){
-    integer iFileNumber = llGetInventoryNumber(g_iInvType);
-    Debug(("File number = " + ((string)iFileNumber)));
+    integer iFileNumber = llGetInventoryNumber(6);
+    
     if ((iFileNumber > 0)) {
         (g_iPrimFireNFilesAvail = 0);
         list lFileAvail = [];
         list lFileList = [];
         integer i;
         for ((i = 0); (i < iFileNumber); (++i)) {
-            (lFileList += llGetInventoryName(g_iInvType,i));
+            (lFileList += llGetInventoryName(6,i));
         }
         list lFileCompare = [];
         for ((i = 0); (i < iNFiles); (++i)) {
             (lFileCompare = llList2List(lgivenFileList,i,i));
-            if ((ERR_GENERIC == llListFindList(lFileList,lFileCompare))) {
-                (lFileAvail += FALSE);
+            if ((-1 == llListFindList(lFileList,lFileCompare))) {
+                (lFileAvail += 0);
                 if ((((0 < i) && (((string)lFileCompare) == sCurrentFile)) && (2 < iNFiles))) {
                     integer iFileNAvail = llGetListLength(lFileAvail);
                     if ((iNFiles > iFileNAvail)) (sCurrentFile = ((string)llList2List(lgivenFileList,(i + 1),(i + 1))));
                     else  {
                         list lFileAvailTmp = llList2List(lFileAvail,1,(iNFiles - 1));
-                        integer j = llListFindList(lFileAvailTmp,[TRUE]);
+                        integer j = llListFindList(lFileAvailTmp,[1]);
                         if ((0 <= j)) (sCurrentFile = ((string)llList2List(lFileAvailTmp,j,j)));
                     }
                 }
@@ -238,61 +136,31 @@ string CheckForFiles(integer iNFiles,list lgivenFileList,integer iPermCheck,stri
             }
             else  {
                 if (iPermCheck) {
-                    if ((!(PERM_COPY & llGetInventoryPermMask(((string)lFileCompare),MASK_OWNER)))) {
+                    if ((!(32768 & llGetInventoryPermMask(((string)lFileCompare),1)))) {
                         llWhisper(0,((g_sTitle + " - File has wrong permission: ") + ((string)lFileCompare)));
-                        (lFileAvail += FALSE);
+                        (lFileAvail += 0);
                     }
                     else  {
-                        (lFileAvail += TRUE);
+                        (lFileAvail += 1);
                         (g_iPrimFireNFilesAvail++);
                     }
                 }
                 else  {
-                    (lFileAvail += TRUE);
+                    (lFileAvail += 1);
                     (g_iPrimFireNFilesAvail++);
                 }
             }
         }
-        if ((0 == llListFindList(lFileAvail,[TRUE]))) (g_iPrimFireAvail = TRUE);
-        else  (g_iPrimFireAvail = FALSE);
-        if ((ERR_GENERIC != llListFindList(llList2List(lFileAvail,1,(iNFiles - 1)),[TRUE]))) (g_iPrimFireAvail = TRUE);
-        else  (g_iPrimFireAvail = FALSE);
+        if ((0 == llListFindList(lFileAvail,[1]))) (g_iPrimFireAvail = 1);
+        else  (g_iPrimFireAvail = 0);
+        if ((-1 != llListFindList(llList2List(lFileAvail,1,(iNFiles - 1)),[1]))) (g_iPrimFireAvail = 1);
+        else  (g_iPrimFireAvail = 0);
         return sCurrentFile;
     }
     else  {
-        (g_iPrimFireAvail = FALSE);
+        (g_iPrimFireAvail = 0);
         return "0";
     }
-}
-
-
-//===============================================
-//PREDEFINED FUNCTIONS
-//===============================================
-
-selectStuff(float fVal){
-    Debug(("selectStuff: " + ((string)fVal)));
-    if ((fVal <= SIZE_SMALL)) {
-        (g_sCurrentPrimFireFile = g_sPrimFireFileSmall);
-        (g_vOffset = <g_vOffsetSmall.x,g_vOffsetSmall.y,(g_vOffsetSmall.z + g_fAltitude)>);
-    }
-    else  if (((fVal > SIZE_SMALL) && (fVal < SIZE_MEDIUM))) {
-        (g_sCurrentPrimFireFile = g_sPrimFireFileMedium1);
-        (g_vOffset = <g_vOffsetMedium1.x,g_vOffsetMedium1.y,(g_vOffsetMedium1.z + g_fAltitude)>);
-    }
-    else  if (((fVal >= SIZE_MEDIUM) && (fVal < SIZE_LARGE))) {
-        (g_sCurrentPrimFireFile = g_sPrimFireFileMedium1);
-        (g_vOffset = <g_vOffsetMedium1.x,g_vOffsetMedium1.y,(g_vOffsetMedium1.z + g_fAltitude)>);
-    }
-    else  if (((fVal >= SIZE_LARGE) && (fVal <= 100))) {
-        (g_sCurrentPrimFireFile = g_sPrimFireFileFull);
-        (g_vOffset = <g_vOffsetFull.x,g_vOffsetFull.y,(g_vOffsetFull.z + g_fAltitude)>);
-    }
-    else  {
-        (g_sSize = "0");
-        return;
-    }
-    (g_sSize = ((string)fVal));
 }
 
 
@@ -306,30 +174,99 @@ selectStuff(float fVal){
 
 default {
 
-		state_entry() {
+	state_entry() {
+        MESSAGE_MAP();
+        (g_iPrimFire = 1);
+        (g_vOffsetSmall = <0.0,0.0,0.0>);
+        (g_vOffsetMedium1 = <0.0,0.0,0.0>);
+        (g_vOffsetFull = <0.0,0.0,0.0>);
+        (g_iPrimFireNFiles = 3);
+        (g_fAltitude = 1.0);
         (g_sScriptName = llGetScriptName());
-        Debug("state_entry");
+        
         llSay(PRIMCOMMAND_CHANNEL,"die");
-        (g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles,g_lPrimFireFileList,g_iPermCheck,g_sCurrentPrimFireFile));
+        (g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles,g_lPrimFireFileList,1,g_sCurrentPrimFireFile));
         llSleep(1);
-        RegisterExtension(g_iType);
-        InfoLines(TRUE);
+        integer link = -1;
+        if (g_iPrimFire) {
+            if ((g_iSingleFire && (-1 == llGetInventoryType(g_sMainScript)))) {
+                (g_iPrimFireAvail = 0);
+                jump __end02;
+            }
+            string sDefGroup = LINKSETID;
+            if (("" == sDefGroup)) (sDefGroup = "Default");
+            string str = llStringTrim(llGetObjectDesc(),3);
+            if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
+            else  {
+                list lGroup = llParseString2List(str,[" "],[]);
+                (str = llList2String(lGroup,0));
+            }
+            string sId = ((str + SEPARATOR) + g_sScriptName);
+            if (g_iPrimFireAvail) llMessageLinked(link,ANIM_CHANNEL,"1",((key)sId));
+            else  if (g_iSingleFire) llMessageLinked(link,ANIM_CHANNEL,"0",((key)sId));
+        }
+        @__end02;
+        if ((g_iVerbose && 1)) {
+            if (g_iPrimFireAvail) {
+                if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+            }
+            else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        }
+        if (g_iPrimFire) {
+            if (g_iPrimFireAvail) {
+                if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+            }
+            else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+        }
+        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+        if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
     }
 
 
-		on_rez(integer start_param) {
+	on_rez(integer start_param) {
         llResetScript();
     }
 
 
 	changed(integer change) {
-        if ((change & CHANGED_INVENTORY)) {
-            llWhisper(0,"Inventory changed, checking objects...");
+        if ((change & 1)) {
+            if ((!silent)) llWhisper(0,"Inventory changed, checking objects...");
             llSay(PRIMCOMMAND_CHANNEL,"die");
-            (g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles,g_lPrimFireFileList,g_iPermCheck,g_sCurrentPrimFireFile));
+            (g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles,g_lPrimFireFileList,1,g_sCurrentPrimFireFile));
             llSleep(1);
-            RegisterExtension(g_iType);
-            InfoLines(TRUE);
+            integer link = -1;
+            if (g_iPrimFire) {
+                if ((g_iSingleFire && (-1 == llGetInventoryType(g_sMainScript)))) {
+                    (g_iPrimFireAvail = 0);
+                    jump __end01;
+                }
+                string sDefGroup = LINKSETID;
+                if (("" == sDefGroup)) (sDefGroup = "Default");
+                string str = llStringTrim(llGetObjectDesc(),3);
+                if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
+                else  {
+                    list lGroup = llParseString2List(str,[" "],[]);
+                    (str = llList2String(lGroup,0));
+                }
+                string sId = ((str + SEPARATOR) + g_sScriptName);
+                if (g_iPrimFireAvail) llMessageLinked(link,ANIM_CHANNEL,"1",((key)sId));
+                else  if (g_iSingleFire) llMessageLinked(link,ANIM_CHANNEL,"0",((key)sId));
+            }
+            @__end01;
+            if ((g_iVerbose && 1)) {
+                if (g_iPrimFireAvail) {
+                    if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+                }
+                else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+            }
+            if (g_iPrimFire) {
+                if (g_iPrimFireAvail) {
+                    if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+                }
+                else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+            }
+            else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+            if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
         }
     }
 
@@ -338,15 +275,87 @@ default {
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
 	link_message(integer iSender,integer iChan,string sSet,key kId) {
-        Debug(((((("link_message = channel " + ((string)iChan)) + "; sSet ") + sSet) + "; kId ") + ((string)kId)));
-        string sConfig = MasterCommand(iChan,sSet,FALSE);
-        string sScriptName = GroupCheck(kId);
+        
+        string _ret1;
+        if ((iChan == COMMAND_CHANNEL)) {
+            list lValues = llParseString2List(sSet,[SEPARATOR],[]);
+            string sCommand = llList2String(lValues,0);
+            if (("register" == sCommand)) {
+                integer link = -1;
+                if (g_iPrimFire) {
+                    if ((g_iSingleFire && (-1 == llGetInventoryType(g_sMainScript)))) {
+                        (g_iPrimFireAvail = 0);
+                        jump __end03;
+                    }
+                    string sDefGroup = LINKSETID;
+                    if (("" == sDefGroup)) (sDefGroup = "Default");
+                    string str = llStringTrim(llGetObjectDesc(),3);
+                    if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
+                    else  {
+                        list lGroup = llParseString2List(str,[" "],[]);
+                        (str = llList2String(lGroup,0));
+                    }
+                    string sId = ((str + SEPARATOR) + g_sScriptName);
+                    if (g_iPrimFireAvail) llMessageLinked(link,ANIM_CHANNEL,"1",((key)sId));
+                    else  if (g_iSingleFire) llMessageLinked(link,ANIM_CHANNEL,"0",((key)sId));
+                }
+                @__end03;
+            }
+            else  if (("verbose" == sCommand)) {
+                (g_iVerbose = 1);
+                if ((g_iVerbose && 0)) {
+                    if (g_iPrimFireAvail) {
+                        if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+                    }
+                    else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+                }
+                if (g_iPrimFire) {
+                    if (g_iPrimFireAvail) {
+                        if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+                    }
+                    else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+                }
+                else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+                if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+            }
+            else  if (("nonverbose" == sCommand)) (g_iVerbose = 0);
+            else  if ((0 && ("config" == sCommand))) {
+                (_ret1 = sSet);
+                jump _end2;
+            }
+            else  if (g_iPrimFire) llSetTimerEvent(0.1);
+            (_ret1 = "");
+            jump _end2;
+        }
+        (_ret1 = "");
+        @_end2;
+        string sConfig = _ret1;
+        string _ret4;
+        string _sDefGroup6 = LINKSETID;
+        if (("" == _sDefGroup6)) (_sDefGroup6 = "Default");
+        string _str2 = llStringTrim(llGetObjectDesc(),3);
+        if (((llToLower(_str2) == "(no description)") || (_str2 == ""))) (_str2 = _sDefGroup6);
+        else  {
+            list _lGroup9 = llParseString2List(_str2,[" "],[]);
+            (_str2 = llList2String(_lGroup9,0));
+        }
+        string _str7 = _str2;
+        list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
+        string sGroup = llList2String(lKeys,0);
+        string _sScriptName8 = llList2String(lKeys,1);
+        if ((((_str7 == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == _str7))) {
+            (_ret4 = _sScriptName8);
+            jump _end5;
+        }
+        (_ret4 = "exit");
+        @_end5;
+        string sScriptName = _ret4;
         if (("exit" == sScriptName)) return;
         if (((((iChan != ANIM_CHANNEL) || (!g_iPrimFire)) || (!g_iPrimFireAvail)) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
         list lParams = llParseString2List(sSet,[SEPARATOR],[]);
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);
-        Debug("work on link_message");
+        
         if (((sVal != g_sSize) || (((integer)sMsg) != g_iLowprim))) {
             if (((sVal == g_sSize) && (("0" == sMsg) || ("1" == sMsg)))) {
                 llSetTimerEvent(0.0);
@@ -362,7 +371,32 @@ default {
             if (((((integer)sMsg) != g_iLowprim) && (("0" == sMsg) || ("1" == sMsg)))) (g_iLowprim = (!g_iLowprim));
             string sCurrentPrimFireFileTemp = g_sCurrentPrimFireFile;
             string g_sSizeTemp = g_sSize;
-            if ((g_iPrimFireNFilesAvail > 1)) selectStuff(((float)sVal));
+            if ((g_iPrimFireNFilesAvail > 1)) {
+                float fVal = ((float)sVal);
+                
+                if ((fVal <= 25.0)) {
+                    (g_sCurrentPrimFireFile = g_sPrimFireFileSmall);
+                    (g_vOffset = <g_vOffsetSmall.x,g_vOffsetSmall.y,(g_vOffsetSmall.z + g_fAltitude)>);
+                }
+                else  if (((fVal > 25.0) && (fVal < 50.0))) {
+                    (g_sCurrentPrimFireFile = g_sPrimFireFileMedium1);
+                    (g_vOffset = <g_vOffsetMedium1.x,g_vOffsetMedium1.y,(g_vOffsetMedium1.z + g_fAltitude)>);
+                }
+                else  if (((fVal >= 50.0) && (fVal < 80.0))) {
+                    (g_sCurrentPrimFireFile = g_sPrimFireFileMedium1);
+                    (g_vOffset = <g_vOffsetMedium1.x,g_vOffsetMedium1.y,(g_vOffsetMedium1.z + g_fAltitude)>);
+                }
+                else  if (((fVal >= 80.0) && (fVal <= 100))) {
+                    (g_sCurrentPrimFireFile = g_sPrimFireFileFull);
+                    (g_vOffset = <g_vOffsetFull.x,g_vOffsetFull.y,(g_vOffsetFull.z + g_fAltitude)>);
+                }
+                else  {
+                    (g_sSize = "0");
+                    jump _end11;
+                }
+                (g_sSize = ((string)fVal));
+                @_end11;
+            }
             if (("0" == g_sSizeTemp)) {
                 llSleep(2.0);
                 llRezObject(g_sCurrentPrimFireFile,(llGetPos() + g_vOffset),ZERO_VECTOR,ZERO_ROTATION,1);
@@ -392,7 +426,7 @@ default {
 
 	timer() {
         llSay(PRIMCOMMAND_CHANNEL,"die");
-        if (g_iVerbose) llWhisper(0,"(v) Prim fire effects ended");
+        if (((!silent) && g_iVerbose)) llWhisper(0,"(v) Prim fire effects ended");
         (g_sSize = "0");
         llSetTimerEvent(0.0);
     }

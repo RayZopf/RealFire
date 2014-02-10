@@ -23,8 +23,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//08. Feb. 2014
-//v2.3-1.0
+//10. Feb. 2014
+//v2.3-1.1
 //
 
 //Files:
@@ -91,11 +91,6 @@
 //GLOBAL VARIABLES
 //===============================================
 
-//debug variables
-//-----------------------------------------------
-integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
-
-
 //user changeable variables
 //-----------------------------------------------
 string NOTECARD = "config";                  // notecard name
@@ -112,7 +107,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";            // title
-string g_sVersion = "2.3-1.0";           // version
+string g_sVersion = "2.3-1.1";           // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "fire";
@@ -124,16 +119,7 @@ integer ACCESS_GROUP = 2;            // group access bit
 integer ACCESS_WORLD = 1;            // world access bit
 float MAX_VOLUME = 1.0;          // max. volume for sound
 
-// RealFire MESSAGE MAP
-//integer COMMAND_CHANNEL =
-//integer PARTICLE_CHANNEL =       smoke channel
-//integer SOUND_CHANNEL =       sound channel
-//integer ANIM_CHANNEL =        primfire/textureanim channel
-//integer PRIMCOMMAND_CHANNEL = kill fire prims or make temp prims
-
-
 // Notecard variables
-integer g_iVerbose = TRUE;         // show more/less info during startup
 integer g_iSwitchAccess;           // access level for switch
 integer g_iMenuAccess;             // access level for menu
 integer g_iLowprim = FALSE;        // only use temp prim for PrimFire if set to TRUE
@@ -256,6 +242,7 @@ toggleFunktion(string sFunction)
 
 //most important function
 //-----------------------------------------------
+// pragma inline
 updateSize(float size)
 {
 	g_fSoundVolume = g_fStartVolume;
@@ -279,6 +266,7 @@ updateSize(float size)
 }
 
 
+// pragma inline
 integer accessGranted(key kUser, integer iAccess)
 {
 	integer iBitmask = ACCESS_WORLD;
@@ -288,6 +276,7 @@ integer accessGranted(key kUser, integer iAccess)
 }
 
 
+// pragma inline
 string showAccess(integer access)
 {
 	string strAccess;
@@ -302,6 +291,7 @@ string showAccess(integer access)
 }
 
 
+// pragma inline
 vector checkVector(string par, vector val)
 {
 	if (val == ZERO_VECTOR) {
@@ -407,12 +397,7 @@ readNotecard (string ncLine)
 		par = llStringTrim(par, STRING_TRIM);
 		val = llStringTrim(val, STRING_TRIM);
 		string lcpar = llToLower(par);
-		if ("globaldebug" == lcpar) {
-			if ("D E B U G" == val) {
-				g_iDebugMode = TRUE;
-				sendMessage(COMMAND_CHANNEL, "globaldebug", "");
-			}
-		} else if ("linksetid" == lcpar && "" != val) LINKSETID = val;
+		if ("linksetid" == lcpar && "" != val) LINKSETID = val;
 		else if (lcpar == "verbose") g_iVerbose = checkYesNo("verbose", val);
 		else if (lcpar == "switchaccess") g_iSwitchAccess = checkInt("switchAccess", (integer)val, 0, 7);
 		else if (lcpar == "menuaccess") g_iMenuAccess = checkInt("menuAccess", (integer)val, 0, 7);
@@ -517,6 +502,7 @@ menuDialog (key id)
 }
 
 
+// pragma inline
 startColorDialog (key id)
 {
 	g_iMenuOpen = TRUE;
@@ -707,6 +693,8 @@ sendMessage(integer iChan, string sVal, string sMsg )
 	llMessageLinked(LINK_THIS, iChan, sSet, (key)sId); //check for single fire - then only this prim for fire command;
 }
 
+
+// pragma inline
 infoLines()
 {
 	llWhisper(0, g_sTitle +" "+g_sVersion+" by "+g_sAuthors);
@@ -732,6 +720,9 @@ default
 {
 	state_entry()
 	{
+		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		MESSAGE_MAP();
+
 		g_kOwner = llGetOwner();
 		g_sScriptName = llGetScriptName();
 
@@ -866,7 +857,6 @@ default
 				if (msg != "Top color" && msg != "^Main menu") {
 					Debug("do it (start)");
 					sendMessage(COMMAND_CHANNEL, "config", "startcolor="+msg);
-					//updateSize(g_fPerSize);
 					startColorDialog(kId);
 				} else if (msg == "Top color") endColorDialog(kId);
 				else if (msg == "^Main menu") menuDialog(kId);
@@ -878,7 +868,6 @@ default
 				if (msg != "Bottom color" && msg != "^Options") {
 					Debug("do it (start)");
 					sendMessage(COMMAND_CHANNEL, "config", "endcolor="+msg);
-					//updateSize(g_fPerSize);
 					endColorDialog(kId);
 				} else if (msg == "Bottom color") startColorDialog(kId);
 				else if (msg == "^Options") optionsDialog(kId);

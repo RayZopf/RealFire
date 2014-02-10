@@ -2,8 +2,8 @@
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//08. Feb. 2014
-//v0.141
+//10. Feb. 2014
+//v0.15
 //
 //
 // (Realfire by Rene)
@@ -41,31 +41,25 @@
 //GLOBAL VARIABLES
 //===============================================
 
-//debug variables
-//-----------------------------------------------
-integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
-
-
 //user changeable variables
 //-----------------------------------------------
-integer g_iPrimFire = TRUE; // Sound on/off in this prim
-integer g_iVerbose = TRUE;
+integer g_iPrimFire; // Sound on/off in this prim
 
 //string g_sPrimFireFileStart = "75145__willc2-45220__struck-match-8b-22k-1-65s";   // starting fire (somehow special sound!)
 string g_sPrimFireFileSmall = "Fire_small";            // for small fire
-vector g_vOffsetSmall = <0.0, 0.0, 0.0>;
+vector g_vOffsetSmall;
 string g_sPrimFireFileMedium1 = "Fire_medium";    // for medium fire
-vector g_vOffsetMedium1 = <0.0, 0.0, 0.0>;
+vector g_vOffsetMedium1;
 //string g_sPrimFireFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1";    // second sound for medium fire
 string g_sPrimFireFileFull = "Fire_full";                   // for big fire
-vector g_vOffsetFull = <0.0, 0.0, 0.0>;
+vector g_vOffsetFull;
 
-integer g_iPrimFireNFiles = 3;
+integer g_iPrimFireNFiles;
 //starting sound has to be first in list
 list g_lPrimFireFileList = [g_sPrimFireFileSmall, g_sPrimFireFileMedium1, g_sPrimFireFileFull];
 string g_sCurrentPrimFireFile = g_sPrimFireFileMedium1; // standard
 
-float g_fAltitude = 1.0; // height for rezzed prim
+float g_fAltitude; // height for rezzed prim
 
 string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
 
@@ -73,7 +67,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealPrimFire";     // title
-string g_sVersion = "0.141";       // version
+string g_sVersion = "0.15";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";
@@ -87,11 +81,6 @@ integer g_iLowprim = FALSE;
 integer g_iPermCheck = TRUE;
 string g_sSize = "0";
 vector g_vOffset;
-
-//RealFire MESSAGE MAP
-//integer COMMAND_CHANNEL =
-//integer ANIM_CHANNEL = primfire/textureanim channel
-//integer PRIMCOMMAND_CHANNEL = kill fire prims or make temp prims
 
 
 //===============================================
@@ -109,6 +98,18 @@ $import CheckForFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptNam
 //PREDEFINED FUNCTIONS
 //===============================================
 
+// pragma inline
+initExtension()
+{
+	llSay(PRIMCOMMAND_CHANNEL, "die");
+	g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_iPermCheck, g_sCurrentPrimFireFile);
+	llSleep(1);
+	RegisterExtension(g_iType);
+	InfoLines(TRUE);
+}
+
+
+// pragma inline
 selectStuff(float fVal)
 {
 	Debug("selectStuff: "+(string)fVal);
@@ -150,31 +151,32 @@ selectStuff(float fVal)
 
 default
 {
-		state_entry()
-		{
-			g_sScriptName = llGetScriptName();
-			Debug("state_entry");
-			llSay(PRIMCOMMAND_CHANNEL, "die");
-			g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_iPermCheck, g_sCurrentPrimFireFile);
-			llSleep(1);
-			RegisterExtension(g_iType);
-			InfoLines(TRUE);
-		}
+	state_entry()
+	{
+		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		MESSAGE_MAP();
+		g_iPrimFire = TRUE;
+		g_vOffsetSmall = <0.0, 0.0, 0.0>;
+		g_vOffsetMedium1 = <0.0, 0.0, 0.0>;
+		g_vOffsetFull = <0.0, 0.0, 0.0>;
+		g_iPrimFireNFiles = 3;
+		g_fAltitude = 1.0; // height for rezzed prim
 
-		on_rez(integer start_param)
-		{
-			llResetScript();
-		}
+		g_sScriptName = llGetScriptName();
+		Debug("state_entry");
+		initExtension();
+	}
+
+	on_rez(integer start_param)
+	{
+		llResetScript();
+	}
 
 	changed(integer change)
 	{
 		if (change & CHANGED_INVENTORY) {
-			llWhisper(0, "Inventory changed, checking objects...");
-			llSay(PRIMCOMMAND_CHANNEL, "die");
-			g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles, g_lPrimFireFileList, g_iPermCheck, g_sCurrentPrimFireFile);
-			llSleep(1);
-			RegisterExtension(g_iType);
-			InfoLines(TRUE);
+			if (!silent) llWhisper(0, "Inventory changed, checking objects...");
+			initExtension();
 		}
 	}
 
@@ -239,7 +241,7 @@ default
 	timer()
 	{
 		llSay(PRIMCOMMAND_CHANNEL, "die");
-		if (g_iVerbose) llWhisper(0, "(v) Prim fire effects ended");
+		if (!silent && g_iVerbose) llWhisper(0, "(v) Prim fire effects ended");
 		g_sSize = "0";
 		llSetTimerEvent(0.0);
 	}

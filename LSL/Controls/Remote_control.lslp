@@ -20,8 +20,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//08. Feb. 2014
-//v1.1-0.2
+//09. Feb. 2014
+//v1.1-0.21
 //
 
 //Files:
@@ -55,12 +55,6 @@
 //GLOBAL VARIABLES
 //===============================================
 
-//debug variables
-//-----------------------------------------------
-integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
-integer g_iVerbose = FALSE;
-
-
 //user changeable variables
 //-----------------------------------------------
 string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
@@ -69,7 +63,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Control";            // title
-string g_sVersion = "1.1-0.2";        // version
+string g_sVersion = "1.1-0.21";        // version
 
 string g_sType = "remote";
 integer g_iType = LINK_SET;
@@ -101,6 +95,9 @@ default
 {
 	state_entry()
 	{
+		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		MESSAGE_MAP();
+
 		if (g_iVerbose) llWhisper(0, g_sTitle + " " + g_sVersion+" by "+g_sAuthors + " ready");
 	}
 

@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Sun Feb  9 00:58:57 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Mon Feb 10 02:45:20 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//08. Feb. 2014
-//v0.86
+//10. Feb. 2014
+//v0.862
 //
 //
 // (Realfire by Rene)
@@ -44,23 +44,17 @@
 //GLOBAL VARIABLES
 //===============================================
 
-//debug variables
-//-----------------------------------------------
-integer g_iDebugMode = FALSE;
-
-
 //user changeable variables
 //-----------------------------------------------
-integer g_iSound = TRUE;
-integer g_iVerbose = TRUE;
+integer g_iSound;
 
 string g_sSoundFileStart = "75145__willc2-45220__struck-match-8b-22k-1-65s";
-string g_sSoundFileSmall = "17742__krisboruff__fire-crackles-no-room";
-string g_sSoundFileMedium1 = "104958__glaneur-de-sons__petit-feu-little-fire-2";
-string g_sSoundFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1";
-string g_sSoundFileFull = "4211__dobroide__fire-crackling";
+string g_sSoundFileSmall = "17742__krisboruff__fire-crackles-no-room_med";
+string g_sSoundFileMedium1 = "104958__glaneur-de-sons__petit-feu-little-fire-2_loud";
+string g_sSoundFileMedium2 = "104957__glaneur-de-sons__petit-feu-little-fire-1_loud";
+string g_sSoundFileFull = "4211__dobroide__fire-crackling_loud";
 
-integer g_iSoundNFiles = 5;
+integer g_iSoundNFiles;
 //starting sound has to be first in list
 list g_lSoundFileList = [g_sSoundFileStart,g_sSoundFileSmall,g_sSoundFileMedium1,g_sSoundFileMedium2,g_sSoundFileFull];
 string g_sCurrentSoundFile = g_sSoundFileMedium2;
@@ -71,133 +65,37 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";
-string g_sVersion = "0.86";
+string g_sVersion = "0.862";
 string g_sAuthors = "Zopf";
 
 string g_sType = "sound";
-integer g_iType = LINK_SET;
 
-integer g_iSoundAvail = FALSE;
-integer g_iInvType = INVENTORY_SOUND;
-integer g_iSoundFileStartAvail = TRUE;
-integer g_iPermCheck = FALSE;
+integer g_iSoundAvail = 0;
+integer g_iSoundFileStartAvail = 1;
 integer g_iSoundNFilesAvail;
 float g_fSoundVolumeCur = 0.0;
 float g_fSoundVolumeNew;
 string g_sSize = "0";
+integer g_iVerbose = 1;
 string g_sMainScript = "Fire.lsl";
 string g_sScriptName;
-integer silent = FALSE;
-integer g_iSingleSound = FALSE;
+integer silent = 0;
 string SEPARATOR = ";;";
-float SIZE_SMALL = 25.0;
-float SIZE_MEDIUM = 50.0;
-float SIZE_LARGE = 80.0;
-integer COMMAND_CHANNEL = -15700;
-integer SOUND_CHANNEL = -15780;
+integer COMMAND_CHANNEL;
+integer PARTICLE_CHANNEL;
+integer SOUND_CHANNEL;
+integer ANIM_CHANNEL;
+integer PRIMCOMMAND_CHANNEL;
+integer REMOTE_CHANNEL;
 
 
-//###
-//Debug.lslm
-//0.1 - 28Jan2014
-
-//===============================================================================
-//= parameters   :    string    sMsg    message string received
-//=
-//= return        :    none
-//=
-//= description  :    output debug messages
-//=
-//===============================================================================
-Debug(string sMsg){
-    if ((!g_iDebugMode)) return;
-    llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
-}
-
-
-//###
-//PrintStatusInfo.lslm
-//0.2 - 08Feb2014
-
-InfoLines(integer bool){
-    if ((g_iVerbose && bool)) {
-        if (g_iSoundAvail) {
-            if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
-        }
-        else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
-    }
-    if (g_iSound) {
-        if (g_iSoundAvail) {
-            if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
-        }
-        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
-    }
-    else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-    if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
-}
-
-
-//###
-//GroupHandling.lslm
-//0.5 - 31Jan2014
-
-string getGroup(string sDefGroup){
-    if (("" == sDefGroup)) (sDefGroup = "Default");
-    string str = llStringTrim(llGetObjectDesc(),STRING_TRIM);
-    if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
-    else  {
-        list lGroup = llParseString2List(str,[" "],[]);
-        (str = llList2String(lGroup,0));
-    }
-    return str;
-}
-
-
-string GroupCheck(key kId){
-    string str = getGroup(LINKSETID);
-    list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
-    string sGroup = llList2String(lKeys,0);
-    string sScriptName = llList2String(lKeys,1);
-    if ((((str == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == str))) return sScriptName;
-    return "exit";
-}
-
-
-//###
-//ExtensionBasics.lslm
-//0.462 - 08Feb2014
-
-RegisterExtension(integer link){
-    if (g_iSound) {
-        if ((g_iSingleSound && (INVENTORY_NONE == llGetInventoryType(g_sMainScript)))) {
-            (g_iSoundAvail = FALSE);
-            return;
-        }
-        string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
-        if (g_iSoundAvail) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
-        else  if (g_iSingleSound) llMessageLinked(link,SOUND_CHANNEL,"0",((key)sId));
-    }
-}
-
-
-string MasterCommand(integer iChan,string sVal,integer conf){
-    if ((iChan == COMMAND_CHANNEL)) {
-        list lValues = llParseString2List(sVal,[SEPARATOR],[]);
-        string sCommand = llList2String(lValues,0);
-        if (("register" == sCommand)) {
-            RegisterExtension(g_iType);
-        }
-        else  if (("verbose" == sCommand)) {
-            (g_iVerbose = TRUE);
-            InfoLines(FALSE);
-        }
-        else  if (("nonverbose" == sCommand)) (g_iVerbose = FALSE);
-        else  if (("globaldebug" == sCommand)) (g_iVerbose = TRUE);
-        else  if ((conf && ("config" == sCommand))) return sVal;
-        else  if (g_iSound) llSetTimerEvent(0.1);
-        return "";
-    }
-    return "";
+MESSAGE_MAP(){
+    (COMMAND_CHANNEL = 15700);
+    (PARTICLE_CHANNEL = -15790);
+    (SOUND_CHANNEL = -15780);
+    (ANIM_CHANNEL = -15770);
+    (PRIMCOMMAND_CHANNEL = -15771);
+    (REMOTE_CHANNEL = -975102);
 }
 
 
@@ -206,27 +104,27 @@ string MasterCommand(integer iChan,string sVal,integer conf){
 //0.2 - 02Feb2014
 
 string CheckForFiles(integer iNFiles,list lgivenFileList,integer iPermCheck,string sCurrentFile){
-    integer iFileNumber = llGetInventoryNumber(g_iInvType);
-    Debug(("File number = " + ((string)iFileNumber)));
+    integer iFileNumber = llGetInventoryNumber(1);
+    
     if ((iFileNumber > 0)) {
         (g_iSoundNFilesAvail = 0);
         list lFileAvail = [];
         list lFileList = [];
         integer i;
         for ((i = 0); (i < iFileNumber); (++i)) {
-            (lFileList += llGetInventoryName(g_iInvType,i));
+            (lFileList += llGetInventoryName(1,i));
         }
         list lFileCompare = [];
         for ((i = 0); (i < iNFiles); (++i)) {
             (lFileCompare = llList2List(lgivenFileList,i,i));
-            if ((ERR_GENERIC == llListFindList(lFileList,lFileCompare))) {
-                (lFileAvail += FALSE);
+            if ((-1 == llListFindList(lFileList,lFileCompare))) {
+                (lFileAvail += 0);
                 if ((((0 < i) && (((string)lFileCompare) == sCurrentFile)) && (2 < iNFiles))) {
                     integer iFileNAvail = llGetListLength(lFileAvail);
                     if ((iNFiles > iFileNAvail)) (sCurrentFile = ((string)llList2List(lgivenFileList,(i + 1),(i + 1))));
                     else  {
                         list lFileAvailTmp = llList2List(lFileAvail,1,(iNFiles - 1));
-                        integer j = llListFindList(lFileAvailTmp,[TRUE]);
+                        integer j = llListFindList(lFileAvailTmp,[1]);
                         if ((0 <= j)) (sCurrentFile = ((string)llList2List(lFileAvailTmp,j,j)));
                     }
                 }
@@ -234,55 +132,52 @@ string CheckForFiles(integer iNFiles,list lgivenFileList,integer iPermCheck,stri
             }
             else  {
                 if (iPermCheck) {
-                    if ((!(PERM_COPY & llGetInventoryPermMask(((string)lFileCompare),MASK_OWNER)))) {
+                    if ((!(32768 & llGetInventoryPermMask(((string)lFileCompare),1)))) {
                         llWhisper(0,((g_sTitle + " - File has wrong permission: ") + ((string)lFileCompare)));
-                        (lFileAvail += FALSE);
+                        (lFileAvail += 0);
                     }
                     else  {
-                        (lFileAvail += TRUE);
+                        (lFileAvail += 1);
                         (g_iSoundNFilesAvail++);
                     }
                 }
                 else  {
-                    (lFileAvail += TRUE);
+                    (lFileAvail += 1);
                     (g_iSoundNFilesAvail++);
                 }
             }
         }
-        if ((0 == llListFindList(lFileAvail,[TRUE]))) (g_iSoundFileStartAvail = TRUE);
-        else  (g_iSoundFileStartAvail = FALSE);
-        if ((ERR_GENERIC != llListFindList(llList2List(lFileAvail,1,(iNFiles - 1)),[TRUE]))) (g_iSoundAvail = TRUE);
-        else  (g_iSoundAvail = FALSE);
+        if ((0 == llListFindList(lFileAvail,[1]))) (g_iSoundFileStartAvail = 1);
+        else  (g_iSoundFileStartAvail = 0);
+        if ((-1 != llListFindList(llList2List(lFileAvail,1,(iNFiles - 1)),[1]))) (g_iSoundAvail = 1);
+        else  (g_iSoundAvail = 0);
         return sCurrentFile;
     }
     else  {
-        (g_iSoundAvail = FALSE);
+        (g_iSoundAvail = 0);
         return "0";
     }
 }
 
 
-//===============================================
-//PREDEFINED FUNCTIONS
-//===============================================
-
 selectStuff(float fVal){
-    Debug(("selectStuff: " + ((string)fVal)));
-    if ((fVal <= SIZE_SMALL)) {
+    
+    if ((fVal <= 25.0)) {
         (g_sCurrentSoundFile = g_sSoundFileSmall);
     }
-    else  if (((fVal > SIZE_SMALL) && (fVal < SIZE_MEDIUM))) {
+    else  if (((fVal > 25.0) && (fVal < 50.0))) {
         (g_sCurrentSoundFile = g_sSoundFileMedium1);
     }
-    else  if (((fVal >= SIZE_MEDIUM) && (fVal < SIZE_LARGE))) {
+    else  if (((fVal >= 50.0) && (fVal < 80.0))) {
         (g_sCurrentSoundFile = g_sSoundFileMedium2);
     }
-    else  if (((fVal >= SIZE_LARGE) && (fVal <= 100))) {
+    else  if (((fVal >= 80.0) && (fVal <= 100))) {
         (g_sCurrentSoundFile = g_sSoundFileFull);
     }
     else  {
-        Debug((("start if g_fSoundVolumeNew > 0: -" + ((string)g_fSoundVolumeNew)) + "-"));
-        if (((g_fSoundVolumeNew > 0) && (TRUE == g_iSoundFileStartAvail))) {
+        string sMsg = (("start if g_fSoundVolumeNew > 0: -" + ((string)g_fSoundVolumeNew)) + "-");
+        
+        if (((g_fSoundVolumeNew > 0) && (1 == g_iSoundFileStartAvail))) {
             integer n;
             for ((n = 0); (n < 3); (++n)) {
                 llTriggerSound(g_sSoundFileStart,g_fSoundVolumeNew);
@@ -307,13 +202,46 @@ selectStuff(float fVal){
 default {
 
 	state_entry() {
+        MESSAGE_MAP();
+        (g_iSound = 1);
+        (g_iSoundNFiles = 5);
         (g_sScriptName = llGetScriptName());
-        Debug("state_entry");
+        
         llStopSound();
-        (g_sCurrentSoundFile = CheckForFiles(g_iSoundNFiles,g_lSoundFileList,g_iPermCheck,g_sCurrentSoundFile));
+        (g_sCurrentSoundFile = CheckForFiles(g_iSoundNFiles,g_lSoundFileList,0,g_sCurrentSoundFile));
         llSleep(1);
-        RegisterExtension(g_iType);
-        InfoLines(TRUE);
+        integer link = -1;
+        if (g_iSound) {
+            if ((0 && (-1 == llGetInventoryType(g_sMainScript)))) {
+                (g_iSoundAvail = 0);
+                jump __end02;
+            }
+            string sDefGroup = LINKSETID;
+            if (("" == sDefGroup)) (sDefGroup = "Default");
+            string str = llStringTrim(llGetObjectDesc(),3);
+            if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
+            else  {
+                list lGroup = llParseString2List(str,[" "],[]);
+                (str = llList2String(lGroup,0));
+            }
+            string sId = ((str + SEPARATOR) + g_sScriptName);
+            if (g_iSoundAvail) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
+        }
+        @__end02;
+        if ((g_iVerbose && 1)) {
+            if (g_iSoundAvail) {
+                if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+            }
+            else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        }
+        if (g_iSound) {
+            if (g_iSoundAvail) {
+                if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+            }
+            else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+        }
+        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+        if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
     }
 
 
@@ -327,13 +255,43 @@ default {
 
 
 	changed(integer change) {
-        if ((change & CHANGED_INVENTORY)) {
-            llWhisper(0,"Inventory changed, checking sound samples...");
+        if ((change & 1)) {
+            if ((!silent)) llWhisper(0,"Inventory changed, checking sound samples...");
             llStopSound();
-            (g_sCurrentSoundFile = CheckForFiles(g_iSoundNFiles,g_lSoundFileList,g_iPermCheck,g_sCurrentSoundFile));
+            (g_sCurrentSoundFile = CheckForFiles(g_iSoundNFiles,g_lSoundFileList,0,g_sCurrentSoundFile));
             llSleep(1);
-            RegisterExtension(g_iType);
-            InfoLines(TRUE);
+            integer link = -1;
+            if (g_iSound) {
+                if ((0 && (-1 == llGetInventoryType(g_sMainScript)))) {
+                    (g_iSoundAvail = 0);
+                    jump __end01;
+                }
+                string sDefGroup = LINKSETID;
+                if (("" == sDefGroup)) (sDefGroup = "Default");
+                string str = llStringTrim(llGetObjectDesc(),3);
+                if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
+                else  {
+                    list lGroup = llParseString2List(str,[" "],[]);
+                    (str = llList2String(lGroup,0));
+                }
+                string sId = ((str + SEPARATOR) + g_sScriptName);
+                if (g_iSoundAvail) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
+            }
+            @__end01;
+            if ((g_iVerbose && 1)) {
+                if (g_iSoundAvail) {
+                    if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+                }
+                else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+            }
+            if (g_iSound) {
+                if (g_iSoundAvail) {
+                    if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+                }
+                else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+            }
+            else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+            if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
         }
     }
 
@@ -342,21 +300,93 @@ default {
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
 	link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
-        Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSoundSet) + "; kId ") + ((string)kId)));
-        string sConfig = MasterCommand(iChan,sSoundSet,FALSE);
-        string sScriptName = GroupCheck(kId);
+        
+        string _ret1;
+        if ((iChan == COMMAND_CHANNEL)) {
+            list lValues = llParseString2List(sSoundSet,[SEPARATOR],[]);
+            string sCommand = llList2String(lValues,0);
+            if (("register" == sCommand)) {
+                integer link = -1;
+                if (g_iSound) {
+                    if ((0 && (-1 == llGetInventoryType(g_sMainScript)))) {
+                        (g_iSoundAvail = 0);
+                        jump __end03;
+                    }
+                    string sDefGroup = LINKSETID;
+                    if (("" == sDefGroup)) (sDefGroup = "Default");
+                    string str = llStringTrim(llGetObjectDesc(),3);
+                    if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
+                    else  {
+                        list lGroup = llParseString2List(str,[" "],[]);
+                        (str = llList2String(lGroup,0));
+                    }
+                    string sId = ((str + SEPARATOR) + g_sScriptName);
+                    if (g_iSoundAvail) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
+                }
+                @__end03;
+            }
+            else  if (("verbose" == sCommand)) {
+                (g_iVerbose = 1);
+                if ((g_iVerbose && 0)) {
+                    if (g_iSoundAvail) {
+                        if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+                    }
+                    else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+                }
+                if (g_iSound) {
+                    if (g_iSoundAvail) {
+                        if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+                    }
+                    else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+                }
+                else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+                if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+            }
+            else  if (("nonverbose" == sCommand)) (g_iVerbose = 0);
+            else  if ((0 && ("config" == sCommand))) {
+                (_ret1 = sSoundSet);
+                jump _end2;
+            }
+            else  if (g_iSound) llSetTimerEvent(0.1);
+            (_ret1 = "");
+            jump _end2;
+        }
+        (_ret1 = "");
+        @_end2;
+        string sConfig = _ret1;
+        string _ret4;
+        string _sDefGroup6 = LINKSETID;
+        if (("" == _sDefGroup6)) (_sDefGroup6 = "Default");
+        string _str2 = llStringTrim(llGetObjectDesc(),3);
+        if (((llToLower(_str2) == "(no description)") || (_str2 == ""))) (_str2 = _sDefGroup6);
+        else  {
+            list _lGroup9 = llParseString2List(_str2,[" "],[]);
+            (_str2 = llList2String(_lGroup9,0));
+        }
+        string _str7 = _str2;
+        list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
+        string sGroup = llList2String(lKeys,0);
+        string _sScriptName8 = llList2String(lKeys,1);
+        if ((((_str7 == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == _str7))) {
+            (_ret4 = _sScriptName8);
+            jump _end5;
+        }
+        (_ret4 = "exit");
+        @_end5;
+        string sScriptName = _ret4;
         if (("exit" == sScriptName)) return;
         if (((((iChan != SOUND_CHANNEL) || (!g_iSound)) || (!g_iSoundAvail)) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
         list lParams = llParseString2List(sSoundSet,[SEPARATOR],[]);
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);
-        Debug(((((((("no changes? background? " + sVal) + "-") + sMsg) + "...g_fSoundVolumeCur=") + ((string)g_fSoundVolumeCur)) + "-g_sSize=") + g_sSize));
+        string _sMsg11 = ((((((("no changes? background? " + sVal) + "-") + sMsg) + "...g_fSoundVolumeCur=") + ((string)g_fSoundVolumeCur)) + "-g_sSize=") + g_sSize);
+        
         if ((((((float)sMsg) == g_fSoundVolumeCur) && ((sVal == g_sSize) || ("" == sVal))) || ("-1" == sVal))) return;
-        Debug("work on link_message");
+        
         (g_fSoundVolumeNew = ((float)sMsg));
         if ((((((0 == g_fSoundVolumeNew) && (sVal != g_sSize)) && ("" != sVal)) && ("0" != sVal)) && ("110" != sVal))) {
             if ((g_iSoundNFilesAvail > 1)) selectStuff(((float)sVal));
-            Debug("change while off");
+            
             return;
         }
         if ((("0" != sVal) && ((g_fSoundVolumeNew > 0) && (g_fSoundVolumeNew <= 1)))) {
@@ -364,13 +394,13 @@ default {
             if ((("" == sVal) || (sVal == g_sSize))) {
                 if ((g_fSoundVolumeCur > 0.0)) {
                     llAdjustSoundVolume(g_fSoundVolumeNew);
-                    if (g_iVerbose) llWhisper(0,"(v) Sound range for fire has changed");
+                    if (((!silent) && g_iVerbose)) llWhisper(0,"(v) Sound range for fire has changed");
                 }
                 else  {
                     llPreloadSound(g_sCurrentSoundFile);
                     llStopSound();
                     llLoopSound(g_sCurrentSoundFile,g_fSoundVolumeNew);
-                    if (g_iVerbose) llWhisper(0,"(v) The fire starts to make noise again");
+                    if (((!silent) && g_iVerbose)) llWhisper(0,"(v) The fire starts to make noise again");
                 }
             }
             else  {
@@ -380,14 +410,15 @@ default {
                 if (("110" == sMsg)) return;
                 if (((g_sCurrentSoundFile == sCurrentSoundFileTemp) && ("0" != sSizeTemp))) {
                     llAdjustSoundVolume(g_fSoundVolumeNew);
-                    if (g_iVerbose) llWhisper(0,"(v) Sound range for fire has changed");
+                    if (((!silent) && g_iVerbose)) llWhisper(0,"(v) Sound range for fire has changed");
                 }
                 else  {
                     if (g_iVerbose) {
-                        if ((g_fSoundVolumeCur > 0.0)) llWhisper(0,"(v) The fire changes it's sound");
-                        else  llWhisper(0,"(v) The fire starts to make noise");
+                        if ((((!silent) && g_iVerbose) && (g_fSoundVolumeCur > 0.0))) llWhisper(0,"(v) The fire changes it's sound");
+                        else  if ((!silent)) llWhisper(0,"(v) The fire starts to make noise");
                     }
-                    Debug(("play sound: " + g_sCurrentSoundFile));
+                    string _sMsg15 = ("play sound: " + g_sCurrentSoundFile);
+                    
                     llPreloadSound(g_sCurrentSoundFile);
                     llSleep(1.3);
                     llStopSound();
@@ -403,7 +434,7 @@ default {
 
 	timer() {
         llStopSound();
-        if (g_iVerbose) llWhisper(0,"(v) Noise from fire ended");
+        if (((!silent) && g_iVerbose)) llWhisper(0,"(v) Noise from fire ended");
         (g_fSoundVolumeNew = (g_fSoundVolumeCur = 0.0));
         (g_sSize = "0");
         llSetTimerEvent(0.0);

@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Sun Feb  9 01:53:35 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Mon Feb 10 02:45:20 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -17,8 +17,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//08. Feb. 2014
-//v1.2-0.421
+//09. Feb. 2014
+//v1.2-0.43
 //
 
 //Files:
@@ -52,129 +52,43 @@
 //GLOBAL VARIABLES
 //===============================================
 
-//debug variables
-//-----------------------------------------------
-integer g_iDebugMode = FALSE;
-
-
 //user changeable variables
 //-----------------------------------------------
-integer g_iVerbose = TRUE;
-integer g_iRemote = TRUE;
+integer g_iRemote;
 string LINKSETID = "RealFire";
 
 
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Receiver";
-string g_sVersion = "1.2-0.421";
+string g_sVersion = "1.2-0.43";
 string g_sAuthors = "Rene10957, Zopf";
-integer g_iType = LINK_SET;
 
 integer g_iListenHandle = 0;
 
 // Constants
-integer BOOL = TRUE;
+integer BOOL = 1;
+integer g_iVerbose = 1;
 string g_sMainScript = "Fire.lsl";
 string g_sScriptName;
-integer silent = FALSE;
+integer silent = 0;
 integer g_iMsgNumber = 10959;
 string SEPARATOR = ";;";
-integer COMMAND_CHANNEL = -15700;
-integer REMOTE_CHANNEL = -975102;
+integer COMMAND_CHANNEL;
+integer PARTICLE_CHANNEL;
+integer SOUND_CHANNEL;
+integer ANIM_CHANNEL;
+integer PRIMCOMMAND_CHANNEL;
+integer REMOTE_CHANNEL;
 
 
-//###
-//Debug.lslm
-//0.1 - 28Jan2014
-
-//===============================================================================
-//= parameters   :    string    sMsg    message string received
-//=
-//= return        :    none
-//=
-//= description  :    output debug messages
-//=
-//===============================================================================
-Debug(string sMsg){
-    if ((!g_iDebugMode)) return;
-    llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
-}
-
-
-//###
-//PrintStatusInfo.lslm
-//0.2 - 08Feb2014
-
-InfoLines(integer bool){
-    if ((g_iVerbose && bool)) {
-        if (BOOL) {
-            if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
-        }
-        else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
-    }
-    if (g_iRemote) {
-        if (BOOL) {
-            if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
-        }
-        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
-    }
-    else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-    if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
-}
-
-
-//###
-//GroupHandling.lslm
-//0.5 - 31Jan2014
-
-string getGroup(string sDefGroup){
-    if (("" == sDefGroup)) (sDefGroup = "Default");
-    string str = llStringTrim(llGetObjectDesc(),STRING_TRIM);
-    if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
-    else  {
-        list lGroup = llParseString2List(str,[" "],[]);
-        (str = llList2String(lGroup,0));
-    }
-    return str;
-}
-
-
-//###
-//ExtensionBasics.lslm
-//0.463 - 08Feb2014
-
-RegisterExtension(integer link){
-    if (g_iRemote) {
-        if ((BOOL && (INVENTORY_NONE == llGetInventoryType(g_sMainScript)))) {
-            (BOOL = FALSE);
-            return;
-        }
-        string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
-        if (BOOL) llMessageLinked(link,REMOTE_CHANNEL,"1",((key)sId));
-        else  if (BOOL) llMessageLinked(link,REMOTE_CHANNEL,"0",((key)sId));
-    }
-}
-
-
-string MasterCommand(integer iChan,string sVal,integer conf){
-    if ((iChan == COMMAND_CHANNEL)) {
-        list lValues = llParseString2List(sVal,[SEPARATOR],[]);
-        string sCommand = llList2String(lValues,0);
-        if (("register" == sCommand)) {
-            RegisterExtension(g_iType);
-        }
-        else  if (("verbose" == sCommand)) {
-            (g_iVerbose = TRUE);
-            InfoLines(FALSE);
-        }
-        else  if (("nonverbose" == sCommand)) (g_iVerbose = FALSE);
-        else  if (("globaldebug" == sCommand)) (g_iVerbose = TRUE);
-        else  if ((conf && ("config" == sCommand))) return sVal;
-        else  if (g_iRemote) llSetTimerEvent(0.1);
-        return "";
-    }
-    return "";
+MESSAGE_MAP(){
+    (COMMAND_CHANNEL = 15700);
+    (PARTICLE_CHANNEL = -15790);
+    (SOUND_CHANNEL = -15780);
+    (ANIM_CHANNEL = -15770);
+    (PRIMCOMMAND_CHANNEL = -15771);
+    (REMOTE_CHANNEL = -975102);
 }
 
 /*
@@ -235,7 +149,7 @@ integer getConfigRemote(string sVal){
     integer n = llGetListLength(lConfigs);
     integer count = 0;
     string par;
-    Debug(((("getConfig Particlefire " + ((string)lConfigs)) + " n ") + ((string)n)));
+    
     if (((n > 1) && (0 == (n % 2)))) {
         string val;
         do  {
@@ -254,20 +168,6 @@ integer getConfigRemote(string sVal){
 }
 
 
-//===============================================
-//PREDEFINED FUNCTIONS
-//===============================================
-
-
-initExtension(){
-    llListenRemove(g_iListenHandle);
-    (g_iListenHandle = llListen(REMOTE_CHANNEL,"","",""));
-    InfoLines(FALSE);
-    if ((INVENTORY_NONE == llGetInventoryType(g_sMainScript))) llWhisper(0,(((g_sTitle + " is not in same prim as ") + g_sMainScript) + "! Remote control will not work!"));
-    if (g_iVerbose) llWhisper(0,(((((("(v) " + g_sTitle) + " uses channel: ") + ((string)g_iMsgNumber)) + " and listens on ") + ((string)REMOTE_CHANNEL)) + " for remote controler"));
-}
-
-
 
 //===============================================
 //===============================================
@@ -279,8 +179,27 @@ initExtension(){
 default {
 
 	state_entry() {
+        MESSAGE_MAP();
+        (g_iRemote = 1);
         (g_sScriptName = llGetScriptName());
-        initExtension();
+        llListenRemove(g_iListenHandle);
+        (g_iListenHandle = llListen(REMOTE_CHANNEL,"","",""));
+        if ((g_iVerbose && 0)) {
+            if (BOOL) {
+                if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+            }
+            else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        }
+        if (g_iRemote) {
+            if (BOOL) {
+                if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+            }
+            else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+        }
+        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+        if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+        if ((-1 == llGetInventoryType(g_sMainScript))) llWhisper(0,(((g_sTitle + " is not in same prim as ") + g_sMainScript) + "! Remote control will not work!"));
+        if (g_iVerbose) llWhisper(0,(((((("(v) " + g_sTitle) + " uses channel: ") + ((string)g_iMsgNumber)) + " and listens on ") + ((string)REMOTE_CHANNEL)) + " for remote controler"));
     }
 
 
@@ -290,25 +209,103 @@ default {
 
 
 	listen(integer channel,string name,key kId,string msg) {
-        Debug(("listen: " + msg));
+        
         list msgList = llParseString2List(msg,[SEPARATOR],[]);
         string group = llList2String(msgList,0);
-        string str = getGroup(LINKSETID);
+        string sDefGroup = LINKSETID;
+        if (("" == sDefGroup)) (sDefGroup = "Default");
+        string _str3 = llStringTrim(llGetObjectDesc(),3);
+        if (((llToLower(_str3) == "(no description)") || (_str3 == ""))) (_str3 = sDefGroup);
+        else  {
+            list lGroup = llParseString2List(_str3,[" "],[]);
+            (_str3 = llList2String(lGroup,0));
+        }
+        string str = _str3;
         if ((((str != group) && (LINKSETID != group)) && (LINKSETID != str))) return;
         string command = llList2String(msgList,1);
         key user = ((key)llList2String(msgList,2));
-        llMessageLinked(LINK_THIS,g_iMsgNumber,command,user);
+        llMessageLinked(-4,g_iMsgNumber,command,user);
     }
 
 
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
 	link_message(integer iSender,integer iChan,string sSet,key kId) {
-        Debug(((((("link_message = channel " + ((string)iChan)) + "; sSoundSet ") + sSet) + "; kId ") + ((string)kId)));
-        string sConfig = MasterCommand(iChan,sSet,TRUE);
+        
+        string _ret1;
+        if ((iChan == COMMAND_CHANNEL)) {
+            list lValues = llParseString2List(sSet,[SEPARATOR],[]);
+            string sCommand = llList2String(lValues,0);
+            if (("register" == sCommand)) {
+                integer link = -1;
+                if (g_iRemote) {
+                    if ((BOOL && (-1 == llGetInventoryType(g_sMainScript)))) {
+                        (BOOL = 0);
+                        jump __end03;
+                    }
+                    string sDefGroup = LINKSETID;
+                    if (("" == sDefGroup)) (sDefGroup = "Default");
+                    string str = llStringTrim(llGetObjectDesc(),3);
+                    if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
+                    else  {
+                        list lGroup = llParseString2List(str,[" "],[]);
+                        (str = llList2String(lGroup,0));
+                    }
+                    string sId = ((str + SEPARATOR) + g_sScriptName);
+                    if (BOOL) llMessageLinked(link,REMOTE_CHANNEL,"1",((key)sId));
+                    else  if (BOOL) llMessageLinked(link,REMOTE_CHANNEL,"0",((key)sId));
+                }
+                @__end03;
+            }
+            else  if (("verbose" == sCommand)) {
+                (g_iVerbose = 1);
+                if ((g_iVerbose && 0)) {
+                    if (BOOL) {
+                        if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+                    }
+                    else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+                }
+                if (g_iRemote) {
+                    if (BOOL) {
+                        if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+                    }
+                    else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+                }
+                else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+                if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+            }
+            else  if (("nonverbose" == sCommand)) (g_iVerbose = 0);
+            else  if ((1 && ("config" == sCommand))) {
+                (_ret1 = sSet);
+                jump _end2;
+            }
+            else  if (g_iRemote) llSetTimerEvent(0.1);
+            (_ret1 = "");
+            jump _end2;
+        }
+        (_ret1 = "");
+        @_end2;
+        string sConfig = _ret1;
         if (("" != sConfig)) {
             if (getConfigRemote(sConfig)) {
-                initExtension();
+                llListenRemove(g_iListenHandle);
+                (g_iListenHandle = llListen(REMOTE_CHANNEL,"","",""));
+                if ((g_iVerbose && 0)) {
+                    if (BOOL) {
+                        if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+                    }
+                    else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+                }
+                if (g_iRemote) {
+                    if (BOOL) {
+                        if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+                    }
+                    else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+                }
+                else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+                if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+                if ((-1 == llGetInventoryType(g_sMainScript))) llWhisper(0,(((g_sTitle + " is not in same prim as ") + g_sMainScript) + "! Remote control will not work!"));
+                if (g_iVerbose) llWhisper(0,(((((("(v) " + g_sTitle) + " uses channel: ") + ((string)g_iMsgNumber)) + " and listens on ") + ((string)REMOTE_CHANNEL)) + " for remote controler"));
             }
         }
     }

@@ -1,9 +1,8 @@
 # Configuration notecard for RealFire
 #
-# Date: 02-02-2014 - 08.Feb.2014
-# Version: 2.3-0.31
+# Date: 02-02-2014 - 09.Feb.2014
+# Version: 2.3-0.32
 
-GlobalDEBUG = ""                # global debugging (empty or "D E B U G") - clear value and reset all scripts to disable after use
 LINKSETID = RealFire            # group where script is in (1: first word of prim desc is identical, or 2: LINKSETID values are identical, or 3: all values are empty, or 4: LINKSETID is identical to prim desc of other prim)
 verbose = YES                   # show more/less info during startup
 switchAccess = 1                # access level for switch (1 = world, 2 = group, 4 = owner, 6 = group + owner)

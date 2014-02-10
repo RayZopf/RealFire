@@ -31,6 +31,7 @@ $import RealFireMessageMap.lslm();
 //GroupHandling.lslm
 //0.5 - 31Jan2014
 
+// pragma inline
 string getGroup(string sDefGroup)
 {
 	if ("" == sDefGroup) sDefGroup = "Default";
@@ -44,6 +45,7 @@ string getGroup(string sDefGroup)
 }
 
 
+// pragma inline
 string GroupCheck(key kId)
 {
 	string str = getGroup(m_sGroup);

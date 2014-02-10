@@ -2,8 +2,8 @@
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//07. Feb. 2014
-//v0.3
+//09. Feb. 2014
+//v0.31
 //
 //
 // (Realfire by Rene)
@@ -42,21 +42,14 @@
 //GLOBAL VARIABLES
 //===============================================
 
-//debug variables
-//-----------------------------------------------
-integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
-
-
 //user changeable variables
 //-----------------------------------------------
-integer g_iParticleFire = TRUE; // script on/off
-integer g_iType = LINK_SET;              // in this case it defines which prim(s) emitts the light and changes texture; values: LINK_THIS (only this prim, if you have more than one particle fire source/script), LINK_SET (all); LINK_ALL_OTHERS, LINK_ROOT LINK_ALL_CHILDREN
-integer g_iTextureAnim = TRUE;
-integer g_iTypeTexture = LINK_SET;
-integer g_iLight = TRUE;
-integer g_iTypeLight = LINK_SET;
-// get singlefire from notecard, think about what to do - define linktype for all three anim things?!
-integer g_iVerbose = TRUE;
+integer g_iParticleFire; // script on/off
+integer g_iType;              // in this case it defines which prim(s) emitts the light and changes texture; values: LINK_THIS (only this prim, if you have more than one particle fire source/script), LINK_SET (all); LINK_ALL_OTHERS, LINK_ROOT LINK_ALL_CHILDREN
+integer g_iTextureAnim;
+integer g_iTypeTexture;
+integer g_iLight;
+integer g_iTypeLight;
 
 string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
 
@@ -76,7 +69,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealParticleFire";     // title
-string g_sVersion = "0.3";       // version
+string g_sVersion = "0.31";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";
@@ -90,11 +83,6 @@ float MAX_COLOR = 1.0;             // max. red, green, blue
 float MAX_INTENSITY = 1.0;       // max. light intensity
 float MAX_RADIUS = 20.0;         // max. light radius
 float MAX_FALLOFF = 2.0;         // max. light falloff
-
-//RealFire MESSAGE MAP
-//integer COMMAND_CHANNEL =
-//integer ANIM_CHANNEL = primfire/textureanim channel
-//integer PRIMCOMMAND_CHANNEL = kill fire prims or make temp prims
 
 // Variables
 vector g_vLightColor;              // light color
@@ -189,7 +177,6 @@ updateSize(float size)
 			}
 		}
 	}
-
 	updateColor();
 
 	updateParticles(vStart, vEnd, fMin, fMax, fRadius, vPush);
@@ -197,7 +184,7 @@ updateSize(float size)
 	Debug((string)llRound(size) + "% " + (string)vStart + " " + (string)vEnd);
 }
 
-
+// pragma inline
 updateColor()
 {
 	g_vStartColor.x = percentage((float)g_iPerRedStart, MAX_COLOR);
@@ -211,6 +198,8 @@ updateColor()
 	g_vLightColor = (g_vStartColor + g_vEndColor) / 2.0; //light color = average of start & end color
 }
 
+
+// pragma inline
 updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadius, vector vPush)
 {
 	llSleep(0.8); // give other effects some time to start - also delays updating colour
@@ -328,6 +317,15 @@ default
 {
 	state_entry()
 	{
+		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		MESSAGE_MAP();
+		g_iParticleFire = TRUE;
+		g_iType = LINK_SET;
+		g_iTextureAnim = TRUE;
+		g_iTypeTexture = LINK_SET;
+		g_iLight = TRUE;
+		g_iTypeLight = LINK_SET;
+
 		g_sScriptName = llGetScriptName();
 		Debug("state_entry");
 		Debug("Particle count: " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
@@ -342,7 +340,7 @@ default
 	changed(integer change)
 	{
 		if (change & CHANGED_INVENTORY) {
-			llWhisper(0, "Inventory changed, checking objects...");
+			if (!silent) llWhisper(0, "Inventory changed, checking objects...");
 			initExtension(TRUE);
 		}
 	}
@@ -409,7 +407,7 @@ default
 		Debug("light + particle off");
 		llSleep(3.9);
 		if (g_iTextureAnim) llSetLinkTextureAnim(g_iTypeTexture, FALSE, ALL_SIDES,4,4,0,0,1);
-		if (g_iVerbose) llWhisper(0, "(v) Particle fire effects ended");
+		if (!silent &&g_iVerbose) llWhisper(0, "(v) Particle fire effects ended");
 		g_sSize = "0";
 		g_iInTimer = FALSE;
 		llSetTimerEvent(0.0);

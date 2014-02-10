@@ -2,8 +2,8 @@
 //Module Print Status Info
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//08. Feb. 2014
-//v0.2
+//09. Feb. 2014
+//v0.21
 
 //Files:
 // PrintStatusInfo.lslm
@@ -29,8 +29,9 @@ $import RealFireMessageMap.lslm();
 
 //###
 //PrintStatusInfo.lslm
-//0.2 - 08Feb2014
+//0.21 - 09Feb2014
 
+// pragma inline
 InfoLines(integer bool)
 {
 	if (m_iVerbose && bool ) {

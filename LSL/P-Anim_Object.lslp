@@ -2,8 +2,8 @@
 //PrimFire rezzed object script
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//01. Feb. 2014
-//v0.2
+//10. Feb. 2014
+//v0.21
 //
 
 //Files:
@@ -34,29 +34,17 @@
 //GLOBAL VARIABLES
 //===============================================
 
-//debug variables
-//-----------------------------------------------
-integer g_iDebugMode=FALSE; // set to TRUE to enable Debug messages
-
-
-//user changeable variables
-//-----------------------------------------------
-//integer g_iVerbose = TRUE;
-
-//string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
+string LINKSETID = "RealFire"; // to be compared to first word in prim description - only listen to link-messages from prims that have this id;
 
 
 //internal variables
 //-----------------------------------------------
-//string g_sTitle = "RealPrimFire-Object";     // title
-//string g_sVersion = "0.2";       // version
+string g_sTitle = "RealPrimFire-Object";     // title
+string g_sVersion = "0.21";       // version
 
 integer g_iType = LINK_SET;
 
 integer g_iLowprim = FALSE;
-
-//RealFire MESSAGE MAP
-//integer PRIMCOMMAND_CHANNEL = kill fire prims or make temp prims
 
 
 //===============================================
@@ -108,6 +96,9 @@ default
 {
 	state_entry()
 	{
+		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		MESSAGE_MAP();
+
 		g_kOwner = llGetOwner();
 		//g_sScriptName = llGetScriptName();
 		Debug("state_entry");

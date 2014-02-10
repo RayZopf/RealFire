@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Sun Feb  9 00:58:57 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Mon Feb 10 02:45:20 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Smoke
 //
@@ -16,8 +16,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//08. Feb. 2014
-//v2.1.3-0.581
+//10. Feb. 2014
+//v2.1.3-0.582
 //
 
 //Files:
@@ -51,166 +51,46 @@
 //GLOBAL VARIABLES
 //===============================================
 
-//debug variables
-//-----------------------------------------------
-integer g_iDebugMode = FALSE;
-
-
 //user changeable variables
 //-----------------------------------------------
-integer g_iSmoke = TRUE;
-integer g_iVerbose = TRUE;
+integer g_iSmoke;
 
 string LINKSETID = "RealFire";
 
 // Particle parameters
-float g_fAge = 10.0;
-float g_fRate = 0.5;
-integer g_iCount = 5;
-float g_fStartAlpha = 0.4;
+float g_fAge;
+float g_fRate;
+integer g_iCount;
+float g_fStartAlpha;
 
 
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";
-string g_sVersion = "2.1.3-0.581";
+string g_sVersion = "2.1.3-0.582";
 string g_sAuthors = "Rene10957, Zopf";
-integer g_iType = LINK_ALL_OTHERS;
 
 string g_sSize = "0";
+integer g_iVerbose = 1;
 string g_sMainScript = "Fire.lsl";
 string g_sScriptName;
-integer silent = FALSE;
-integer g_iSingleSmoke = FALSE;
+integer silent = 0;
 string SEPARATOR = ";;";
-integer COMMAND_CHANNEL = -15700;
-integer PARTICLE_CHANNEL = -15790;
+integer COMMAND_CHANNEL;
+integer PARTICLE_CHANNEL;
+integer SOUND_CHANNEL;
+integer ANIM_CHANNEL;
+integer PRIMCOMMAND_CHANNEL;
+integer REMOTE_CHANNEL;
 
 
-//###
-//Debug.lslm
-//0.1 - 28Jan2014
-
-//===============================================================================
-//= parameters   :    string    sMsg    message string received
-//=
-//= return        :    none
-//=
-//= description  :    output debug messages
-//=
-//===============================================================================
-Debug(string sMsg){
-    if ((!g_iDebugMode)) return;
-    llOwnerSay(((("DEBUG: " + g_sScriptName) + "; ") + sMsg));
-}
-
-
-float percentage(float per,float num){
-    return ((num / 100.0) * per);
-}
-
-
-//###
-//PrintStatusInfo.lslm
-//0.2 - 08Feb2014
-
-InfoLines(integer bool){
-    if ((g_iVerbose && bool)) {
-        if (g_iSmoke) {
-            if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
-        }
-        else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
-    }
-    if (g_iSmoke) {
-        if (g_iSmoke) {
-            if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
-        }
-        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
-    }
-    else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-    if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
-}
-
-
-//###
-//GroupHandling.lslm
-//0.5 - 31Jan2014
-
-string getGroup(string sDefGroup){
-    if (("" == sDefGroup)) (sDefGroup = "Default");
-    string str = llStringTrim(llGetObjectDesc(),STRING_TRIM);
-    if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
-    else  {
-        list lGroup = llParseString2List(str,[" "],[]);
-        (str = llList2String(lGroup,0));
-    }
-    return str;
-}
-
-
-string GroupCheck(key kId){
-    string str = getGroup(LINKSETID);
-    list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
-    string sGroup = llList2String(lKeys,0);
-    string sScriptName = llList2String(lKeys,1);
-    if ((((str == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == str))) return sScriptName;
-    return "exit";
-}
-
-
-//###
-//ExtensionBasics.lslm
-//0.462 - 08Feb2014
-
-RegisterExtension(integer link){
-    if (g_iSmoke) {
-        if ((g_iSingleSmoke && (INVENTORY_NONE == llGetInventoryType(g_sMainScript)))) {
-            (g_iSmoke = FALSE);
-            return;
-        }
-        string sId = ((getGroup(LINKSETID) + SEPARATOR) + g_sScriptName);
-        if (g_iSmoke) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
-        else  if (g_iSingleSmoke) llMessageLinked(link,PARTICLE_CHANNEL,"0",((key)sId));
-    }
-}
-
-
-string MasterCommand(integer iChan,string sVal,integer conf){
-    if ((iChan == COMMAND_CHANNEL)) {
-        list lValues = llParseString2List(sVal,[SEPARATOR],[]);
-        string sCommand = llList2String(lValues,0);
-        if (("register" == sCommand)) {
-            RegisterExtension(g_iType);
-        }
-        else  if (("verbose" == sCommand)) {
-            (g_iVerbose = TRUE);
-            InfoLines(FALSE);
-        }
-        else  if (("nonverbose" == sCommand)) (g_iVerbose = FALSE);
-        else  if (("globaldebug" == sCommand)) (g_iVerbose = TRUE);
-        else  if ((conf && ("config" == sCommand))) return sVal;
-        else  if (g_iSmoke) llSetTimerEvent(0.1);
-        return "";
-    }
-    return "";
-}
-
-
-//===============================================
-//PREDEFINED FUNCTIONS
-//===============================================
-
-initExtension(){
-    if (g_iSmoke) llParticleSystem([]);
-    llSleep(1);
-    RegisterExtension(g_iType);
-    InfoLines(FALSE);
-}
-
-
-updateParticles(float fAlpha){
-    Debug(("fAlpha " + ((string)fAlpha)));
-    llParticleSystem([PSYS_PART_FLAGS,((0 | PSYS_PART_INTERP_COLOR_MASK) | PSYS_PART_INTERP_SCALE_MASK),PSYS_SRC_PATTERN,PSYS_SRC_PATTERN_EXPLODE,PSYS_SRC_BURST_RADIUS,0.1,PSYS_PART_START_COLOR,<0.5,0.5,0.5>,PSYS_PART_END_COLOR,<0.5,0.5,0.5>,PSYS_PART_START_ALPHA,fAlpha,PSYS_PART_END_ALPHA,0.0,PSYS_PART_START_SCALE,<0.1,0.1,0.0>,PSYS_PART_END_SCALE,<3.0,3.0,0.0>,PSYS_PART_MAX_AGE,g_fAge,PSYS_SRC_BURST_RATE,g_fRate,PSYS_SRC_BURST_PART_COUNT,g_iCount,PSYS_SRC_ACCEL,<0.0,0.0,0.2>,PSYS_SRC_BURST_SPEED_MIN,0.0,PSYS_SRC_BURST_SPEED_MAX,0.1]);
+MESSAGE_MAP(){
+    (COMMAND_CHANNEL = 15700);
+    (PARTICLE_CHANNEL = -15790);
+    (SOUND_CHANNEL = -15780);
+    (ANIM_CHANNEL = -15770);
+    (PRIMCOMMAND_CHANNEL = -15771);
+    (REMOTE_CHANNEL = -975102);
 }
 
 
@@ -225,9 +105,48 @@ updateParticles(float fAlpha){
 default {
 
 	state_entry() {
+        MESSAGE_MAP();
+        (g_iSmoke = 1);
+        (g_fAge = 10.0);
+        (g_fRate = 0.5);
+        (g_iCount = 5);
+        (g_fStartAlpha = 0.4);
         (g_sScriptName = llGetScriptName());
-        Debug(("state_entry, Particle count = " + ((string)llRound(((((float)g_iCount) * g_fAge) / g_fRate)))));
-        initExtension();
+        
+        if (g_iSmoke) llParticleSystem([]);
+        llSleep(1);
+        integer link = -2;
+        if (g_iSmoke) {
+            if ((0 && (-1 == llGetInventoryType(g_sMainScript)))) {
+                (g_iSmoke = 0);
+                jump __end02;
+            }
+            string sDefGroup = LINKSETID;
+            if (("" == sDefGroup)) (sDefGroup = "Default");
+            string str = llStringTrim(llGetObjectDesc(),3);
+            if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
+            else  {
+                list lGroup = llParseString2List(str,[" "],[]);
+                (str = llList2String(lGroup,0));
+            }
+            string sId = ((str + SEPARATOR) + g_sScriptName);
+            if (g_iSmoke) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
+        }
+        @__end02;
+        if ((g_iVerbose && 0)) {
+            if (g_iSmoke) {
+                if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+            }
+            else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        }
+        if (g_iSmoke) {
+            if (g_iSmoke) {
+                if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+            }
+            else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+        }
+        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+        if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
     }
 
 
@@ -247,11 +166,100 @@ default {
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
 	link_message(integer iSender,integer iChan,string sSet,key kId) {
-        Debug(((((((("link_message = channel " + ((string)iChan)) + "; sSet ") + sSet) + "; kId ") + ((string)kId)) + " ...g_sSize ") + g_sSize));
-        MasterCommand(iChan,sSet,FALSE);
+        string _sMsg1 = ((((((("link_message = channel " + ((string)iChan)) + "; sSet ") + sSet) + "; kId ") + ((string)kId)) + " ...g_sSize ") + g_sSize);
+        
+        if ((iChan == COMMAND_CHANNEL)) {
+            list lValues = llParseString2List(sSet,[SEPARATOR],[]);
+            string sCommand = llList2String(lValues,0);
+            if (("register" == sCommand)) {
+                integer link = -2;
+                if (g_iSmoke) {
+                    if ((0 && (-1 == llGetInventoryType(g_sMainScript)))) {
+                        (g_iSmoke = 0);
+                        jump __end03;
+                    }
+                    string sDefGroup = LINKSETID;
+                    if (("" == sDefGroup)) (sDefGroup = "Default");
+                    string str = llStringTrim(llGetObjectDesc(),3);
+                    if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
+                    else  {
+                        list lGroup = llParseString2List(str,[" "],[]);
+                        (str = llList2String(lGroup,0));
+                    }
+                    string sId = ((str + SEPARATOR) + g_sScriptName);
+                    if (g_iSmoke) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
+                }
+                @__end03;
+            }
+            else  if (("verbose" == sCommand)) {
+                (g_iVerbose = 1);
+                if ((g_iVerbose && 0)) {
+                    if (g_iSmoke) {
+                        if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+                    }
+                    else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+                }
+                if (g_iSmoke) {
+                    if (g_iSmoke) {
+                        if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+                    }
+                    else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+                }
+                else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+                if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+            }
+            else  if (("nonverbose" == sCommand)) (g_iVerbose = 0);
+            else  if ((0 && ("config" == sCommand))) {
+                
+                jump _end2;
+            }
+            else  if (g_iSmoke) llSetTimerEvent(0.1);
+            "";
+            jump _end2;
+        }
+        "";
+        @_end2;
         if (((iChan != PARTICLE_CHANNEL) || (!g_iSmoke))) return;
-        string sScriptName = GroupCheck(kId);
-        if (("exit" == GroupCheck(kId))) return;
+        string _ret4;
+        string _sDefGroup6 = LINKSETID;
+        if (("" == _sDefGroup6)) (_sDefGroup6 = "Default");
+        string _str2 = llStringTrim(llGetObjectDesc(),3);
+        if (((llToLower(_str2) == "(no description)") || (_str2 == ""))) (_str2 = _sDefGroup6);
+        else  {
+            list _lGroup9 = llParseString2List(_str2,[" "],[]);
+            (_str2 = llList2String(_lGroup9,0));
+        }
+        string _str7 = _str2;
+        list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
+        string sGroup = llList2String(lKeys,0);
+        string _sScriptName8 = llList2String(lKeys,1);
+        if ((((_str7 == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == _str7))) {
+            (_ret4 = _sScriptName8);
+            jump _end5;
+        }
+        (_ret4 = "exit");
+        @_end5;
+        string sScriptName = _ret4;
+        string _ret10;
+        string _sDefGroup12 = LINKSETID;
+        if (("" == _sDefGroup12)) (_sDefGroup12 = "Default");
+        string __str213 = llStringTrim(llGetObjectDesc(),3);
+        if (((llToLower(__str213) == "(no description)") || (__str213 == ""))) (__str213 = _sDefGroup12);
+        else  {
+            list _lGroup18 = llParseString2List(__str213,[" "],[]);
+            (__str213 = llList2String(_lGroup18,0));
+        }
+        string _str14 = __str213;
+        list _lKeys15 = llParseString2List(((string)kId),[SEPARATOR],[]);
+        string _sGroup16 = llList2String(_lKeys15,0);
+        string _sScriptName17 = llList2String(_lKeys15,1);
+        if ((((_str14 == _sGroup16) || (LINKSETID == _sGroup16)) || (LINKSETID == _str14))) {
+            (_ret10 = _sScriptName17);
+            jump _end11;
+        }
+        (_ret10 = "exit");
+        @_end11;
+        if (("exit" == _ret10)) return;
         list lParams = llParseString2List(sSet,[SEPARATOR],[]);
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);
@@ -261,12 +269,15 @@ default {
         }
         if ((((((integer)sVal) > 0) && (((integer)sVal) <= 100)) && ("smoke" == sMsg))) {
             llSetTimerEvent(0.0);
-            updateParticles(percentage(((float)sVal),g_fStartAlpha));
-            if ((g_iVerbose && ("0" != g_sSize))) llWhisper(0,"(v) Smoke changes it's appearance");
+            float num = g_fStartAlpha;
+            float fAlpha = ((num / 100.0) * ((float)sVal));
+            
+            llParticleSystem([0,3,9,2,16,0.1,1,<0.5,0.5,0.5>,3,<0.5,0.5,0.5>,2,fAlpha,4,0.0,5,<0.1,0.1,0.0>,6,<3.0,3.0,0.0>,7,g_fAge,13,g_fRate,15,g_iCount,8,<0.0,0.0,0.2>,17,0.0,18,0.1]);
+            if ((((!silent) && g_iVerbose) && ("0" != g_sSize))) llWhisper(0,"(v) Smoke changes it's appearance");
             (g_sSize = sVal);
         }
         else  if ((("smoke" == sMsg) || ("" == sMsg))) {
-            llWhisper(0,"Fumes are fading");
+            if ((!silent)) llWhisper(0,"Fumes are fading");
             llSetTimerEvent(11.0);
         }
     }
@@ -275,8 +286,8 @@ default {
 
 	timer() {
         llParticleSystem([]);
-        if (g_iVerbose) llWhisper(0,"(v) Smoke vanished");
-        Debug("smoke particles off");
+        if (((!silent) && g_iVerbose)) llWhisper(0,"(v) Smoke vanished");
+        
         (g_sSize = "0");
         llSetTimerEvent(0.0);
     }
