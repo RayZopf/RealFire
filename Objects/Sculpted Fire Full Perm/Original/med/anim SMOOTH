@@ -17,8 +17,7 @@ default
     state_entry()
     {   
         // llSetTextureAnim() is a function that animates a texture on a face.
-        //llSetTextureAnim(ANIM_ON | SMOOTH | LOOP, ALL_SIDES,25,25,25.0, 20,20.20);
-        llSetTextureAnim(FALSE, ALL_SIDES, 0, 0, 0.0, 0.0, 1.0);
+        llSetTextureAnim(ANIM_ON | SMOOTH | LOOP, ALL_SIDES,25,25,25.0, 20,20.20);
                             // animate the script to scroll across all the faces.
     }
  
