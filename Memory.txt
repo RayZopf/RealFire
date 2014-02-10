@@ -31,3 +31,4 @@
 [17:06:23] Fire log whispers: (v) Channel for remote control: 10959
 [17:06:23] Fire log whispers:
      -free memory: 2846 -
+(v) RealFire/Fire.lsl
