@@ -30,3 +30,7 @@ Feb .2014
  - bugfixes
  - code re-formatting
  - particle fire in own module
+ - incorporated RealFire 2.3 update
+ - started using LSLForge optimizer
+ 	- needed to rework some modules and scripts
+ - edited fire prims
