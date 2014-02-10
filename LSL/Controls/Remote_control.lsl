@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Mon Feb 10 02:45:20 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Mon Feb 10 14:26:29 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote control (secondary switch) for RealFire
 //
@@ -105,6 +105,7 @@ default {
 
 	state_entry() {
         MESSAGE_MAP();
+        (g_iVerbose = 0);
         if (g_iVerbose) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + " ready"));
     }
 
