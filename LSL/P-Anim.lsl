@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Tue Feb 11 16:16:26 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Tue Feb 11 18:07:19 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
 //11. Feb. 2014
-//v0.161
+//v0.17
 //
 //
 // (Realfire by Rene)
@@ -68,7 +68,7 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealPrimFire";
-string g_sVersion = "0.161";
+string g_sVersion = "0.17";
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";
@@ -182,6 +182,9 @@ default {
         (g_vOffsetFull = <0.0,0.0,0.0>);
         (g_iPrimFireNFiles = 3);
         (g_fAltitude = 1.0);
+        integer rc = -1;
+        (rc = llSetMemoryLimit(29000));
+        if ((g_iVerbose && (1 > rc))) llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Setting memory limit failed"));
         (g_sScriptName = llGetScriptName());
         
         llSay(PRIMCOMMAND_CHANNEL,"die");
@@ -191,7 +194,7 @@ default {
         if (g_iPrimFire) {
             if ((g_iSingleFire && (-1 == llGetInventoryType(g_sMainScript)))) {
                 (g_iPrimFireAvail = 0);
-                jump __end01;
+                jump __end02;
             }
             string sDefGroup = LINKSETID;
             if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -205,7 +208,7 @@ default {
             if (g_iPrimFireAvail) llMessageLinked(link,ANIM_CHANNEL,"1",((key)sId));
             else  if (g_iSingleFire) llMessageLinked(link,ANIM_CHANNEL,"0",((key)sId));
         }
-        @__end01;
+        @__end02;
         if ((g_iVerbose && 1)) {
             if (g_iPrimFireAvail) {
                 if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
@@ -219,7 +222,7 @@ default {
             else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
         }
         else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-        if (((!silent) && g_iVerbose)) llWhisper(0,((((((("\n\t- currently used/free memory: (u)" + ((string)llGetUsedMemory())) + "/") + ((string)llGetFreeMemory())) + "(f) -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+        if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
     }
 
 
@@ -266,7 +269,7 @@ default {
                 else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
             }
             else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-            if (((!silent) && g_iVerbose)) llWhisper(0,((((((("\n\t- currently used/free memory: (u)" + ((string)llGetUsedMemory())) + "/") + ((string)llGetFreeMemory())) + "(f) -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+            if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
         }
     }
 
@@ -316,7 +319,7 @@ default {
                     else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
                 }
                 else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-                if (((!silent) && g_iVerbose)) llWhisper(0,((((((("\n\t- currently used/free memory: (u)" + ((string)llGetUsedMemory())) + "/") + ((string)llGetFreeMemory())) + "(f) -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+                if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
             }
             else  if (("nonverbose" == sCommand)) (g_iVerbose = 0);
             else  if ((0 && ("config" == sCommand))) {

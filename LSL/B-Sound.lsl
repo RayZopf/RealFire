@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Feb 11 16:16:26 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Feb 11 18:07:19 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
 //11. Feb. 2014
-//v0.511
+//v0.52
 //
 //
 // (Realfire by Rene)
@@ -56,7 +56,7 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";
-string g_sVersion = "0.511";
+string g_sVersion = "0.52";
 string g_sAuthors = "Zopf";
 
 string g_sType = "sound";
@@ -117,6 +117,9 @@ default {
 	state_entry() {
         MESSAGE_MAP();
         (g_iSound = 1);
+        integer rc = -1;
+        (rc = llSetMemoryLimit(25000));
+        if ((g_iVerbose && (1 > rc))) llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Setting memory limit failed"));
         (g_sScriptName = llGetScriptName());
         
         (g_fFactor = 0.875);
@@ -128,7 +131,7 @@ default {
         if (g_iSound) {
             if ((0 && (-1 == llGetInventoryType(g_sMainScript)))) {
                 (g_iSoundAvail = 0);
-                jump __end01;
+                jump __end02;
             }
             string sDefGroup = LINKSETID;
             if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -141,7 +144,7 @@ default {
             string sId = ((str + SEPARATOR) + g_sScriptName);
             if (g_iSoundAvail) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
         }
-        @__end01;
+        @__end02;
         if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
         if ((g_iVerbose && 1)) {
             if (g_iSoundAvail) {
@@ -156,7 +159,7 @@ default {
             else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
         }
         else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-        if (((!silent) && g_iVerbose)) llWhisper(0,((((((("\n\t- currently used/free memory: (u)" + ((string)llGetUsedMemory())) + "/") + ((string)llGetFreeMemory())) + "(f) -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+        if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
     }
 
 
@@ -208,7 +211,7 @@ default {
                 else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
             }
             else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-            if (((!silent) && g_iVerbose)) llWhisper(0,((((((("\n\t- currently used/free memory: (u)" + ((string)llGetUsedMemory())) + "/") + ((string)llGetFreeMemory())) + "(f) -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+            if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
         }
     }
 
@@ -257,7 +260,7 @@ default {
                     else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
                 }
                 else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-                if (((!silent) && g_iVerbose)) llWhisper(0,((((((("\n\t- currently used/free memory: (u)" + ((string)llGetUsedMemory())) + "/") + ((string)llGetFreeMemory())) + "(f) -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+                if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
             }
             else  if (("nonverbose" == sCommand)) (g_iVerbose = 0);
             else  if ((0 && ("config" == sCommand))) {

@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Tue Feb 11 16:16:26 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Tue Feb 11 18:07:19 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
 //11. Feb. 2014
-//v0.321
+//v0.33
 //
 //
 // (Realfire by Rene)
@@ -62,7 +62,7 @@ vector g_vEndColor = <1.0,0.0,0.0>;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealParticleFire";
-string g_sVersion = "0.321";
+string g_sVersion = "0.33";
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";
@@ -285,7 +285,7 @@ initExtension(integer bool){
         else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
     }
     else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-    if (((!silent) && g_iVerbose)) llWhisper(0,((((((("\n\t- currently used/free memory: (u)" + ((string)llGetUsedMemory())) + "/") + ((string)llGetFreeMemory())) + "(f) -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+    if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
 }
 
 
@@ -399,6 +399,9 @@ default {
         (g_iTypeTexture = -1);
         (g_iLight = 1);
         (g_iTypeLight = -1);
+        integer rc = -1;
+        (rc = llSetMemoryLimit(40000));
+        if ((g_iVerbose && (1 > rc))) llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Setting memory limit failed"));
         (g_sScriptName = llGetScriptName());
         
         
@@ -464,7 +467,7 @@ default {
                     else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
                 }
                 else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-                if (((!silent) && g_iVerbose)) llWhisper(0,((((((("\n\t- currently used/free memory: (u)" + ((string)llGetUsedMemory())) + "/") + ((string)llGetFreeMemory())) + "(f) -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+                if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
             }
             else  if (("nonverbose" == sCommand)) (g_iVerbose = 0);
             else  if ((1 && ("config" == sCommand))) {

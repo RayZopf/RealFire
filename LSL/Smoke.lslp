@@ -16,7 +16,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
 //11. Feb. 2014
-//v2.1.3-0.591
+//v2.1.3-0.6
 //
 
 //Files:
@@ -66,7 +66,7 @@ float g_fStartAlpha;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.1.3-0.591";       // version
+string g_sVersion = "2.1.3-0.6";       // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "smoke";
@@ -79,6 +79,7 @@ string g_sSize = "0";
 //LSLForge MODULES
 //===============================================
 $import Debug2.lslm(m_sScriptName=g_sScriptName);
+$import MemoryManagement.lslm(m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose);
 $import RealFireMessageMap.lslm();
 $import GenericFunctions.lslm();
 $import PrintStatusInfo.lslm(m_iAvail=g_iSmoke, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iSmoke, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
@@ -175,6 +176,7 @@ default
 		g_iCount = 5;              // how many particles to emit per BURST
 		g_fStartAlpha = 0.4;         // start alpha (transparency) value
 
+		MemRestrict(21000);
 		g_sScriptName = llGetScriptName();
 		if (debug) Debug("state_entry", TRUE, FALSE);
 		if (debug) Debug("Particle count: " + (string)llRound((float)g_iCount * g_fAge / g_fRate), FALSE, FALSE);

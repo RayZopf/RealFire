@@ -3,7 +3,7 @@
 // by Zopf Resident - Ray Zopf (Raz)
 //
 //11. Feb. 2014
-//v0.871
+//v0.88
 //
 //
 // (Realfire by Rene)
@@ -64,7 +64,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";     // title
-string g_sVersion = "0.871";       // version
+string g_sVersion = "0.88";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "sound";
@@ -84,6 +84,7 @@ string g_sSize = "0";
 //LSLForge MODULES
 //===============================================
 $import Debug2.lslm(m_sScriptName=g_sScriptName);
+$import MemoryManagement.lslm(m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose);
 $import RealFireMessageMap.lslm();
 $import PrintStatusInfo.lslm(m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iSound, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iSingle=g_iSingleSound, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
@@ -151,6 +152,7 @@ default
 		g_iSound = TRUE;
 		g_iSoundNFiles = 5;
 
+		MemRestrict(30000);
 		g_sScriptName = llGetScriptName();
 		if (debug) Debug("state_entry", TRUE, FALSE);
 		initExtension();

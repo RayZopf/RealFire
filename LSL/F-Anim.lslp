@@ -3,7 +3,7 @@
 // by Zopf Resident - Ray Zopf (Raz)
 //
 //11. Feb. 2014
-//v0.321
+//v0.33
 //
 //
 // (Realfire by Rene)
@@ -69,7 +69,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealParticleFire";     // title
-string g_sVersion = "0.321";       // version
+string g_sVersion = "0.33";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";
@@ -97,6 +97,7 @@ float g_fStartRadius;              // start value of lightRadius (before burning
 //LSLForge MODULES
 //===============================================
 $import Debug2.lslm(m_sScriptName=g_sScriptName);
+$import MemoryManagement.lslm(m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose);
 $import RealFireMessageMap.lslm();
 $import GenericFunctions.lslm();
 $import PrintStatusInfo.lslm(m_iAvail=g_iParticleFireAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iParticleFire, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
@@ -326,6 +327,7 @@ default
 		g_iLight = TRUE;
 		g_iTypeLight = LINK_SET;
 
+		MemRestrict(40000);
 		g_sScriptName = llGetScriptName();
 		if (debug) Debug("state_entry", TRUE, TRUE);
 		if (debug) Debug("Particle count: " + (string)llRound((float)g_iCount * g_fAge / g_fRate), TRUE, FALSE);

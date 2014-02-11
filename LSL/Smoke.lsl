@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Feb 11 16:16:26 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Feb 11 18:07:19 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Smoke
 //
@@ -17,7 +17,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
 //11. Feb. 2014
-//v2.1.3-0.591
+//v2.1.3-0.6
 //
 
 //Files:
@@ -67,7 +67,7 @@ float g_fStartAlpha;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";
-string g_sVersion = "2.1.3-0.591";
+string g_sVersion = "2.1.3-0.6";
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sSize = "0";
@@ -111,6 +111,9 @@ default {
         (g_fRate = 0.5);
         (g_iCount = 5);
         (g_fStartAlpha = 0.4);
+        integer rc = -1;
+        (rc = llSetMemoryLimit(21000));
+        if ((g_iVerbose && (1 > rc))) llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Setting memory limit failed"));
         (g_sScriptName = llGetScriptName());
         
         
@@ -120,7 +123,7 @@ default {
         if (g_iSmoke) {
             if ((0 && (-1 == llGetInventoryType(g_sMainScript)))) {
                 (g_iSmoke = 0);
-                jump __end01;
+                jump __end02;
             }
             string sDefGroup = LINKSETID;
             if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -133,7 +136,7 @@ default {
             string sId = ((str + SEPARATOR) + g_sScriptName);
             if (g_iSmoke) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
         }
-        @__end01;
+        @__end02;
         if ((g_iVerbose && 0)) {
             if (g_iSmoke) {
                 if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
@@ -147,7 +150,7 @@ default {
             else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
         }
         else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-        if (((!silent) && g_iVerbose)) llWhisper(0,((((((("\n\t- currently used/free memory: (u)" + ((string)llGetUsedMemory())) + "/") + ((string)llGetFreeMemory())) + "(f) -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+        if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
     }
 
 
@@ -206,7 +209,7 @@ default {
                     else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
                 }
                 else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-                if (((!silent) && g_iVerbose)) llWhisper(0,((((((("\n\t- currently used/free memory: (u)" + ((string)llGetUsedMemory())) + "/") + ((string)llGetFreeMemory())) + "(f) -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+                if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
             }
             else  if (("nonverbose" == sCommand)) (g_iVerbose = 0);
             else  if ((0 && ("config" == sCommand))) {

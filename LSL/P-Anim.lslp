@@ -3,7 +3,7 @@
 // by Zopf Resident - Ray Zopf (Raz)
 //
 //11. Feb. 2014
-//v0.161
+//v0.17
 //
 //
 // (Realfire by Rene)
@@ -67,7 +67,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealPrimFire";     // title
-string g_sVersion = "0.161";       // version
+string g_sVersion = "0.17";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";
@@ -87,6 +87,7 @@ vector g_vOffset;
 //LSLForge MODULES
 //===============================================
 $import Debug2.lslm(m_sScriptName=g_sScriptName);
+$import MemoryManagement.lslm(m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iVerbose=g_iVerbose);
 $import RealFireMessageMap.lslm();
 $import PrintStatusInfo.lslm(m_iAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iPrimFire, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iSingle=g_iSingleFire, m_iEnabled=g_iPrimFire, m_iAvail=g_iPrimFireAvail, m_iChannel=ANIM_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
@@ -162,6 +163,7 @@ default
 		g_iPrimFireNFiles = 3;
 		g_fAltitude = 1.0; // height for rezzed prim
 
+		MemRestrict(29000);
 		g_sScriptName = llGetScriptName();
 		if (debug) Debug("state_entry", TRUE, FALSE);
 		initExtension();
