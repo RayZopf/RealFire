@@ -43,7 +43,7 @@ InfoLines(integer bool)
 			else llWhisper(PUBLIC_CHANNEL, m_sTitle + " " + m_sVersion + " not ready");
 	} else  llWhisper(PUBLIC_CHANNEL, m_sTitle+"/"+ m_sScriptName +" script disabled");
 
-	if (!silent && m_iVerbose) llWhisper(PUBLIC_CHANNEL, "\n\t- free memory: "+(string)llGetFreeMemory()+" -\n(v) "+m_sTitle+"/"+ m_sScriptName);
+	if (!silent && m_iVerbose) llWhisper(PUBLIC_CHANNEL, "\n\t- used/free memory: (u)"+(string)llGetUsedMemory()+"/"+(string)llGetFreeMemory()+"(f) -\n(v) "+m_sTitle+"/"+ m_sScriptName);
 }
 
 //END PrintStatusInfo.lslm
