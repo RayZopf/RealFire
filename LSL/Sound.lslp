@@ -152,7 +152,7 @@ default
 		g_iSound = TRUE;
 		g_iSoundNFiles = 5;
 
-		MemRestrict(30000);
+		MemRestrict(32000);
 		g_sScriptName = llGetScriptName();
 		if (debug) Debug("state_entry", TRUE, FALSE);
 		initExtension();

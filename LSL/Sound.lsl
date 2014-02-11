@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Tue Feb 11 18:07:19 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Sound.lslp Tue Feb 11 19:29:22 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -205,7 +205,7 @@ default {
         (g_iSound = 1);
         (g_iSoundNFiles = 5);
         integer rc = -1;
-        (rc = llSetMemoryLimit(30000));
+        (rc = llSetMemoryLimit(32000));
         if ((g_iVerbose && (1 > rc))) llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Setting memory limit failed"));
         (g_sScriptName = llGetScriptName());
         

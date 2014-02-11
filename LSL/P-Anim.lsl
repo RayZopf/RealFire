@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Tue Feb 11 18:07:19 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Tue Feb 11 21:32:37 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -177,13 +177,13 @@ default {
 	state_entry() {
         MESSAGE_MAP();
         (g_iPrimFire = 1);
-        (g_vOffsetSmall = <0.0,0.0,0.0>);
-        (g_vOffsetMedium1 = <0.0,0.0,0.0>);
-        (g_vOffsetFull = <0.0,0.0,0.0>);
+        (g_vOffsetSmall = <0.0,0.0,-0.525>);
+        (g_vOffsetMedium1 = <0.0,0.0,-0.345>);
+        (g_vOffsetFull = <0.0,0.0,5.0e-2>);
         (g_iPrimFireNFiles = 3);
         (g_fAltitude = 1.0);
         integer rc = -1;
-        (rc = llSetMemoryLimit(29000));
+        (rc = llSetMemoryLimit(30000));
         if ((g_iVerbose && (1 > rc))) llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Setting memory limit failed"));
         (g_sScriptName = llGetScriptName());
         

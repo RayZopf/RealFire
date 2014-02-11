@@ -157,13 +157,13 @@ default
 		//debug=TRUE; // set to TRUE to enable Debug messages
 		MESSAGE_MAP();
 		g_iPrimFire = TRUE;
-		g_vOffsetSmall = <0.0, 0.0, 0.0>;
-		g_vOffsetMedium1 = <0.0, 0.0, 0.0>;
-		g_vOffsetFull = <0.0, 0.0, 0.0>;
+		g_vOffsetSmall = <0.0, 0.0, -0.525>;
+		g_vOffsetMedium1 = <0.0, 0.0, -0.345>;
+		g_vOffsetFull = <0.0, 0.0, 0.05>;
 		g_iPrimFireNFiles = 3;
 		g_fAltitude = 1.0; // height for rezzed prim
 
-		MemRestrict(29000);
+		MemRestrict(30000);
 		g_sScriptName = llGetScriptName();
 		if (debug) Debug("state_entry", TRUE, FALSE);
 		initExtension();
