@@ -20,8 +20,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//09. Feb. 2014
-//v1.1-0.21
+//11. Feb. 2014
+//v1.1-0.211
 //
 
 //Files:
@@ -63,7 +63,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Control";            // title
-string g_sVersion = "1.1-0.21";        // version
+string g_sVersion = "1.1-0.211";        // version
 
 string g_sType = "remote";
 integer g_iType = LINK_SET;
@@ -73,8 +73,8 @@ string g_sAuthors = "Rene10957, Zopf";
 //===============================================
 //LSLForge MODULES
 //===============================================
+$import Debug2.lslm(m_sScriptName=g_sScriptName);
 $import RealFireMessageMap.lslm();
-$import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
@@ -95,7 +95,7 @@ default
 {
 	state_entry()
 	{
-		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		//debug=TRUE; // set to TRUE to enable Debug messages
 		MESSAGE_MAP();
 		g_iVerbose = FALSE; // as script is used in fire prims that get rezzed all the time
 

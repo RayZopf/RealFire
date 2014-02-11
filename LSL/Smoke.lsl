@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Feb 11 12:26:35 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Feb 11 16:16:26 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Smoke
 //
@@ -17,7 +17,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
 //11. Feb. 2014
-//v2.1.3-0.59
+//v2.1.3-0.591
 //
 
 //Files:
@@ -67,7 +67,7 @@ float g_fStartAlpha;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";
-string g_sVersion = "2.1.3-0.59";
+string g_sVersion = "2.1.3-0.591";
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sSize = "0";
@@ -113,13 +113,14 @@ default {
         (g_fStartAlpha = 0.4);
         (g_sScriptName = llGetScriptName());
         
+        
         if (g_iSmoke) llParticleSystem([]);
         llSleep(1);
         integer link = -2;
         if (g_iSmoke) {
             if ((0 && (-1 == llGetInventoryType(g_sMainScript)))) {
                 (g_iSmoke = 0);
-                jump __end02;
+                jump __end01;
             }
             string sDefGroup = LINKSETID;
             if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -132,7 +133,7 @@ default {
             string sId = ((str + SEPARATOR) + g_sScriptName);
             if (g_iSmoke) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
         }
-        @__end02;
+        @__end01;
         if ((g_iVerbose && 0)) {
             if (g_iSmoke) {
                 if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
@@ -166,7 +167,6 @@ default {
 //listen for linked messages from Fire (main) script
 //-----------------------------------------------
 	link_message(integer iSender,integer iChan,string sSet,key kId) {
-        string _sMsg1 = ((((((("link_message = channel " + ((string)iChan)) + "; sSet ") + sSet) + "; kId ") + ((string)kId)) + " ...g_sSize ") + g_sSize);
         
         if ((iChan == COMMAND_CHANNEL)) {
             list lValues = llParseString2List(sSet,[SEPARATOR],[]);
@@ -176,7 +176,7 @@ default {
                 if (g_iSmoke) {
                     if ((0 && (-1 == llGetInventoryType(g_sMainScript)))) {
                         (g_iSmoke = 0);
-                        jump __end03;
+                        jump __end01;
                     }
                     string sDefGroup = LINKSETID;
                     if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -189,7 +189,7 @@ default {
                     string sId = ((str + SEPARATOR) + g_sScriptName);
                     if (g_iSmoke) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
                 }
-                @__end03;
+                @__end01;
             }
             else  if (("verbose" == sCommand)) {
                 (g_iVerbose = 1);
@@ -211,55 +211,55 @@ default {
             else  if (("nonverbose" == sCommand)) (g_iVerbose = 0);
             else  if ((0 && ("config" == sCommand))) {
                 
-                jump _end2;
+                jump _end0;
             }
             else  if (g_iSmoke) llSetTimerEvent(0.1);
             "";
-            jump _end2;
+            jump _end0;
         }
         "";
-        @_end2;
+        @_end0;
         if (((iChan != PARTICLE_CHANNEL) || (!g_iSmoke))) return;
-        string _ret4;
-        string _sDefGroup6 = LINKSETID;
-        if (("" == _sDefGroup6)) (_sDefGroup6 = "Default");
+        string _ret2;
+        string _sDefGroup4 = LINKSETID;
+        if (("" == _sDefGroup4)) (_sDefGroup4 = "Default");
         string _str2 = llStringTrim(llGetObjectDesc(),3);
-        if (((llToLower(_str2) == "(no description)") || (_str2 == ""))) (_str2 = _sDefGroup6);
+        if (((llToLower(_str2) == "(no description)") || (_str2 == ""))) (_str2 = _sDefGroup4);
         else  {
-            list _lGroup9 = llParseString2List(_str2,[" "],[]);
-            (_str2 = llList2String(_lGroup9,0));
+            list _lGroup7 = llParseString2List(_str2,[" "],[]);
+            (_str2 = llList2String(_lGroup7,0));
         }
-        string _str7 = _str2;
+        string _str5 = _str2;
         list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
         string sGroup = llList2String(lKeys,0);
-        string _sScriptName8 = llList2String(lKeys,1);
-        if ((((_str7 == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == _str7))) {
-            (_ret4 = _sScriptName8);
-            jump _end5;
+        string _sScriptName6 = llList2String(lKeys,1);
+        if ((((_str5 == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == _str5))) {
+            (_ret2 = _sScriptName6);
+            jump _end3;
         }
-        (_ret4 = "exit");
-        @_end5;
-        string sScriptName = _ret4;
-        string _ret10;
-        string _sDefGroup12 = LINKSETID;
-        if (("" == _sDefGroup12)) (_sDefGroup12 = "Default");
-        string __str213 = llStringTrim(llGetObjectDesc(),3);
-        if (((llToLower(__str213) == "(no description)") || (__str213 == ""))) (__str213 = _sDefGroup12);
+        (_ret2 = "exit");
+        @_end3;
+        string sScriptName = _ret2;
+        string _ret8;
+        string _sDefGroup10 = LINKSETID;
+        if (("" == _sDefGroup10)) (_sDefGroup10 = "Default");
+        string __str211 = llStringTrim(llGetObjectDesc(),3);
+        if (((llToLower(__str211) == "(no description)") || (__str211 == ""))) (__str211 = _sDefGroup10);
         else  {
-            list _lGroup18 = llParseString2List(__str213,[" "],[]);
-            (__str213 = llList2String(_lGroup18,0));
+            list _lGroup16 = llParseString2List(__str211,[" "],[]);
+            (__str211 = llList2String(_lGroup16,0));
         }
-        string _str14 = __str213;
-        list _lKeys15 = llParseString2List(((string)kId),[SEPARATOR],[]);
-        string _sGroup16 = llList2String(_lKeys15,0);
-        string _sScriptName17 = llList2String(_lKeys15,1);
-        if ((((_str14 == _sGroup16) || (LINKSETID == _sGroup16)) || (LINKSETID == _str14))) {
-            (_ret10 = _sScriptName17);
-            jump _end11;
+        string _str12 = __str211;
+        list _lKeys13 = llParseString2List(((string)kId),[SEPARATOR],[]);
+        string _sGroup14 = llList2String(_lKeys13,0);
+        string _sScriptName15 = llList2String(_lKeys13,1);
+        if ((((_str12 == _sGroup14) || (LINKSETID == _sGroup14)) || (LINKSETID == _str12))) {
+            (_ret8 = _sScriptName15);
+            jump _end9;
         }
-        (_ret10 = "exit");
-        @_end11;
-        if (("exit" == _ret10)) return;
+        (_ret8 = "exit");
+        @_end9;
+        if (("exit" == _ret8)) return;
         list lParams = llParseString2List(sSet,[SEPARATOR],[]);
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);

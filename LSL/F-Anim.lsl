@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Tue Feb 11 12:28:34 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Tue Feb 11 16:16:26 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
 //11. Feb. 2014
-//v0.32
+//v0.321
 //
 //
 // (Realfire by Rene)
@@ -62,7 +62,7 @@ vector g_vEndColor = <1.0,0.0,0.0>;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealParticleFire";
-string g_sVersion = "0.32";
+string g_sVersion = "0.321";
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";
@@ -119,7 +119,6 @@ MESSAGE_MAP(){
 //GenericFunctions.lslm
 //0.22 - 09Feb2014
 
-// pragma noinlining
 integer checkInt(string par,integer val,integer min,integer max){
     if (((val < min) || (val > max))) {
         if ((val < min)) (val = min);
@@ -127,20 +126,6 @@ integer checkInt(string par,integer val,integer min,integer max){
         llWhisper(0,((par + " out of range, corrected to ") + ((string)val)));
     }
     return val;
-}
-
-
-// pragma noinlining
-integer min(integer x,integer y){
-    if ((x < y)) return x;
-    else  return y;
-}
-
-
-// pragma noinlining
-integer max(integer x,integer y){
-    if ((x > y)) return x;
-    else  return y;
 }
 
 
@@ -382,6 +367,20 @@ specialFire(){
 }
 
 
+// pragma inline
+integer max(integer x,integer y){
+    if ((x > y)) return x;
+    else  return y;
+}
+
+
+// pragma inline
+integer min(integer x,integer y){
+    if ((x < y)) return x;
+    else  return y;
+}
+
+
 
 //===============================================
 //===============================================
@@ -425,7 +424,7 @@ default {
 //-----------------------------------------------
 	link_message(integer iSender,integer iChan,string sSet,key kId) {
         
-        string _ret1;
+        string _ret0;
         if ((iChan == COMMAND_CHANNEL)) {
             list lValues = llParseString2List(sSet,[SEPARATOR],[]);
             string sCommand = llList2String(lValues,0);
@@ -434,7 +433,7 @@ default {
                 if (g_iParticleFire) {
                     if ((g_iSingleFire && (-1 == llGetInventoryType(g_sMainScript)))) {
                         (g_iParticleFireAvail = 0);
-                        jump __end03;
+                        jump _end0;
                     }
                     string sDefGroup = LINKSETID;
                     if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -448,7 +447,7 @@ default {
                     if (g_iParticleFireAvail) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
                     else  if (g_iSingleFire) llMessageLinked(link,PARTICLE_CHANNEL,"0",((key)sId));
                 }
-                @__end03;
+                @_end0;
             }
             else  if (("verbose" == sCommand)) {
                 (g_iVerbose = 1);
@@ -469,41 +468,41 @@ default {
             }
             else  if (("nonverbose" == sCommand)) (g_iVerbose = 0);
             else  if ((1 && ("config" == sCommand))) {
-                (_ret1 = sSet);
-                jump _end2;
+                (_ret0 = sSet);
+                jump _end1;
             }
             else  if (g_iParticleFire) llSetTimerEvent(0.1);
-            (_ret1 = "");
-            jump _end2;
+            (_ret0 = "");
+            jump _end1;
         }
-        (_ret1 = "");
-        @_end2;
-        string sConfig = _ret1;
+        (_ret0 = "");
+        @_end1;
+        string sConfig = _ret0;
         if (("" != sConfig)) {
             integer rc = getConfigParticleFire(sConfig);
             if ((1 == rc)) initExtension(0);
             else  if ((1 <= rc)) updateSize(((float)g_sSize));
         }
-        string _ret4;
-        string _sDefGroup6 = LINKSETID;
-        if (("" == _sDefGroup6)) (_sDefGroup6 = "Default");
+        string _ret2;
+        string _sDefGroup4 = LINKSETID;
+        if (("" == _sDefGroup4)) (_sDefGroup4 = "Default");
         string _str2 = llStringTrim(llGetObjectDesc(),3);
-        if (((llToLower(_str2) == "(no description)") || (_str2 == ""))) (_str2 = _sDefGroup6);
+        if (((llToLower(_str2) == "(no description)") || (_str2 == ""))) (_str2 = _sDefGroup4);
         else  {
-            list _lGroup9 = llParseString2List(_str2,[" "],[]);
-            (_str2 = llList2String(_lGroup9,0));
+            list _lGroup7 = llParseString2List(_str2,[" "],[]);
+            (_str2 = llList2String(_lGroup7,0));
         }
-        string _str7 = _str2;
+        string _str5 = _str2;
         list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
         string sGroup = llList2String(lKeys,0);
-        string _sScriptName8 = llList2String(lKeys,1);
-        if ((((_str7 == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == _str7))) {
-            (_ret4 = _sScriptName8);
-            jump _end5;
+        string _sScriptName6 = llList2String(lKeys,1);
+        if ((((_str5 == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == _str5))) {
+            (_ret2 = _sScriptName6);
+            jump _end3;
         }
-        (_ret4 = "exit");
-        @_end5;
-        string sScriptName = _ret4;
+        (_ret2 = "exit");
+        @_end3;
+        string sScriptName = _ret2;
         if (("exit" == sScriptName)) return;
         if (((((iChan != PARTICLE_CHANNEL) || (!g_iParticleFire)) || (!g_iParticleFireAvail)) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
         list lParams = llParseString2List(sSet,[SEPARATOR],[]);

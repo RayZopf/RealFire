@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Feb 11 11:39:03 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Feb 11 16:16:26 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -25,7 +25,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
 //11. Feb. 2014
-//v2.3-1.2
+//v2.3-1.21
 //
 
 //Files:
@@ -107,7 +107,7 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";
-string g_sVersion = "2.3-1.2";
+string g_sVersion = "2.3-1.21";
 string g_sAuthors = "Rene10957, Zopf";
 
 // Notecard variables
@@ -211,7 +211,6 @@ MESSAGE_MAP(){
 //GenericFunctions.lslm
 //0.22 - 09Feb2014
 
-// pragma noinlining
 integer checkInt(string par,integer val,integer min,integer max){
     if (((val < min) || (val > max))) {
         if ((val < min)) (val = min);
@@ -219,20 +218,6 @@ integer checkInt(string par,integer val,integer min,integer max){
         llWhisper(0,((par + " out of range, corrected to ") + ((string)val)));
     }
     return val;
-}
-
-
-// pragma noinlining
-integer min(integer x,integer y){
-    if ((x < y)) return x;
-    else  return y;
-}
-
-
-// pragma noinlining
-integer max(integer x,integer y){
-    if ((x > y)) return x;
-    else  return y;
 }
 
 
@@ -596,11 +581,10 @@ startSystem(){
     if ((size <= 25.0)) {
         if ((g_iChangeSmoke && g_iSmokeAvail)) (g_fPercentSmoke = (size * 4.0));
         else  (g_fPercentSmoke = 100.0);
-        string sMsg = ((((("Smoke size: change= " + ((string)g_iChangeSmoke)) + ", size= ") + ((string)size)) + ", percentage= ") + ((string)g_fPercentSmoke));
         
         if (((g_iSoundAvail || g_iBackSoundAvail) && g_iChangeVolume)) {
-            float _num4 = g_fStartVolume;
-            (g_fSoundVolume = ((_num4 / 100.0) * (size * 4.0)));
+            float _num3 = g_fStartVolume;
+            (g_fSoundVolume = ((_num3 / 100.0) * (size * 4.0)));
         }
     }
     if ((g_iPrimFireAvail && g_iPrimFireOn)) sendMessage(ANIM_CHANNEL,((string)size),((string)g_iLowprim));
@@ -666,6 +650,20 @@ sendMessage(integer iChan,string sVal,string sMsg){
     return;
     @thisprim;
     llMessageLinked(-4,iChan,sSet,((key)sId));
+}
+
+
+// pragma inline
+integer max(integer x,integer y){
+    if ((x > y)) return x;
+    else  return y;
+}
+
+
+// pragma inline
+integer min(integer x,integer y){
+    if ((x < y)) return x;
+    else  return y;
 }
 
 
@@ -748,17 +746,53 @@ default {
             if ((msg == "Small")) (g_fPerSize = 25.0);
             else  if ((msg == "Medium")) (g_fPerSize = 50.0);
             else  if ((msg == "Large")) (g_fPerSize = 80.0);
-            else  if ((msg == "-Fire")) (g_fPerSize = max((((integer)g_fPerSize) - 5),5));
-            else  if ((msg == "+Fire")) (g_fPerSize = min((((integer)g_fPerSize) + 5),100));
+            else  if ((msg == "-Fire")) {
+                integer _ret0;
+                integer x = (((integer)g_fPerSize) - 5);
+                if ((x > 5)) {
+                    (_ret0 = x);
+                }
+                else  {
+                    (_ret0 = 5);
+                }
+                (g_fPerSize = _ret0);
+            }
+            else  if ((msg == "+Fire")) {
+                integer _ret2;
+                integer _x4 = (((integer)g_fPerSize) + 5);
+                if ((_x4 < 100)) {
+                    (_ret2 = _x4);
+                }
+                else  {
+                    (_ret2 = 100);
+                }
+                (g_fPerSize = _ret2);
+            }
             else  if ((msg == "-Volume")) {
-                (g_iPerVolume = max((g_iPerVolume - 5),0));
+                integer _ret5;
+                integer _x7 = (g_iPerVolume - 5);
+                if ((_x7 > 0)) {
+                    (_ret5 = _x7);
+                }
+                else  {
+                    (_ret5 = 0);
+                }
+                (g_iPerVolume = _ret5);
                 float per = g_iPerVolume;
                 (g_fStartVolume = (1.0e-2 * per));
             }
             else  if ((msg == "+Volume")) {
-                (g_iPerVolume = min((g_iPerVolume + 5),100));
-                float _per5 = g_iPerVolume;
-                (g_fStartVolume = (1.0e-2 * _per5));
+                integer _ret10;
+                integer _x12 = (g_iPerVolume + 5);
+                if ((_x12 < 100)) {
+                    (_ret10 = _x12);
+                }
+                else  {
+                    (_ret10 = 100);
+                }
+                (g_iPerVolume = _ret10);
+                float _per15 = g_iPerVolume;
+                (g_fStartVolume = (1.0e-2 * _per15));
             }
             else  if (("FastToggle" == msg)) {
                 if ((((g_iSmokeOn || g_iSoundOn) || g_iParticleFireOn) || g_iPrimFireOn)) {
@@ -779,7 +813,6 @@ default {
                     if ((size <= 25.0)) {
                         if ((g_iChangeSmoke && g_iSmokeAvail)) (g_fPercentSmoke = (size * 4.0));
                         else  (g_fPercentSmoke = 100.0);
-                        string sMsg = ((((("Smoke size: change= " + ((string)g_iChangeSmoke)) + ", size= ") + ((string)size)) + ", percentage= ") + ((string)g_fPercentSmoke));
                         
                         if (((g_iSoundAvail || g_iBackSoundAvail) && g_iChangeVolume)) {
                             float num = g_fStartVolume;
@@ -970,7 +1003,7 @@ default {
 	link_message(integer iSender_number,integer iChan,string sMsg,key kId) {
         
         if ((iChan == COMMAND_CHANNEL)) return;
-        string _ret1;
+        string _ret0;
         string sDefGroup = LINKSETID;
         if (("" == sDefGroup)) (sDefGroup = "Default");
         string _str2 = llStringTrim(llGetObjectDesc(),3);
@@ -982,14 +1015,14 @@ default {
         string str = _str2;
         list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
         string sGroup = llList2String(lKeys,0);
-        string _sScriptName3 = llList2String(lKeys,1);
+        string _sScriptName2 = llList2String(lKeys,1);
         if ((((str == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == str))) {
-            (_ret1 = _sScriptName3);
-            jump _end2;
+            (_ret0 = _sScriptName2);
+            jump _end1;
         }
-        (_ret1 = "exit");
-        @_end2;
-        string sScriptName = _ret1;
+        (_ret0 = "exit");
+        @_end1;
+        string sScriptName = _ret0;
         if (("exit" == sScriptName)) return;
         if (((iChan == ANIM_CHANNEL) && (llToLower(sScriptName) != llToLower(g_sScriptName)))) {
             if ((sScriptName == PRIMFIREANIMSCRIPT)) {
@@ -1083,27 +1116,27 @@ default {
                 else  llInstantMessage(kId,"[Switch] Access denied");
             }
             else  if ((sMsg == g_sMsgOn)) {
-                integer _iAccess8 = g_iSwitchAccess;
-                integer _iBitmask9 = 1;
-                if ((kId == g_kOwner)) (_iBitmask9 += 4);
-                if (llSameGroup(kId)) (_iBitmask9 += 2);
-                if ((_iBitmask9 & _iAccess8)) startSystem();
+                integer _iAccess7 = g_iSwitchAccess;
+                integer _iBitmask8 = 1;
+                if ((kId == g_kOwner)) (_iBitmask8 += 4);
+                if (llSameGroup(kId)) (_iBitmask8 += 2);
+                if ((_iBitmask8 & _iAccess7)) startSystem();
                 else  llInstantMessage(kId,"[Switch] Access denied");
             }
             else  if ((sMsg == g_sMsgOff)) {
-                integer _iAccess12 = g_iSwitchAccess;
-                integer _iBitmask13 = 1;
-                if ((kId == g_kOwner)) (_iBitmask13 += 4);
-                if (llSameGroup(kId)) (_iBitmask13 += 2);
-                if ((_iBitmask13 & _iAccess12)) stopSystem();
+                integer _iAccess11 = g_iSwitchAccess;
+                integer _iBitmask12 = 1;
+                if ((kId == g_kOwner)) (_iBitmask12 += 4);
+                if (llSameGroup(kId)) (_iBitmask12 += 2);
+                if ((_iBitmask12 & _iAccess11)) stopSystem();
                 else  llInstantMessage(kId,"[Switch] Access denied");
             }
             else  if ((sMsg == g_sMsgMenu)) {
-                integer _iAccess16 = g_iMenuAccess;
-                integer _iBitmask17 = 1;
-                if ((kId == g_kOwner)) (_iBitmask17 += 4);
-                if (llSameGroup(kId)) (_iBitmask17 += 2);
-                if ((_iBitmask17 & _iAccess16)) {
+                integer _iAccess15 = g_iMenuAccess;
+                integer _iBitmask16 = 1;
+                if ((kId == g_kOwner)) (_iBitmask16 += 4);
+                if (llSameGroup(kId)) (_iBitmask16 += 2);
+                if ((_iBitmask16 & _iAccess15)) {
                     startSystem();
                     menuDialog(kId);
                 }
@@ -1196,7 +1229,6 @@ default {
             if ((size <= 25.0)) {
                 if ((g_iChangeSmoke && g_iSmokeAvail)) (g_fPercentSmoke = (size * 4.0));
                 else  (g_fPercentSmoke = 100.0);
-                string sMsg = ((((("Smoke size: change= " + ((string)g_iChangeSmoke)) + ", size= ") + ((string)size)) + ", percentage= ") + ((string)g_fPercentSmoke));
                 
                 if (((g_iSoundAvail || g_iBackSoundAvail) && g_iChangeVolume)) {
                     float num = g_fStartVolume;

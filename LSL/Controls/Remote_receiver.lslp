@@ -17,7 +17,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
 //11. Feb. 2014
-//v1.2-0.44
+//v1.2-0.451
 //
 
 //Files:
@@ -60,7 +60,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Receiver";            // title
-string g_sVersion = "1.2-0.44";        // version
+string g_sVersion = "1.2-0.451";        // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "remote";
@@ -75,10 +75,10 @@ integer BOOL = TRUE;
 //===============================================
 //LSLForge MODULES
 //===============================================
+$import Debug2.lslm(m_sScriptName=g_sScriptName);
 $import RealFireMessageMap.lslm();
-$import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iAvail=BOOL, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iRemote, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
-$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iSingle=BOOL, m_iEnabled=g_iRemote, m_iAvail=BOOL, m_iChannel=REMOTE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iSingle=BOOL, m_iEnabled=g_iRemote, m_iAvail=BOOL, m_iChannel=REMOTE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
@@ -110,7 +110,7 @@ default
 {
 	state_entry()
 	{
-		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		//debug=TRUE; // set to TRUE to enable Debug messages
 		MESSAGE_MAP();
 		g_iRemote = TRUE;
 
@@ -126,7 +126,7 @@ default
 
 	listen(integer channel, string name, key kId, string msg)
 	{
-		Debug("listen: "+msg);
+		if (debug) Debug("listen: "+msg, FALSE, FALSE);
 		// Security - check the object belongs to our owner, not using llListen - filter, as we have state_entry and on_rez events
 		//if (llGetOwnerKey(kId) != g_kOwner) return; // disabled as remote only workswithin range of llSay and we want to give away remotes (objects)
 
@@ -147,7 +147,7 @@ default
 //-----------------------------------------------
 	link_message(integer iSender, integer iChan, string sSet, key kId)
 	{
-		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSet + "; kId " + (string)kId);
+		if (debug) Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSet + "; kId " + (string)kId, FALSE, FALSE);
 		string sConfig = MasterCommand(iChan, sSet, TRUE);
 		if ("" != sConfig) {
 			if (getConfigRemote(sConfig)) {

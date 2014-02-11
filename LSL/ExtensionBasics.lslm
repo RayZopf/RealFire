@@ -2,8 +2,8 @@
 //Module register with and react on master for RealFire Extensions
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//09. Feb. 2014
-//v0.464
+//11. Feb. 2014
+//v0.471
 //Files:
 // ExtensionBasics.lslm
 //
@@ -21,9 +21,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-$module (integer m_iDebug, string m_sGroup, integer m_iSingle ,integer m_iEnabled, integer m_iAvail, integer m_iChannel, string m_sScriptName, integer m_iLinkType, string m_sTitle, string m_sScriptName, string m_sVersion, string m_sAuthors)
+$module (string m_sGroup, integer m_iSingle ,integer m_iEnabled, integer m_iAvail, integer m_iChannel, string m_sScriptName, integer m_iLinkType, string m_sTitle, string m_sScriptName, string m_sVersion, string m_sAuthors)
 
-$import Debug.lslm(m_iDebugMode=m_iDebug, m_sScriptName=m_sScriptName);
+$import Debug2.lslm(m_sScriptName=m_sScriptName);
 $import RealFireMessageMap.lslm();
 $import GroupHandling.lslm(m_sGroup=m_sGroup);
 $import PrintStatusInfo.lslm(m_iAvail=m_iAvail, m_sTitle=m_sTitle, m_sScriptName=m_sScriptName, m_iEnabled=m_iEnabled, m_sVersion=m_sVersion, m_sAuthors=m_sAuthors);
@@ -32,7 +32,7 @@ $import ColorChanger.lslm();
 
 //###
 //ExtensionBasics.lslm
-//0.464 - 09Feb2014
+//0.471 - 11Feb2014
 
 // pragma inline
 RegisterExtension(integer link)
@@ -78,7 +78,7 @@ string MasterCommand(integer iChan, string sVal, integer conf)
 	integer n = llGetListLength(lConfigs);
 	integer count = 0;
 	string par;
-	Debug("getConfig Particlefire "+(string)lConfigs+" n "+(string)n);
+	if (debug) Debug("getConfig Particlefire "+(string)lConfigs+" n "+(string)n, TRUE, FALSE);
 
 	if (n > 1 && 0 == n%2) {
 		string val;
@@ -183,7 +183,7 @@ integer getConfigRemote(string sVal)
 	integer n = llGetListLength(lConfigs);
 	integer count = 0;
 	string par;
-	Debug("getConfig Particlefire "+(string)lConfigs+" n "+(string)n);
+	if (debug) Debug("getConfig Remote "+(string)lConfigs+" n "+(string)n, TRUE, FALSE);
 
 	if (n > 1 && 0 == n%2) {
 		string val;

@@ -3,7 +3,7 @@
 // by Zopf Resident - Ray Zopf (Raz)
 //
 //11. Feb. 2014
-//v0.5
+//v0.511
 //
 //
 // (Realfire by Rene)
@@ -55,7 +55,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";     // title
-string g_sVersion = "0.5";       // version
+string g_sVersion = "0.511";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "sound";
@@ -71,10 +71,10 @@ float g_fFactor;
 //===============================================
 //LSLForge MODULES
 //===============================================
+$import Debug2.lslm(m_sScriptName=g_sScriptName);
 $import RealFireMessageMap.lslm();
-$import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iSound, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
-$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iSingle=g_iSingleSound, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iSingle=g_iSingleSound, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
@@ -97,7 +97,7 @@ initExtension()
 checkSoundFiles()
 {
 	integer iSoundNumber = llGetInventoryNumber(INVENTORY_SOUND);
-	Debug("Sound number = " +(string)iSoundNumber);
+	if (debug) Debug("Sound number = " +(string)iSoundNumber, FALSE, FALSE);
 	if ( iSoundNumber > 0) {
 		integer i;
 		for (i = 0; i < iSoundNumber; ++i) {
@@ -120,12 +120,12 @@ default
 {
 	state_entry()
 	{
-		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		//debug=TRUE; // set to TRUE to enable Debug messages
 		MESSAGE_MAP();
 		g_iSound=TRUE;
 
 		g_sScriptName = llGetScriptName();
-		Debug("state_entry");
+		if (debug) Debug("state_entry", TRUE, FALSE);
 		g_fFactor = 7.0 / 8.0;
 		llPassTouches(TRUE); //this need review!
 		initExtension();
@@ -155,7 +155,7 @@ default
 //-----------------------------------------------
 	link_message(integer iSender, integer iChan, string sSoundSet, key kId)
 	{
-		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);
+		if (debug) Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId, FALSE, FALSE);
 		string sConfig = MasterCommand(iChan, sSoundSet, FALSE);
 		if ("" != sConfig) {
 //			if (getConfigBSound(sConfig)) initExtension();
@@ -168,17 +168,17 @@ default
 		list lParams = llParseString2List(sSoundSet, [SEPARATOR], []);
 		string sVal = llList2String(lParams, 0);
 		string sMsg = llList2String(lParams, 1);
-		Debug("no changes? backround on/off? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
+		if (debug) Debug("no changes? backround on/off? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize, FALSE, FALSE);
 		if ("110" == sVal || ("0" == sMsg && g_iInTimer)) return; // 110 = Sound.lsl
 
 		llSetTimerEvent(0.0);
 		g_iInTimer = FALSE;
 		if ((float)sMsg == g_fSoundVolumeCur && (sVal == g_sSize || "" == sVal)) return; //no "backround sound off" currently, 110 = Sound.lsl
-		Debug("work on link_message");
+		if (debug) Debug("work on link_message", FALSE, FALSE);
 
 		g_fSoundVolumeNew = (float)sMsg;
 		if (g_fSoundVolumeNew > 0.0 && g_fSoundVolumeNew <= 1.0) { //background sound on/volume adjust
-			Debug("Factor start "+(string)g_fFactor);
+			if (debug) Debug("Factor start "+(string)g_fFactor, FALSE, FALSE);
 			//simple adjustment to different fire sizes (full, at start, when special B_Sound message with sVal = -1)
 			if ("-1" == sVal) g_fFactor = 1.0;
 				else if ( 0 < (integer)sVal && 100 >= (integer)sVal) {
@@ -186,14 +186,14 @@ default
 						else g_fFactor = 6.0 / 7.0;
 				} else if ("" != sVal && (integer)g_sSize <= SIZE_SMALL ) g_fFactor = 5.0 / 6.0; //fallback - is this still needed?
 					else if ("" != sVal && (integer)g_sSize > SIZE_SMALL && 100 <= (integer)g_sSize) g_fFactor = 5.0 / 6.0;
-			Debug("Factor calculated "+(string)g_fFactor);
+			if (debug) Debug("Factor calculated "+(string)g_fFactor, FALSE ,FALSE);
 			float fSoundVolumeF = g_fSoundVolumeNew*g_fFactor;
 
 			if (g_fSoundVolumeCur > 0) { //sound should already run
-				Debug("Vol-adjust: "+(string)fSoundVolumeF);
+				if (debug) Debug("Vol-adjust: "+(string)fSoundVolumeF, FALSE, FALSE);
 				llAdjustSoundVolume(fSoundVolumeF);
 			} else {
-				Debug("play sound: "+(string)fSoundVolumeF);
+				if (debug) Debug("play sound: "+(string)fSoundVolumeF, FALSE , FALSE);
 				llPreloadSound(BACKSOUNDFILE);
 				llStopSound(); // just in case...
 				llLoopSound(BACKSOUNDFILE, fSoundVolumeF);

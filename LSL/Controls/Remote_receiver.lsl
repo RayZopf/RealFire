@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb 11 12:25:29 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb 11 16:16:26 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -18,7 +18,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
 //11. Feb. 2014
-//v1.2-0.44
+//v1.2-0.451
 //
 
 //Files:
@@ -61,7 +61,7 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Receiver";
-string g_sVersion = "1.2-0.44";
+string g_sVersion = "1.2-0.451";
 string g_sAuthors = "Rene10957, Zopf";
 
 integer g_iListenHandle = 0;
@@ -214,13 +214,13 @@ default {
         string group = llList2String(msgList,0);
         string sDefGroup = LINKSETID;
         if (("" == sDefGroup)) (sDefGroup = "Default");
-        string _str3 = llStringTrim(llGetObjectDesc(),3);
-        if (((llToLower(_str3) == "(no description)") || (_str3 == ""))) (_str3 = sDefGroup);
+        string _str2 = llStringTrim(llGetObjectDesc(),3);
+        if (((llToLower(_str2) == "(no description)") || (_str2 == ""))) (_str2 = sDefGroup);
         else  {
-            list lGroup = llParseString2List(_str3,[" "],[]);
-            (_str3 = llList2String(lGroup,0));
+            list lGroup = llParseString2List(_str2,[" "],[]);
+            (_str2 = llList2String(lGroup,0));
         }
-        string str = _str3;
+        string str = _str2;
         if ((((str != group) && (LINKSETID != group)) && (LINKSETID != str))) return;
         string command = llList2String(msgList,1);
         key user = ((key)llList2String(msgList,2));
@@ -232,7 +232,7 @@ default {
 //-----------------------------------------------
 	link_message(integer iSender,integer iChan,string sSet,key kId) {
         
-        string _ret1;
+        string _ret0;
         if ((iChan == COMMAND_CHANNEL)) {
             list lValues = llParseString2List(sSet,[SEPARATOR],[]);
             string sCommand = llList2String(lValues,0);
@@ -241,7 +241,7 @@ default {
                 if (g_iRemote) {
                     if ((BOOL && (-1 == llGetInventoryType(g_sMainScript)))) {
                         (BOOL = 0);
-                        jump __end03;
+                        jump _end0;
                     }
                     string sDefGroup = LINKSETID;
                     if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -255,7 +255,7 @@ default {
                     if (BOOL) llMessageLinked(link,REMOTE_CHANNEL,"1",((key)sId));
                     else  if (BOOL) llMessageLinked(link,REMOTE_CHANNEL,"0",((key)sId));
                 }
-                @__end03;
+                @_end0;
             }
             else  if (("verbose" == sCommand)) {
                 (g_iVerbose = 1);
@@ -276,16 +276,16 @@ default {
             }
             else  if (("nonverbose" == sCommand)) (g_iVerbose = 0);
             else  if ((1 && ("config" == sCommand))) {
-                (_ret1 = sSet);
-                jump _end2;
+                (_ret0 = sSet);
+                jump _end1;
             }
             else  if (g_iRemote) llSetTimerEvent(0.1);
-            (_ret1 = "");
-            jump _end2;
+            (_ret0 = "");
+            jump _end1;
         }
-        (_ret1 = "");
-        @_end2;
-        string sConfig = _ret1;
+        (_ret0 = "");
+        @_end1;
+        string sConfig = _ret0;
         if (("" != sConfig)) {
             if (getConfigRemote(sConfig)) {
                 llListenRemove(g_iListenHandle);

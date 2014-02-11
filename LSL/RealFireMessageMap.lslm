@@ -2,8 +2,8 @@
 //Module that only holds the RealFire Message channel constants
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//09. Feb. 2014
-//v0.6
+//11. Feb. 2014
+//v0.61
 
 //Files:
 // RealFireMessageMap.lslm
@@ -24,11 +24,6 @@
 
 
 $module ()
-
-
-//debug variables
-//-----------------------------------------------
-integer g_iDebugMode = FALSE;
 
 
 //user changeable variables
@@ -95,7 +90,7 @@ integer REMOTE_CHANNEL;         // remote channel - for listen and link_messages
 
 //###
 //RealFireMessageMap.lslm
-//0.6 - 09Feb2014
+//0.61 - 11Feb2014
 
 // pragma inline
 LSLFORGE_OPTIMIZER_MODUL()

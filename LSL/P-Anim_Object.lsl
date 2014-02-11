@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Tue Feb 11 11:39:03 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim_Object.lslp Tue Feb 11 16:16:26 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire rezzed object script
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//10. Feb. 2014
-//v0.21
+//11. Feb. 2014
+//v0.22
 //
 
 
@@ -35,7 +35,7 @@ MESSAGE_MAP(){
 
 /*SelectPrimFire(float fMsg)
 {
-	Debug("SelectPrimFire: "+(string)fMsg);
+	if (debug) Debug("SelectPrimFire: "+(string)fMsg, FALSE, FALSE);
 	if (fMsg <= 25) {
 			g_sCurrentPrimFireFile = g_sPrimFireFileSmall;
 	} else if (fMsg > 25 && fMsg <= 50) {
@@ -45,7 +45,7 @@ MESSAGE_MAP(){
 	} else if (fMsg >= 80 && fMsg <= 100) {
 			g_sCurrentPrimFireFile = g_sPrimFireFileFull;
 	} else {
-		//Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-");
+		//if (debug) Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-", FALSE, FALSE);
 		//if (g_fSoundVolumeNew > 0 && TRUE == g_iSoundFileStartAvail) {
 		//	integer n;
 		//	for (n = 0; n < 3; ++n) { //let sound appear louder
@@ -94,7 +94,7 @@ default {
         
         if ((0 == start_param)) {
             llSetLinkPrimitiveParamsFast(-1,[4,0]);
-            integer _g_iLowprim1 = 1;
+            integer _g_iLowprim0 = 1;
         }
         (g_kOwner = llGetOwner());
     }
@@ -107,7 +107,6 @@ default {
         if ((llGetOwnerKey(kId) != g_kOwner)) return;
         if (("toggle" == sSet)) {
             (g_iLowprim = (!g_iLowprim));
-            string sMsg = ("listen - toggle:" + ((string)g_iLowprim));
             
             if (g_iLowprim) llSetLinkPrimitiveParamsFast(-1,[4,1]);
             else  llSetLinkPrimitiveParamsFast(-1,[4,0]);

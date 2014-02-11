@@ -30,7 +30,6 @@ $module ()
 //GenericFunctions.lslm
 //0.22 - 09Feb2014
 
-// pragma noinlining
 integer checkInt(string par, integer val, integer min, integer max)
 {
 	if (val < min || val > max) {
@@ -49,14 +48,14 @@ float percentage (float per, float num)
 }
 
 
-// pragma noinlining
+// pragma inline
 integer min (integer x, integer y)
 {
 	if (x < y) return x; else return y;
 }
 
 
-// pragma noinlining
+// pragma inline
 integer max (integer x, integer y)
 {
 	if (x > y) return x; else return y;

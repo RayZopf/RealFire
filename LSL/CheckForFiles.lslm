@@ -2,8 +2,8 @@
 //Module check for needed files
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//02. Feb 2014
-//v0.2
+//11. Feb 2014
+//v0.21
 
 //Files:
 // PrintStatusInfo.lslm
@@ -23,19 +23,19 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-$module (integer m_iDebugMode, string m_sScriptName, integer m_iInvType, integer m_iFileStartAvail, string m_sTitle, integer m_iNFilesAvail, integer m_iAvail)
+$module (string m_sScriptName, integer m_iInvType, integer m_iFileStartAvail, string m_sTitle, integer m_iNFilesAvail, integer m_iAvail)
 
-$import Debug.lslm(m_iDebugMode=m_iDebugMode, m_sScriptName=m_sScriptName);
+$import Debug2.lslm(m_sScriptName=m_sScriptName);
 
 
 //###
 //CheckForFiles.lslm
-//0.2 - 02Feb2014
+//0.21 - 11Feb2014
 
 string CheckForFiles(integer iNFiles, list lgivenFileList, integer iPermCheck, string sCurrentFile)
 {
 	integer iFileNumber = llGetInventoryNumber(m_iInvType);
-	Debug("File number = " +(string)iFileNumber);
+	if (debug) Debug("File number = " +(string)iFileNumber, FALSE, FALSE);
 	if ( iFileNumber > 0) {
 		m_iNFilesAvail = 0;
 		list lFileAvail = [];

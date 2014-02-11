@@ -16,7 +16,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
 //11. Feb. 2014
-//v2.1.3-0.59
+//v2.1.3-0.591
 //
 
 //Files:
@@ -66,7 +66,7 @@ float g_fStartAlpha;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.1.3-0.59";       // version
+string g_sVersion = "2.1.3-0.591";       // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "smoke";
@@ -78,11 +78,11 @@ string g_sSize = "0";
 //===============================================
 //LSLForge MODULES
 //===============================================
+$import Debug2.lslm(m_sScriptName=g_sScriptName);
 $import RealFireMessageMap.lslm();
-$import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import GenericFunctions.lslm();
 $import PrintStatusInfo.lslm(m_iAvail=g_iSmoke, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iSmoke, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
-$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iSingle=g_iSingleSmoke, m_iEnabled=g_iSmoke, m_iAvail=g_iSmoke, m_iChannel=PARTICLE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iSingle=g_iSingleSmoke, m_iEnabled=g_iSmoke, m_iAvail=g_iSmoke, m_iChannel=PARTICLE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
@@ -104,7 +104,7 @@ initExtension()
 // pragma inline
 updateParticles(float fAlpha)
 {
-	Debug("fAlpha " + (string)fAlpha);
+	if (debug) Debug("fAlpha " + (string)fAlpha, FALSE, FALSE);
 	llParticleSystem ([
 	//System Behavior
 		PSYS_PART_FLAGS,
@@ -166,7 +166,7 @@ default
 {
 	state_entry()
 	{
-		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		//debug=TRUE; // set to TRUE to enable Debug messages
 		MESSAGE_MAP();
 		g_iSmoke = TRUE;
 		// Particle parameters
@@ -176,8 +176,8 @@ default
 		g_fStartAlpha = 0.4;         // start alpha (transparency) value
 
 		g_sScriptName = llGetScriptName();
-		Debug("state_entry");
-		//Debug("Particle count: " + (string)llRound((float)g_iCount * g_fAge / g_fRate)); // LSLForge Optimizer fails on this one (but same lines as in other script!)
+		if (debug) Debug("state_entry", TRUE, FALSE);
+		if (debug) Debug("Particle count: " + (string)llRound((float)g_iCount * g_fAge / g_fRate), FALSE, FALSE);
 		initExtension();
 	}
 
@@ -198,7 +198,7 @@ default
 //-----------------------------------------------
 	link_message(integer iSender, integer iChan, string sSet, key kId)
 	{
-		Debug("link_message = channel " + (string)iChan + "; sSet " + sSet + "; kId " + (string)kId+" ...g_sSize "+g_sSize);
+		if (debug) Debug("link_message = channel " + (string)iChan + "; sSet " + sSet + "; kId " + (string)kId+" ...g_sSize "+g_sSize, FALSE ,FALSE);
 		MasterCommand(iChan, sSet, FALSE);
 
 		if (iChan != PARTICLE_CHANNEL || !g_iSmoke) return;
@@ -230,7 +230,7 @@ default
 	{
 		llParticleSystem([]);
 		if (!silent && g_iVerbose) llWhisper(PUBLIC_CHANNEL, "(v) Smoke vanished");
-		Debug("smoke particles off");
+		if (debug) Debug("smoke particles off", TRUE, FALSE);
 		g_sSize = "0";
 		llSetTimerEvent(0.0);
 	}

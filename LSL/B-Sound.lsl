@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Feb 11 12:27:31 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Feb 11 16:16:26 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
 //11. Feb. 2014
-//v0.5
+//v0.511
 //
 //
 // (Realfire by Rene)
@@ -56,7 +56,7 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";
-string g_sVersion = "0.5";
+string g_sVersion = "0.511";
 string g_sAuthors = "Zopf";
 
 string g_sType = "sound";
@@ -128,7 +128,7 @@ default {
         if (g_iSound) {
             if ((0 && (-1 == llGetInventoryType(g_sMainScript)))) {
                 (g_iSoundAvail = 0);
-                jump __end02;
+                jump __end01;
             }
             string sDefGroup = LINKSETID;
             if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -141,7 +141,7 @@ default {
             string sId = ((str + SEPARATOR) + g_sScriptName);
             if (g_iSoundAvail) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
         }
-        @__end02;
+        @__end01;
         if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
         if ((g_iVerbose && 1)) {
             if (g_iSoundAvail) {
@@ -218,7 +218,7 @@ default {
 //-----------------------------------------------
 	link_message(integer iSender,integer iChan,string sSoundSet,key kId) {
         
-        string _ret1;
+        string _ret0;
         if ((iChan == COMMAND_CHANNEL)) {
             list lValues = llParseString2List(sSoundSet,[SEPARATOR],[]);
             string sCommand = llList2String(lValues,0);
@@ -227,7 +227,7 @@ default {
                 if (g_iSound) {
                     if ((0 && (-1 == llGetInventoryType(g_sMainScript)))) {
                         (g_iSoundAvail = 0);
-                        jump __end03;
+                        jump _end0;
                     }
                     string sDefGroup = LINKSETID;
                     if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -240,7 +240,7 @@ default {
                     string sId = ((str + SEPARATOR) + g_sScriptName);
                     if (g_iSoundAvail) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
                 }
-                @__end03;
+                @_end0;
             }
             else  if (("verbose" == sCommand)) {
                 (g_iVerbose = 1);
@@ -261,44 +261,43 @@ default {
             }
             else  if (("nonverbose" == sCommand)) (g_iVerbose = 0);
             else  if ((0 && ("config" == sCommand))) {
-                (_ret1 = sSoundSet);
-                jump _end2;
+                (_ret0 = sSoundSet);
+                jump _end1;
             }
             else  if (g_iSound) llSetTimerEvent(0.1);
-            (_ret1 = "");
-            jump _end2;
+            (_ret0 = "");
+            jump _end1;
         }
-        (_ret1 = "");
-        @_end2;
-        string sConfig = _ret1;
+        (_ret0 = "");
+        @_end1;
+        string sConfig = _ret0;
         if (("" != sConfig)) {
         }
-        string _ret4;
-        string _sDefGroup6 = LINKSETID;
-        if (("" == _sDefGroup6)) (_sDefGroup6 = "Default");
+        string _ret2;
+        string _sDefGroup4 = LINKSETID;
+        if (("" == _sDefGroup4)) (_sDefGroup4 = "Default");
         string _str2 = llStringTrim(llGetObjectDesc(),3);
-        if (((llToLower(_str2) == "(no description)") || (_str2 == ""))) (_str2 = _sDefGroup6);
+        if (((llToLower(_str2) == "(no description)") || (_str2 == ""))) (_str2 = _sDefGroup4);
         else  {
-            list _lGroup9 = llParseString2List(_str2,[" "],[]);
-            (_str2 = llList2String(_lGroup9,0));
+            list _lGroup7 = llParseString2List(_str2,[" "],[]);
+            (_str2 = llList2String(_lGroup7,0));
         }
-        string _str7 = _str2;
+        string _str5 = _str2;
         list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
         string sGroup = llList2String(lKeys,0);
-        string _sScriptName8 = llList2String(lKeys,1);
-        if ((((_str7 == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == _str7))) {
-            (_ret4 = _sScriptName8);
-            jump _end5;
+        string _sScriptName6 = llList2String(lKeys,1);
+        if ((((_str5 == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == _str5))) {
+            (_ret2 = _sScriptName6);
+            jump _end3;
         }
-        (_ret4 = "exit");
-        @_end5;
-        string sScriptName = _ret4;
+        (_ret2 = "exit");
+        @_end3;
+        string sScriptName = _ret2;
         if (("exit" == sScriptName)) return;
         if (((((iChan != SOUND_CHANNEL) || (!g_iSound)) || (!g_iSoundAvail)) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
         list lParams = llParseString2List(sSoundSet,[SEPARATOR],[]);
         string sVal = llList2String(lParams,0);
         string sMsg = llList2String(lParams,1);
-        string _sMsg11 = ((((((("no changes? backround on/off? " + sVal) + "-") + sMsg) + "...g_fSoundVolumeCur=") + ((string)g_fSoundVolumeCur)) + "-g_sSize=") + g_sSize);
         
         if ((("110" == sVal) || (("0" == sMsg) && g_iInTimer))) return;
         llSetTimerEvent(0.0);
@@ -307,7 +306,6 @@ default {
         
         (g_fSoundVolumeNew = ((float)sMsg));
         if (((g_fSoundVolumeNew > 0.0) && (g_fSoundVolumeNew <= 1.0))) {
-            string _sMsg14 = ("Factor start " + ((string)g_fFactor));
             
             if (("-1" == sVal)) (g_fFactor = 1.0);
             else  if (((0 < ((integer)sVal)) && (100 >= ((integer)sVal)))) {
@@ -316,7 +314,6 @@ default {
             }
             else  if ((("" != sVal) && (((integer)g_sSize) <= 25.0))) (g_fFactor = 0.8333333333333334);
             else  if (((("" != sVal) && (((integer)g_sSize) > 25.0)) && (100 <= ((integer)g_sSize)))) (g_fFactor = 0.8333333333333334);
-            string _sMsg16 = ("Factor calculated " + ((string)g_fFactor));
             
             float fSoundVolumeF = (g_fSoundVolumeNew * g_fFactor);
             if ((g_fSoundVolumeCur > 0)) {

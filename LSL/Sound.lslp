@@ -3,7 +3,7 @@
 // by Zopf Resident - Ray Zopf (Raz)
 //
 //11. Feb. 2014
-//v0.87
+//v0.871
 //
 //
 // (Realfire by Rene)
@@ -64,7 +64,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";     // title
-string g_sVersion = "0.87";       // version
+string g_sVersion = "0.871";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "sound";
@@ -83,12 +83,12 @@ string g_sSize = "0";
 //===============================================
 //LSLForge MODULES
 //===============================================
+$import Debug2.lslm(m_sScriptName=g_sScriptName);
 $import RealFireMessageMap.lslm();
-$import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iAvail=g_iSoundAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iSound, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
-$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iSingle=g_iSingleSound, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iSingle=g_iSingleSound, m_iEnabled=g_iSound, m_iAvail=g_iSoundAvail, m_iChannel=SOUND_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
-$import CheckForFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iSoundFileStartAvail, m_sTitle=g_sTitle, m_iNFilesAvail=g_iSoundNFilesAvail, m_iAvail=g_iSoundAvail);
+$import CheckForFiles.lslm(m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iSoundFileStartAvail, m_sTitle=g_sTitle, m_iNFilesAvail=g_iSoundNFilesAvail, m_iAvail=g_iSoundAvail);
 
 
 //===============================================
@@ -108,7 +108,7 @@ initExtension()
 
 selectStuff(float fVal)
 {
-	Debug("selectStuff: "+(string)fVal);
+	if (debug) Debug("selectStuff: "+(string)fVal, FALSE, FALSE);
 	if (fVal <= SIZE_SMALL) {
 		g_sCurrentSoundFile = g_sSoundFileSmall;
 	} else if (fVal > SIZE_SMALL && fVal < SIZE_MEDIUM) {
@@ -118,7 +118,7 @@ selectStuff(float fVal)
 	} else if (fVal >= SIZE_LARGE && fVal <= 100) {
 		g_sCurrentSoundFile = g_sSoundFileFull;
 	} else {
-		Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-");
+		if (debug) Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-", FALSE ,FALSE);
 		if (g_fSoundVolumeNew > 0 && TRUE == g_iSoundFileStartAvail) {
 			integer n;
 			for (n = 0; n < 3; ++n) { //let sound appear louder
@@ -146,13 +146,13 @@ default
 {
 	state_entry()
 	{
-		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		//debug=TRUE; // set to TRUE to enable Debug messages
 		MESSAGE_MAP();
 		g_iSound = TRUE;
 		g_iSoundNFiles = 5;
 
 		g_sScriptName = llGetScriptName();
-		Debug("state_entry");
+		if (debug) Debug("state_entry", TRUE, FALSE);
 		initExtension();
 	}
 
@@ -180,7 +180,7 @@ default
 //-----------------------------------------------
 	link_message(integer iSender, integer iChan, string sSoundSet, key kId)
 	{
-		Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId);
+		if (debug) Debug("link_message = channel " + (string)iChan + "; sSoundSet " + sSoundSet + "; kId " + (string)kId, FALSE ,FALSE);
 		string sConfig = MasterCommand(iChan, sSoundSet, FALSE);
 
 		string sScriptName = GroupCheck(kId);
@@ -190,15 +190,15 @@ default
 		list lParams = llParseString2List(sSoundSet, [SEPARATOR], []);
 				string sVal = llList2String(lParams, 0);
 				string sMsg = llList2String(lParams, 1);
-		Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
+		if (debug) Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize, FALSE ,FALSE);
 		if (((float)sMsg == g_fSoundVolumeCur && (sVal == g_sSize || "" == sVal)) || "-1" == sVal) return; // -1 for background sound script
-		Debug("work on link_message");
+		if (debug) Debug("work on link_message", FALSE ,FALSE);
 
 		g_fSoundVolumeNew = (float)sMsg;
 		//change sound while sound is muted or off
 		if ((0 == g_fSoundVolumeNew && sVal != g_sSize && "" != sVal && "0" != sVal) && "110" != sVal) {
 			if (g_iSoundNFilesAvail > 1) selectStuff((float)sVal);
-			Debug("change while off");
+			if (debug) Debug("change while off", FALSE ,FALSE);
 			return;
 		}
 
@@ -229,7 +229,7 @@ default
 						if (!silent && g_iVerbose &&g_fSoundVolumeCur > 0.0) llWhisper(PUBLIC_CHANNEL, "(v) The fire changes it's sound");
 							else if (!silent) llWhisper(PUBLIC_CHANNEL, "(v) The fire starts to make noise");
 					}
-					Debug("play sound: "+g_sCurrentSoundFile);
+					if (debug) Debug("play sound: "+g_sCurrentSoundFile, FALSE ,FALSE);
 					llPreloadSound(g_sCurrentSoundFile);
 					llSleep(1.3); // give fire some time to start before making noise or before changing the sound
 					llStopSound();

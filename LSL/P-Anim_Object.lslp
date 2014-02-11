@@ -2,8 +2,8 @@
 //PrimFire rezzed object script
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//10. Feb. 2014
-//v0.21
+//11. Feb. 2014
+//v0.22
 //
 
 //Files:
@@ -50,8 +50,8 @@ integer g_iLowprim = FALSE;
 //===============================================
 //LSLForge MODULES
 //===============================================
+$import Debug2.lslm(m_sScriptName=g_sScriptName);
 $import RealFireMessageMap.lslm();
-$import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 
 
 //===============================================
@@ -60,7 +60,7 @@ $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 
 /*SelectPrimFire(float fMsg)
 {
-	Debug("SelectPrimFire: "+(string)fMsg);
+	if (debug) Debug("SelectPrimFire: "+(string)fMsg, FALSE, FALSE);
 	if (fMsg <= 25) {
 			g_sCurrentPrimFireFile = g_sPrimFireFileSmall;
 	} else if (fMsg > 25 && fMsg <= 50) {
@@ -70,7 +70,7 @@ $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 	} else if (fMsg >= 80 && fMsg <= 100) {
 			g_sCurrentPrimFireFile = g_sPrimFireFileFull;
 	} else {
-		//Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-");
+		//if (debug) Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-", FALSE, FALSE);
 		//if (g_fSoundVolumeNew > 0 && TRUE == g_iSoundFileStartAvail) {
 		//	integer n;
 		//	for (n = 0; n < 3; ++n) { //let sound appear louder
@@ -96,12 +96,12 @@ default
 {
 	state_entry()
 	{
-		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		//debug=TRUE; // set to TRUE to enable Debug messages
 		MESSAGE_MAP();
 
 		g_kOwner = llGetOwner();
 		//g_sScriptName = llGetScriptName();
-		Debug("state_entry");
+		if (debug) Debug("state_entry", TRUE, FALSE);
 		//!make permanent on state_entry, so that object does not get deleted after putting the script in a prim!
 		llSetPrimitiveParams([PRIM_TEMP_ON_REZ, FALSE,
 			PRIM_PHANTOM, TRUE]);
@@ -123,7 +123,7 @@ default
 
 	on_rez(integer start_param)
 	{
-		Debug("on_rez: " +(string)start_param);
+		if (debug) Debug("on_rez: " +(string)start_param, TRUE, FALSE);
 		if (0 == start_param) {
 			llSetLinkPrimitiveParamsFast(g_iType, [PRIM_TEMP_ON_REZ, FALSE]); //make it permanent if not rezzed/attached by avi - do not use "0" as llRezObject start param
 			integer g_iLowprim = TRUE;
@@ -135,12 +135,12 @@ default
 //-----------------------------------------------
 	listen(integer iChan, string name, key kId, string sSet)
 	{
-		Debug("listen: "+sSet);
+		if (debug) Debug("listen: "+sSet, FALSE, FALSE);
 		// Security - check the object belongs to our owner, not using llListen - filter, as we have state_entry and on_rez events
 		if (llGetOwnerKey(kId) != g_kOwner) return;
 		if ("toggle" == sSet) {
 			g_iLowprim = !g_iLowprim;
-			Debug("listen - toggle:" + (string)g_iLowprim);
+			if (debug) Debug("listen - toggle:" + (string)g_iLowprim, FALSE, FALSE);
 			if (g_iLowprim) llSetLinkPrimitiveParamsFast(g_iType, [PRIM_TEMP_ON_REZ, TRUE]);
 				else llSetLinkPrimitiveParamsFast(g_iType, [PRIM_TEMP_ON_REZ, FALSE]);
 			} else if ("die" == sSet) llDie();

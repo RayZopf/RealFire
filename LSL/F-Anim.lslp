@@ -3,7 +3,7 @@
 // by Zopf Resident - Ray Zopf (Raz)
 //
 //11. Feb. 2014
-//v0.32
+//v0.321
 //
 //
 // (Realfire by Rene)
@@ -69,7 +69,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealParticleFire";     // title
-string g_sVersion = "0.32";       // version
+string g_sVersion = "0.321";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";
@@ -96,11 +96,11 @@ float g_fStartRadius;              // start value of lightRadius (before burning
 //===============================================
 //LSLForge MODULES
 //===============================================
+$import Debug2.lslm(m_sScriptName=g_sScriptName);
 $import RealFireMessageMap.lslm();
-$import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import GenericFunctions.lslm();
 $import PrintStatusInfo.lslm(m_iAvail=g_iParticleFireAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iParticleFire, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
-$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iSingle=g_iSingleFire, m_iEnabled=g_iParticleFire, m_iAvail=g_iParticleFireAvail, m_iChannel=PARTICLE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iSingle=g_iSingleFire, m_iEnabled=g_iParticleFire, m_iAvail=g_iParticleFireAvail, m_iChannel=PARTICLE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 
@@ -181,7 +181,7 @@ updateSize(float size)
 
 	updateParticles(vStart, vEnd, fMin, fMax, fRadius, vPush);
 	if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight, [PRIM_POINT_LIGHT, TRUE, g_vLightColor, g_fLightIntensity, g_fLightRadius, g_fLightFalloff]);
-	Debug((string)llRound(size) + "% " + (string)vStart + " " + (string)vEnd);
+	if (debug) Debug((string)llRound(size) + "% " + (string)vStart + " " + (string)vEnd, TRUE, FALSE);
 }
 
 // pragma inline
@@ -254,7 +254,7 @@ updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadiu
 
 specialFire()
 {
-	Debug("specialFire");
+	if (debug) Debug("specialFire", FALSE, FALSE);
 	//particles to start fire with
 	llParticleSystem ([
 	//System Behavior
@@ -317,7 +317,7 @@ default
 {
 	state_entry()
 	{
-		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		//debug=TRUE; // set to TRUE to enable Debug messages
 		MESSAGE_MAP();
 		g_iParticleFire = TRUE;
 		g_iType = LINK_SET;
@@ -327,8 +327,8 @@ default
 		g_iTypeLight = LINK_SET;
 
 		g_sScriptName = llGetScriptName();
-		Debug("state_entry");
-		Debug("Particle count: " + (string)llRound((float)g_iCount * g_fAge / g_fRate));
+		if (debug) Debug("state_entry", TRUE, TRUE);
+		if (debug) Debug("Particle count: " + (string)llRound((float)g_iCount * g_fAge / g_fRate), TRUE, FALSE);
 		initExtension(TRUE);
 	}
 
@@ -350,7 +350,7 @@ default
 //-----------------------------------------------
 	link_message(integer iSender, integer iChan, string sSet, key kId)
 	{
-		Debug("link_message = channel " + (string)iChan + "; sSet " + sSet + "; kId " + (string)kId);
+		if (debug) Debug("link_message = channel " + (string)iChan + "; sSet " + sSet + "; kId " + (string)kId, FALSE, FALSE);
 		string sConfig = MasterCommand(iChan, sSet, TRUE);
 		if ("" != sConfig) {
 			integer rc = getConfigParticleFire(sConfig);
@@ -365,8 +365,8 @@ default
 		list lParams = llParseString2List(sSet, [SEPARATOR], []);
 		string sVal = llList2String(lParams, 0);
 		string sMsg = llList2String(lParams, 1);
-		//Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
-		Debug("work on link_message");
+		//if (debug) Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize, FALSE, FALSE);
+		if (debug) Debug("work on link_message", FALSE ,FALSE);
 
 		if  ("0" == sVal && g_iInTimer) return;
 
@@ -400,11 +400,11 @@ default
 
 	timer()
 	{
-		Debug("timer");
+		if (debug) Debug("timer", FALSE, FALSE);
 		if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight, [PRIM_POINT_LIGHT, FALSE, ZERO_VECTOR, 0, 0, 0]);
 		llSleep(1.3);
 		llParticleSystem([]);
-		Debug("light + particle off");
+		if (debug) Debug("light + particle off", TRUE, FALSE);
 		llSleep(3.9);
 		if (g_iTextureAnim) llSetLinkTextureAnim(g_iTypeTexture, FALSE, ALL_SIDES,4,4,0,0,1);
 		if (!silent &&g_iVerbose) llWhisper(PUBLIC_CHANNEL, "(v) Particle fire effects ended");

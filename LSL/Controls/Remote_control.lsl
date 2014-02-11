@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Tue Feb 11 11:39:03 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Tue Feb 11 16:16:26 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote control (secondary switch) for RealFire
 //
@@ -21,8 +21,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//09. Feb. 2014
-//v1.1-0.21
+//11. Feb. 2014
+//v1.1-0.211
 //
 
 //Files:
@@ -64,7 +64,7 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Control";
-string g_sVersion = "1.1-0.21";
+string g_sVersion = "1.1-0.211";
 string g_sAuthors = "Rene10957, Zopf";
 integer g_iVerbose = 1;
 string g_sMsgSwitch = "switch";

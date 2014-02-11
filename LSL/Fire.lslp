@@ -24,7 +24,7 @@
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
 //11. Feb. 2014
-//v2.3-1.2
+//v2.3-1.21
 //
 
 //Files:
@@ -107,7 +107,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";            // title
-string g_sVersion = "2.3-1.2";           // version
+string g_sVersion = "2.3-1.21";           // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "fire";
@@ -180,8 +180,8 @@ float g_fStartVolume;              // start value of volume (before burning down
 //===============================================
 //LSLForge MODULES
 //===============================================
+$import Debug2.lslm(m_sScriptName=g_sScriptName);
 $import RealFireMessageMap.lslm();
-$import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import GenericFunctions.lslm();
 $import ColorChanger.lslm();
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
@@ -201,7 +201,7 @@ $import GroupHandling.lslm(m_sGroup=LINKSETID);
 //===============================================================================
 toggleFunktion(string sFunction)
 {
-	Debug("toggle function " + sFunction);
+	if (debug) Debug("toggle function " + sFunction, FALSE, FALSE);
 	if ("fire" == sFunction) {
 		if (g_iOn) stopSystem(); else startSystem();
 	} else if ("particlefire" == sFunction) {
@@ -250,7 +250,7 @@ updateSize(float size)
 	if (size <= SIZE_SMALL) {
 		if (g_iChangeSmoke && g_iSmokeAvail) g_fPercentSmoke = size * 4.0; //works only here within range 0-100!!!
 			else g_fPercentSmoke = 100.0;
-		Debug("Smoke size: change= "+(string)g_iChangeSmoke+", size= "+(string)size +", percentage= "+(string)g_fPercentSmoke);
+		if (debug) Debug("Smoke size: change= "+(string)g_iChangeSmoke+", size= "+(string)size +", percentage= "+(string)g_fPercentSmoke, FALSE, FALSE);
 		if ((g_iSoundAvail || g_iBackSoundAvail) && g_iChangeVolume) g_fSoundVolume = percentage(size * 4.0, g_fStartVolume);
 	}
 
@@ -262,7 +262,7 @@ updateSize(float size)
 			else sendMessage(SOUND_CHANNEL, g_sCurrentSound, "0");
 	}
 	if (g_iParticleFireAvail && g_iParticleFireOn) sendMessage(PARTICLE_CHANNEL, (string)size, "fire");
-	//Debug((string)llRound(size) + "% " + (string)vStart + " " + (string)vEnd);
+	//if (debug) Debug((string)llRound(size) + "% " + (string)vStart + " " + (string)vEnd, FALSE, FALSE);
 }
 
 
@@ -316,7 +316,7 @@ loadNotecard()
 	g_iLine = 0;
 	g_sConfLine = "";
 	if (llGetInventoryType(NOTECARD) == INVENTORY_NOTECARD) {
-		Debug("loadNotecard, NC avail");
+		if (debug) Debug("loadNotecard, NC avail", TRUE, FALSE);
 		g_kQuery = llGetNotecardLine(NOTECARD, g_iLine);
 	} else {
 		llWhisper(PUBLIC_CHANNEL, "Notecard \"" + NOTECARD + "\" not found or empty, using defaults");
@@ -351,7 +351,7 @@ loadNotecard()
 		if (g_iOn) startSystem();
 		if (g_iVerbose) infoLines();
 
-		if (g_iDebugMode) {
+		if (debug) {
 			llOwnerSay("verbose = " + (string)g_iVerbose);
 			llOwnerSay("switchAccess = " + (string)g_iSwitchAccess);
 			llOwnerSay("menuAccess = " + (string)g_iMenuAccess);
@@ -387,7 +387,7 @@ loadNotecard()
 
 readNotecard (string ncLine)
 {
-	//Debug("readNotecard, ncLine: "+ncLine);
+	//if (debug) Debug("readNotecard, ncLine: "+ncLine, FALSE, FALSE);
 	string ncData = llStringTrim(ncLine, STRING_TRIM);
 
 	if (llStringLength(ncData) > 0 && llGetSubString(ncData, 0, 0) != "#") {
@@ -620,7 +620,7 @@ reset()
 
 startSystem()
 {
-	Debug("startSystem");
+	if (debug) Debug("startSystem", FALSE, FALSE);
 	if (!g_iOn) sendMessage(g_iExtNumber, (string)TRUE, ""); //don't see what that is for - came in with RealFire 2.3
 	llSetTimerEvent(0.0);
 	if (g_iMenuOpen) {
@@ -720,7 +720,7 @@ default
 {
 	state_entry()
 	{
-		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		//debug=TRUE; // set to TRUE to enable Debug messages
 		MESSAGE_MAP();
 
 		g_kOwner = llGetOwner();
@@ -774,7 +774,7 @@ default
 
 	listen(integer channel, string name, key kId, string msg)
 	{
-		Debug("LISTEN event: " + (string)channel + "; " + msg);
+		if (debug) Debug("LISTEN event: " + (string)channel + "; " + msg, FALSE, FALSE);
 
 		if (channel == menuChannel) {
 			llListenRemove(g_iMenuHandle);
@@ -851,22 +851,22 @@ default
 				}
 
 			} else if (channel == g_iStartColorChannel) {
-				Debug("startcolor");
+				if (debug) Debug("startcolor", FALSE, FALSE);
 				llListenRemove(g_iStartColorHandle);
 				setColor(1, msg);
 				if (msg != "Top color" && msg != "^Main menu") {
-					Debug("do it (start)");
+					if (debug) Debug("do it (start)", FALSE, FALSE);
 					sendMessage(COMMAND_CHANNEL, "config", "startcolor="+msg);
 					startColorDialog(kId);
 				} else if (msg == "Top color") endColorDialog(kId);
 				else if (msg == "^Main menu") menuDialog(kId);
 
 			} else if (channel == g_iEndColorChannel) {
-				Debug("endcolor");
+				if (debug) Debug("endcolor", FALSE, FALSE);
 				llListenRemove(g_iEndColorHandle);
 				setColor(0, msg);
 				if (msg != "Bottom color" && msg != "^Options") {
-					Debug("do it (start)");
+					if (debug) Debug("do it (start)", FALSE ,FALSE);
 					sendMessage(COMMAND_CHANNEL, "config", "endcolor="+msg);
 					endColorDialog(kId);
 				} else if (msg == "Bottom color") startColorDialog(kId);
@@ -878,7 +878,7 @@ default
 //-----------------------------------------------
 	link_message(integer iSender_number, integer iChan, string sMsg, key kId)
 	{
-		Debug("link_message= channel: " + (string)iChan + "; Message: " + sMsg + ";Key: " + (string)kId);
+		if (debug) Debug("link_message= channel: " + (string)iChan + "; Message: " + sMsg + ";Key: " + (string)kId, TRUE, FALSE);
 
 		if (iChan == COMMAND_CHANNEL) return;
 		string sScriptName = GroupCheck(kId);
@@ -987,10 +987,10 @@ default
 	{
 		if(kQuery_id != g_kQuery) return;
 		if (data != EOF) {
-			//Debug("Dataserver");
+			//if (debug) Debug("Dataserver", FALSE, FALSE, FALSE ,FALSE);
 			readNotecard(data);
 		} else {
-			Debug("Dataserver, last line done");
+			if (debug) Debug("Dataserver, last line done", FALSE, FALSE);
 			if (!g_iBurnDown) g_fBurnTime = 315360000;   //10 years
 			g_fTime = g_fDieTime / 100.0;                //try to get a one percent timer interval
 			if (g_fTime < 1.0) g_fTime = 1.0;            //but never smaller than one second
@@ -1012,7 +1012,7 @@ default
 			if (g_iOn) startSystem();
 			if (g_iVerbose) infoLines();
 
-			if (g_iDebugMode) {
+			if (debug) {
 				llOwnerSay((string)g_iLine + " lines in notecard");
 				llOwnerSay("verbose = " + (string)g_iVerbose);
 				llOwnerSay("switchAccess = " + (string)g_iSwitchAccess);

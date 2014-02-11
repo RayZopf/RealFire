@@ -3,7 +3,7 @@
 // by Zopf Resident - Ray Zopf (Raz)
 //
 //11. Feb. 2014
-//v0.16
+//v0.161
 //
 //
 // (Realfire by Rene)
@@ -67,7 +67,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealPrimFire";     // title
-string g_sVersion = "0.16";       // version
+string g_sVersion = "0.161";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";
@@ -86,12 +86,12 @@ vector g_vOffset;
 //===============================================
 //LSLForge MODULES
 //===============================================
+$import Debug2.lslm(m_sScriptName=g_sScriptName);
 $import RealFireMessageMap.lslm();
-$import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import PrintStatusInfo.lslm(m_iAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iPrimFire, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
-$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iSingle=g_iSingleFire, m_iEnabled=g_iPrimFire, m_iAvail=g_iPrimFireAvail, m_iChannel=ANIM_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_sGroup=LINKSETID, m_iSingle=g_iSingleFire, m_iEnabled=g_iPrimFire, m_iAvail=g_iPrimFireAvail, m_iChannel=ANIM_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
-$import CheckForFiles.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_iNFilesAvail=g_iPrimFireNFilesAvail, m_iAvail=g_iPrimFireAvail);
+$import CheckForFiles.lslm(m_sScriptName=g_sScriptName, m_iInvType=g_iInvType, m_iFileStartAvail=g_iPrimFireAvail, m_sTitle=g_sTitle, m_iNFilesAvail=g_iPrimFireNFilesAvail, m_iAvail=g_iPrimFireAvail);
 
 
 //===============================================
@@ -112,7 +112,7 @@ initExtension()
 // pragma inline
 selectStuff(float fVal)
 {
-	Debug("selectStuff: "+(string)fVal);
+	if (debug) Debug("selectStuff: "+(string)fVal, FALSE, FALSE);
 	if (fVal <= SIZE_SMALL) {
 		g_sCurrentPrimFireFile = g_sPrimFireFileSmall;
 		g_vOffset = <g_vOffsetSmall.x, g_vOffsetSmall.y, g_vOffsetSmall.z+g_fAltitude>;
@@ -126,7 +126,7 @@ selectStuff(float fVal)
 		g_sCurrentPrimFireFile = g_sPrimFireFileFull;
 		g_vOffset = <g_vOffsetFull.x, g_vOffsetFull.y, g_vOffsetFull.z+g_fAltitude>;
 	} else {
-		//Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-");
+		//if (debug) Debug("start if g_fSoundVolumeNew > 0: -"+(string)g_fSoundVolumeNew+"-", FALSE, FALSE);
 		//if (g_fSoundVolumeNew > 0 && TRUE == g_iSoundFileStartAvail) {
 		//	integer n;
 		//	for (n = 0; n < 3; ++n) { //let sound appear louder
@@ -153,7 +153,7 @@ default
 {
 	state_entry()
 	{
-		//g_iDebugMode=TRUE; // set to TRUE to enable Debug messages
+		//debug=TRUE; // set to TRUE to enable Debug messages
 		MESSAGE_MAP();
 		g_iPrimFire = TRUE;
 		g_vOffsetSmall = <0.0, 0.0, 0.0>;
@@ -163,7 +163,7 @@ default
 		g_fAltitude = 1.0; // height for rezzed prim
 
 		g_sScriptName = llGetScriptName();
-		Debug("state_entry");
+		if (debug) Debug("state_entry", TRUE, FALSE);
 		initExtension();
 	}
 
@@ -185,7 +185,7 @@ default
 //-----------------------------------------------
 	link_message(integer iSender, integer iChan, string sSet, key kId)
 	{
-		Debug("link_message = channel " + (string)iChan + "; sSet " + sSet + "; kId " + (string)kId);
+		if (debug) Debug("link_message = channel " + (string)iChan + "; sSet " + sSet + "; kId " + (string)kId, FALSE, FALSE);
 		string sConfig = MasterCommand(iChan, sSet, FALSE);
 
 		string sScriptName = GroupCheck(kId);
@@ -195,8 +195,8 @@ default
 		list lParams = llParseString2List(sSet, [SEPARATOR], []);
 		string sVal = llList2String(lParams, 0);
 		string sMsg = llList2String(lParams, 1);
-		//Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize);
-		Debug("work on link_message");
+		//if (debug) Debug("no changes? background? "+sVal+"-"+sMsg+"...g_fSoundVolumeCur="+(string)g_fSoundVolumeCur+"-g_sSize="+g_sSize, FALSE, FALSE);
+		if (debug) Debug("work on link_message", FALSE ,FALSE);
 
 		if (sVal != g_sSize || (integer)sMsg != g_iLowprim) {
 			if (sVal == g_sSize && ("0" == sMsg || "1" == sMsg)) {
