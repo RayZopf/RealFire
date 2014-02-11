@@ -2,8 +2,8 @@
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//09. Feb. 2014
-//v0.49
+//11. Feb. 2014
+//v0.5
 //
 //
 // (Realfire by Rene)
@@ -55,7 +55,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealB-Sound";     // title
-string g_sVersion = "0.49";       // version
+string g_sVersion = "0.5";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "sound";
@@ -145,7 +145,7 @@ default
 	changed(integer change)
 	{
 		if (change & CHANGED_INVENTORY) {
-			if (!silent) llWhisper(0, "Inventory changed, checking sound samples...");
+			if (!silent) llWhisper(PUBLIC_CHANNEL, "Inventory changed, checking sound samples...");
 			initExtension();
 		}
 	}
@@ -197,12 +197,12 @@ default
 				llPreloadSound(BACKSOUNDFILE);
 				llStopSound(); // just in case...
 				llLoopSound(BACKSOUNDFILE, fSoundVolumeF);
-				if (!silent && g_iVerbose) llWhisper(0, "(v) Fire emits a crackling background sound");
+				if (!silent && g_iVerbose) llWhisper(PUBLIC_CHANNEL, "(v) Fire emits a crackling background sound");
 			}
 			g_fSoundVolumeCur = g_fSoundVolumeNew;
 			if ("" != sVal) g_sSize = sVal;
 		} else {
-			if (!silent) llWhisper(0, "Background fire noises getting quieter and quieter...");
+			if (!silent) llWhisper(PUBLIC_CHANNEL, "Background fire noises getting quieter and quieter...");
 			g_iInTimer = TRUE;
 			llSetTimerEvent(12.0); //wait ... better would be to fade out
 		}
@@ -212,7 +212,7 @@ default
 	timer()
 	{
 		llStopSound();
-		if (!silent && g_iVerbose) llWhisper(0, "(v) Background noise off");
+		if (!silent && g_iVerbose) llWhisper(PUBLIC_CHANNEL, "(v) Background noise off");
 		g_fSoundVolumeNew = g_fSoundVolumeCur = 0.0;
 		g_sSize = "0";
 		g_iInTimer = FALSE;

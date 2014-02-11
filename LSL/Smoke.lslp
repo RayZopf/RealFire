@@ -15,8 +15,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: register with Fire.lsl, LSLForge Modules
-//10. Feb. 2014
-//v2.1.3-0.582
+//11. Feb. 2014
+//v2.1.3-0.59
 //
 
 //Files:
@@ -66,7 +66,7 @@ float g_fStartAlpha;         // start alpha (transparency) value
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSmoke";     // title
-string g_sVersion = "2.1.3-0.582";       // version
+string g_sVersion = "2.1.3-0.59";       // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "smoke";
@@ -217,10 +217,10 @@ default
 		if ((integer)sVal > 0 && (integer)sVal <= 100 && "smoke" == sMsg) {
 			llSetTimerEvent(0.0);
 			updateParticles(percentage((float)sVal, g_fStartAlpha));
-			if (!silent && g_iVerbose && "0"!= g_sSize) llWhisper(0, "(v) Smoke changes it's appearance");
+			if (!silent && g_iVerbose && "0"!= g_sSize) llWhisper(PUBLIC_CHANNEL, "(v) Smoke changes it's appearance");
 			g_sSize = sVal;
 		} else if ("smoke" == sMsg || "" == sMsg) {
-			if (!silent) llWhisper(0, "Fumes are fading");
+			if (!silent) llWhisper(PUBLIC_CHANNEL, "Fumes are fading");
 			llSetTimerEvent(11.0);
 		}
 	}
@@ -229,7 +229,7 @@ default
 	timer()
 	{
 		llParticleSystem([]);
-		if (!silent && g_iVerbose) llWhisper(0, "(v) Smoke vanished");
+		if (!silent && g_iVerbose) llWhisper(PUBLIC_CHANNEL, "(v) Smoke vanished");
 		Debug("smoke particles off");
 		g_sSize = "0";
 		llSetTimerEvent(0.0);

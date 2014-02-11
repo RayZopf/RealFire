@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Mon Feb 10 02:45:20 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Tue Feb 11 11:39:03 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//10. Feb. 2014
-//v0.15
+//11. Feb. 2014
+//v0.16
 //
 //
 // (Realfire by Rene)
@@ -68,7 +68,7 @@ string LINKSETID = "RealFire";
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealPrimFire";
-string g_sVersion = "0.15";
+string g_sVersion = "0.16";
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";

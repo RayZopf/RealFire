@@ -2,8 +2,8 @@
 //Module Print Status Info
 //
 //by: Zopf Resident - Ray Zopf (Raz)
-//09. Feb. 2014
-//v0.21
+//11. Feb. 2014
+//v0.22
 
 //Files:
 // PrintStatusInfo.lslm
@@ -29,21 +29,21 @@ $import RealFireMessageMap.lslm();
 
 //###
 //PrintStatusInfo.lslm
-//0.21 - 09Feb2014
+//0.22 - 11Feb2014
 
 // pragma inline
 InfoLines(integer bool)
 {
 	if (m_iVerbose && bool ) {
-		if (m_iAvail) { if (!silent) llWhisper(0, "(v) "+m_sTitle+" - File(s) found in inventory: Yes"); }
-			else llWhisper(0, "(v) "+m_sTitle+"/"+ m_sScriptName +" - Needed files(s) found in inventory: NO");
+		if (m_iAvail) { if (!silent) llWhisper(PUBLIC_CHANNEL, "(v) "+m_sTitle+" - File(s) found in inventory: Yes"); }
+			else llWhisper(PUBLIC_CHANNEL, "(v) "+m_sTitle+"/"+ m_sScriptName +" - Needed files(s) found in inventory: NO");
 	}
 	if (m_iEnabled) {
-		if (m_iAvail) { if (!silent) llWhisper(0, m_sTitle + " " + m_sVersion +" by "+m_sAuthors + "\t ready"); }
-			else llWhisper(0, m_sTitle + " " + m_sVersion + " not ready");
-	} else  llWhisper(0, m_sTitle+"/"+ m_sScriptName +" script disabled");
+		if (m_iAvail) { if (!silent) llWhisper(PUBLIC_CHANNEL, m_sTitle + " " + m_sVersion +" by "+m_sAuthors + "\t ready"); }
+			else llWhisper(PUBLIC_CHANNEL, m_sTitle + " " + m_sVersion + " not ready");
+	} else  llWhisper(PUBLIC_CHANNEL, m_sTitle+"/"+ m_sScriptName +" script disabled");
 
-	if (!silent && m_iVerbose) llWhisper(0, "\n\t- free memory: "+(string)llGetFreeMemory()+" -\n(v) "+m_sTitle+"/"+ m_sScriptName);
+	if (!silent && m_iVerbose) llWhisper(PUBLIC_CHANNEL, "\n\t- free memory: "+(string)llGetFreeMemory()+" -\n(v) "+m_sTitle+"/"+ m_sScriptName);
 }
 
 //END PrintStatusInfo.lslm

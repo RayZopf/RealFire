@@ -2,8 +2,8 @@
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//09. Feb. 2014
-//v0.31
+//11. Feb. 2014
+//v0.32
 //
 //
 // (Realfire by Rene)
@@ -69,7 +69,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealParticleFire";     // title
-string g_sVersion = "0.31";       // version
+string g_sVersion = "0.32";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";
@@ -340,7 +340,7 @@ default
 	changed(integer change)
 	{
 		if (change & CHANGED_INVENTORY) {
-			if (!silent) llWhisper(0, "Inventory changed, checking objects...");
+			if (!silent) llWhisper(PUBLIC_CHANNEL, "Inventory changed, checking objects...");
 			initExtension(TRUE);
 		}
 	}
@@ -407,7 +407,7 @@ default
 		Debug("light + particle off");
 		llSleep(3.9);
 		if (g_iTextureAnim) llSetLinkTextureAnim(g_iTypeTexture, FALSE, ALL_SIDES,4,4,0,0,1);
-		if (!silent &&g_iVerbose) llWhisper(0, "(v) Particle fire effects ended");
+		if (!silent &&g_iVerbose) llWhisper(PUBLIC_CHANNEL, "(v) Particle fire effects ended");
 		g_sSize = "0";
 		g_iInTimer = FALSE;
 		llSetTimerEvent(0.0);

@@ -2,8 +2,8 @@
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//10. Feb. 2014
-//v0.862
+//11. Feb. 2014
+//v0.87
 //
 //
 // (Realfire by Rene)
@@ -64,7 +64,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealSound";     // title
-string g_sVersion = "0.862";       // version
+string g_sVersion = "0.87";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "sound";
@@ -170,7 +170,7 @@ default
 	changed(integer change)
 	{
 		if (change & CHANGED_INVENTORY) {
-			if (!silent) llWhisper(0, "Inventory changed, checking sound samples...");
+			if (!silent) llWhisper(PUBLIC_CHANNEL, "Inventory changed, checking sound samples...");
 			initExtension();
 		}
 	}
@@ -207,12 +207,12 @@ default
 			if ("" == sVal || sVal == g_sSize) {
 				if (g_fSoundVolumeCur > 0.0) {
 					llAdjustSoundVolume(g_fSoundVolumeNew);
-					if (!silent && g_iVerbose) llWhisper(0, "(v) Sound range for fire has changed");
+					if (!silent && g_iVerbose) llWhisper(PUBLIC_CHANNEL, "(v) Sound range for fire has changed");
 				} else {
 					llPreloadSound(g_sCurrentSoundFile); // give fire some time to start before making noise
 					llStopSound(); // just to be save
 					llLoopSound(g_sCurrentSoundFile, g_fSoundVolumeNew);
-					if (!silent && g_iVerbose) llWhisper(0, "(v) The fire starts to make noise again");
+					if (!silent && g_iVerbose) llWhisper(PUBLIC_CHANNEL, "(v) The fire starts to make noise again");
 				}
 			} else {
 
@@ -223,11 +223,11 @@ default
 
 				if (g_sCurrentSoundFile == sCurrentSoundFileTemp && "0" != sSizeTemp) {
 					llAdjustSoundVolume(g_fSoundVolumeNew); // fire size changed - but still same soundsample
-					if (!silent && g_iVerbose) llWhisper(0, "(v) Sound range for fire has changed");
+					if (!silent && g_iVerbose) llWhisper(PUBLIC_CHANNEL, "(v) Sound range for fire has changed");
 				} else {
 					if (g_iVerbose) {
-						if (!silent && g_iVerbose &&g_fSoundVolumeCur > 0.0) llWhisper(0, "(v) The fire changes it's sound");
-							else if (!silent) llWhisper(0, "(v) The fire starts to make noise");
+						if (!silent && g_iVerbose &&g_fSoundVolumeCur > 0.0) llWhisper(PUBLIC_CHANNEL, "(v) The fire changes it's sound");
+							else if (!silent) llWhisper(PUBLIC_CHANNEL, "(v) The fire starts to make noise");
 					}
 					Debug("play sound: "+g_sCurrentSoundFile);
 					llPreloadSound(g_sCurrentSoundFile);
@@ -244,7 +244,7 @@ default
 	timer()
 	{
 		llStopSound();
-		if (!silent && g_iVerbose) llWhisper(0, "(v) Noise from fire ended");
+		if (!silent && g_iVerbose) llWhisper(PUBLIC_CHANNEL, "(v) Noise from fire ended");
 		g_fSoundVolumeNew =g_fSoundVolumeCur = 0.0;
 		g_sSize = "0";
 		llSetTimerEvent(0.0);

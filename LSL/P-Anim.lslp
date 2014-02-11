@@ -2,8 +2,8 @@
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//10. Feb. 2014
-//v0.15
+//11. Feb. 2014
+//v0.16
 //
 //
 // (Realfire by Rene)
@@ -67,7 +67,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealPrimFire";     // title
-string g_sVersion = "0.15";       // version
+string g_sVersion = "0.16";       // version
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";
@@ -175,7 +175,7 @@ default
 	changed(integer change)
 	{
 		if (change & CHANGED_INVENTORY) {
-			if (!silent) llWhisper(0, "Inventory changed, checking objects...");
+			if (!silent) llWhisper(PUBLIC_CHANNEL, "Inventory changed, checking objects...");
 			initExtension();
 		}
 	}
@@ -241,7 +241,7 @@ default
 	timer()
 	{
 		llSay(PRIMCOMMAND_CHANNEL, "die");
-		if (!silent && g_iVerbose) llWhisper(0, "(v) Prim fire effects ended");
+		if (!silent && g_iVerbose) llWhisper(PUBLIC_CHANNEL, "(v) Prim fire effects ended");
 		g_sSize = "0";
 		llSetTimerEvent(0.0);
 	}

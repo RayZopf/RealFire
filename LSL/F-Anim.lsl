@@ -1,10 +1,10 @@
-// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Mon Feb 10 02:45:20 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Tue Feb 11 11:39:03 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
 //
-//09. Feb. 2014
-//v0.31
+//11. Feb. 2014
+//v0.32
 //
 //
 // (Realfire by Rene)
@@ -62,7 +62,7 @@ vector g_vEndColor = <1.0,0.0,0.0>;
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealParticleFire";
-string g_sVersion = "0.31";
+string g_sVersion = "0.32";
 string g_sAuthors = "Zopf";
 
 string g_sType = "anim";

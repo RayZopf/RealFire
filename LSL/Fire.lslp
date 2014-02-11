@@ -23,8 +23,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//10. Feb. 2014
-//v2.3-1.1
+//11. Feb. 2014
+//v2.3-1.2
 //
 
 //Files:
@@ -107,7 +107,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire";            // title
-string g_sVersion = "2.3-1.1";           // version
+string g_sVersion = "2.3-1.2";           // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "fire";
@@ -296,7 +296,7 @@ vector checkVector(string par, vector val)
 {
 	if (val == ZERO_VECTOR) {
 		val = <100,100,100>;
-		llWhisper(0, "[Notecard] " + par + " out of range, corrected to " + (string)val);
+		llWhisper(PUBLIC_CHANNEL, "[Notecard] " + par + " out of range, corrected to " + (string)val);
 	}
 	return val;
 }
@@ -306,7 +306,7 @@ integer checkYesNo(string par, string val)
 {
 	if (llToLower(val) == "yes") return TRUE;
 	if (llToLower(val) == "no") return FALSE;
-	llWhisper(0, "[Notecard] " + par + " out of range, corrected to NO");
+	llWhisper(PUBLIC_CHANNEL, "[Notecard] " + par + " out of range, corrected to NO");
 	return FALSE;
 }
 
@@ -319,7 +319,7 @@ loadNotecard()
 		Debug("loadNotecard, NC avail");
 		g_kQuery = llGetNotecardLine(NOTECARD, g_iLine);
 	} else {
-		llWhisper(0, "Notecard \"" + NOTECARD + "\" not found or empty, using defaults");
+		llWhisper(PUBLIC_CHANNEL, "Notecard \"" + NOTECARD + "\" not found or empty, using defaults");
 
 		g_iVerbose = TRUE;
 		g_iSwitchAccess = ACCESS_WORLD;
@@ -447,7 +447,7 @@ readNotecard (string ncLine)
 			g_iDefFalloff = checkInt("falloff", (integer)val, 0, 100);
 			g_sConfLine += lcpar+"="+(string)g_iDefFalloff+SEPARATOR;
 
-		} else llWhisper(0, "Unknown parameter in notecard line " + (string)(g_iLine + 1) + ": " + par);
+		} else llWhisper(PUBLIC_CHANNEL, "Unknown parameter in notecard line " + (string)(g_iLine + 1) + ": " + par);
 	}
 
 	g_iLine++;
@@ -614,7 +614,7 @@ reset()
 
 	//just send, don't check
 	sendMessage(COMMAND_CHANNEL, "off", "");
-	if (!silent && g_iVerbose) llWhisper(0, "(v) The fire gets taken care off");
+	if (!silent && g_iVerbose) llWhisper(PUBLIC_CHANNEL, "(v) The fire gets taken care off");
 }
 
 
@@ -637,7 +637,7 @@ startSystem()
 	}
 	if (!g_iOn) {
 		if (g_iSoundAvail && g_iSoundOn) sendMessage(SOUND_CHANNEL, "110", (string)g_fStartVolume); // special start sound
-		if (!silent && g_iVerbose) llWhisper(0, "(v) The fire gets lit");
+		if (!silent && g_iVerbose) llWhisper(PUBLIC_CHANNEL, "(v) The fire gets lit");
 	}
 	updateSize(g_fPerSize);
 	llSetTimerEvent(g_fBurnTime);
@@ -648,7 +648,7 @@ startSystem()
 
 stopSystem()
 {
-	if (!silent && g_iVerbose && g_iOn) llWhisper(0, " (v) The fire is dying down");
+	if (!silent && g_iVerbose && g_iOn) llWhisper(PUBLIC_CHANNEL, " (v) The fire is dying down");
 	if (g_iOn) sendMessage(g_iExtNumber, (string)FALSE, ""); //don't see what that is for - came in with RealFire 2.3
 	g_iOn = FALSE;
 	g_iBurning = FALSE;
@@ -697,13 +697,13 @@ sendMessage(integer iChan, string sVal, string sMsg )
 // pragma inline
 infoLines()
 {
-	llWhisper(0, g_sTitle +" "+g_sVersion+" by "+g_sAuthors);
-	if (!silent) llWhisper(0, "Touch to start/stop fire\n *Long touch to show menu*");
+	llWhisper(PUBLIC_CHANNEL, g_sTitle +" "+g_sVersion+" by "+g_sAuthors);
+	if (!silent) llWhisper(PUBLIC_CHANNEL, "Touch to start/stop fire\n *Long touch to show menu*");
 	if (!silent && g_iVerbose) {
-		llWhisper(0, "(v) Switch access:" + showAccess(g_iSwitchAccess));
-		llWhisper(0, "(v) Menu access:" + showAccess(g_iMenuAccess));
-		llWhisper(0, "(v) Channel for remote control: "+ (string)g_iMsgNumber);
-		llWhisper(0, "\n\t -free memory: "+(string)llGetFreeMemory()+" -\n(v) "+g_sTitle+"/"+ g_sScriptName);
+		llWhisper(PUBLIC_CHANNEL, "(v) Switch access:" + showAccess(g_iSwitchAccess));
+		llWhisper(PUBLIC_CHANNEL, "(v) Menu access:" + showAccess(g_iMenuAccess));
+		llWhisper(PUBLIC_CHANNEL, "(v) Channel for remote control: "+ (string)g_iMsgNumber);
+		llWhisper(PUBLIC_CHANNEL, "\n\t -free memory: "+(string)llGetFreeMemory()+" -\n(v) "+g_sTitle+"/"+ g_sScriptName);
 	}
 }
 
@@ -728,7 +728,7 @@ default
 
 		stopSystem();
 		sendMessage(COMMAND_CHANNEL, "register", "");
-		if (!silent && g_iVerbose) llWhisper(0, "(v) Loading notecard...");
+		if (!silent && g_iVerbose) llWhisper(PUBLIC_CHANNEL, "(v) Loading notecard...");
 		loadNotecard();
 	}
 
@@ -745,7 +745,7 @@ default
 			g_iSmokeAvail = g_iSmokeOn = FALSE;
 			g_iSoundAvail = g_iBackSoundAvail = g_iDefSound = g_iSoundOn = FALSE;
 			sendMessage(COMMAND_CHANNEL, "register", "");
-			if (!silent) llWhisper(0, "Inventory changed, reloading notecard...");
+			if (!silent) llWhisper(PUBLIC_CHANNEL, "Inventory changed, reloading notecard...");
 			loadNotecard();
 		}
 	}
@@ -888,7 +888,7 @@ default
 			if (sScriptName == PRIMFIREANIMSCRIPT) {
 				if ("1" == sMsg) {
 					g_iPrimFireAvail = TRUE;
-					if (!silent) llWhisper(0, "PrimFire available");
+					if (!silent) llWhisper(PUBLIC_CHANNEL, "PrimFire available");
 					if (g_iDefPrimFire && g_iOn) { //if only smoke scripts gets resetted - is normally in another prim!
 						g_iPrimFireOn = !g_iPrimFireOn; //important to get it toggled
 						toggleFunktion("primfire");
@@ -898,17 +898,17 @@ default
 			if (sScriptName == TEXTUREANIMSCRIPT) {
 				if ("1" == sMsg){
 					//g_iBackSoundAvail = TRUE;
-					if (!silent) llWhisper(0, "Texture animations available");
+					if (!silent) llWhisper(PUBLIC_CHANNEL, "Texture animations available");
 				} else ;//g_iBackSoundAvail = FALSE;
 			}
-			if ("1" != sMsg ) llWhisper(0, "Unable to provide animations ("+sScriptName+")");
+			if ("1" != sMsg ) llWhisper(PUBLIC_CHANNEL, "Unable to provide animations ("+sScriptName+")");
 
 		} else if (iChan == PARTICLE_CHANNEL && llToLower(sScriptName) != llToLower(g_sScriptName)) {
 			if (sScriptName == PARTICLEFIREANIMSCRIPT) {
 				if ("1" == sMsg) {
 					g_iParticleFireAvail = TRUE;
 					if ("" != g_sConfLine) sendMessage(COMMAND_CHANNEL, "config", g_sConfLine);
-					if (!silent) llWhisper(0, "ParticleFire available");
+					if (!silent) llWhisper(PUBLIC_CHANNEL, "ParticleFire available");
 					if (g_iDefParticleFire && g_iOn) { //if only smoke scripts gets resetted - is normally in another prim!
 						g_iParticleFireOn = !g_iParticleFireOn; //important to get it toggled
 						toggleFunktion("particlefire");
@@ -918,20 +918,20 @@ default
 			if (sScriptName == SMOKESCRIPT) {
 				if ("1" == sMsg) {
 					g_iSmokeAvail = TRUE;
-					if (!silent) llWhisper(0, "Smoke available");
+					if (!silent) llWhisper(PUBLIC_CHANNEL, "Smoke available");
 					if (g_iDefSmoke && g_iOn) { //if only smoke scripts gets resetted - is normally in another prim!
 						g_iSmokeOn = !g_iSmokeOn; //important to get it toggled
 						toggleFunktion("smoke");
 					}
 				} else g_iSmokeAvail = FALSE;
 			}
-			if ("1" != sMsg ) llWhisper(0, "Unable to provide particle effects ("+sScriptName+")");
+			if ("1" != sMsg ) llWhisper(PUBLIC_CHANNEL, "Unable to provide particle effects ("+sScriptName+")");
 
 		} else if (iChan == SOUND_CHANNEL && llToLower(sScriptName) != llToLower(g_sScriptName)) {
 			if (sScriptName == SOUNDSCRIPT) {
 				if ("1" == sMsg) {
 					g_iSoundAvail = TRUE;
-					if (!silent) llWhisper(0, "Noise available");
+					if (!silent) llWhisper(PUBLIC_CHANNEL, "Noise available");
 					if (g_iDefSound && g_iOn) { //if only sound scripts gets resetted - one of them should be another prim!
 						g_iSoundOn = !g_iSoundOn; //important to get it toggled
 						toggleFunktion("sound");
@@ -940,25 +940,25 @@ default
 			} else if (sScriptName == BACKSOUNDSCRIPT) {
 				if ("1" == sMsg){
 					g_iBackSoundAvail = TRUE;
-					if (!silent) llWhisper(0, "Ambience sound available");
+					if (!silent) llWhisper(PUBLIC_CHANNEL, "Ambience sound available");
 					if (g_iDefSound && g_iOn) { //if only sound scripts gets resetted
 						g_iSoundOn = !g_iSoundOn; //important to get it toggled
 						toggleFunktion("sound");
 					}
 				} else g_iBackSoundAvail = FALSE;
 			}
-			if ("1" != sMsg ) llWhisper(0, "Unable to provide sound effects ("+sScriptName+")");
+			if ("1" != sMsg ) llWhisper(PUBLIC_CHANNEL, "Unable to provide sound effects ("+sScriptName+")");
 
 		} else if (iChan == REMOTE_CHANNEL) {
 				if ("1" == sMsg) {
-					if (!silent) llWhisper(0, "Remote receiver activated");
+					if (!silent) llWhisper(PUBLIC_CHANNEL, "Remote receiver activated");
 					if ("" != g_sConfLine) sendMessage(COMMAND_CHANNEL, "config", g_sConfLine);
 				}
 
 		} else if (iChan == g_iMsgNumber) {
 			if (kId) { }
 				else {
-					llWhisper(0, "A valid avatar key must be provided in the link message.");
+					llWhisper(PUBLIC_CHANNEL, "A valid avatar key must be provided in the link message.");
 					return;
 				}
 
@@ -1049,7 +1049,7 @@ default
 	timer()
 	{
 		if (g_iMenuOpen) {
-			llWhisper(0, "MENU TIMEOUT");
+			llWhisper(PUBLIC_CHANNEL, "MENU TIMEOUT");
 			llListenRemove(g_iMenuHandle);
 			llListenRemove(g_iStartColorHandle);
 			llListenRemove(g_iEndColorHandle);

@@ -16,8 +16,8 @@
 //
 //modified by: Zopf Resident - Ray Zopf (Raz)
 //Additions: initial structure for multiple sound files, implement linked_message system, background sound, LSLForge Modules
-//09. Feb. 2014
-//v1.2-0.43
+//11. Feb. 2014
+//v1.2-0.44
 //
 
 //Files:
@@ -60,7 +60,7 @@ string LINKSETID = "RealFire"; // to be compared to first word in prim descripti
 //internal variables
 //-----------------------------------------------
 string g_sTitle = "RealFire Remote Receiver";            // title
-string g_sVersion = "1.2-0.43";        // version
+string g_sVersion = "1.2-0.44";        // version
 string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "remote";
@@ -93,8 +93,8 @@ initExtension()
 	llListenRemove(g_iListenHandle);
 	g_iListenHandle = llListen(REMOTE_CHANNEL, "", "", "");
 	InfoLines(FALSE);
-	if (INVENTORY_NONE == llGetInventoryType(g_sMainScript)) llWhisper(0, g_sTitle + " is not in same prim as " + g_sMainScript+"! Remote control will not work!");
-	if (g_iVerbose) llWhisper(0, "(v) "+g_sTitle + " uses channel: " + (string)g_iMsgNumber+" and listens on "+(string)REMOTE_CHANNEL +" for remote controler");
+	if (INVENTORY_NONE == llGetInventoryType(g_sMainScript)) llWhisper(PUBLIC_CHANNEL, g_sTitle + " is not in same prim as " + g_sMainScript+"! Remote control will not work!");
+	if (g_iVerbose) llWhisper(PUBLIC_CHANNEL, "(v) "+g_sTitle + " uses channel: " + (string)g_iMsgNumber+" and listens on "+(string)REMOTE_CHANNEL +" for remote controler");
 }
 
 
