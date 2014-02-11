@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Tue Feb 11 18:07:19 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Tue Feb 11 23:11:46 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -129,163 +129,8 @@ integer checkInt(string par,integer val,integer min,integer max){
 }
 
 
- integer getConfigParticleFire(string sVal){
-    list lConfigs = llParseString2List(sVal,["config","=",SEPARATOR],[]);
-    integer n = llGetListLength(lConfigs);
-    integer count = 0;
-    string par;
-    
-    if (((n > 1) && (0 == (n % 2)))) {
-        string val;
-        do  {
-            (par = llList2String(lConfigs,count));
-            (val = llList2String(lConfigs,(count + 1)));
-            if ((par == "changelight")) (g_iChangeLight = ((integer)val));
-            else  if (("singlefire" == par)) (g_iSingleFire = ((integer)val));
-            else  if ((par == "topcolor")) (g_vDefEndColor = ((vector)val));
-            else  if ((par == "bottomcolor")) (g_vDefStartColor = ((vector)val));
-            else  if ((par == "intensity")) (g_iDefIntensity = ((integer)val));
-            else  if ((par == "radius")) (g_iDefRadius = ((integer)val));
-            else  if ((par == "falloff")) (g_iDefFalloff = ((integer)val));
-            else  if (("startcolor" == par)) {
-                {
-                    if ((val == "-Red")) (g_iPerRedStart = max((g_iPerRedStart - 10),0));
-                    else  if ((val == "-Green")) (g_iPerGreenStart = max((g_iPerGreenStart - 10),0));
-                    else  if ((val == "-Blue")) (g_iPerBlueStart = max((g_iPerBlueStart - 10),0));
-                    else  if ((val == "+Red")) (g_iPerRedStart = min((g_iPerRedStart + 10),100));
-                    else  if ((val == "+Green")) (g_iPerGreenStart = min((g_iPerGreenStart + 10),100));
-                    else  if ((val == "+Blue")) (g_iPerBlueStart = min((g_iPerBlueStart + 10),100));
-                    else  if ((val == "R min/max")) {
-                        if (g_iPerRedStart) (g_iPerRedStart = 0);
-                        else  (g_iPerRedStart = 100);
-                    }
-                    else  if ((val == "G min/max")) {
-                        if (g_iPerGreenStart) (g_iPerGreenStart = 0);
-                        else  (g_iPerGreenStart = 100);
-                    }
-                    else  if ((val == "B min/max")) {
-                        if (g_iPerBlueStart) (g_iPerBlueStart = 0);
-                        else  (g_iPerBlueStart = 100);
-                    }
-                    else  if ((val == "One color")) {
-                        (g_iPerRedEnd = g_iPerRedStart);
-                        (g_iPerGreenEnd = g_iPerGreenStart);
-                        (g_iPerBlueEnd = g_iPerBlueStart);
-                    }
-                }
-                if ((2 == n)) return 2;
-            }
-            else  if (("endcolor" == par)) {
-                {
-                    if ((val == "-Red")) (g_iPerRedEnd = max((g_iPerRedEnd - 10),0));
-                    else  if ((val == "-Green")) (g_iPerGreenEnd = max((g_iPerGreenEnd - 10),0));
-                    else  if ((val == "-Blue")) (g_iPerBlueEnd = max((g_iPerBlueEnd - 10),0));
-                    else  if ((val == "+Red")) (g_iPerRedEnd = min((g_iPerRedEnd + 10),100));
-                    else  if ((val == "+Green")) (g_iPerGreenEnd = min((g_iPerGreenEnd + 10),100));
-                    else  if ((val == "+Blue")) (g_iPerBlueEnd = min((g_iPerBlueEnd + 10),100));
-                    else  if ((val == "R min/max")) {
-                        if (g_iPerRedEnd) (g_iPerRedEnd = 0);
-                        else  (g_iPerRedEnd = 100);
-                    }
-                    else  if ((val == "G min/max")) {
-                        if (g_iPerGreenEnd) (g_iPerGreenEnd = 0);
-                        else  (g_iPerGreenEnd = 100);
-                    }
-                    else  if ((val == "B min/max")) {
-                        if (g_iPerBlueEnd) (g_iPerBlueEnd = 0);
-                        else  (g_iPerBlueEnd = 100);
-                    }
-                    else  if ((val == "One color")) {
-                        (g_iPerRedStart = g_iPerRedEnd);
-                        (g_iPerGreenStart = g_iPerGreenEnd);
-                        (g_iPerBlueStart = g_iPerBlueEnd);
-                    }
-                }
-                if ((2 == n)) return 2;
-            }
-            (count = (count + 2));
-        }
-        while ((count <= n));
-    }
-    else  {
-        if ((1 == n)) {
-            (par = llList2String(lConfigs,count));
-            if (("reset" == par)) {
-                (g_iPerRedStart = ((integer)g_vDefStartColor.x));
-                (g_iPerGreenStart = ((integer)g_vDefStartColor.y));
-                (g_iPerBlueStart = ((integer)g_vDefStartColor.z));
-                (g_iPerRedEnd = ((integer)g_vDefEndColor.x));
-                (g_iPerGreenEnd = ((integer)g_vDefEndColor.y));
-                (g_iPerBlueEnd = ((integer)g_vDefEndColor.z));
-            }
-        }
-        return 0;
-    }
-    return 1;
-}
-
-
-//===============================================
-//PREDEFINED FUNCTIONS
-//===============================================
-
-initExtension(integer bool){
-    if (g_iParticleFire) {
-        llParticleSystem([]);
-        if (g_iTextureAnim) llSetLinkTextureAnim(g_iTypeTexture,0,-1,4,4,0,0,1);
-        if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight,[23,0,ZERO_VECTOR,0,0,0]);
-    }
-    (g_vDefStartColor.x = checkInt("ColorOn (RED)",((integer)g_vDefStartColor.x),0,100));
-    (g_vDefStartColor.y = checkInt("ColorOn (GREEN)",((integer)g_vDefStartColor.y),0,100));
-    (g_vDefStartColor.z = checkInt("ColorOn (BLUE)",((integer)g_vDefStartColor.z),0,100));
-    (g_vDefEndColor.x = checkInt("ColorOff (RED)",((integer)g_vDefEndColor.x),0,100));
-    (g_vDefEndColor.y = checkInt("ColorOff (GREEN)",((integer)g_vDefEndColor.y),0,100));
-    (g_vDefEndColor.z = checkInt("ColorOff (BLUE)",((integer)g_vDefEndColor.z),0,100));
-    float per = g_iDefIntensity;
-    float num = 1.0;
-    (g_fStartIntensity = ((num / 100.0) * per));
-    float _per4 = g_iDefRadius;
-    float _num5 = 20.0;
-    (g_fStartRadius = ((_num5 / 100.0) * _per4));
-    float _per8 = g_iDefFalloff;
-    float _num9 = 2.0;
-    (g_fLightFalloff = ((_num9 / 100.0) * _per8));
-    llSleep(1);
-    if (bool) {
-        integer link = g_iType;
-        if (g_iParticleFire) {
-            if ((g_iSingleFire && (-1 == llGetInventoryType(g_sMainScript)))) {
-                (g_iParticleFireAvail = 0);
-                jump _end10;
-            }
-            string sDefGroup = LINKSETID;
-            if (("" == sDefGroup)) (sDefGroup = "Default");
-            string str = llStringTrim(llGetObjectDesc(),3);
-            if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
-            else  {
-                list lGroup = llParseString2List(str,[" "],[]);
-                (str = llList2String(lGroup,0));
-            }
-            string sId = ((str + SEPARATOR) + g_sScriptName);
-            if (g_iParticleFireAvail) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
-            else  if (g_iSingleFire) llMessageLinked(link,PARTICLE_CHANNEL,"0",((key)sId));
-        }
-        @_end10;
-    }
-    if ((g_iVerbose && 0)) {
-        if (g_iParticleFireAvail) {
-            if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
-        }
-        else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
-    }
-    if (g_iParticleFire) {
-        if (g_iParticleFireAvail) {
-            if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
-        }
-        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
-    }
-    else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-    if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+float percentage(float per,float num){
+    return ((num / 100.0) * per);
 }
 
 
@@ -324,10 +169,8 @@ updateSize(float size){
         }
         if (g_iLight) {
             if (g_iChangeLight) {
-                float num = g_fStartIntensity;
-                (g_fLightIntensity = ((num / 100.0) * (size * 4.0)));
-                float _num4 = g_fStartRadius;
-                (g_fLightRadius = ((_num4 / 100.0) * (size * 4.0)));
+                (g_fLightIntensity = percentage((size * 4.0),g_fStartIntensity));
+                (g_fLightRadius = percentage((size * 4.0),g_fStartRadius));
             }
             else  {
                 (g_fLightIntensity = g_fStartIntensity);
@@ -335,35 +178,17 @@ updateSize(float size){
             }
         }
     }
-    float per = ((float)g_iPerRedStart);
-    float _num6 = 1.0;
-    (g_vStartColor.x = ((_num6 / 100.0) * per));
-    float _per4 = ((float)g_iPerGreenStart);
-    float _num5 = 1.0;
-    (g_vStartColor.y = ((_num5 / 100.0) * _per4));
-    float _per8 = ((float)g_iPerBlueStart);
-    float _num9 = 1.0;
-    (g_vStartColor.z = ((_num9 / 100.0) * _per8));
-    float _per12 = ((float)g_iPerRedEnd);
-    float _num13 = 1.0;
-    (g_vEndColor.x = ((_num13 / 100.0) * _per12));
-    float _per16 = ((float)g_iPerGreenEnd);
-    float _num17 = 1.0;
-    (g_vEndColor.y = ((_num17 / 100.0) * _per16));
-    float _per20 = ((float)g_iPerBlueEnd);
-    float _num21 = 1.0;
-    (g_vEndColor.z = ((_num21 / 100.0) * _per20));
+    (g_vStartColor.x = percentage(((float)g_iPerRedStart),1.0));
+    (g_vStartColor.y = percentage(((float)g_iPerGreenStart),1.0));
+    (g_vStartColor.z = percentage(((float)g_iPerBlueStart),1.0));
+    (g_vEndColor.x = percentage(((float)g_iPerRedEnd),1.0));
+    (g_vEndColor.y = percentage(((float)g_iPerGreenEnd),1.0));
+    (g_vEndColor.z = percentage(((float)g_iPerBlueEnd),1.0));
     (g_vLightColor = ((g_vStartColor + g_vEndColor) / 2.0));
     llSleep(0.8);
     llParticleSystem([0,259,9,2,16,fRadius,1,g_vStartColor,3,g_vEndColor,2,1.0,4,0.0,5,vStart,6,vEnd,7,1.0,13,0.1,15,10,8,vPush,17,fMin,18,fMax]);
     if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight,[23,1,g_vLightColor,g_fLightIntensity,g_fLightRadius,g_fLightFalloff]);
     
-}
-
-
-specialFire(){
-    
-    llParticleSystem([0,259,9,2,16,0.148438,1,<0.74902,0.6,0.14902>,3,<1.0,0.2,0.0>,2,0.101961,4,7.05882e-2,5,<0.59375,0.59375,0.0>,6,<9.375e-2,9.375e-2,0.0>,12,((key)"23d133ad-c669-18a8-02a3-a75baa9b214a"),7,3.0,13,1.0e-2,15,1,8,<0.0,0.0,0.203125>,17,1.95313e-2,18,2.73438e-2]);
 }
 
 
@@ -405,7 +230,56 @@ default {
         (g_sScriptName = llGetScriptName());
         
         
-        initExtension(1);
+        if (g_iParticleFire) {
+            llParticleSystem([]);
+            if (g_iTextureAnim) llSetLinkTextureAnim(g_iTypeTexture,0,-1,4,4,0,0,1);
+            if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight,[23,0,ZERO_VECTOR,0,0,0]);
+        }
+        (g_vDefStartColor.x = checkInt("ColorOn (RED)",((integer)g_vDefStartColor.x),0,100));
+        (g_vDefStartColor.y = checkInt("ColorOn (GREEN)",((integer)g_vDefStartColor.y),0,100));
+        (g_vDefStartColor.z = checkInt("ColorOn (BLUE)",((integer)g_vDefStartColor.z),0,100));
+        (g_vDefEndColor.x = checkInt("ColorOff (RED)",((integer)g_vDefEndColor.x),0,100));
+        (g_vDefEndColor.y = checkInt("ColorOff (GREEN)",((integer)g_vDefEndColor.y),0,100));
+        (g_vDefEndColor.z = checkInt("ColorOff (BLUE)",((integer)g_vDefEndColor.z),0,100));
+        (g_fStartIntensity = percentage(g_iDefIntensity,1.0));
+        (g_fStartRadius = percentage(g_iDefRadius,20.0));
+        (g_fLightFalloff = percentage(g_iDefFalloff,2.0));
+        llSleep(1);
+        {
+            integer link = g_iType;
+            if (g_iParticleFire) {
+                if ((g_iSingleFire && (-1 == llGetInventoryType(g_sMainScript)))) {
+                    (g_iParticleFireAvail = 0);
+                    jump __end02;
+                }
+                string sDefGroup = LINKSETID;
+                if (("" == sDefGroup)) (sDefGroup = "Default");
+                string str = llStringTrim(llGetObjectDesc(),3);
+                if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
+                else  {
+                    list lGroup = llParseString2List(str,[" "],[]);
+                    (str = llList2String(lGroup,0));
+                }
+                string sId = ((str + SEPARATOR) + g_sScriptName);
+                if (g_iParticleFireAvail) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
+                else  if (g_iSingleFire) llMessageLinked(link,PARTICLE_CHANNEL,"0",((key)sId));
+            }
+            @__end02;
+        }
+        if ((g_iVerbose && 0)) {
+            if (g_iParticleFireAvail) {
+                if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+            }
+            else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+        }
+        if (g_iParticleFire) {
+            if (g_iParticleFireAvail) {
+                if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+            }
+            else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+        }
+        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+        if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
     }
 
 
@@ -417,7 +291,56 @@ default {
 	changed(integer change) {
         if ((change & 1)) {
             if ((!silent)) llWhisper(0,"Inventory changed, checking objects...");
-            initExtension(1);
+            if (g_iParticleFire) {
+                llParticleSystem([]);
+                if (g_iTextureAnim) llSetLinkTextureAnim(g_iTypeTexture,0,-1,4,4,0,0,1);
+                if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight,[23,0,ZERO_VECTOR,0,0,0]);
+            }
+            (g_vDefStartColor.x = checkInt("ColorOn (RED)",((integer)g_vDefStartColor.x),0,100));
+            (g_vDefStartColor.y = checkInt("ColorOn (GREEN)",((integer)g_vDefStartColor.y),0,100));
+            (g_vDefStartColor.z = checkInt("ColorOn (BLUE)",((integer)g_vDefStartColor.z),0,100));
+            (g_vDefEndColor.x = checkInt("ColorOff (RED)",((integer)g_vDefEndColor.x),0,100));
+            (g_vDefEndColor.y = checkInt("ColorOff (GREEN)",((integer)g_vDefEndColor.y),0,100));
+            (g_vDefEndColor.z = checkInt("ColorOff (BLUE)",((integer)g_vDefEndColor.z),0,100));
+            (g_fStartIntensity = percentage(g_iDefIntensity,1.0));
+            (g_fStartRadius = percentage(g_iDefRadius,20.0));
+            (g_fLightFalloff = percentage(g_iDefFalloff,2.0));
+            llSleep(1);
+            {
+                integer link = g_iType;
+                if (g_iParticleFire) {
+                    if ((g_iSingleFire && (-1 == llGetInventoryType(g_sMainScript)))) {
+                        (g_iParticleFireAvail = 0);
+                        jump __end01;
+                    }
+                    string sDefGroup = LINKSETID;
+                    if (("" == sDefGroup)) (sDefGroup = "Default");
+                    string str = llStringTrim(llGetObjectDesc(),3);
+                    if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
+                    else  {
+                        list lGroup = llParseString2List(str,[" "],[]);
+                        (str = llList2String(lGroup,0));
+                    }
+                    string sId = ((str + SEPARATOR) + g_sScriptName);
+                    if (g_iParticleFireAvail) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
+                    else  if (g_iSingleFire) llMessageLinked(link,PARTICLE_CHANNEL,"0",((key)sId));
+                }
+                @__end01;
+            }
+            if ((g_iVerbose && 0)) {
+                if (g_iParticleFireAvail) {
+                    if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+                }
+                else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+            }
+            if (g_iParticleFire) {
+                if (g_iParticleFireAvail) {
+                    if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+                }
+                else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+            }
+            else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+            if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
         }
     }
 
@@ -482,30 +405,164 @@ default {
         @_end1;
         string sConfig = _ret0;
         if (("" != sConfig)) {
-            integer rc = getConfigParticleFire(sConfig);
-            if ((1 == rc)) initExtension(0);
+            integer _ret2;
+            list lConfigs = llParseString2List(sConfig,["config","=",SEPARATOR],[]);
+            integer n = llGetListLength(lConfigs);
+            integer count = 0;
+            string par;
+            
+            if (((n > 1) && (0 == (n % 2)))) {
+                string val;
+                do  {
+                    {
+                        (par = llList2String(lConfigs,count));
+                        (val = llList2String(lConfigs,(count + 1)));
+                        if ((par == "changelight")) (g_iChangeLight = ((integer)val));
+                        else  if (("singlefire" == par)) (g_iSingleFire = ((integer)val));
+                        else  if ((par == "topcolor")) (g_vDefEndColor = ((vector)val));
+                        else  if ((par == "bottomcolor")) (g_vDefStartColor = ((vector)val));
+                        else  if ((par == "intensity")) (g_iDefIntensity = ((integer)val));
+                        else  if ((par == "radius")) (g_iDefRadius = ((integer)val));
+                        else  if ((par == "falloff")) (g_iDefFalloff = ((integer)val));
+                        else  if (("startcolor" == par)) {
+                            {
+                                if ((val == "-Red")) (g_iPerRedStart = max((g_iPerRedStart - 10),0));
+                                else  if ((val == "-Green")) (g_iPerGreenStart = max((g_iPerGreenStart - 10),0));
+                                else  if ((val == "-Blue")) (g_iPerBlueStart = max((g_iPerBlueStart - 10),0));
+                                else  if ((val == "+Red")) (g_iPerRedStart = min((g_iPerRedStart + 10),100));
+                                else  if ((val == "+Green")) (g_iPerGreenStart = min((g_iPerGreenStart + 10),100));
+                                else  if ((val == "+Blue")) (g_iPerBlueStart = min((g_iPerBlueStart + 10),100));
+                                else  if ((val == "R min/max")) {
+                                    if (g_iPerRedStart) (g_iPerRedStart = 0);
+                                    else  (g_iPerRedStart = 100);
+                                }
+                                else  if ((val == "G min/max")) {
+                                    if (g_iPerGreenStart) (g_iPerGreenStart = 0);
+                                    else  (g_iPerGreenStart = 100);
+                                }
+                                else  if ((val == "B min/max")) {
+                                    if (g_iPerBlueStart) (g_iPerBlueStart = 0);
+                                    else  (g_iPerBlueStart = 100);
+                                }
+                                else  if ((val == "One color")) {
+                                    (g_iPerRedEnd = g_iPerRedStart);
+                                    (g_iPerGreenEnd = g_iPerGreenStart);
+                                    (g_iPerBlueEnd = g_iPerBlueStart);
+                                }
+                            }
+                            if ((2 == n)) {
+                                (_ret2 = 2);
+                                jump _end3;
+                            }
+                        }
+                        else  if (("endcolor" == par)) {
+                            {
+                                if ((val == "-Red")) (g_iPerRedEnd = max((g_iPerRedEnd - 10),0));
+                                else  if ((val == "-Green")) (g_iPerGreenEnd = max((g_iPerGreenEnd - 10),0));
+                                else  if ((val == "-Blue")) (g_iPerBlueEnd = max((g_iPerBlueEnd - 10),0));
+                                else  if ((val == "+Red")) (g_iPerRedEnd = min((g_iPerRedEnd + 10),100));
+                                else  if ((val == "+Green")) (g_iPerGreenEnd = min((g_iPerGreenEnd + 10),100));
+                                else  if ((val == "+Blue")) (g_iPerBlueEnd = min((g_iPerBlueEnd + 10),100));
+                                else  if ((val == "R min/max")) {
+                                    if (g_iPerRedEnd) (g_iPerRedEnd = 0);
+                                    else  (g_iPerRedEnd = 100);
+                                }
+                                else  if ((val == "G min/max")) {
+                                    if (g_iPerGreenEnd) (g_iPerGreenEnd = 0);
+                                    else  (g_iPerGreenEnd = 100);
+                                }
+                                else  if ((val == "B min/max")) {
+                                    if (g_iPerBlueEnd) (g_iPerBlueEnd = 0);
+                                    else  (g_iPerBlueEnd = 100);
+                                }
+                                else  if ((val == "One color")) {
+                                    (g_iPerRedStart = g_iPerRedEnd);
+                                    (g_iPerGreenStart = g_iPerGreenEnd);
+                                    (g_iPerBlueStart = g_iPerBlueEnd);
+                                }
+                            }
+                            if ((2 == n)) {
+                                (_ret2 = 2);
+                                jump _end3;
+                            }
+                        }
+                        (count = (count + 2));
+                    }
+                }
+                while ((count <= n));
+            }
+            else  {
+                if ((1 == n)) {
+                    (par = llList2String(lConfigs,count));
+                    if (("reset" == par)) {
+                        (g_iPerRedStart = ((integer)g_vDefStartColor.x));
+                        (g_iPerGreenStart = ((integer)g_vDefStartColor.y));
+                        (g_iPerBlueStart = ((integer)g_vDefStartColor.z));
+                        (g_iPerRedEnd = ((integer)g_vDefEndColor.x));
+                        (g_iPerGreenEnd = ((integer)g_vDefEndColor.y));
+                        (g_iPerBlueEnd = ((integer)g_vDefEndColor.z));
+                    }
+                }
+                (_ret2 = 0);
+                jump _end3;
+            }
+            (_ret2 = 1);
+            @_end3;
+            integer rc = _ret2;
+            if ((1 == rc)) {
+                if (g_iParticleFire) {
+                    llParticleSystem([]);
+                    if (g_iTextureAnim) llSetLinkTextureAnim(g_iTypeTexture,0,-1,4,4,0,0,1);
+                    if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight,[23,0,ZERO_VECTOR,0,0,0]);
+                }
+                (g_vDefStartColor.x = checkInt("ColorOn (RED)",((integer)g_vDefStartColor.x),0,100));
+                (g_vDefStartColor.y = checkInt("ColorOn (GREEN)",((integer)g_vDefStartColor.y),0,100));
+                (g_vDefStartColor.z = checkInt("ColorOn (BLUE)",((integer)g_vDefStartColor.z),0,100));
+                (g_vDefEndColor.x = checkInt("ColorOff (RED)",((integer)g_vDefEndColor.x),0,100));
+                (g_vDefEndColor.y = checkInt("ColorOff (GREEN)",((integer)g_vDefEndColor.y),0,100));
+                (g_vDefEndColor.z = checkInt("ColorOff (BLUE)",((integer)g_vDefEndColor.z),0,100));
+                (g_fStartIntensity = percentage(g_iDefIntensity,1.0));
+                (g_fStartRadius = percentage(g_iDefRadius,20.0));
+                (g_fLightFalloff = percentage(g_iDefFalloff,2.0));
+                llSleep(1);
+                
+                if ((g_iVerbose && 0)) {
+                    if (g_iParticleFireAvail) {
+                        if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+                    }
+                    else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+                }
+                if (g_iParticleFire) {
+                    if (g_iParticleFireAvail) {
+                        if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+                    }
+                    else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+                }
+                else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+                if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+            }
             else  if ((1 <= rc)) updateSize(((float)g_sSize));
         }
-        string _ret2;
-        string _sDefGroup4 = LINKSETID;
-        if (("" == _sDefGroup4)) (_sDefGroup4 = "Default");
+        string _ret11;
+        string _sDefGroup13 = LINKSETID;
+        if (("" == _sDefGroup13)) (_sDefGroup13 = "Default");
         string _str2 = llStringTrim(llGetObjectDesc(),3);
-        if (((llToLower(_str2) == "(no description)") || (_str2 == ""))) (_str2 = _sDefGroup4);
+        if (((llToLower(_str2) == "(no description)") || (_str2 == ""))) (_str2 = _sDefGroup13);
         else  {
-            list _lGroup7 = llParseString2List(_str2,[" "],[]);
-            (_str2 = llList2String(_lGroup7,0));
+            list _lGroup16 = llParseString2List(_str2,[" "],[]);
+            (_str2 = llList2String(_lGroup16,0));
         }
-        string _str5 = _str2;
+        string _str14 = _str2;
         list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
         string sGroup = llList2String(lKeys,0);
-        string _sScriptName6 = llList2String(lKeys,1);
-        if ((((_str5 == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == _str5))) {
-            (_ret2 = _sScriptName6);
-            jump _end3;
+        string _sScriptName15 = llList2String(lKeys,1);
+        if ((((_str14 == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == _str14))) {
+            (_ret11 = _sScriptName15);
+            jump _end12;
         }
-        (_ret2 = "exit");
-        @_end3;
-        string sScriptName = _ret2;
+        (_ret11 = "exit");
+        @_end12;
+        string sScriptName = _ret11;
         if (("exit" == sScriptName)) return;
         if (((((iChan != PARTICLE_CHANNEL) || (!g_iParticleFire)) || (!g_iParticleFireAvail)) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
         list lParams = llParseString2List(sSet,[SEPARATOR],[]);
@@ -522,7 +579,8 @@ default {
             string g_sSizeTemp = g_sSize;
             if (("0" == g_sSizeTemp)) {
                 llSleep(0.7);
-                specialFire();
+                
+                llParticleSystem([0,259,9,2,16,0.148438,1,<0.74902,0.6,0.14902>,3,<1.0,0.2,0.0>,2,0.101961,4,7.05882e-2,5,<0.59375,0.59375,0.0>,6,<9.375e-2,9.375e-2,0.0>,12,((key)"23d133ad-c669-18a8-02a3-a75baa9b214a"),7,3.0,13,1.0e-2,15,1,8,<0.0,0.0,0.203125>,17,1.95313e-2,18,2.73438e-2]);
                 (g_fLightIntensity = g_fStartIntensity);
                 (g_fLightRadius = g_fStartRadius);
                 llSleep(2.4);
@@ -537,7 +595,8 @@ default {
             (g_iInTimer = 1);
             llSetTimerEvent(1.0);
             llSleep(1.3);
-            specialFire();
+            
+            llParticleSystem([0,259,9,2,16,0.148438,1,<0.74902,0.6,0.14902>,3,<1.0,0.2,0.0>,2,0.101961,4,7.05882e-2,5,<0.59375,0.59375,0.0>,6,<9.375e-2,9.375e-2,0.0>,12,((key)"23d133ad-c669-18a8-02a3-a75baa9b214a"),7,3.0,13,1.0e-2,15,1,8,<0.0,0.0,0.203125>,17,1.95313e-2,18,2.73438e-2]);
             llSleep(2.9);
         }
     }

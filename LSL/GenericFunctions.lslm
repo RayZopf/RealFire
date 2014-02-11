@@ -41,7 +41,6 @@ integer checkInt(string par, integer val, integer min, integer max)
 }
 
 
-// pragma inline
 float percentage (float per, float num)
 {
 	return num / 100.0 * per;

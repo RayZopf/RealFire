@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Feb 11 18:07:19 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.B-Sound.lslp Tue Feb 11 23:00:29 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Sound Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -90,20 +90,6 @@ MESSAGE_MAP(){
 }
 
 
-checkSoundFiles(){
-    integer iSoundNumber = llGetInventoryNumber(1);
-    
-    if ((iSoundNumber > 0)) {
-        integer i;
-        for ((i = 0); (i < iSoundNumber); (++i)) {
-            string sSoundName = llGetInventoryName(1,i);
-            if ((sSoundName == BACKSOUNDFILE)) (g_iSoundAvail = 1);
-        }
-    }
-    else  (g_iSoundAvail = 0);
-}
-
-
 
 //===============================================
 //===============================================
@@ -125,13 +111,22 @@ default {
         (g_fFactor = 0.875);
         llPassTouches(1);
         if (g_iSound) llStopSound();
-        checkSoundFiles();
+        integer iSoundNumber = llGetInventoryNumber(1);
+        
+        if ((iSoundNumber > 0)) {
+            integer i;
+            for ((i = 0); (i < iSoundNumber); (++i)) {
+                string sSoundName = llGetInventoryName(1,i);
+                if ((sSoundName == BACKSOUNDFILE)) (g_iSoundAvail = 1);
+            }
+        }
+        else  (g_iSoundAvail = 0);
         llSleep(1);
         integer link = -1;
         if (g_iSound) {
             if ((0 && (-1 == llGetInventoryType(g_sMainScript)))) {
                 (g_iSoundAvail = 0);
-                jump __end02;
+                jump __end12;
             }
             string sDefGroup = LINKSETID;
             if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -144,7 +139,7 @@ default {
             string sId = ((str + SEPARATOR) + g_sScriptName);
             if (g_iSoundAvail) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
         }
-        @__end02;
+        @__end12;
         if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
         if ((g_iVerbose && 1)) {
             if (g_iSoundAvail) {
@@ -177,13 +172,22 @@ default {
         if ((change & 1)) {
             if ((!silent)) llWhisper(0,"Inventory changed, checking sound samples...");
             if (g_iSound) llStopSound();
-            checkSoundFiles();
+            integer iSoundNumber = llGetInventoryNumber(1);
+            
+            if ((iSoundNumber > 0)) {
+                integer i;
+                for ((i = 0); (i < iSoundNumber); (++i)) {
+                    string sSoundName = llGetInventoryName(1,i);
+                    if ((sSoundName == BACKSOUNDFILE)) (g_iSoundAvail = 1);
+                }
+            }
+            else  (g_iSoundAvail = 0);
             llSleep(1);
             integer link = -1;
             if (g_iSound) {
                 if ((0 && (-1 == llGetInventoryType(g_sMainScript)))) {
                     (g_iSoundAvail = 0);
-                    jump __end01;
+                    jump _end1;
                 }
                 string sDefGroup = LINKSETID;
                 if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -196,7 +200,7 @@ default {
                 string sId = ((str + SEPARATOR) + g_sScriptName);
                 if (g_iSoundAvail) llMessageLinked(link,SOUND_CHANNEL,"1",((key)sId));
             }
-            @__end01;
+            @_end1;
             if (g_iSoundAvail) llPreloadSound(BACKSOUNDFILE);
             if ((g_iVerbose && 1)) {
                 if (g_iSoundAvail) {

@@ -95,6 +95,7 @@ initExtension()
 }
 
 
+// pragma inline
 checkSoundFiles()
 {
 	integer iSoundNumber = llGetInventoryNumber(INVENTORY_SOUND);

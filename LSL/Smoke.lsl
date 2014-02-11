@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Feb 11 18:07:19 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Feb 11 22:58:57 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Smoke
 //
@@ -91,6 +91,11 @@ MESSAGE_MAP(){
     (ANIM_CHANNEL = -15770);
     (PRIMCOMMAND_CHANNEL = -15771);
     (REMOTE_CHANNEL = -975102);
+}
+
+
+float percentage(float per,float num){
+    return ((num / 100.0) * per);
 }
 
 
@@ -272,8 +277,7 @@ default {
         }
         if ((((((integer)sVal) > 0) && (((integer)sVal) <= 100)) && ("smoke" == sMsg))) {
             llSetTimerEvent(0.0);
-            float num = g_fStartAlpha;
-            float fAlpha = ((num / 100.0) * ((float)sVal));
+            float fAlpha = percentage(((float)sVal),g_fStartAlpha);
             
             llParticleSystem([0,3,9,2,16,0.1,1,<0.5,0.5,0.5>,3,<0.5,0.5,0.5>,2,fAlpha,4,0.0,5,<0.1,0.1,0.0>,6,<3.0,3.0,0.0>,7,g_fAge,13,g_fRate,15,g_iCount,8,<0.0,0.0,0.2>,17,0.0,18,0.1]);
             if ((((!silent) && g_iVerbose) && ("0" != g_sSize))) llWhisper(0,"(v) Smoke changes it's appearance");

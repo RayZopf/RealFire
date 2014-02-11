@@ -72,6 +72,7 @@ string MasterCommand(integer iChan, string sVal, integer conf)
 }
 
 
+// pragma inline
  integer getConfigParticleFire(string sVal)
 {
 	list lConfigs = llParseString2List(sVal, ["config","=",SEPARATOR], []);
@@ -177,6 +178,7 @@ integer getConfigBSound(string sConfig)
 }
 */
 
+// pragma inline
 integer getConfigRemote(string sVal)
 {
 	list lConfigs = llParseString2List(sVal, ["config","=",SEPARATOR], []);

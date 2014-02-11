@@ -32,6 +32,7 @@ $import Debug2.lslm(m_sScriptName=m_sScriptName);
 //CheckForFiles.lslm
 //0.21 - 11Feb2014
 
+// pragma inline
 string CheckForFiles(integer iNFiles, list lgivenFileList, integer iPermCheck, string sCurrentFile)
 {
 	integer iFileNumber = llGetInventoryNumber(m_iInvType);

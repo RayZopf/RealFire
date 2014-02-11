@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb 11 18:07:19 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb 11 22:58:57 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -89,82 +89,6 @@ MESSAGE_MAP(){
     (ANIM_CHANNEL = -15770);
     (PRIMCOMMAND_CHANNEL = -15771);
     (REMOTE_CHANNEL = -975102);
-}
-
-/*
-getConfigSound(string sConfig)
-{
-	list lConfigs = llParseString2List(sConfig, ["=",SEPARATOR], []);
-	integer n = llGetListLength(lConfigs);
-	integer count = 0;
-	if (n > 1 && 0 == n%2) do {
-		string par = llList2String(lConfigs, count);
-		string val = llList2String(lConfigs, count+1);
-/ *
-		// config for particle fire
-		if (par == "topcolor") g_vDefEndColor = checkVector("topColor", (vector)val);
-		else if (par == "bottomcolor") g_vDefStartColor = checkVector("bottomColor", (vector)val);
-		// config for light
-		else if (par == "intensity") g_iDefIntensity = checkInt("intensity", (integer)val, 0, 100);
-		else if (par == "radius") g_iDefRadius = checkInt("radius", (integer)val, 0, 100);
-		else if (par == "falloff") g_iDefFalloff = checkInt("falloff", (integer)val, 0, 100);
-		// color config
-		else if ("startcolor" == par) setColor(1, val);
-		else if ("endcolor" == par) setColor(0, val);
-* /
-		count = count +2;
-	} while (count <= n);
-}
-
-
-integer getConfigBSound(string sConfig)
-{
-	list lConfigs = llParseString2List(sConfig, ["=",SEPARATOR], []);
-	integer n = llGetListLength(lConfigs);
-	integer count = 0;
-	if (n > 1 && 0 == n%2) do {
-		string par = llList2String(lConfigs, count);
-		string val = llList2String(lConfigs, count+1);
-/ *
-		// config for particle fire
-		if (par == "topcolor") g_vDefEndColor = checkVector("topColor", (vector)val);
-		else if (par == "bottomcolor") g_vDefStartColor = checkVector("bottomColor", (vector)val);
-		// config for light
-		else if (par == "intensity") g_iDefIntensity = checkInt("intensity", (integer)val, 0, 100);
-		else if (par == "radius") g_iDefRadius = checkInt("radius", (integer)val, 0, 100);
-		else if (par == "falloff") g_iDefFalloff = checkInt("falloff", (integer)val, 0, 100);
-		// color config
-		else if ("startcolor" == par) setColor(1, val);
-		else if ("endcolor" == par) setColor(0, val);
-* /
-		count = count +2;
-	} while (count <= n);
-	else return 0;
-	return 1;
-}
-*/
-
-integer getConfigRemote(string sVal){
-    list lConfigs = llParseString2List(sVal,["config","=",SEPARATOR],[]);
-    integer n = llGetListLength(lConfigs);
-    integer count = 0;
-    string par;
-    
-    if (((n > 1) && (0 == (n % 2)))) {
-        string val;
-        do  {
-            (par = llList2String(lConfigs,count));
-            (val = llList2String(lConfigs,(count + 1)));
-            if ((par == "msgnumber")) {
-                (g_iMsgNumber = ((integer)val));
-                return 1;
-            }
-            (count = (count + 2));
-        }
-        while ((count <= n));
-    }
-    else  return 0;
-    return 0;
 }
 
 
@@ -290,7 +214,35 @@ default {
         @_end1;
         string sConfig = _ret0;
         if (("" != sConfig)) {
-            if (getConfigRemote(sConfig)) {
+            integer _ret2;
+            list lConfigs = llParseString2List(sConfig,["config","=",SEPARATOR],[]);
+            integer n = llGetListLength(lConfigs);
+            integer count = 0;
+            string par;
+            
+            if (((n > 1) && (0 == (n % 2)))) {
+                string val;
+                do  {
+                    {
+                        (par = llList2String(lConfigs,count));
+                        (val = llList2String(lConfigs,(count + 1)));
+                        if ((par == "msgnumber")) {
+                            (g_iMsgNumber = ((integer)val));
+                            (_ret2 = 1);
+                            jump _end3;
+                        }
+                        (count = (count + 2));
+                    }
+                }
+                while ((count <= n));
+            }
+            else  {
+                (_ret2 = 0);
+                jump _end3;
+            }
+            (_ret2 = 0);
+            @_end3;
+            if (_ret2) {
                 llListenRemove(g_iListenHandle);
                 (g_iListenHandle = llListen(REMOTE_CHANNEL,"","",""));
                 if ((g_iVerbose && 0)) {

@@ -242,7 +242,6 @@ toggleFunktion(string sFunction)
 
 //most important function
 //-----------------------------------------------
-// pragma inline
 updateSize(float size)
 {
 	g_fSoundVolume = g_fStartVolume;
@@ -266,7 +265,6 @@ updateSize(float size)
 }
 
 
-// pragma inline
 integer accessGranted(key kUser, integer iAccess)
 {
 	integer iBitmask = ACCESS_WORLD;
@@ -694,7 +692,6 @@ sendMessage(integer iChan, string sVal, string sMsg )
 }
 
 
-// pragma inline
 infoLines()
 {
 	llWhisper(PUBLIC_CHANNEL, g_sTitle +" "+g_sVersion+" by "+g_sAuthors);

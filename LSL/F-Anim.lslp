@@ -109,6 +109,7 @@ $import GroupHandling.lslm(m_sGroup=LINKSETID);
 //PREDEFINED FUNCTIONS
 //===============================================
 
+// pragma inline
 initExtension(integer bool)
 {
 	if (g_iParticleFire) {
@@ -253,6 +254,7 @@ updateParticles(vector vStart, vector vEnd, float fMin, float fMax, float fRadiu
 }
 
 
+// pragma inline
 specialFire()
 {
 	if (debug) Debug("specialFire", FALSE, FALSE);
