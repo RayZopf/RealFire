@@ -1,0 +1,9 @@
+off
+'Fire log' [8/8] running scripts. 290Kb consumed for 0.012845ms of cpu time.
+[10:00:11] #Firestorm LSL Bridge v2.4: 'Fire log' [8/8] running scripts. 290Kb consumed for 0.012757ms of cpu time.
+[10:00:17] #Firestorm LSL Bridge v2.4: 'Fire log' [8/8] running scripts. 290Kb consumed for 0.012683ms of cpu time.
+
+on
+'Fire log' [8/8] running scripts. 290Kb consumed for 0.012478ms of cpu time.
+[10:01:18] #Firestorm LSL Bridge v2.4: 'Fire log' [8/8] running scripts. 290Kb consumed for 0.012409ms of cpu time.
+[10:01:25] #Firestorm LSL Bridge v2.4: 'Fire log' [8/8] running scripts. 290Kb consumed for 0.012317ms of cpu time.
