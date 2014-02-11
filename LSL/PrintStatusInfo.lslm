@@ -22,7 +22,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-$module (integer m_iVerbose, integer m_iAvail, string m_sTitle, string m_sScriptName, integer m_iEnabled, string m_sVersion, string m_sAuthors)
+$module (integer m_iAvail, string m_sTitle, string m_sScriptName, integer m_iEnabled, string m_sVersion, string m_sAuthors)
 
 $import RealFireMessageMap.lslm();
 
@@ -34,7 +34,7 @@ $import RealFireMessageMap.lslm();
 // pragma inline
 InfoLines(integer bool)
 {
-	if (m_iVerbose && bool ) {
+	if (g_iVerbose && bool ) {
 		if (m_iAvail) { if (!silent) llWhisper(PUBLIC_CHANNEL, "(v) "+m_sTitle+" - File(s) found in inventory: Yes"); }
 			else llWhisper(PUBLIC_CHANNEL, "(v) "+m_sTitle+"/"+ m_sScriptName +" - Needed files(s) found in inventory: NO");
 	}
@@ -43,7 +43,7 @@ InfoLines(integer bool)
 			else llWhisper(PUBLIC_CHANNEL, m_sTitle + " " + m_sVersion + " not ready");
 	} else  llWhisper(PUBLIC_CHANNEL, m_sTitle+"/"+ m_sScriptName +" script disabled");
 
-	if (!silent && m_iVerbose) llWhisper(PUBLIC_CHANNEL, "\n\t- used/free memory: (u)"+(string)llGetUsedMemory()+"/"+(string)llGetFreeMemory()+"(f) -\n(v) "+m_sTitle+"/"+ m_sScriptName);
+	if (!silent && g_iVerbose) llWhisper(PUBLIC_CHANNEL, "\n\t- currently used/free memory: (u)"+(string)llGetUsedMemory()+"/"+(string)llGetFreeMemory()+"(f) -\n(v) "+m_sTitle+"/"+ m_sScriptName);
 }
 
 //END PrintStatusInfo.lslm

@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Tue Feb 11 11:39:03 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Tue Feb 11 12:28:34 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -300,7 +300,7 @@ initExtension(integer bool){
         else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
     }
     else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-    if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+    if (((!silent) && g_iVerbose)) llWhisper(0,((((((("\n\t- currently used/free memory: (u)" + ((string)llGetUsedMemory())) + "/") + ((string)llGetFreeMemory())) + "(f) -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
 }
 
 
@@ -465,7 +465,7 @@ default {
                     else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
                 }
                 else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-                if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+                if (((!silent) && g_iVerbose)) llWhisper(0,((((((("\n\t- currently used/free memory: (u)" + ((string)llGetUsedMemory())) + "/") + ((string)llGetFreeMemory())) + "(f) -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
             }
             else  if (("nonverbose" == sCommand)) (g_iVerbose = 0);
             else  if ((1 && ("config" == sCommand))) {

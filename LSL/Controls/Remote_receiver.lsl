@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb 11 11:39:03 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb 11 12:25:29 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -197,7 +197,7 @@ default {
             else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
         }
         else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-        if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+        if (((!silent) && g_iVerbose)) llWhisper(0,((((((("\n\t- currently used/free memory: (u)" + ((string)llGetUsedMemory())) + "/") + ((string)llGetFreeMemory())) + "(f) -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
         if ((-1 == llGetInventoryType(g_sMainScript))) llWhisper(0,(((g_sTitle + " is not in same prim as ") + g_sMainScript) + "! Remote control will not work!"));
         if (g_iVerbose) llWhisper(0,(((((("(v) " + g_sTitle) + " uses channel: ") + ((string)g_iMsgNumber)) + " and listens on ") + ((string)REMOTE_CHANNEL)) + " for remote controler"));
     }
@@ -272,7 +272,7 @@ default {
                     else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
                 }
                 else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-                if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+                if (((!silent) && g_iVerbose)) llWhisper(0,((((((("\n\t- currently used/free memory: (u)" + ((string)llGetUsedMemory())) + "/") + ((string)llGetFreeMemory())) + "(f) -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
             }
             else  if (("nonverbose" == sCommand)) (g_iVerbose = 0);
             else  if ((1 && ("config" == sCommand))) {
@@ -303,7 +303,7 @@ default {
                     else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
                 }
                 else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-                if (((!silent) && g_iVerbose)) llWhisper(0,((((("\n\t- free memory: " + ((string)llGetFreeMemory())) + " -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+                if (((!silent) && g_iVerbose)) llWhisper(0,((((((("\n\t- currently used/free memory: (u)" + ((string)llGetUsedMemory())) + "/") + ((string)llGetFreeMemory())) + "(f) -\n(v) ") + g_sTitle) + "/") + g_sScriptName));
                 if ((-1 == llGetInventoryType(g_sMainScript))) llWhisper(0,(((g_sTitle + " is not in same prim as ") + g_sMainScript) + "! Remote control will not work!"));
                 if (g_iVerbose) llWhisper(0,(((((("(v) " + g_sTitle) + " uses channel: ") + ((string)g_iMsgNumber)) + " and listens on ") + ((string)REMOTE_CHANNEL)) + " for remote controler"));
             }

@@ -99,8 +99,8 @@ float g_fStartRadius;              // start value of lightRadius (before burning
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
 $import GenericFunctions.lslm();
-$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=g_iParticleFireAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iParticleFire, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
-$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iSingle=g_iSingleFire, m_iEnabled=g_iParticleFire, m_iAvail=g_iParticleFireAvail, m_iChannel=PARTICLE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import PrintStatusInfo.lslm(m_iAvail=g_iParticleFireAvail, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iParticleFire, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iSingle=g_iSingleFire, m_iEnabled=g_iParticleFire, m_iAvail=g_iParticleFireAvail, m_iChannel=PARTICLE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 

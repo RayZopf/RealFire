@@ -77,8 +77,8 @@ integer BOOL = TRUE;
 //===============================================
 $import RealFireMessageMap.lslm();
 $import Debug.lslm(m_iDebugMode=g_iDebugMode, m_sScriptName=g_sScriptName);
-$import PrintStatusInfo.lslm(m_iVerbose=g_iVerbose, m_iAvail=BOOL, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iRemote, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
-$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iSingle=BOOL, m_iEnabled=g_iRemote, m_iAvail=BOOL, m_iChannel=REMOTE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_iVerbose=g_iVerbose, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import PrintStatusInfo.lslm(m_iAvail=BOOL, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_iEnabled=g_iRemote, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
+$import ExtensionBasics.lslm(m_iDebug=g_iDebugMode, m_sGroup=LINKSETID, m_iSingle=BOOL, m_iEnabled=g_iRemote, m_iAvail=BOOL, m_iChannel=REMOTE_CHANNEL, m_sScriptName=g_sScriptName, m_iLinkType=g_iType, m_sTitle=g_sTitle, m_sScriptName=g_sScriptName, m_sVersion=g_sVersion, m_sAuthors=g_sAuthors);
 $import GroupHandling.lslm(m_sGroup=LINKSETID);
 
 

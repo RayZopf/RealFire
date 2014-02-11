@@ -21,12 +21,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-$module (integer m_iDebug, string m_sGroup, integer m_iSingle ,integer m_iEnabled, integer m_iAvail, integer m_iChannel, string m_sScriptName, integer m_iLinkType, integer m_iVerbose, string m_sTitle, string m_sScriptName, string m_sVersion, string m_sAuthors)
+$module (integer m_iDebug, string m_sGroup, integer m_iSingle ,integer m_iEnabled, integer m_iAvail, integer m_iChannel, string m_sScriptName, integer m_iLinkType, string m_sTitle, string m_sScriptName, string m_sVersion, string m_sAuthors)
 
 $import Debug.lslm(m_iDebugMode=m_iDebug, m_sScriptName=m_sScriptName);
 $import RealFireMessageMap.lslm();
 $import GroupHandling.lslm(m_sGroup=m_sGroup);
-$import PrintStatusInfo.lslm(m_iVerbose=m_iVerbose, m_iAvail=m_iAvail, m_sTitle=m_sTitle, m_sScriptName=m_sScriptName, m_iEnabled=m_iEnabled, m_sVersion=m_sVersion, m_sAuthors=m_sAuthors);
+$import PrintStatusInfo.lslm(m_iAvail=m_iAvail, m_sTitle=m_sTitle, m_sScriptName=m_sScriptName, m_iEnabled=m_iEnabled, m_sVersion=m_sVersion, m_sAuthors=m_sAuthors);
 $import ColorChanger.lslm();
 
 
@@ -60,10 +60,10 @@ string MasterCommand(integer iChan, string sVal, integer conf)
 
 			RegisterExtension(m_iLinkType);
 		} else if ("verbose" == sCommand) {
-			m_iVerbose = TRUE;
+			g_iVerbose = TRUE;
 			InfoLines(FALSE);
 		}
-		else if ("nonverbose" == sCommand) m_iVerbose = FALSE;
+		else if ("nonverbose" == sCommand) g_iVerbose = FALSE;
 		else if (conf && "config" == sCommand) return sVal;
 		else if (m_iEnabled) llSetTimerEvent(0.1);
 
