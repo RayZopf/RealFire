@@ -84,7 +84,7 @@ integer SOUND_CHANNEL = -15780;           // sound channel
 integer ANIM_CHANNEL = -15770;            // primfire/textureanim channel
 integer PRIMCOMMAND_CHANNEL = -15771;     // kill fire prims or make temp prims
 
-integer REMOTE_CHANNEL = 975102;         // remote channel - for listen and link_messages (register extension)
+integer REMOTE_CHANNEL = -975102;         // remote channel - for listen and link_messages (register extension)
 
 
 
