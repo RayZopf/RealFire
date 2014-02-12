@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Wed Feb 12 02:33:10 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.P-Anim.lslp Wed Feb 12 05:08:21 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //PrimFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -90,6 +90,67 @@ integer ANIM_CHANNEL = -15770;
 integer PRIMCOMMAND_CHANNEL = -15771;
 
 
+//###
+//CheckForFiles.lslm
+//0.21 - 11Feb2014
+
+string CheckForFiles(integer iNFiles,list lgivenFileList,integer iPermCheck,string sCurrentFile){
+    integer iFileNumber = llGetInventoryNumber(6);
+    
+    if ((iFileNumber > 0)) {
+        (g_iPrimFireNFilesAvail = 0);
+        list lFileAvail = [];
+        list lFileList = [];
+        integer i;
+        for ((i = 0); (i < iFileNumber); (++i)) {
+            (lFileList += llGetInventoryName(6,i));
+        }
+        list lFileCompare = [];
+        for ((i = 0); (i < iNFiles); (++i)) {
+            (lFileCompare = llList2List(lgivenFileList,i,i));
+            if ((-1 == llListFindList(lFileList,lFileCompare))) {
+                (lFileAvail += 0);
+                if ((((0 < i) && (((string)lFileCompare) == sCurrentFile)) && (2 < iNFiles))) {
+                    integer iFileNAvail = llGetListLength(lFileAvail);
+                    if ((iNFiles > iFileNAvail)) (sCurrentFile = ((string)llList2List(lgivenFileList,(i + 1),(i + 1))));
+                    else  {
+                        list lFileAvailTmp = llList2List(lFileAvail,1,(iNFiles - 1));
+                        integer j = llListFindList(lFileAvailTmp,[1]);
+                        if ((0 <= j)) (sCurrentFile = ((string)llList2List(lFileAvailTmp,j,j)));
+                    }
+                }
+                llWhisper(0,((g_sTitle + " - File not found in inventory: ") + ((string)lFileCompare)));
+            }
+            else  {
+                if (iPermCheck) {
+                    if ((!(32768 & llGetInventoryPermMask(((string)lFileCompare),1)))) {
+                        llWhisper(0,((g_sTitle + " - File has wrong permission: ") + ((string)lFileCompare)));
+                        (lFileAvail += 0);
+                    }
+                    else  {
+                        (lFileAvail += 1);
+                        (g_iPrimFireNFilesAvail++);
+                    }
+                }
+                else  {
+                    (lFileAvail += 1);
+                    (g_iPrimFireNFilesAvail++);
+                }
+            }
+        }
+        if ((0 == llListFindList(lFileAvail,[1]))) (g_iPrimFireAvail = 1);
+        else  (g_iPrimFireAvail = 0);
+        if ((-1 != llListFindList(llList2List(lFileAvail,1,(iNFiles - 1)),[1]))) (g_iPrimFireAvail = 1);
+        else  (g_iPrimFireAvail = 0);
+        return sCurrentFile;
+    }
+    else  {
+        (g_iPrimFireAvail = 0);
+        return "0";
+    }
+}
+
+
 
 //===============================================
 //===============================================
@@ -113,71 +174,13 @@ default {
         (g_sScriptName = llGetScriptName());
         
         llSay(PRIMCOMMAND_CHANNEL,"die");
-        string _ret0;
-        integer iNFiles = g_iPrimFireNFiles;
-        list lgivenFileList = g_lPrimFireFileList;
-        integer iPermCheck = 1;
-        string sCurrentFile = g_sCurrentPrimFireFile;
-        integer iFileNumber = llGetInventoryNumber(6);
-        
-        if ((iFileNumber > 0)) {
-            (g_iPrimFireNFilesAvail = 0);
-            list lFileAvail = [];
-            list lFileList = [];
-            integer i;
-            for ((i = 0); (i < iFileNumber); (++i)) {
-                (lFileList += llGetInventoryName(6,i));
-            }
-            list lFileCompare = [];
-            for ((i = 0); (i < iNFiles); (++i)) {
-                (lFileCompare = llList2List(lgivenFileList,i,i));
-                if ((-1 == llListFindList(lFileList,lFileCompare))) {
-                    (lFileAvail += 0);
-                    if ((((0 < i) && (((string)lFileCompare) == sCurrentFile)) && (2 < iNFiles))) {
-                        integer iFileNAvail = llGetListLength(lFileAvail);
-                        if ((iNFiles > iFileNAvail)) (sCurrentFile = ((string)llList2List(lgivenFileList,(i + 1),(i + 1))));
-                        else  {
-                            list lFileAvailTmp = llList2List(lFileAvail,1,(iNFiles - 1));
-                            integer j = llListFindList(lFileAvailTmp,[1]);
-                            if ((0 <= j)) (sCurrentFile = ((string)llList2List(lFileAvailTmp,j,j)));
-                        }
-                    }
-                    llWhisper(0,((g_sTitle + " - File not found in inventory: ") + ((string)lFileCompare)));
-                }
-                else  {
-                    if (iPermCheck) {
-                        if ((!(32768 & llGetInventoryPermMask(((string)lFileCompare),1)))) {
-                            llWhisper(0,((g_sTitle + " - File has wrong permission: ") + ((string)lFileCompare)));
-                            (lFileAvail += 0);
-                        }
-                        else  {
-                            (lFileAvail += 1);
-                            (g_iPrimFireNFilesAvail++);
-                        }
-                    }
-                    else  {
-                        (lFileAvail += 1);
-                        (g_iPrimFireNFilesAvail++);
-                    }
-                }
-            }
-            if ((0 == llListFindList(lFileAvail,[1]))) (g_iPrimFireAvail = 1);
-            else  (g_iPrimFireAvail = 0);
-            if ((-1 != llListFindList(llList2List(lFileAvail,1,(iNFiles - 1)),[1]))) (g_iPrimFireAvail = 1);
-            else  (g_iPrimFireAvail = 0);
-            (_ret0 = sCurrentFile);
-        }
-        else  {
-            (g_iPrimFireAvail = 0);
-            (_ret0 = "0");
-        }
-        (g_sCurrentPrimFireFile = _ret0);
+        (g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles,g_lPrimFireFileList,1,g_sCurrentPrimFireFile));
         llSleep(1);
         integer link = -1;
         if (g_iPrimFire) {
             if ((g_iSingleFire && (-1 == llGetInventoryType(g_sMainScript)))) {
                 (g_iPrimFireAvail = 0);
-                jump _end2;
+                jump __end02;
             }
             string sDefGroup = LINKSETID;
             if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -191,7 +194,7 @@ default {
             if (g_iPrimFireAvail) llMessageLinked(link,ANIM_CHANNEL,"1",((key)sId));
             else  if (g_iSingleFire) llMessageLinked(link,ANIM_CHANNEL,"0",((key)sId));
         }
-        @_end2;
+        @__end02;
         if ((g_iVerbose && 1)) {
             if (g_iPrimFireAvail) {
                 if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
@@ -218,71 +221,13 @@ default {
         if ((change & 1)) {
             if ((!silent)) llWhisper(0,"Inventory changed, checking objects...");
             llSay(PRIMCOMMAND_CHANNEL,"die");
-            string _ret0;
-            integer iNFiles = g_iPrimFireNFiles;
-            list lgivenFileList = g_lPrimFireFileList;
-            integer iPermCheck = 1;
-            string sCurrentFile = g_sCurrentPrimFireFile;
-            integer iFileNumber = llGetInventoryNumber(6);
-            
-            if ((iFileNumber > 0)) {
-                (g_iPrimFireNFilesAvail = 0);
-                list lFileAvail = [];
-                list lFileList = [];
-                integer i;
-                for ((i = 0); (i < iFileNumber); (++i)) {
-                    (lFileList += llGetInventoryName(6,i));
-                }
-                list lFileCompare = [];
-                for ((i = 0); (i < iNFiles); (++i)) {
-                    (lFileCompare = llList2List(lgivenFileList,i,i));
-                    if ((-1 == llListFindList(lFileList,lFileCompare))) {
-                        (lFileAvail += 0);
-                        if ((((0 < i) && (((string)lFileCompare) == sCurrentFile)) && (2 < iNFiles))) {
-                            integer iFileNAvail = llGetListLength(lFileAvail);
-                            if ((iNFiles > iFileNAvail)) (sCurrentFile = ((string)llList2List(lgivenFileList,(i + 1),(i + 1))));
-                            else  {
-                                list lFileAvailTmp = llList2List(lFileAvail,1,(iNFiles - 1));
-                                integer j = llListFindList(lFileAvailTmp,[1]);
-                                if ((0 <= j)) (sCurrentFile = ((string)llList2List(lFileAvailTmp,j,j)));
-                            }
-                        }
-                        llWhisper(0,((g_sTitle + " - File not found in inventory: ") + ((string)lFileCompare)));
-                    }
-                    else  {
-                        if (iPermCheck) {
-                            if ((!(32768 & llGetInventoryPermMask(((string)lFileCompare),1)))) {
-                                llWhisper(0,((g_sTitle + " - File has wrong permission: ") + ((string)lFileCompare)));
-                                (lFileAvail += 0);
-                            }
-                            else  {
-                                (lFileAvail += 1);
-                                (g_iPrimFireNFilesAvail++);
-                            }
-                        }
-                        else  {
-                            (lFileAvail += 1);
-                            (g_iPrimFireNFilesAvail++);
-                        }
-                    }
-                }
-                if ((0 == llListFindList(lFileAvail,[1]))) (g_iPrimFireAvail = 1);
-                else  (g_iPrimFireAvail = 0);
-                if ((-1 != llListFindList(llList2List(lFileAvail,1,(iNFiles - 1)),[1]))) (g_iPrimFireAvail = 1);
-                else  (g_iPrimFireAvail = 0);
-                (_ret0 = sCurrentFile);
-            }
-            else  {
-                (g_iPrimFireAvail = 0);
-                (_ret0 = "0");
-            }
-            (g_sCurrentPrimFireFile = _ret0);
+            (g_sCurrentPrimFireFile = CheckForFiles(g_iPrimFireNFiles,g_lPrimFireFileList,1,g_sCurrentPrimFireFile));
             llSleep(1);
             integer link = -1;
             if (g_iPrimFire) {
                 if ((g_iSingleFire && (-1 == llGetInventoryType(g_sMainScript)))) {
                     (g_iPrimFireAvail = 0);
-                    jump _end2;
+                    jump __end01;
                 }
                 string sDefGroup = LINKSETID;
                 if (("" == sDefGroup)) (sDefGroup = "Default");
@@ -296,7 +241,7 @@ default {
                 if (g_iPrimFireAvail) llMessageLinked(link,ANIM_CHANNEL,"1",((key)sId));
                 else  if (g_iSingleFire) llMessageLinked(link,ANIM_CHANNEL,"0",((key)sId));
             }
-            @_end2;
+            @__end01;
             if ((g_iVerbose && 1)) {
                 if (g_iPrimFireAvail) {
                     if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));

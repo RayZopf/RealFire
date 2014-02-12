@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Wed Feb 12 02:33:10 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Wed Feb 12 05:08:21 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -193,7 +193,7 @@ integer COMMAND_CHANNEL = -15700;
 integer PARTICLE_CHANNEL = -15790;
 integer SOUND_CHANNEL = -15780;
 integer ANIM_CHANNEL = -15770;
-integer REMOTE_CHANNEL = 975102;
+integer REMOTE_CHANNEL = -975102;
 
 
 //###

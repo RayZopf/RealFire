@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Wed Feb 12 02:33:10 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Wed Feb 12 05:08:21 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote control (secondary switch) for RealFire
 //
@@ -70,7 +70,7 @@ integer g_iVerbose = 1;
 string g_sMsgSwitch = "switch";
 string g_sMsgMenu = "menu";
 string SEPARATOR = ";;";
-integer REMOTE_CHANNEL = 975102;
+integer REMOTE_CHANNEL = -975102;
 
 
 //===============================================

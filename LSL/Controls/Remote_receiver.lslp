@@ -114,7 +114,7 @@ default
 		//debug=TRUE; // set to TRUE to enable Debug messages
 		g_iRemote = TRUE;
 
-		MemRestrict(19000);
+		MemRestrict(21000);
 		//g_kOwner = llGetOwner();
 		g_sScriptName = llGetScriptName();
 		initExtension();

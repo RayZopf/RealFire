@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Wed Feb 12 02:33:10 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Wed Feb 12 05:08:21 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -75,7 +75,7 @@ integer silent = 0;
 integer g_iMsgNumber = 10959;
 string SEPARATOR = ";;";
 integer COMMAND_CHANNEL = -15700;
-integer REMOTE_CHANNEL = 975102;
+integer REMOTE_CHANNEL = -975102;
 
 
 
@@ -91,7 +91,7 @@ default {
 	state_entry() {
         (g_iRemote = 1);
         integer rc = -1;
-        (rc = llSetMemoryLimit(19000));
+        (rc = llSetMemoryLimit(21000));
         if ((g_iVerbose && (1 > rc))) llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Setting memory limit failed"));
         (g_sScriptName = llGetScriptName());
         llListenRemove(g_iListenHandle);

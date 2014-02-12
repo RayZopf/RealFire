@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Wed Feb 12 02:33:10 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Wed Feb 12 05:08:45 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -120,6 +120,64 @@ float percentage(float per,float num){
 }
 
 
+//===============================================
+//PREDEFINED FUNCTIONS
+//===============================================
+
+initExtension(integer bool){
+    if (g_iParticleFire) {
+        llParticleSystem([]);
+        if (g_iTextureAnim) llSetLinkTextureAnim(g_iTypeTexture,0,-1,4,4,0,0,1);
+        if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight,[23,0,ZERO_VECTOR,0,0,0]);
+    }
+    (g_vDefStartColor.x = checkInt("ColorOn (RED)",((integer)g_vDefStartColor.x),0,100));
+    (g_vDefStartColor.y = checkInt("ColorOn (GREEN)",((integer)g_vDefStartColor.y),0,100));
+    (g_vDefStartColor.z = checkInt("ColorOn (BLUE)",((integer)g_vDefStartColor.z),0,100));
+    (g_vDefEndColor.x = checkInt("ColorOff (RED)",((integer)g_vDefEndColor.x),0,100));
+    (g_vDefEndColor.y = checkInt("ColorOff (GREEN)",((integer)g_vDefEndColor.y),0,100));
+    (g_vDefEndColor.z = checkInt("ColorOff (BLUE)",((integer)g_vDefEndColor.z),0,100));
+    (g_fStartIntensity = percentage(g_iDefIntensity,1.0));
+    (g_fStartRadius = percentage(g_iDefRadius,20.0));
+    (g_fLightFalloff = percentage(g_iDefFalloff,2.0));
+    llSleep(1);
+    if (bool) {
+        integer link = g_iType;
+        if (g_iParticleFire) {
+            if ((g_iSingleFire && (-1 == llGetInventoryType(g_sMainScript)))) {
+                (g_iParticleFireAvail = 0);
+                jump _end0;
+            }
+            string sDefGroup = LINKSETID;
+            if (("" == sDefGroup)) (sDefGroup = "Default");
+            string str = llStringTrim(llGetObjectDesc(),3);
+            if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
+            else  {
+                list lGroup = llParseString2List(str,[" "],[]);
+                (str = llList2String(lGroup,0));
+            }
+            string sId = ((str + SEPARATOR) + g_sScriptName);
+            if (g_iParticleFireAvail) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
+            else  if (g_iSingleFire) llMessageLinked(link,PARTICLE_CHANNEL,"0",((key)sId));
+        }
+        @_end0;
+    }
+    if ((g_iVerbose && 0)) {
+        if (g_iParticleFireAvail) {
+            if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
+        }
+        else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
+    }
+    if (g_iParticleFire) {
+        if (g_iParticleFireAvail) {
+            if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
+        }
+        else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
+    }
+    else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
+    if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+}
+
+
 //most important function
 //-----------------------------------------------
 updateSize(float size){
@@ -178,6 +236,12 @@ updateSize(float size){
 }
 
 
+specialFire(){
+    
+    llParticleSystem([0,259,9,2,16,0.148438,1,<0.74902,0.6,0.14902>,3,<1.0,0.2,0.0>,2,0.101961,4,7.05882e-2,5,<0.59375,0.59375,0.0>,6,<9.375e-2,9.375e-2,0.0>,12,((key)"23d133ad-c669-18a8-02a3-a75baa9b214a"),7,3.0,13,1.0e-2,15,1,8,<0.0,0.0,0.203125>,17,1.95313e-2,18,2.73438e-2]);
+}
+
+
 // pragma inline
 integer max(integer x,integer y){
     if ((x > y)) return x;
@@ -215,56 +279,7 @@ default {
         (g_sScriptName = llGetScriptName());
         
         
-        if (g_iParticleFire) {
-            llParticleSystem([]);
-            if (g_iTextureAnim) llSetLinkTextureAnim(g_iTypeTexture,0,-1,4,4,0,0,1);
-            if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight,[23,0,ZERO_VECTOR,0,0,0]);
-        }
-        (g_vDefStartColor.x = checkInt("ColorOn (RED)",((integer)g_vDefStartColor.x),0,100));
-        (g_vDefStartColor.y = checkInt("ColorOn (GREEN)",((integer)g_vDefStartColor.y),0,100));
-        (g_vDefStartColor.z = checkInt("ColorOn (BLUE)",((integer)g_vDefStartColor.z),0,100));
-        (g_vDefEndColor.x = checkInt("ColorOff (RED)",((integer)g_vDefEndColor.x),0,100));
-        (g_vDefEndColor.y = checkInt("ColorOff (GREEN)",((integer)g_vDefEndColor.y),0,100));
-        (g_vDefEndColor.z = checkInt("ColorOff (BLUE)",((integer)g_vDefEndColor.z),0,100));
-        (g_fStartIntensity = percentage(g_iDefIntensity,1.0));
-        (g_fStartRadius = percentage(g_iDefRadius,20.0));
-        (g_fLightFalloff = percentage(g_iDefFalloff,2.0));
-        llSleep(1);
-        {
-            integer link = g_iType;
-            if (g_iParticleFire) {
-                if ((g_iSingleFire && (-1 == llGetInventoryType(g_sMainScript)))) {
-                    (g_iParticleFireAvail = 0);
-                    jump __end02;
-                }
-                string sDefGroup = LINKSETID;
-                if (("" == sDefGroup)) (sDefGroup = "Default");
-                string str = llStringTrim(llGetObjectDesc(),3);
-                if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
-                else  {
-                    list lGroup = llParseString2List(str,[" "],[]);
-                    (str = llList2String(lGroup,0));
-                }
-                string sId = ((str + SEPARATOR) + g_sScriptName);
-                if (g_iParticleFireAvail) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
-                else  if (g_iSingleFire) llMessageLinked(link,PARTICLE_CHANNEL,"0",((key)sId));
-            }
-            @__end02;
-        }
-        if ((g_iVerbose && 0)) {
-            if (g_iParticleFireAvail) {
-                if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
-            }
-            else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
-        }
-        if (g_iParticleFire) {
-            if (g_iParticleFireAvail) {
-                if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
-            }
-            else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
-        }
-        else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-        if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+        initExtension(1);
     }
 
 
@@ -276,56 +291,7 @@ default {
 	changed(integer change) {
         if ((change & 1)) {
             if ((!silent)) llWhisper(0,"Inventory changed, checking objects...");
-            if (g_iParticleFire) {
-                llParticleSystem([]);
-                if (g_iTextureAnim) llSetLinkTextureAnim(g_iTypeTexture,0,-1,4,4,0,0,1);
-                if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight,[23,0,ZERO_VECTOR,0,0,0]);
-            }
-            (g_vDefStartColor.x = checkInt("ColorOn (RED)",((integer)g_vDefStartColor.x),0,100));
-            (g_vDefStartColor.y = checkInt("ColorOn (GREEN)",((integer)g_vDefStartColor.y),0,100));
-            (g_vDefStartColor.z = checkInt("ColorOn (BLUE)",((integer)g_vDefStartColor.z),0,100));
-            (g_vDefEndColor.x = checkInt("ColorOff (RED)",((integer)g_vDefEndColor.x),0,100));
-            (g_vDefEndColor.y = checkInt("ColorOff (GREEN)",((integer)g_vDefEndColor.y),0,100));
-            (g_vDefEndColor.z = checkInt("ColorOff (BLUE)",((integer)g_vDefEndColor.z),0,100));
-            (g_fStartIntensity = percentage(g_iDefIntensity,1.0));
-            (g_fStartRadius = percentage(g_iDefRadius,20.0));
-            (g_fLightFalloff = percentage(g_iDefFalloff,2.0));
-            llSleep(1);
-            {
-                integer link = g_iType;
-                if (g_iParticleFire) {
-                    if ((g_iSingleFire && (-1 == llGetInventoryType(g_sMainScript)))) {
-                        (g_iParticleFireAvail = 0);
-                        jump __end01;
-                    }
-                    string sDefGroup = LINKSETID;
-                    if (("" == sDefGroup)) (sDefGroup = "Default");
-                    string str = llStringTrim(llGetObjectDesc(),3);
-                    if (((llToLower(str) == "(no description)") || (str == ""))) (str = sDefGroup);
-                    else  {
-                        list lGroup = llParseString2List(str,[" "],[]);
-                        (str = llList2String(lGroup,0));
-                    }
-                    string sId = ((str + SEPARATOR) + g_sScriptName);
-                    if (g_iParticleFireAvail) llMessageLinked(link,PARTICLE_CHANNEL,"1",((key)sId));
-                    else  if (g_iSingleFire) llMessageLinked(link,PARTICLE_CHANNEL,"0",((key)sId));
-                }
-                @__end01;
-            }
-            if ((g_iVerbose && 0)) {
-                if (g_iParticleFireAvail) {
-                    if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
-                }
-                else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
-            }
-            if (g_iParticleFire) {
-                if (g_iParticleFireAvail) {
-                    if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
-                }
-                else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
-            }
-            else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-            if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
+            initExtension(1);
         }
     }
 
@@ -494,60 +460,29 @@ default {
             (_ret2 = 1);
             @_end3;
             integer rc = _ret2;
-            if ((1 == rc)) {
-                if (g_iParticleFire) {
-                    llParticleSystem([]);
-                    if (g_iTextureAnim) llSetLinkTextureAnim(g_iTypeTexture,0,-1,4,4,0,0,1);
-                    if (g_iLight) llSetLinkPrimitiveParamsFast(g_iTypeLight,[23,0,ZERO_VECTOR,0,0,0]);
-                }
-                (g_vDefStartColor.x = checkInt("ColorOn (RED)",((integer)g_vDefStartColor.x),0,100));
-                (g_vDefStartColor.y = checkInt("ColorOn (GREEN)",((integer)g_vDefStartColor.y),0,100));
-                (g_vDefStartColor.z = checkInt("ColorOn (BLUE)",((integer)g_vDefStartColor.z),0,100));
-                (g_vDefEndColor.x = checkInt("ColorOff (RED)",((integer)g_vDefEndColor.x),0,100));
-                (g_vDefEndColor.y = checkInt("ColorOff (GREEN)",((integer)g_vDefEndColor.y),0,100));
-                (g_vDefEndColor.z = checkInt("ColorOff (BLUE)",((integer)g_vDefEndColor.z),0,100));
-                (g_fStartIntensity = percentage(g_iDefIntensity,1.0));
-                (g_fStartRadius = percentage(g_iDefRadius,20.0));
-                (g_fLightFalloff = percentage(g_iDefFalloff,2.0));
-                llSleep(1);
-                
-                if ((g_iVerbose && 0)) {
-                    if (g_iParticleFireAvail) {
-                        if ((!silent)) llWhisper(0,(("(v) " + g_sTitle) + " - File(s) found in inventory: Yes"));
-                    }
-                    else  llWhisper(0,(((("(v) " + g_sTitle) + "/") + g_sScriptName) + " - Needed files(s) found in inventory: NO"));
-                }
-                if (g_iParticleFire) {
-                    if (g_iParticleFireAvail) {
-                        if ((!silent)) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + "\t ready"));
-                    }
-                    else  llWhisper(0,(((g_sTitle + " ") + g_sVersion) + " not ready"));
-                }
-                else  llWhisper(0,(((g_sTitle + "/") + g_sScriptName) + " script disabled"));
-                if (((!silent) && g_iVerbose)) llWhisper(0,((((((((("\n\t- used/max available memory: " + ((string)llGetUsedMemory())) + "/") + ((string)llGetMemoryLimit())) + " - free: ") + ((string)llGetFreeMemory())) + "-\n(v) ") + g_sTitle) + "/") + g_sScriptName));
-            }
+            if ((1 == rc)) initExtension(0);
             else  if ((1 <= rc)) updateSize(((float)g_sSize));
         }
-        string _ret11;
-        string _sDefGroup13 = LINKSETID;
-        if (("" == _sDefGroup13)) (_sDefGroup13 = "Default");
+        string _ret4;
+        string _sDefGroup6 = LINKSETID;
+        if (("" == _sDefGroup6)) (_sDefGroup6 = "Default");
         string _str2 = llStringTrim(llGetObjectDesc(),3);
-        if (((llToLower(_str2) == "(no description)") || (_str2 == ""))) (_str2 = _sDefGroup13);
+        if (((llToLower(_str2) == "(no description)") || (_str2 == ""))) (_str2 = _sDefGroup6);
         else  {
-            list _lGroup16 = llParseString2List(_str2,[" "],[]);
-            (_str2 = llList2String(_lGroup16,0));
+            list _lGroup9 = llParseString2List(_str2,[" "],[]);
+            (_str2 = llList2String(_lGroup9,0));
         }
-        string _str14 = _str2;
+        string _str7 = _str2;
         list lKeys = llParseString2List(((string)kId),[SEPARATOR],[]);
         string sGroup = llList2String(lKeys,0);
-        string _sScriptName15 = llList2String(lKeys,1);
-        if ((((_str14 == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == _str14))) {
-            (_ret11 = _sScriptName15);
-            jump _end12;
+        string _sScriptName8 = llList2String(lKeys,1);
+        if ((((_str7 == sGroup) || (LINKSETID == sGroup)) || (LINKSETID == _str7))) {
+            (_ret4 = _sScriptName8);
+            jump _end5;
         }
-        (_ret11 = "exit");
-        @_end12;
-        string sScriptName = _ret11;
+        (_ret4 = "exit");
+        @_end5;
+        string sScriptName = _ret4;
         if (("exit" == sScriptName)) return;
         if (((((iChan != PARTICLE_CHANNEL) || (!g_iParticleFire)) || (!g_iParticleFireAvail)) || (llSubStringIndex(llToLower(sScriptName),g_sType) >= 0))) return;
         list lParams = llParseString2List(sSet,[SEPARATOR],[]);
@@ -564,8 +499,7 @@ default {
             string g_sSizeTemp = g_sSize;
             if (("0" == g_sSizeTemp)) {
                 llSleep(0.7);
-                
-                llParticleSystem([0,259,9,2,16,0.148438,1,<0.74902,0.6,0.14902>,3,<1.0,0.2,0.0>,2,0.101961,4,7.05882e-2,5,<0.59375,0.59375,0.0>,6,<9.375e-2,9.375e-2,0.0>,12,((key)"23d133ad-c669-18a8-02a3-a75baa9b214a"),7,3.0,13,1.0e-2,15,1,8,<0.0,0.0,0.203125>,17,1.95313e-2,18,2.73438e-2]);
+                specialFire();
                 (g_fLightIntensity = g_fStartIntensity);
                 (g_fLightRadius = g_fStartRadius);
                 llSleep(2.4);
@@ -580,8 +514,7 @@ default {
             (g_iInTimer = 1);
             llSetTimerEvent(1.0);
             llSleep(1.3);
-            
-            llParticleSystem([0,259,9,2,16,0.148438,1,<0.74902,0.6,0.14902>,3,<1.0,0.2,0.0>,2,0.101961,4,7.05882e-2,5,<0.59375,0.59375,0.0>,6,<9.375e-2,9.375e-2,0.0>,12,((key)"23d133ad-c669-18a8-02a3-a75baa9b214a"),7,3.0,13,1.0e-2,15,1,8,<0.0,0.0,0.203125>,17,1.95313e-2,18,2.73438e-2]);
+            specialFire();
             llSleep(2.9);
         }
     }
