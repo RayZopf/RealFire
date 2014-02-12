@@ -1,0 +1,15 @@
+off
+'Fire log' [8/8] running scripts. 291Kb consumed for 0.016731ms of cpu time.
+'Fire log' [8/8] running scripts. 291Kb consumed for 0.016570ms of cpu time.
+'Fire log' [8/8] running scripts. 291Kb consumed for 0.016370ms of cpu time.
+
+on
+'Fire log' [8/8] running scripts. 291Kb consumed for 0.015930ms of cpu time.
+'Fire log' [8/8] running scripts. 291Kb consumed for 0.015795ms of cpu time.
+'Fire log' [8/8] running scripts. 291Kb consumed for 0.015643ms of cpu time.
+
+
+on first, before off!)
+'Fire log' [8/8] running scripts. 291Kb consumed for 0.018673ms of cpu time.
+'Fire log' [8/8] running scripts. 291Kb consumed for 0.018351ms of cpu time.
+'Fire log' [8/8] running scripts. 291Kb consumed for 0.018064ms of cpu time.

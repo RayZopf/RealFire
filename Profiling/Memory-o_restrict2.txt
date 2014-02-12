@@ -1,0 +1,33 @@
+whispers: RealB-Sound 0.52 by Zopf     ready
+[19:23:53] Fire log whispers:
+    - used/max available memory: 19158/25000 - free: 4988-
+(v) RealB-Sound/B-Sound.lsl
+[19:23:53] Fire log whispers: RealFire Remote Receiver 1.2-0.46 by Rene10957, Zopf     ready
+[19:23:53] Fire log whispers:
+    - used/max available memory: 14958/19000 - free: 1606-
+(v) RealFire Remote Receiver/Remote_receiver.lsl
+[19:23:53] Fire log whispers: RealPrimFire 0.17 by Zopf     ready
+[19:23:53] Fire log whispers:
+    - used/max available memory: 25180/30000 - free: 3888-
+(v) RealPrimFire/P-Anim.lsl
+[19:23:53] Smoke log whispers: RealSmoke 2.1.3-0.6 by Rene10957, Zopf     ready
+[19:23:53] Smoke log whispers:
+    - used/max available memory: 15450/21000 - free: 4498-
+(v) RealSmoke/Smoke.lsl
+[19:23:53] Fire log whispers: RealParticleFire 0.33 by Zopf     ready
+[19:23:53] Fire log whispers:
+    - used/max available memory: 34076/40000 - free: 3392-
+(v) RealParticleFire/F-Anim.lsl
+[19:23:53] Smoke log whispers: RealSound 0.88 by Zopf     ready
+[19:23:53] Smoke log whispers:
+    - used/max available memory: 25450/32000 - free: 4426-
+(v) RealSound/Sound.lsl
+[19:23:53] Fire log whispers: RealFire 2.3-1.21 by Rene10957, Zopf
+[19:23:53] Fire log whispers: Touch to start/stop fire
+ *Long touch to show menu*
+[19:23:53] Fire log whispers: (v) Switch access: World
+[19:23:53] Fire log whispers: (v) Menu access: World
+[19:23:53] Fire log whispers: (v) Channel for remote control: 10959
+[19:23:53] Fire log whispers:
+     -free memory: 9778 -
+(v) RealFire/Fire.lsl
