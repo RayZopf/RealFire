@@ -168,7 +168,6 @@ default
 	state_entry()
 	{
 		//debug=TRUE; // set to TRUE to enable Debug messages
-		MESSAGE_MAP();
 		g_iSmoke = TRUE;
 		// Particle parameters
 		g_fAge = 10.0;               // life of each particle

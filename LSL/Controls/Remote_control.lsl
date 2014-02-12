@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Tue Feb 11 22:58:57 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_control.lslp Wed Feb 12 02:33:10 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote control (secondary switch) for RealFire
 //
@@ -70,22 +70,7 @@ integer g_iVerbose = 1;
 string g_sMsgSwitch = "switch";
 string g_sMsgMenu = "menu";
 string SEPARATOR = ";;";
-integer COMMAND_CHANNEL;
-integer PARTICLE_CHANNEL;
-integer SOUND_CHANNEL;
-integer ANIM_CHANNEL;
-integer PRIMCOMMAND_CHANNEL;
-integer REMOTE_CHANNEL;
-
-
-MESSAGE_MAP(){
-    (COMMAND_CHANNEL = 15700);
-    (PARTICLE_CHANNEL = -15790);
-    (SOUND_CHANNEL = -15780);
-    (ANIM_CHANNEL = -15770);
-    (PRIMCOMMAND_CHANNEL = -15771);
-    (REMOTE_CHANNEL = -975102);
-}
+integer REMOTE_CHANNEL = 975102;
 
 
 //===============================================
@@ -104,7 +89,6 @@ MESSAGE_MAP(){
 default {
 
 	state_entry() {
-        MESSAGE_MAP();
         (g_iVerbose = 0);
         if (g_iVerbose) llWhisper(0,(((((g_sTitle + " ") + g_sVersion) + " by ") + g_sAuthors) + " ready"));
     }

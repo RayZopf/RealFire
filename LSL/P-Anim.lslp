@@ -155,7 +155,6 @@ default
 	state_entry()
 	{
 		//debug=TRUE; // set to TRUE to enable Debug messages
-		MESSAGE_MAP();
 		g_iPrimFire = TRUE;
 		g_vOffsetSmall = <0.0, 0.0, -0.525>;
 		g_vOffsetMedium1 = <0.0, 0.0, -0.345>;

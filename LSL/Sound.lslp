@@ -148,7 +148,6 @@ default
 	state_entry()
 	{
 		//debug=TRUE; // set to TRUE to enable Debug messages
-		MESSAGE_MAP();
 		g_iSound = TRUE;
 		g_iSoundNFiles = 5;
 

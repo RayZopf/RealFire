@@ -96,7 +96,6 @@ default
 	state_entry()
 	{
 		//debug=TRUE; // set to TRUE to enable Debug messages
-		MESSAGE_MAP();
 		g_iVerbose = FALSE; // as script is used in fire prims that get rezzed all the time
 
 		if (g_iVerbose) llWhisper(0, g_sTitle + " " + g_sVersion+" by "+g_sAuthors + " ready");

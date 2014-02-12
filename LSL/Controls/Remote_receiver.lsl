@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Tue Feb 11 22:58:57 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Controls.Remote_receiver.lslp Wed Feb 12 02:33:10 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Remote receiver for RealFire
 //
@@ -74,22 +74,8 @@ string g_sScriptName;
 integer silent = 0;
 integer g_iMsgNumber = 10959;
 string SEPARATOR = ";;";
-integer COMMAND_CHANNEL;
-integer PARTICLE_CHANNEL;
-integer SOUND_CHANNEL;
-integer ANIM_CHANNEL;
-integer PRIMCOMMAND_CHANNEL;
-integer REMOTE_CHANNEL;
-
-
-MESSAGE_MAP(){
-    (COMMAND_CHANNEL = 15700);
-    (PARTICLE_CHANNEL = -15790);
-    (SOUND_CHANNEL = -15780);
-    (ANIM_CHANNEL = -15770);
-    (PRIMCOMMAND_CHANNEL = -15771);
-    (REMOTE_CHANNEL = -975102);
-}
+integer COMMAND_CHANNEL = -15700;
+integer REMOTE_CHANNEL = 975102;
 
 
 
@@ -103,7 +89,6 @@ MESSAGE_MAP(){
 default {
 
 	state_entry() {
-        MESSAGE_MAP();
         (g_iRemote = 1);
         integer rc = -1;
         (rc = llSetMemoryLimit(19000));

@@ -321,7 +321,6 @@ default
 	state_entry()
 	{
 		//debug=TRUE; // set to TRUE to enable Debug messages
-		MESSAGE_MAP();
 		g_iParticleFire = TRUE;
 		g_iType = LINK_SET;
 		g_iTextureAnim = TRUE;

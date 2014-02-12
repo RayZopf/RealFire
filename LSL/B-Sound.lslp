@@ -123,7 +123,6 @@ default
 	state_entry()
 	{
 		//debug=TRUE; // set to TRUE to enable Debug messages
-		MESSAGE_MAP();
 		g_iSound=TRUE;
 
 		MemRestrict(25000);

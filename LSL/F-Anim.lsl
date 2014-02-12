@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Tue Feb 11 23:11:46 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.F-Anim.lslp Wed Feb 12 02:33:10 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //ParticleFire Enhancement to Realfire
 // by Zopf Resident - Ray Zopf (Raz)
@@ -97,22 +97,8 @@ integer g_iPerGreenEnd;
 integer g_iPerBlueEnd;
 integer g_iInTimer = 0;
 string SEPARATOR = ";;";
-integer COMMAND_CHANNEL;
-integer PARTICLE_CHANNEL;
-integer SOUND_CHANNEL;
-integer ANIM_CHANNEL;
-integer PRIMCOMMAND_CHANNEL;
-integer REMOTE_CHANNEL;
-
-
-MESSAGE_MAP(){
-    (COMMAND_CHANNEL = 15700);
-    (PARTICLE_CHANNEL = -15790);
-    (SOUND_CHANNEL = -15780);
-    (ANIM_CHANNEL = -15770);
-    (PRIMCOMMAND_CHANNEL = -15771);
-    (REMOTE_CHANNEL = -975102);
-}
+integer COMMAND_CHANNEL = -15700;
+integer PARTICLE_CHANNEL = -15790;
 
 
 //###
@@ -217,7 +203,6 @@ integer min(integer x,integer y){
 default {
 
 	state_entry() {
-        MESSAGE_MAP();
         (g_iParticleFire = 1);
         (g_iType = -1);
         (g_iTextureAnim = 1);

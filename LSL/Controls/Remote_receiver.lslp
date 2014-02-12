@@ -112,7 +112,6 @@ default
 	state_entry()
 	{
 		//debug=TRUE; // set to TRUE to enable Debug messages
-		MESSAGE_MAP();
 		g_iRemote = TRUE;
 
 		MemRestrict(19000);

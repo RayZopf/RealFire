@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Tue Feb 11 22:58:57 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Smoke.lslp Wed Feb 12 02:33:10 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Smoke
 //
@@ -76,22 +76,8 @@ string g_sMainScript = "Fire.lsl";
 string g_sScriptName;
 integer silent = 0;
 string SEPARATOR = ";;";
-integer COMMAND_CHANNEL;
-integer PARTICLE_CHANNEL;
-integer SOUND_CHANNEL;
-integer ANIM_CHANNEL;
-integer PRIMCOMMAND_CHANNEL;
-integer REMOTE_CHANNEL;
-
-
-MESSAGE_MAP(){
-    (COMMAND_CHANNEL = 15700);
-    (PARTICLE_CHANNEL = -15790);
-    (SOUND_CHANNEL = -15780);
-    (ANIM_CHANNEL = -15770);
-    (PRIMCOMMAND_CHANNEL = -15771);
-    (REMOTE_CHANNEL = -975102);
-}
+integer COMMAND_CHANNEL = -15700;
+integer PARTICLE_CHANNEL = -15790;
 
 
 float percentage(float per,float num){
@@ -110,7 +96,6 @@ float percentage(float per,float num){
 default {
 
 	state_entry() {
-        MESSAGE_MAP();
         (g_iSmoke = 1);
         (g_fAge = 10.0);
         (g_fRate = 0.5);

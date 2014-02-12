@@ -1,4 +1,4 @@
-// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Tue Feb 11 22:58:57 Mitteleuropäische Zeit 2014
+// LSL script generated: RealFire-Rene10957.LSL.Fire.lslp Wed Feb 12 02:33:10 Mitteleuropäische Zeit 2014
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //Realfire by Rene - Fire
 //
@@ -189,22 +189,11 @@ integer g_iPerRedEnd;
 integer g_iPerGreenEnd;
 integer g_iPerBlueEnd;
 string SEPARATOR = ";;";
-integer COMMAND_CHANNEL;
-integer PARTICLE_CHANNEL;
-integer SOUND_CHANNEL;
-integer ANIM_CHANNEL;
-integer PRIMCOMMAND_CHANNEL;
-integer REMOTE_CHANNEL;
-
-
-MESSAGE_MAP(){
-    (COMMAND_CHANNEL = 15700);
-    (PARTICLE_CHANNEL = -15790);
-    (SOUND_CHANNEL = -15780);
-    (ANIM_CHANNEL = -15770);
-    (PRIMCOMMAND_CHANNEL = -15771);
-    (REMOTE_CHANNEL = -975102);
-}
+integer COMMAND_CHANNEL = -15700;
+integer PARTICLE_CHANNEL = -15790;
+integer SOUND_CHANNEL = -15780;
+integer ANIM_CHANNEL = -15770;
+integer REMOTE_CHANNEL = 975102;
 
 
 //###
@@ -693,7 +682,6 @@ integer min(integer x,integer y){
 default {
 
 	state_entry() {
-        MESSAGE_MAP();
         (g_kOwner = llGetOwner());
         (g_sScriptName = llGetScriptName());
         stopSystem();
