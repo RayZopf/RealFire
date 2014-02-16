@@ -70,7 +70,7 @@ vector g_vEndColor = <1, 0, 0>;    // particle end color
 //-----------------------------------------------
 string g_sTitle = "RealParticleFire";     // title
 string g_sVersion = "0.33";       // version
-string g_sAuthors = "Zopf";
+string g_sAuthors = "Rene10957, Zopf";
 
 string g_sType = "anim";
 
