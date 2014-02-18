@@ -1,7 +1,7 @@
 # Configuration notecard for RealFire
 #
-# Date: 02-02-2014 - 09.Feb.2014
-# Version: 2.3-0.32
+# Date: 02-02-2014 - 18.Feb.2014
+# Version: 2.3-0.34
 
 LINKSETID = RealFire            # group where script is in (1: first word of prim desc is identical, or 2: LINKSETID values are identical, or 3: all values are empty, or 4: LINKSETID is identical to prim desc of other prim)
 verbose = YES                   # show more/less info during startup
@@ -15,8 +15,9 @@ changeLight = YES               # YES = change light with fire, NO = remain at c
 changeSmoke = YES               # YES = change smoke with fire, NO = remain at 100%
 changeVolume = YES              # YES = change volume with fire, NO = remain at current volume
 singleFire = YES                # YES = single fire, NO = multiple fires
-#g_iSingleSmoke = FALSE;
-#g_iSingleSound = FALSE;
+#singleLight = NO
+singleSmoke = NO
+#singleSound = NO
 
 # Menu defaults
 
@@ -27,6 +28,7 @@ volume = 100                    # sound volume percentage
 ParticleFire = YES              # (additionally) use particles for fire effect (induces viewer side lag)
 PrimFire = NO                   # (additionally) use prims for fire effect (may induce higher prim count)
 lowprim = NO                    # rez PrimFire as temp-prim only (not to set via Menu!)
+#light = YES
 smoke = YES                     # smoke or no smoke
 sound = YES                     # sound or no sound
 
