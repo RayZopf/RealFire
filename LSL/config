@@ -16,7 +16,7 @@ changeSmoke = YES               # YES = change smoke with fire, NO = remain at 1
 changeVolume = YES              # YES = change volume with fire, NO = remain at current volume
 singleFire = YES                # YES = single fire, NO = multiple fires
 #singleLight = NO
-singleSmoke = NO
+#singleSmoke = NO
 #singleSound = NO
 
 # Menu defaults
