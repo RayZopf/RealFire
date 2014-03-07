@@ -2,16 +2,15 @@ Project to add some improvements to Linden Home fireplace (Meadowbrooks open fir
 =====================================================================
 Aims
 ----
-trying to get a nicer fire, smoke, sound, animated logs
+get a nicer fire, smoke, sound, animated logs
 let fire rezz more logs, embers, etc
 
 Todo
 ----
-work on prims (more landimpact, less laggy; make them flexiprims?)
-rework some internal functions like
+work on prims (landimpact, lag; make them flexiprims?)
+rework some internal functions, like
  - size of fire
  - change of fire/sound
- - settings notecard and verbosity
 make it work in opensim (SoaS)
  - LSLForge uses extraneous parentheses
 	- see [0005422: (i = 1); fails to compile] (http://opensimulator.org/mantis/view.php?id=5422)
@@ -21,7 +20,7 @@ make it work in opensim (SoaS)
 
 Components
 ==========
-Scripts
+Script-base
 -------
 [RealFire] (https://marketplace.secondlife.com/de-DE/p/RealFire-by-Rene/3490495)
  - [Shop] (https://marketplace.secondlife.com/de-DE/stores/113876)
