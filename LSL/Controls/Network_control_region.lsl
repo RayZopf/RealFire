@@ -1,7 +1,7 @@
 // Network control for RealFire
 //
 // Author: Rene10957 Resident
-// Date: 02-02-2014
+// Date: 21-03-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -12,9 +12,8 @@
 // Drop this in any prim you want to use as a control panel
 
 string title = "Network Control";   // title
-string version = "2.1";             // version
+string version = "2.2";             // version
 integer linkSet = FALSE;            // REGION mode
-integer debug = FALSE;              // show/hide debug messages
 integer silent = FALSE;             // silent startup
 
 // Constants
@@ -98,7 +97,6 @@ default
     listen(integer channel, string name, key id, string msg)
     {
         integer length = llGetListLength(networkNodes) / 2;
-        if (debug) llOwnerSay("[Network control] LISTEN event: " + (string)channel + "; " + msg);
 
         if (channel == replyChannel) {
             if (llGetOwnerKey(id) != owner) return;
@@ -159,7 +157,6 @@ default
     {
         llSetTimerEvent(0);
         if (time == cDialogTime) {  // dialog timeout
-            if (debug) llOwnerSay("Dialog timeout");
             llListenRemove(dialogHandle);
         }
         else if (time == vReplyTime) {  // remote timeout (variable!)
@@ -174,9 +171,6 @@ default
                 menuButtons = ["On", "Off", "Discover"] + menuButtons;
                 if (user) menuDialog(user);
             }
-        }
-        else {
-            if (debug) llOwnerSay("Timer out of range: " + (string)time);
         }
     }
 }

@@ -1,7 +1,7 @@
 // Realfire by Rene - Smoke
 //
 // Author: Rene10957 Resident
-// Date: 02-02-2014
+// Date: 21-03-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -12,8 +12,7 @@
 // See fire.lsl for feature list
 
 string title = "RealSmoke";     // title
-string version = "2.1.3";       // version
-integer debug = FALSE;          // show/hide debug messages
+string version = "2.1.4";       // version
 integer silent = FALSE;         // silent startup
 
 // Constants
@@ -71,7 +70,6 @@ default
     state_entry()
     {
         llParticleSystem([]);
-        if (debug) llOwnerSay("Particle count: " + (string)llRound((float)count * age / rate));
         if (!silent) llWhisper(0, title + " " + version + " ready");
     }
 
@@ -80,9 +78,8 @@ default
         llResetScript();
     }
 
-    link_message(integer sender, integer number, string msg, key id)
+    link_message(integer sender_number, integer number, string msg, key id)
     {
-        if (debug) llOwnerSay("[Smoke] LINK_MESSAGE event: " + (string)number + "; " + msg + "; " + (string)id);
         if (number != smokeChannel) return;
 
         integer alpha = (integer)msg;

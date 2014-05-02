@@ -1,7 +1,7 @@
 // Network receiver for RealFire
 //
 // Author: Rene10957 Resident
-// Date: 02-02-2014
+// Date: 21-03-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -13,9 +13,8 @@
 // Note: only useful if you are also using the network control script
 
 string title = "Network Receiver";   // title
-string version = "2.1";              // version
+string version = "2.2";              // version
 integer linkSet = TRUE;              // LINKSET mode
-integer debug = FALSE;               // show/hide debug messages
 integer silent = FALSE;              // silent startup
 
 // Constants
@@ -49,9 +48,8 @@ default
         llResetScript();
     }
 
-    link_message(integer sender, integer number, string msg, key id)
+    link_message(integer sender_number, integer number, string msg, key id)
     {
-        if (debug) llOwnerSay("[Receiver] LINK_MESSAGE event: " + (string)number + "; " + msg + "; " + (string)id);
         if (number != remoteChannel) return;
         if (msg == "HELO") {
             llRegionSayTo(id, replyChannel, "DATA");
@@ -66,7 +64,6 @@ default
 
     listen(integer channel, string name, key id, string msg)
     {
-        if (debug) llOwnerSay("[Receiver] LISTEN event: " + (string)channel + "; " + msg);
         if (channel != remoteChannel) return;
         if (llGetOwnerKey(id) != owner) return;
         if (msg == "HELO") {

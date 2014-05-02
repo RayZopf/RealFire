@@ -1,7 +1,7 @@
 # Configuration notecard for RealFire
 #
-# Date: 02-02-2014
-# Version: 2.3
+# Date: 21-03-2014
+# Version: 2.3.1
 
 verbose = YES                   # show more/less info during startup
 switchAccess = 1                # access level for switch (1 = world, 2 = group, 4 = owner, 6 = group + owner)
@@ -30,11 +30,16 @@ intensity = 100                 # light intensity percentage
 radius = 50                     # light radius percentage
 falloff = 40                    # light falloff percentage
 
-# Link messages
+# Link messages: in
 
 msgNumber = 10959               # number part of incoming link messages
 msgSwitch = switch              # string part of incoming link message: switch (on/off)
 msgOn = on                      # string part of incoming link message: switch on
 msgOff = off                    # string part of incoming link message: switch off
 msgMenu = menu                  # string part of incoming link message: show menu
-extNumber = 10960               # number part of outgoing link messages
+
+# Link messages: out
+
+extButton =                     # "Close" replaced by button text (sends link message)
+extNumber = 10960               # number part of outgoing link message
+switchNumber = 10961            # number part of outgoing on/off messages
