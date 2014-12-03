@@ -1,7 +1,7 @@
 // EasyFire
 //
 // Author: Rene10957 Resident
-// Date: 12-04-2014
+// Date: 02-08-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -9,7 +9,7 @@
 // Author and license headers must be left intact.
 
 string title = "EasyFire";             // title
-string version = "1.0";                // version
+string version = "1.0.1";              // version
 
 // Constants //////////////////////////////////////////////////////////////////////////////////////
 
@@ -150,14 +150,14 @@ setFire()
     vector end = endScale / 100.0 * (float)perSize;          // end scale
     float min = minSpeed / 100.0 * (float)perSize;           // min. burst speed
     float max = maxSpeed / 100.0 * (float)perSize;           // max. burst speed
-    float radius = burstRadius / 100.0 * (float)perSize;     // resize burst radius
+    float radius = burstRadius / 100.0 * (float)perSize;     // burst radius
     vector push = partAccel / 100.0 * (float)perSize;        // accelleration
     // Smoke
     vector startS = startScaleS / 100.0 * (float)perSize;    // start scale
     vector endS = endScaleS / 100.0 * (float)perSize;        // end scale
     float minS = minSpeedS / 100.0 * (float)perSize;         // min. burst speed
     float maxS = maxSpeedS / 100.0 * (float)perSize;         // max. burst speed
-    float radiusS = burstRadiusS / 100.0 * (float)perSize;   // resize burst radius
+    float radiusS = burstRadiusS / 100.0 * (float)perSize;   // burst radius
     vector pushS = partAccelS / 100.0 * (float)perSize;      // accelleration
     // Sound
     volume = (float)perSize / 100.0;
