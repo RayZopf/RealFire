@@ -1,7 +1,7 @@
 USER MANUAL FOR REALFIRE
 
-Date: 21-03-2014
-Version: 2.3.1
+Date: 05-10-2014
+Version: 2.3.2
 
 A downloadable PDF version is available on the Marketplace.
 
@@ -51,9 +51,13 @@ HOW TO ADD SOUND
 
 If you don't want to use the provided fire sound, you can drop an uploaded PCM WAV file (16-bit, 44.1 kHz, mono, <= 10 sec.) into the prim that contains the fire script. It can have any name and will be looped by the script.
 
+HOW TO CHANGE THE FIRE TEXTURE
+
+Several textures have been included as a replacement for the default particle texture. Each of them will give the fire a slightly different look. Replacing the texture is as easy as dropping it in the prim inventory and removing the old texture (if any).
+
 BURNING DOWN
 
-The fire burns continuously by default. You can make it burn down by setting the notecard option burnDown to YES. The burnTime and dieTime options control how long the fire will burn and how long it takes to die. Light, smoke and sound will start to diminish when the fire reaches 25% (or can remain unchanged, see notecard options). If you set loop to YES, the fire will restart and repeat the whole process.
+The fire burns continuously by default. You can make it burn down by setting the notecard option burnDown to YES. The burnTime and dieTime options control how long the fire will burn and how long it takes to die. Light, smoke and sound will start to diminish when the fire reaches the default size (or can remain unchanged, see notecard options). If you set loop to YES, the fire will restart and repeat the whole process.
 
 COMMUNICATION WITH OTHER SCRIPTS
 
@@ -72,8 +76,8 @@ The fire script uses a notecard (default name "config"). Here you can configure 
 For faster loading, remove whatever lines you don't need.
 
 verbose = YES                   # show more/less info during startup
-switchAccess = 1                # access level for switch (1 = world, 2 = group, 4 = owner, 6 = group + owner)
-menuAccess = 1                  # access level for menu (1 = world, 2 = group, 4 = owner, 6 = group + owner)
+switchAccess = 1                # access level for switch (1 = public, 2 = group, 4 = owner, 6 = group + owner)
+menuAccess = 1                  # access level for menu (1 = public, 2 = group, 4 = owner, 6 = group + owner)
 burnDown = NO                   # YES = burn down, NO = burn continuously
 loop = NO                       # YES = restart after burning down
 burnTime = 300                  # time to burn before starting to die, in seconds
@@ -114,11 +118,11 @@ switchNumber = 10961            # number part of outgoing on/off messages
 
 ACCESS CONTROL
 
-Both fire and menu have 3 access levels: owner, group and world. For example, you could have a public fire switch with limited access to the menu so no one can mess with your settings.
+Both fire and menu have 3 access levels: owner, group and public. For example, you could have a public fire switch with limited access to the menu so no one can mess with your settings.
 
 Access levels:
 
-1 = world: anyone
+1 = public: anyone
 2 = group: avatars with same active group as object
 4 = owner: object owner
 6 = group + owner
@@ -145,7 +149,7 @@ CHANGE HISTORY
 2.0, 16-06-2012:
 
 - menu: smoke on/off, sound on/off, change size, speed and color
-- access control: owner, group, world
+- access control: owner, group, public
 - simplified notecard settings
 - plugin support
 
@@ -201,3 +205,11 @@ Other:
 - bugfix: object can be touched before notecard has finished loading
 - removed all debug code
 - final code cleanup
+
+2.3.2, 05-10-2014
+
+- slightly improved startup messages
+- more efficient notecard loading
+- use alternate fire texture (4 included)
+- more realistic smoke texture
+- smoke is resized, not faded out

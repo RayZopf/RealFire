@@ -1,26 +1,16 @@
 // Realfire by Rene - Fire
 //
 // Author: Rene10957 Resident
-// Date: 21-03-2014
+// Date: 05-10-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
 //
 // Author and license headers must be left intact.
 // Content creator? Please read the license notecard!
-//
-// Features:
-//
-// - Fire with smoke, light and sound
-// - Burns down at any desired speed
-// - Change fire size/color and sound volume
-// - Plugin support
-// - Access control: owner, group, world
-// - Touch to start or stop fire
-// - Long touch to show menu
 
 string title = "RealFire";      // title
-string version = "2.3.1";       // version
+string version = "2.3.2";       // version
 string notecard = "config";     // notecard name
 integer silent = FALSE;         // silent startup
 
@@ -28,8 +18,9 @@ integer silent = FALSE;         // silent startup
 
 integer _OWNER_ = 4;            // owner access bit
 integer _GROUP_ = 2;            // group access bit
-integer _WORLD_ = 1;            // world access bit
+integer _PUBLIC_ = 1;           // public access bit
 integer smokeChannel = -15790;  // smoke channel
+float minParticle = 0.0625;     // smallest possible particle dimension (SL limit = 0.03125)
 float maxRed = 1.0;             // max. red
 float maxGreen = 1.0;           // max. green
 float maxBlue = 1.0;            // max. blue
@@ -40,7 +31,7 @@ float maxVolume = 1.0;          // max. volume for sound
 
 // Notecard variables
 
-integer verbose = TRUE;         // show more/less info during startup
+integer verbose = FALSE;        // show more/less info during startup
 integer switchAccess;           // access level for switch
 integer menuAccess;             // access level for menu
 integer msgNumber;              // number part of incoming link messages
@@ -55,33 +46,39 @@ integer burnDown = FALSE;       // burn down or burn continuously
 float burnTime;                 // time to burn in seconds before starting to die
 float dieTime;                  // time it takes to die in seconds
 integer loop = FALSE;           // restart after burning down
-integer changeLight = TRUE;     // change light with fire
-integer changeSmoke = TRUE;     // change smoke with fire
-integer changeVolume = TRUE;    // change volume with fire
-integer singleFire = TRUE;      // single fire or multiple fires
+integer changeLight = FALSE;    // change light with fire
+integer changeSmoke = FALSE;    // change smoke with fire
+integer changeVolume = FALSE;   // change volume with fire
+integer singleFire = FALSE;     // single fire or multiple fires
 integer defSize;                // default fire size (percentage)
+float minSize;                  // min. fire size (percentage)
 vector defStartColor;           // default start (bottom) color (percentage R,G,B)
 vector defEndColor;             // default end (top) color (percentage R,G,B)
 integer defVolume;              // default volume for sound (percentage)
-integer defSmoke = TRUE;        // default smoke on/off
-integer defSound = TRUE;        // default sound on/off
+integer defSmoke = FALSE;       // default smoke on/off
+integer defSound = FALSE;       // default sound on/off
 integer defIntensity;           // default light intensity (percentage)
 integer defRadius;              // default light radius (percentage)
 integer defFalloff;             // default light falloff (percentage)
 
-// Particle parameters
+// Particle parameters (general)
 
 float age = 1.0;                // particle lifetime
 float rate = 0.1;               // particle burst rate
 integer count = 10;             // particle count
+vector startColor = <1, 1, 0>;  // particle start color
+vector endColor = <1, 0, 0>;    // particle end color
+float startAlpha = 1.0;         // particle start alpha
+float endAlpha = 0.0;           // particle end alpha
+
+// Particle parameters (resizing)
+
 vector startScale = <0.4, 2, 0>;// particle start size (100%)
 vector endScale = <0.4, 2, 0>;  // particle end size (100%)
 float minSpeed = 0.0;           // particle min. burst speed (100%)
 float maxSpeed = 0.04;          // particle max. burst speed (100%)
 float burstRadius = 0.4;        // particle burst radius (100%)
 vector partAccel = <0, 0, 10>;  // particle accelleration (100%)
-vector startColor = <1, 1, 0>;  // particle start color
-vector endColor = <1, 0, 0>;    // particle end color
 
 // Variables
 
@@ -104,11 +101,11 @@ integer perSize;                // percent particle size
 integer perVolume;              // percent volume
 integer on = FALSE;             // fire on/off
 integer burning = FALSE;        // burning constantly
-integer smokeOn = TRUE;         // smoke on/off
-integer soundOn = TRUE;         // sound on/off
+integer smokeOn = FALSE;        // smoke on/off
+integer soundOn = FALSE;        // sound on/off
 integer menuOpen = FALSE;       // a menu is open or canceled (ignore button)
 float time;                     // timer interval in seconds
-float percent;                  // percentage of particle size
+float percent;                  // percentage of perSize (changed by burning down)
 float percentSmoke;             // percentage of smoke
 float decPercent;               // how much to burn down (%) every timer interval
 vector lightColor;              // light color
@@ -117,6 +114,7 @@ float lightRadius;              // light radius (changed by burning down)
 float lightFalloff;             // light falloff
 float soundVolume;              // sound volume (changed by burning down)
 string sound;                   // first sound in inventory
+string texture;                 // first texture in inventory
 float startIntensity;           // start value of lightIntensity (before burning down)
 float startRadius;              // start value of lightRadius (before burning down)
 float startVolume;              // start value of volume (before burning down)
@@ -148,7 +146,7 @@ toggleSmoke()
         smokeOn = FALSE;
     }
     else {
-        sendMessage(100);
+        if (changeSmoke) sendMessage(llRound(percentSmoke)); else sendMessage(100);
         smokeOn = TRUE;
     }
 }
@@ -167,41 +165,42 @@ toggleSound()
 
 updateSize(float size)
 {
-    vector start;
-    vector end;
-    float min;
-    float max;
-    float radius;
-    vector push;
+    vector start;                            // start scale
+    vector end;                              // end scale
+    float radius;                            // burst radius
+    float min = minSpeed / 100.0 * size;     // min. burst speed
+    float max = maxSpeed / 100.0 * size;     // max. burst speed
+    vector push = partAccel / 100.0 * size;  // accelleration
 
-    end = endScale / 100.0 * size;             // end scale
-    min = minSpeed / 100.0 * size;             // min. burst speed
-    max = maxSpeed / 100.0 * size;             // max. burst speed
-    push = partAccel / 100.0 * size;           // accelleration
-
-    if (size > 25.0) {
-        start = startScale / 100.0 * size;     // start scale
-        radius = burstRadius / 100.0 * size;   // burst radius
+    if (size < minSize) {
+        start = startScale / 100.0 * minSize;
+        end = endScale / 100.0 * minSize;
+        radius = burstRadius / 100.0 * minSize;
     }
     else {
-        start = startScale / 4.0;              // start scale
-        radius = burstRadius / 4.0;            // burst radius
-        if (size < 5.0) {
-            start.y = startScale.y / 100.0 * size * 5.0;
-            if (start.y < 0.25) start.y = 0.25;
-        }
+        start = startScale / 100.0 * size;
+        end = endScale / 100.0 * size;
+        radius = burstRadius / 100.0 * size;
+    }
+
+    if (size > (float)defSize) {
+        lightIntensity = startIntensity;
+        lightRadius = startRadius;
+        percentSmoke = 100.0;
+        soundVolume = startVolume;
+    }
+    else {
+        size *= 100.0 / (float)defSize;
         if (changeLight) {
-            lightIntensity = percentage(size * 4.0, startIntensity);
-            lightRadius = percentage(size * 4.0, startRadius);
+            lightIntensity = percentage(size, startIntensity);
+            lightRadius = percentage(size + 50.0 - size / 2.0, startRadius);
         }
         else {
             lightIntensity = startIntensity;
             lightRadius = startRadius;
         }
-        if (changeSmoke) percentSmoke = size * 4.0;
-        else percentSmoke = 100.0;
-        if (changeVolume) soundVolume = percentage(size * 4.0, startVolume);
-        else soundVolume = startVolume;
+        if (changeSmoke) percentSmoke = size; else percentSmoke = 100.0;
+        if (changeVolume) soundVolume = percentage(size, startVolume); else soundVolume = startVolume;
     }
 
     updateColor();
@@ -225,7 +224,7 @@ updateColor()
 
 integer accessGranted(key user, integer access)
 {
-    integer bitmask = _WORLD_;
+    integer bitmask = _PUBLIC_;
     if (user == owner) bitmask += _OWNER_;
     if (llSameGroup(user)) bitmask += _GROUP_;
     return (bitmask & access);
@@ -261,8 +260,8 @@ integer checkYesNo(string par, string val)
 loadNotecard()
 {
     verbose = TRUE;
-    switchAccess = _WORLD_;
-    menuAccess = _WORLD_;
+    switchAccess = _PUBLIC_;
+    menuAccess = _PUBLIC_;
     msgNumber = 10959;
     msgSwitch = "switch";
     msgOn = "on";
@@ -289,7 +288,6 @@ loadNotecard()
     defRadius = 50;
     defFalloff = 40;
     line = 0;
-    loading = TRUE;
 
     if (!burnDown) burnTime = 315360000;   // 10 years
     time = dieTime / 100.0;                // try to get a one percent timer interval
@@ -302,14 +300,16 @@ loadNotecard()
     startVolume = percentage(defVolume, maxVolume);
 
     if (llGetInventoryType(notecard) == INVENTORY_NOTECARD) {
+        loading = TRUE;
+        llSetText("Loading notecard...", <1,1,1>, 1.0);
         llGetNotecardLine(notecard, line);
     }
     else {
-        if (!silent) llWhisper(0, "Notecard \"" + notecard + "\" not found or empty, using defaults");
         reset(); // initial values for menu
         if (on) startSystem();
         if (!silent) {
             if (verbose) {
+                llWhisper(0, "Notecard \"" + notecard + "\" not found or empty, using defaults");
                 llWhisper(0, "Touch to start/stop fire");
                 llWhisper(0, "Long touch to show menu");
                 if (sound) llWhisper(0, "Sound in object inventory: Yes");
@@ -317,7 +317,6 @@ loadNotecard()
             }
             llWhisper(0, title + " " + version + " ready");
         }
-        loading = FALSE;
     }
 }
 
@@ -327,14 +326,12 @@ readNotecard (string ncLine)
 
     if (llStringLength(ncData) > 0 && llGetSubString(ncData, 0, 0) != "#") {
         list ncList = llParseString2List(ncData, ["=","#"], []);  // split into parameter, value, comment
-        string par = llList2String(ncList, 0);
-        string val = llList2String(ncList, 1);
-        par = llStringTrim(par, STRING_TRIM);
-        val = llStringTrim(val, STRING_TRIM);
+        string par = llStringTrim(llList2String(ncList, 0), STRING_TRIM);
+        string val = llStringTrim(llList2String(ncList, 1), STRING_TRIM);
         string lcpar = llToLower(par);
-        if (lcpar == "verbose") verbose = checkYesNo("verbose", val);
-        else if (lcpar == "switchaccess") switchAccess = checkInt("switchAccess", (integer)val, 0, 7);
-        else if (lcpar == "menuaccess") menuAccess = checkInt("menuAccess", (integer)val, 0, 7);
+        if (lcpar == "verbose") verbose = checkYesNo(par, val);
+        else if (lcpar == "switchaccess") switchAccess = checkInt(par, (integer)val, 0, 7);
+        else if (lcpar == "menuaccess") menuAccess = checkInt(par, (integer)val, 0, 7);
         else if (lcpar == "msgnumber") msgNumber = (integer)val;
         else if (lcpar == "msgswitch") msgSwitch = val;
         else if (lcpar == "msgon") msgOn = val;
@@ -343,23 +340,23 @@ readNotecard (string ncLine)
         else if (lcpar == "extbutton") extButton = llGetSubString(val, 0, 23);
         else if (lcpar == "extnumber") extNumber = (integer)val;
         else if (lcpar == "switchnumber") switchNumber = (integer)val;
-        else if (lcpar == "burndown") burnDown = checkYesNo("burndown", val);
-        else if (lcpar == "burntime") burnTime = (float)checkInt("burnTime", (integer)val, 1, 315360000); // 10 years
-        else if (lcpar == "dietime") dieTime = (float)checkInt("dieTime", (integer)val, 1, 315360000); // 10 years
-        else if (lcpar == "loop") loop = checkYesNo("loop", val);
-        else if (lcpar == "changelight") changeLight = checkYesNo("changeLight", val);
-        else if (lcpar == "changesmoke") changeSmoke = checkYesNo("changeSmoke", val);
-        else if (lcpar == "changevolume") changeVolume = checkYesNo("changeVolume", val);
-        else if (lcpar == "singlefire") singleFire = checkYesNo("singleFire", val);
-        else if (lcpar == "size") defSize = checkInt("size", (integer)val, 0, 100);
-        else if (lcpar == "topcolor") defEndColor = checkVector("topColor", (vector)val);
-        else if (lcpar == "bottomcolor") defStartColor = checkVector("bottomColor", (vector)val);
-        else if (lcpar == "volume") defVolume = checkInt("volume", (integer)val, 0, 100);
-        else if (lcpar == "smoke") defSmoke = checkYesNo("smoke", val);
-        else if (lcpar == "sound") defSound = checkYesNo("sound", val);
-        else if (lcpar == "intensity") defIntensity = checkInt("intensity", (integer)val, 0, 100);
-        else if (lcpar == "radius") defRadius = checkInt("radius", (integer)val, 0, 100);
-        else if (lcpar == "falloff") defFalloff = checkInt("falloff", (integer)val, 0, 100);
+        else if (lcpar == "burndown") burnDown = checkYesNo(par, val);
+        else if (lcpar == "burntime") burnTime = (float)checkInt(par, (integer)val, 1, 315360000); // 10 years
+        else if (lcpar == "dietime") dieTime = (float)checkInt(par, (integer)val, 1, 315360000); // 10 years
+        else if (lcpar == "loop") loop = checkYesNo(par, val);
+        else if (lcpar == "changelight") changeLight = checkYesNo(par, val);
+        else if (lcpar == "changesmoke") changeSmoke = checkYesNo(par, val);
+        else if (lcpar == "changevolume") changeVolume = checkYesNo(par, val);
+        else if (lcpar == "singlefire") singleFire = checkYesNo(par, val);
+        else if (lcpar == "size") defSize = checkInt(par, (integer)val, 5, 100);
+        else if (lcpar == "topcolor") defEndColor = checkVector(par, (vector)val);
+        else if (lcpar == "bottomcolor") defStartColor = checkVector(par, (vector)val);
+        else if (lcpar == "volume") defVolume = checkInt(par, (integer)val, 5, 100);
+        else if (lcpar == "smoke") defSmoke = checkYesNo(par, val);
+        else if (lcpar == "sound") defSound = checkYesNo(par, val);
+        else if (lcpar == "intensity") defIntensity = checkInt(par, (integer)val, 0, 100);
+        else if (lcpar == "radius") defRadius = checkInt(par, (integer)val, 0, 100);
+        else if (lcpar == "falloff") defFalloff = checkInt(par, (integer)val, 0, 100);
         else llWhisper(0, "Unknown parameter in notecard line " + (string)(line + 1) + ": " + par);
     }
 
@@ -504,10 +501,11 @@ updateParticles(vector start, vector end, float min, float max, float radius, ve
 {
     list particles = [
         PSYS_SRC_PATTERN, PSYS_SRC_PATTERN_EXPLODE,
+        PSYS_SRC_TEXTURE, texture,
         PSYS_PART_START_COLOR, startColor,
         PSYS_PART_END_COLOR, endColor,
-        PSYS_PART_START_ALPHA, 1.0,
-        PSYS_PART_END_ALPHA, 0.0,
+        PSYS_PART_START_ALPHA, startAlpha,
+        PSYS_PART_END_ALPHA, endAlpha,
         PSYS_PART_START_SCALE, start,
         PSYS_PART_END_SCALE, end,
         PSYS_PART_MAX_AGE, age,
@@ -558,23 +556,22 @@ updateParticles(vector start, vector end, float min, float max, float radius, ve
     }
 }
 
-sendMessage(integer alpha)
+sendMessage(integer size)
 {
-    llMessageLinked(LINK_ALL_OTHERS, smokeChannel, (string)alpha, getGroup());
+    llMessageLinked(LINK_ALL_OTHERS, smokeChannel, (string)size, getGroup());
 }
 
 default
 {
     state_entry()
     {
+        minSize = 100.0 / (startScale.x / minParticle); // smallest possible fire size (percentage)
         owner = llGetOwner();
         sound = llGetInventoryName(INVENTORY_SOUND, 0); // get first sound from inventory
+        texture = llGetInventoryName(INVENTORY_TEXTURE, 0); // get first texture from inventory
         if (sound) llPreloadSound(sound);
         stopSystem();
-        if (!silent) {
-            llWhisper(0, "RealFire by Rene10957");
-            llWhisper(0, "Loading notecard...");
-        }
+        if (!silent) llWhisper(0, "RealFire by Rene10957");
         loadNotecard();
     }
 
@@ -758,6 +755,7 @@ default
                 llWhisper(0, title + " " + version + " ready");
             }
             loading = FALSE;
+            llSetText("", ZERO_VECTOR, 0.0);
         }
         else {
             readNotecard(data);
@@ -767,7 +765,6 @@ default
     changed(integer change)
     {
         if (change & CHANGED_INVENTORY) {
-            if (!silent) llWhisper(0, "Inventory changed, reloading notecard...");
             sound = llGetInventoryName(INVENTORY_SOUND, 0); // get first sound from inventory
             if (sound) llPreloadSound(sound);
             loadNotecard();

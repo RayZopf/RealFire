@@ -1,7 +1,7 @@
 // Network control for RealFire
 //
 // Author: Rene10957 Resident
-// Date: 21-03-2014
+// Date: 05-10-2014
 //
 // This work is licensed under the Creative Commons Attribution 3.0 Unported (CC BY 3.0) License.
 // To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/.
@@ -12,7 +12,7 @@
 // Drop this in any prim you want to use as a control panel
 
 string title = "Network Control";   // title
-string version = "2.2";             // version
+string version = "2.2.2";           // version
 integer linkSet = TRUE;             // LINKSET mode
 integer silent = FALSE;             // silent startup
 
@@ -59,8 +59,8 @@ discoverNodes(key id)
     float pctlag = 100.0 * (1.0 - llGetRegionTimeDilation());  // try to work around time dilation
     vReplyTime = cReplyTime + cReplyTime / 100.0 * pctlag;  // (more lag = longer timeout)
     time = setTimer(vReplyTime);
-    if (linkSet) llMessageLinked(LINK_ALL_OTHERS, remoteChannel, "HELO", llGetKey());
-    else llRegionSay(remoteChannel, "HELO");
+    if (linkSet) llMessageLinked(LINK_ALL_OTHERS, remoteChannel, "PING", llGetKey());
+    else llRegionSay(remoteChannel, "PING");
 }
 
 menuDialog (key id)
@@ -165,7 +165,7 @@ default
             else llWhisper(0, "Node discovery completed (" + (string)length + " nodes)");
             llListenRemove(replyHandle);
             if (length > 0) {
-                menuButtons = llList2ListStrided(llDeleteSubList(networkNodes, 0, 0), 0, -1, 2);
+                menuButtons = llList2ListStrided(networkNodes, 1, -1, 2);
                 menuButtons = llListSort(menuButtons, 1, TRUE);  // sort ascending
                 menuButtons = orderButtons(menuButtons);         // reverse row order
                 menuButtons = ["On", "Off", "Discover"] + menuButtons;

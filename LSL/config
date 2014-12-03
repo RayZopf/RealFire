@@ -1,7 +1,7 @@
 # Configuration notecard for RealFire
 #
-# Date: 21-03-2014
-# Version: 2.3.1
+# Date: 05-10-2014
+# Version: 2.3.2
 
 verbose = YES                   # show more/less info during startup
 switchAccess = 1                # access level for switch (1 = world, 2 = group, 4 = owner, 6 = group + owner)
